@@ -4,13 +4,17 @@ using System.Collections.Generic;
 
 public class Mesher
 {
-    private static void MeshChunk(Chunk chunk, Chunks chunks, Transform transform, Material material) {
+    private static MarchingCubes marching = new MarchingCubes();
+
+    public static void MeshChunk(Chunk chunk, Chunks chunks, Transform transform, Material material) {
+        if (!chunk.Dirty) {
+            return;
+        }
+
         if (chunk.Mesh != null) {
             Object.Destroy(chunk.Mesh);
             Object.Destroy(chunk.GameObject);
         }
-
-        var marching = new MarchingCubes();
 
         List<Vector3> verts = new List<Vector3>();
         List<int> indices = new List<int>();
@@ -33,15 +37,13 @@ public class Mesher
 
         chunk.Mesh = mesh;
         chunk.GameObject = go;
+        chunk.Dirty = false;
     }
 
     public static void MeshChunks(Chunks chunks, Transform transform, Material material) {
         foreach(var kv in chunks.Map) {
             var chunk = kv.Value;
-            if (chunk.Dirty) {
-                MeshChunk(chunk, chunks, transform, material);
-                chunk.Dirty = false;
-            }
+            MeshChunk(chunk, chunks, transform, material);
         }
     }
 }

@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.Assertions;
 
 public class TerrianManager : MonoBehaviour {
-    private ChunksMesh chunksMesh;
     private Terrian terrian;
     public CameraController cameraController;
 
@@ -12,13 +11,12 @@ public class TerrianManager : MonoBehaviour {
 	void Start () {
         Assert.IsNotNull(cameraController);
 
-        chunksMesh = gameObject.AddComponent<ChunksMesh>();
-        terrian = new Terrian(chunksMesh.Chunks);
-        terrian.GenerateForCamera(cameraController.Target);
+        terrian = new Terrian();
     }
 	
 	// Update is called once per frame
 	void Update () {
-        
+        terrian.GenerateForCamera(cameraController.Target);
+        terrian.MeshChunks(transform);
 	}
 }

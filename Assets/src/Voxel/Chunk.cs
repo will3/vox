@@ -9,6 +9,7 @@ public class Chunk
     private readonly int size;
     private Vector3Int origin;
     private bool dirty;
+    public bool Hidden;
 
     public Vector3Int Origin
     {
