@@ -12,7 +12,7 @@ public class Terrian
     private int generateDis = 3;
     private int drawDis = 2;
     private int maxHeight = 64;
-    private Material material = new Material(Shader.Find("Standard"));
+    private Material material = new Material(Shader.Find("Custom/voxel"));
 
     private Dictionary<Vector3Int, TerrianChunk> map = new Dictionary<Vector3Int, TerrianChunk>();
     Perlin heightNoise = new Perlin();

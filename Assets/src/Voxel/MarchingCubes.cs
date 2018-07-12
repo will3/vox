@@ -4,6 +4,11 @@ using System.Collections.Generic;
 
 public class MarchingCubes
 {
+    public interface IMarchingCubesData {
+        float GetValue(int i, int j, int k);
+        Color GetColor(int i, int j, int k);
+    }
+
     private Vector3[] EdgeVertex { get; set; }
     private float surface;
 
@@ -20,7 +25,7 @@ public class MarchingCubes
     /// <summary>
     /// MarchCube performs the Marching Cubes algorithm on a single cube
     /// </summary>
-    public void March(float x, float y, float z, float[] cube, IList<Vector3> vertList, IList<int> indexList)
+    public void March(float x, float y, float z, float[] cube, Color color, IList<Vector3> vertList, IList<int> indexList, IList<Color> colors)
     {
         int i, j, vert, idx;
         int flagIndex = 0;
@@ -61,6 +66,7 @@ public class MarchingCubes
                 vert = TriangleConnectionTable[flagIndex, 3 * i + j];
                 indexList.Add(idx + WindingOrder[j]);
                 vertList.Add(EdgeVertex[vert]);
+                colors.Add(color);
             }
         }
     }
@@ -396,7 +402,7 @@ public class MarchingCubes
     /// </summary>
     protected int[] WindingOrder { get; private set; }
 
-    public virtual void Generate(Chunk chunk, Chunks chunks, int width, int height, int depth, IList<Vector3> verts, IList<int> indices)
+    public void Generate(IMarchingCubesData data, int width, int height, int depth, IList<Vector3> verts, IList<int> indices, IList<Color> colors)
     {
 
         if (Surface > 0.0f)
@@ -427,23 +433,16 @@ public class MarchingCubes
                         iy = y + VertexOffset[i, 1];
                         iz = z + VertexOffset[i, 2];
 
-                        Cube[i] = getVoxel(ix, iy, iz, chunk, chunks);
+                        Cube[i] = data.GetValue(ix, iy, iz);
                     }
 
+                    Color color = data.GetColor(x, y, z);
+
                     //Perform algorithm
-                    March(x, y, z, Cube, verts, indices);
+                    March(x, y, z, Cube, color, verts, indices, colors);
                 }
             }
         }
-    }
-
-    private float getVoxel(int i, int j, int k, Chunk chunk, Chunks chunks) {
-        int max= chunks.Size - 1;
-        if (i < 0 || i > max || j < 0 || j > max || k < 0 || k > max) {
-            var origin = chunk.Origin;
-            return chunks.Get(i + origin.x, j + origin.y, k + origin.z);
-        }
-        return chunk.Get(i, j, k);
     }
 
     /// <summary>
