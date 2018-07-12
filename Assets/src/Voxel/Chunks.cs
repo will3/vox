@@ -55,6 +55,7 @@ public class Chunks
             return map[origin];
         }
         map[origin] = new Chunk(size, origin);
+        map[origin].Chunks = this;
         return map[origin];
     }
 

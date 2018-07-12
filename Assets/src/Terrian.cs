@@ -79,11 +79,17 @@ public class Terrian
             }
         }
 
+        Color grass;
+        ColorUtility.TryParseHtmlString("#63912C", out grass);
+        Color rock;
+        ColorUtility.TryParseHtmlString("#727D75", out rock);
+
         for (var i = 0; i < size; i++) {
             for (var j = 0; j < size; j ++) {
                 for (var k = 0; k < size; k++) {
                     float value = field.Sample(i / 2.0f, j / 2.0f, k / 2.0f);
-                    chunk.Set(i, j, k, value);          
+                    chunk.Set(i, j, k, value);
+                    chunk.SetColor(i, j, k, rock);
                 }
             }
         }

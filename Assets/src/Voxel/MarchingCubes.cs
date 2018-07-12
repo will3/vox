@@ -4,11 +4,6 @@ using System.Collections.Generic;
 
 public class MarchingCubes
 {
-    public interface IMarchingCubesData {
-        float GetValue(int i, int j, int k);
-        Color GetColor(int i, int j, int k);
-    }
-
     private Vector3[] EdgeVertex { get; set; }
     private float surface;
 
@@ -402,8 +397,11 @@ public class MarchingCubes
     /// </summary>
     protected int[] WindingOrder { get; private set; }
 
-    public void Generate(IMarchingCubesData data, int width, int height, int depth, IList<Vector3> verts, IList<int> indices, IList<Color> colors)
+    public void Generate(Chunk chunk, IList<Vector3> verts, IList<int> indices, IList<Color> colors)
     {
+        int width = chunk.Size;
+        int height = chunk.Size;
+        int depth = chunk.Size;
 
         if (Surface > 0.0f)
         {
@@ -433,16 +431,27 @@ public class MarchingCubes
                         iy = y + VertexOffset[i, 1];
                         iz = z + VertexOffset[i, 2];
 
-                        Cube[i] = data.GetValue(ix, iy, iz);
+                        Cube[i] = GetValue(chunk, ix, iy, iz);
                     }
 
-                    Color color = data.GetColor(x, y, z);
+                    Color color = chunk.GetColor(x, y, z);
 
                     //Perform algorithm
                     March(x, y, z, Cube, color, verts, indices, colors);
                 }
             }
         }
+    }
+
+    public float GetValue(Chunk chunk, int i, int j, int k)
+    {
+        int max = chunk.Size - 1;
+        if (i < 0 || i > max || j < 0 || j > max || k < 0 || k > max)
+        {
+            var origin = chunk.Origin;
+            return chunk.Chunks.Get(i + origin.x, j + origin.y, k + origin.z);
+        }
+        return chunk.Get(i, j, k);
     }
 
     /// <summary>

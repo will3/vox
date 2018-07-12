@@ -19,9 +19,8 @@ public class Mesher
         var verts = new List<Vector3>();
         var indices = new List<int>();
         var colors = new List<Color>();
-        var data = new MarchingCubeData(chunk, chunks);
 
-        marching.Generate(data, chunk.Size, chunk.Size, chunk.Size, verts, indices, colors);
+        marching.Generate(chunk, verts, indices, colors);
 
         Mesh mesh = new Mesh();
         mesh.SetVertices(verts);
@@ -48,30 +47,6 @@ public class Mesher
         foreach(var kv in chunks.Map) {
             var chunk = kv.Value;
             MeshChunk(chunk, chunks, transform, material);
-        }
-    }
-
-    class MarchingCubeData : MarchingCubes.IMarchingCubesData {
-        private Chunk chunk;
-        private Chunks chunks;
-
-        public MarchingCubeData(Chunk chunk, Chunks chunks) {
-            this.chunk = chunk;
-            this.chunks = chunks;
-        }
-
-        public float GetValue(int i, int j, int k) {
-            int max = chunks.Size - 1;
-            if (i < 0 || i > max || j < 0 || j > max || k < 0 || k > max)
-            {
-                var origin = chunk.Origin;
-                return chunks.Get(i + origin.x, j + origin.y, k + origin.z);
-            }
-            return chunk.Get(i, j, k);               
-        }
-
-        public Color GetColor(int i, int j, int k) {
-            return new Color(1.0f, 1.0f, 1.0f);
         }
     }
 }
