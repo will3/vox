@@ -7,7 +7,8 @@ public class Chunk
     private readonly float[] data;
     private readonly Dictionary<int, Color> colors = new Dictionary<int, Color>();
     private readonly Dictionary<int, Vector3> normals = new Dictionary<int, Vector3>();
-    private readonly Set<int> = new Set<int>();
+    private readonly HashSet<int> waters = new HashSet<int>();
+
     private Mesh mesh;
     private GameObject gameObject;
     private readonly int size;
@@ -108,6 +109,20 @@ public class Chunk
     public void SetNormal(int i, int j, int k, Vector3 normal) {
         var index = getIndex(i, j, k);
         normals[index] = normal;
+    }
+
+    public void SetWater(int i, int j, int k, bool flag) {
+        var index = getIndex(i, j, k);
+        if (flag) {
+            waters.Add(index);
+        } else {
+            waters.Remove(index);
+        }
+    }
+
+    public bool GetWater(int i, int j, int k) {
+        var index = getIndex(i, j, k);
+        return waters.Contains(index);
     }
 
     private int getIndex(int i, int j, int k) {

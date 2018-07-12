@@ -33,7 +33,7 @@ public class Terrian
         heightNoise.OctaveCount = 5;
         ColorUtility.TryParseHtmlString("#63912C", out grass);
         ColorUtility.TryParseHtmlString("#727D75", out rock);
-        ColorUtility.TryParseHtmlString("#6F7993", out water);
+        ColorUtility.TryParseHtmlString("#108276", out water);
     }
 
     public void Update() {
@@ -92,6 +92,7 @@ public class Terrian
                         if (chunk.Get(i, j, k) <= 0.5) {
                             chunk.Set(i, j, k, 1);
                             chunk.SetColor(i, j, k, water);
+                            chunk.SetWater(i, j, k, true);
                         }
                     }
                 }
@@ -115,6 +116,9 @@ public class Terrian
                     var normal = marchingCubes.GetNormal(i, j, k, chunk);
                     if (normal.HasValue)
                     {
+                        if (chunk.GetWater(i, j, k)) {
+                            continue;
+                        }
                         if (Vector3.Angle(Vector3.up, normal.Value) < 0) {
                             Debug.Log("Unexpected");
                         }
