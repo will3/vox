@@ -12,11 +12,12 @@ public class TerrianManager : MonoBehaviour {
         Assert.IsNotNull(cameraController);
 
         terrian = new Terrian();
+        terrian.Transform = transform;
     }
 	
 	// Update is called once per frame
 	void Update () {
-        terrian.GenerateForCamera(cameraController.Target);
-        terrian.MeshChunks(transform);
+        terrian.Target = cameraController.Target;
+        terrian.Update();
 	}
 }

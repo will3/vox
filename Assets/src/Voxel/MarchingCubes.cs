@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public class MarchingCubes
 {
@@ -41,7 +42,8 @@ public class MarchingCubes
             //if there is an intersection on this edge
             if ((edgeFlags & (1 << i)) != 0)
             {
-                offset = GetOffset(cube[EdgeConnection[i, 0]], cube[EdgeConnection[i, 1]]);
+                offset = 0.5f;
+                //offset = GetOffset(cube[EdgeConnection[i, 0]], cube[EdgeConnection[i, 1]]);
 
                 EdgeVertex[i].x = x + (VertexOffset[EdgeConnection[i, 0], 0] + offset * EdgeDirection[i, 0]);
                 EdgeVertex[i].y = y + (VertexOffset[EdgeConnection[i, 0], 1] + offset * EdgeDirection[i, 1]);
@@ -397,6 +399,64 @@ public class MarchingCubes
     /// </summary>
     protected int[] WindingOrder { get; private set; }
 
+    // Get Normal of a voxel
+    // If more than one surface, use first surface
+    public Vector3? GetNormal(int x, int y, int z, Chunk chunk) {
+        int i;
+        int flagIndex = 0;
+        float offset = 0.0f;
+        int ix, iy, iz;
+
+        //Get the values in the 8 neighbours which make up a cube
+        for (i = 0; i < 8; i++)
+        {
+            ix = x + VertexOffset[i, 0];
+            iy = y + VertexOffset[i, 1];
+            iz = z + VertexOffset[i, 2];
+
+            Cube[i] = GetValue(chunk, ix, iy, iz);
+        }
+
+        var cube = Cube;
+
+        ////Find which vertices are inside of the surface and which are outside
+        for (i = 0; i < 8; i++) if (cube[i] <= Surface) flagIndex |= 1 << i;
+
+        ////Find which edges are intersected by the surface
+        int edgeFlags = CubeEdgeFlags[flagIndex];
+
+        ////If the cube is entirely inside or outside of the surface, then there will be no intersections
+        if (edgeFlags == 0) return null;
+
+        ////Find the point of intersection of the surface with each edge
+        for (i = 0; i < 12; i++)
+        {
+            //if there is an intersection on this edge
+            if ((edgeFlags & (1 << i)) != 0)
+            {
+                offset = GetOffset(cube[EdgeConnection[i, 0]], cube[EdgeConnection[i, 1]]);
+
+                EdgeVertex[i].x = x + (VertexOffset[EdgeConnection[i, 0], 0] + offset * EdgeDirection[i, 0]);
+                EdgeVertex[i].y = y + (VertexOffset[EdgeConnection[i, 0], 1] + offset * EdgeDirection[i, 1]);
+                EdgeVertex[i].z = z + (VertexOffset[EdgeConnection[i, 0], 2] + offset * EdgeDirection[i, 2]);
+            }
+        }
+
+        //Save the triangles that were found. There can be up to five per cube
+        for (i = 0; i < 5; i++)
+        {
+            if (TriangleConnectionTable[flagIndex, 3 * i] < 0) break;
+
+            var a = EdgeVertex[TriangleConnectionTable[flagIndex, 3 * i + 0]];
+            var b = EdgeVertex[TriangleConnectionTable[flagIndex, 3 * i + 1]];
+            var c = EdgeVertex[TriangleConnectionTable[flagIndex, 3 * i + 2]];
+
+            return Vector3.Cross(a - b, a - c);
+        }
+
+        return null;
+    }
+
     public void Generate(Chunk chunk, IList<Vector3> verts, IList<int> indices, IList<Color> colors)
     {
         int width = chunk.Size;
@@ -460,9 +520,8 @@ public class MarchingCubes
     /// </summary>
     protected virtual float GetOffset(float v1, float v2)
     {
-        return 0.5f;
-        //float delta = v2 - v1;
-        //return (delta == 0.0f) ? Surface : (Surface - v1) / delta;
+        float delta = v2 - v1;
+        return (delta == 0.0f) ? Surface : (Surface - v1) / delta;
     }
 
     /// <summary>

@@ -6,6 +6,8 @@ public class Chunk
 {
     private readonly float[] data;
     private readonly Dictionary<int, Color> colors = new Dictionary<int, Color>();
+    private readonly Dictionary<int, Vector3> normals = new Dictionary<int, Vector3>();
+    private readonly Set<int> = new Set<int>();
     private Mesh mesh;
     private GameObject gameObject;
     private readonly int size;
@@ -101,6 +103,11 @@ public class Chunk
         Color color;
         colors.TryGetValue(index, out color);
         return color;
+    }
+
+    public void SetNormal(int i, int j, int k, Vector3 normal) {
+        var index = getIndex(i, j, k);
+        normals[index] = normal;
     }
 
     private int getIndex(int i, int j, int k) {

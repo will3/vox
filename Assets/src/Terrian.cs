@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using LibNoise.Generator;
+using System;
 
 public class Terrian
 {
@@ -13,43 +14,120 @@ public class Terrian
     private int drawDis = 2;
     private int maxHeight = 64;
     private Material material = new Material(Shader.Find("Custom/voxel"));
+    public Transform Transform;
+    public Vector3 Target;
 
     private Dictionary<Vector3Int, TerrianChunk> map = new Dictionary<Vector3Int, TerrianChunk>();
     Perlin heightNoise = new Perlin();
+    MarchingCubes marchingCubes = new MarchingCubes();
+    Color grass;
+    Color rock;
+    Color water;
+
+    private int waterLevel = 2;
 
     public Terrian(int size = 32) {
         this.size = size;
         sizeF = size;
         chunks = new Chunks(size);
         heightNoise.OctaveCount = 5;
+        ColorUtility.TryParseHtmlString("#63912C", out grass);
+        ColorUtility.TryParseHtmlString("#727D75", out rock);
+        ColorUtility.TryParseHtmlString("#6F7993", out water);
     }
 
-    public void GenerateForCamera(Vector3 cameraTarget) {
-        int x = Mathf.FloorToInt(cameraTarget.x / sizeF);
-        int z = Mathf.FloorToInt(cameraTarget.z / sizeF);
+    public void Update() {
+        int x = Mathf.FloorToInt(Target.x / sizeF);
+        int z = Mathf.FloorToInt(Target.z / sizeF);
 
-        for (int j = 0; j < maxChunksY; j ++) {
-            for (int i = x - generateDis; i <= x + generateDis; i++) {
-                for (int k = z - generateDis; k <= z + generateDis; k ++) {
+        for (int j = 0; j < maxChunksY; j++)
+        {
+            for (int i = x - generateDis; i <= x + generateDis; i++)
+            {
+                for (int k = z - generateDis; k <= z + generateDis; k++)
+                {
                     var origin = new Vector3Int(i, j, k) * size;
-                    generate(origin);
+                    var terrianChunk = generateRock(origin);
+                    generateWater(terrianChunk);
                 }
             }
         }
 
-        foreach (var kv in map) {
+        foreach (var kv in map)
+        {
             var terrianChunk = kv.Value;
             terrianChunk.UpdateDistance(x, z);
-        }
-    }
 
-    public void MeshChunks(Transform transform) {
-        foreach (var kv in map) {
-            var terrianChunk = kv.Value;
-            if (terrianChunk.Distance < drawDis) {
-                Mesher.MeshChunk(terrianChunk.Chunk, chunks, transform, material);
+            if (terrianChunk.Distance < drawDis)
+            {
+                generateGrass(terrianChunk);
             }
         }
+
+        foreach (var kv in map)
+        {
+            var terrianChunk = kv.Value;
+            if (terrianChunk.Distance < drawDis)
+            {
+                Mesher.MeshChunk(terrianChunk.Chunk, chunks, Transform, material);
+            }
+        }
+        
+    }
+
+    private void generateWater(TerrianChunk terrianChunk) {
+        if (terrianChunk.GeneratedWater) {
+            return;
+        }
+
+        var chunk = terrianChunk.Chunk;
+        if (chunk.Origin.y < waterLevel) {
+            float maxJ = waterLevel - chunk.Origin.y;
+            if (maxJ > chunk.Size) {
+                maxJ = chunk.Size;
+            }
+            for (var i = 0; i < chunk.Size; i++) {
+                for (var k = 0; k < chunk.Size; k++) {
+                    for (var j = 0; j < maxJ; j++) {
+                        if (chunk.Get(i, j, k) <= 0.5) {
+                            chunk.Set(i, j, k, 1);
+                            chunk.SetColor(i, j, k, water);
+                        }
+                    }
+                }
+            }
+        }
+
+        terrianChunk.GeneratedWater = true;
+    }
+
+    private void generateGrass(TerrianChunk terrianChunk) {
+        if (terrianChunk.GeneratedGrass) {
+            return;
+        }
+        var chunk = terrianChunk.Chunk;
+        for (var i = 0; i < chunk.Size; i++)
+        {
+            for (var j = 0; j < chunk.Size; j++)
+            {
+                for (var k = 0; k < chunk.Size; k++)
+                {
+                    var normal = marchingCubes.GetNormal(i, j, k, chunk);
+                    if (normal.HasValue)
+                    {
+                        if (Vector3.Angle(Vector3.up, normal.Value) < 0) {
+                            Debug.Log("Unexpected");
+                        }
+
+                        if (Vector3.Angle(Vector3.up, normal.Value) < 60)
+                        {
+                            chunk.SetColor(i, j, k, grass);
+                        }
+                    }
+                }
+            }
+        }
+        terrianChunk.GeneratedGrass = true;
     }
 
     float getVoxel(int i, int j, int k) {
@@ -58,10 +136,10 @@ public class Terrian
         return value;
     }
 
-    void generate(Vector3Int origin) {
+    TerrianChunk generateRock(Vector3Int origin) {
         TerrianChunk terrianChunk = getTerrianChunk(origin);
         if (terrianChunk.generated) {
-            return;
+            return terrianChunk;
         }
 
         var chunk = chunks.GetOrCreateChunk(origin);
@@ -79,11 +157,6 @@ public class Terrian
             }
         }
 
-        Color grass;
-        ColorUtility.TryParseHtmlString("#63912C", out grass);
-        Color rock;
-        ColorUtility.TryParseHtmlString("#727D75", out rock);
-
         for (var i = 0; i < size; i++) {
             for (var j = 0; j < size; j ++) {
                 for (var k = 0; k < size; k++) {
@@ -96,6 +169,8 @@ public class Terrian
 
         terrianChunk.generated = true;
         terrianChunk.Chunk = chunk;
+
+        return terrianChunk;
     }
 
     TerrianChunk getTerrianChunk(Vector3Int origin) {
@@ -111,6 +186,8 @@ public class Terrian
     class TerrianChunk {
         private Vector3Int key;
         public bool generated = false;
+        public bool GeneratedWater = false;
+        public bool GeneratedGrass = false;
         private int distance;
         public Chunk Chunk;
 
