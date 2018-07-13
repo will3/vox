@@ -50,6 +50,16 @@ public class Chunks
         return map[origin].Get(i - origin.x, j - origin.y, k - origin.z);
     }
 
+    public float GetLighting(int i, int j, int k) {
+        var origin = getOrigin(i, j, k);
+        if (!map.ContainsKey(origin))
+        {
+            return 1.0f;
+        }
+
+        return map[origin].GetLighting(i - origin.x, j - origin.y, k - origin.z);
+    }
+
     public Color GetColor(int i, int j, int k) {
         var origin = getOrigin(i, j, k);
         if (!map.ContainsKey(origin))

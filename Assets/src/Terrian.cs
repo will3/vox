@@ -18,7 +18,7 @@ public class Terrian
     private int waterLevel = 2;
     private int minTreeJ = 4;
 
-    private Material material = new Material(Shader.Find("Custom/voxel"));
+    private Material material = new Material(Shader.Find("Unlit/voxelunlit"));
     public Transform Transform;
     public Vector3 Target;
 
@@ -63,6 +63,7 @@ public class Terrian
                 generateNormals(terrianChunk);
                 generateGrass(terrianChunk);
                 generateTrees(terrianChunk);
+                generateShadows(terrianChunk);
             }
         }
 
@@ -72,9 +73,11 @@ public class Terrian
             if (terrianChunk.Distance < drawDis)
             {
                 marchingCubes.AccurateOffset = false;
+                //marchingCubes.UseLighting = true;
                 Mesher.MeshChunk(terrianChunk.Chunk, chunks, Transform, material, marchingCubes);
 
-                marchingCubes.AccurateOffset = true;
+                //marchingCubes.UseLighting = false;
+				marchingCubes.AccurateOffset = false;
                 var treeChunk = treeLayer.GetChunk(terrianChunk.Origin);
                 Mesher.MeshChunk(treeChunk, chunks, Transform, material, marchingCubes);
             }
@@ -124,7 +127,7 @@ public class Terrian
                 continue;
             }
 
-            var absJ = coord.x + chunk.Origin.y;
+            var absJ = coord.y + chunk.Origin.y;
 
             if (absJ < minTreeJ) {
                 continue;
@@ -313,7 +316,32 @@ public class Terrian
     }
 
     private void generateShadows(TerrianChunk terrianChunk) {
-        
+        if (terrianChunk.GeneratedShadows) {
+            return;
+        }
+
+        var chunk = terrianChunk.Chunk;
+        var treeChunk = treeLayer.GetChunk(chunk.Origin);
+        var origin = chunk.Origin;
+        foreach(var kv in terrianChunk.Normals) {
+            var coord = kv.Key;
+            var globalCoord = coord + origin;
+            var shadow = calculateShadow(globalCoord);
+            chunk.SetLighting(coord, shadow);
+            //treeChunk.SetLighting(coord, shadow);
+        }
+
+        terrianChunk.GeneratedShadows = true;
+    }
+
+    private float calculateShadow(Vector3Int coord) {
+        var shadowStrength = 0.4f;
+        var result = Raycast4545.Trace(coord, chunks) || Raycast4545.Trace(coord, treeLayer);
+        if (result) {
+            return 1 - shadowStrength;
+        } else {
+            return 1.0f;
+        }
     }
 
     class TerrianChunk {
@@ -335,6 +363,7 @@ public class Terrian
         public bool GeneratedGrass = false;
         public bool GeneratedTrees = false;
         public bool GeneratedNormals = false;
+        public bool GeneratedShadows = false;
 
         private int distance;
         private Vector3Int origin;

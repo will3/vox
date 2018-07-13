@@ -3,12 +3,12 @@ using System.Collections;
 
 public class Raycast
 {
-    class RaycastResult {
+    public class RaycastResult {
         public Vector3 HitPos;
         public Vector3 HitNormal;
     }
 
-    RaycastResult TraceRay(Chunks chunks, Vector3 pos, Vector3 dir, int max_d)
+    public static RaycastResult Trace(Chunks chunks, Vector3 pos, Vector3 dir, int max_d, bool ignoreFirst = true)
     {
         float px = pos.x;
         float py = pos.y;
@@ -24,53 +24,58 @@ public class Raycast
         // algo below is as described by this paper:
         // http://www.cse.chalmers.se/edu/year/2010/course/TDA361/grid.pdf
 
-        var t = 0.0f;
-        var ix = Mathf.FloorToInt(px) | 0;
-        var iy = Mathf.FloorToInt(py) | 0;
-        var iz = Mathf.FloorToInt(pz) | 0;
+        float t = 0.0f;
+        float ix = Mathf.Floor(px);
+        float iy = Mathf.Floor(py);
+        float iz = Mathf.Floor(pz);
 
-        var stepx = (dx > 0) ? 1 : -1;
-        var stepy = (dy > 0) ? 1 : -1;
-        var stepz = (dz > 0) ? 1 : -1;
+        float stepx = (dx > 0) ? 1 : -1;
+        float stepy = (dy > 0) ? 1 : -1;
+        float stepz = (dz > 0) ? 1 : -1;
 
         // dx,dy,dz are already normalized
-        var txDelta = Mathf.Abs(1 / dx);
-        var tyDelta = Mathf.Abs(1 / dy);
-        var tzDelta = Mathf.Abs(1 / dz);
+        float txDelta = Mathf.Abs(1 / dx);
+        float tyDelta = Mathf.Abs(1 / dy);
+        float tzDelta = Mathf.Abs(1 / dz);
 
-        var xdist = (stepx > 0) ? (ix + 1 - px) : (px - ix);
-        var ydist = (stepy > 0) ? (iy + 1 - py) : (py - iy);
-        var zdist = (stepz > 0) ? (iz + 1 - pz) : (pz - iz);
+        float xdist = (stepx > 0) ? (ix + 1 - px) : (px - ix);
+        float ydist = (stepy > 0) ? (iy + 1 - py) : (py - iy);
+        float zdist = (stepz > 0) ? (iz + 1 - pz) : (pz - iz);
 
         // location of nearest voxel boundary, in units of t
-        var txMax = txDelta * xdist;
-        var tyMax = tyDelta * ydist;
-        var tzMax = tzDelta * zdist;
+        float txMax = txDelta * xdist;
+        float tyMax = tyDelta * ydist;
+        float tzMax = tzDelta * zdist;
 
-        var steppedIndex = -1;
+        float steppedIndex = -1;
+        bool first = true;
 
         // main loop along raycast vector
         while (t <= max_d)
         {
 
             // exit check
-            var b = chunks.Get(ix, iy, iz);
+            var b = chunks.Get((int)ix, (int)iy, (int)iz);
 
             if (b > 0.5f)
             {
-                var result = new RaycastResult();
-                result.HitPos.x = px + t * dx;
-                result.HitPos.y = py + t * dy;
-                result.HitPos.z = pz + t * dz;
+                if (ignoreFirst && first) {
+                    first = false;
+                } else {
+                    var result = new RaycastResult();
+                    result.HitPos.x = px + t * dx;
+                    result.HitPos.y = py + t * dy;
+                    result.HitPos.z = pz + t * dz;
 
 
-                if (steppedIndex == 0) result.HitNormal.x = -stepx;
+                    if (steppedIndex == 0) result.HitNormal.x = -stepx;
 
-                if (steppedIndex == 1) result.HitNormal.y = -stepy;
+                    if (steppedIndex == 1) result.HitNormal.y = -stepy;
 
-                if (steppedIndex == 2) result.HitNormal.z = -stepz;
+                    if (steppedIndex == 2) result.HitNormal.z = -stepz;
 
-                return result;
+                    return result;    
+                }
             }
 
             // advance t to next nearest voxel boundary

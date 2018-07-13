@@ -6,6 +6,7 @@ public class Chunk
 {
     private readonly float[] data;
     private readonly Dictionary<int, Color> colors = new Dictionary<int, Color>();
+    private readonly Dictionary<Vector3Int, float> lightingMap = new Dictionary<Vector3Int, float>();
 
     private Mesh mesh;
     private GameObject gameObject;
@@ -140,6 +141,19 @@ public class Chunk
         }
     }
 
+    public float GetLightingGlobal(int i, int j, int k)
+    {
+        int max = size - 1;
+        if (i < 0 || i > max || j < 0 || j > max || k < 0 || k > max)
+        {
+            return Chunks.GetLighting(i + origin.x, j + origin.y, k + origin.z);
+        }
+        else
+        {
+            return GetLighting(i, j, k);
+        }
+    }
+
     public Color GetColor(int i, int j, int k) {
         var index = getIndex(i, j, k);
         Color color;
@@ -159,5 +173,22 @@ public class Chunk
             return false;
         }
         return true;
+    }
+
+    public float GetLighting(int i, int j, int k) {
+        Vector3Int coord = new Vector3Int(i, j, k);
+        return GetLighting(coord);
+    }
+
+    public float GetLighting(Vector3Int coord) {
+        if (lightingMap.ContainsKey(coord)) {
+            return lightingMap[coord];    
+        }
+
+        return 1.0f;
+    }
+
+    public void SetLighting(Vector3Int coord, float v) {
+        lightingMap[coord] = v;
     }
 }
