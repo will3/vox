@@ -50,6 +50,15 @@ public class Chunks
         return map[origin].Get(i - origin.x, j - origin.y, k - origin.z);
     }
 
+    public Color GetColor(int i, int j, int k) {
+        var origin = getOrigin(i, j, k);
+        if (!map.ContainsKey(origin))
+        {
+            return default(Color);
+        }
+        return map[origin].GetColor(i - origin.x, j - origin.y, k - origin.z);
+    }
+
     public Chunk GetOrCreateChunk(Vector3Int origin) {
         if (map.ContainsKey(origin)) {
             return map[origin];
@@ -59,14 +68,32 @@ public class Chunks
         return map[origin];
     }
 
+    public Chunk GetChunk(Vector3Int origin) {
+        return map[origin];
+    }
+
+    public bool HasChunk(Vector3Int origin) {
+        return map.ContainsKey(origin);
+    }
+
     public void Set(int i, int j, int k, float v)
     {
         var origin = getOrigin(i, j, k);
-        if (!map.ContainsKey(origin))
-        {
-            map[origin] = new Chunk(size, origin);
-        }
+        var chunk = GetOrCreateChunk(origin);
+        chunk.Set(i - origin.x, j - origin.y, k - origin.z, v);
+    }
 
-        map[origin].Set(i - origin.x, j - origin.y, k - origin.z, v);
+    public void SetIfHigher(int i, int j, int k, float v)
+    {
+        var origin = getOrigin(i, j, k);
+        var chunk = GetOrCreateChunk(origin);
+        chunk.SetIfHigher(i - origin.x, j - origin.y, k - origin.z, v);
+    }
+
+    public void SetColor(int i, int j, int k, Color v)
+    {
+        var origin = getOrigin(i, j, k);
+        var chunk = GetOrCreateChunk(origin);
+        chunk.SetColor(i - origin.x, j - origin.y, k - origin.z, v);
     }
 }

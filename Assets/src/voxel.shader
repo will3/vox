@@ -10,7 +10,8 @@
          LOD 200
          
          CGPROGRAM
-         #pragma surface surf Standard vertex:vert fullforwardshadows
+         #pragma surface surf Standard vertex:vert
+         // #pragma surface surf Standard vertex:vert fullforwardshadows
          #pragma target 3.0
          struct Input {
              float2 uv_MainTex;

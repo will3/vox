@@ -6,8 +6,6 @@ public class Chunk
 {
     private readonly float[] data;
     private readonly Dictionary<int, Color> colors = new Dictionary<int, Color>();
-    private readonly Dictionary<int, Vector3> normals = new Dictionary<int, Vector3>();
-    private readonly HashSet<int> waters = new HashSet<int>();
 
     private Mesh mesh;
     private GameObject gameObject;
@@ -94,9 +92,52 @@ public class Chunk
         dirty = true;
     }
 
+    public void SetIfHigher(int i, int j, int k, float v) {
+        var index = getIndex(i, j, k);
+        if (data[index] < v) {
+            data[index] = v;
+        }
+        dirty = true;
+    }
+
     public void SetColor(int i, int j, int k, Color v) {
         var index = getIndex(i, j, k);
         colors[index] = v;
+    }
+
+    public void SetIfHigherGlobal(int i, int j, int k, float v) {
+        int max = size - 1;
+        if (i < 0 || i > max || j < 0 || j > max || k < 0 || k > max)
+        {
+            Chunks.SetIfHigher(i + origin.x, j + origin.y, k + origin.z, v);
+        }
+        else
+        {
+            SetIfHigher(i, j, k, v);
+        }
+    }
+
+    public void SetGlobal(int i, int j, int k, float v) {
+        int max = size - 1;
+        if (i < 0 || i > max || j < 0 || j > max || k < 0 || k > max)
+        {
+            Chunks.Set(i + origin.x, j + origin.y, k + origin.z, v);
+        } else {
+            Set(i, j, k, v);
+        }
+    }
+
+    public void SetColorGlobal(int i, int j, int k, Color color)
+    {
+        int max = size - 1;
+        if (i < 0 || i > max || j < 0 || j > max || k < 0 || k > max)
+        {
+            Chunks.SetColor(i + origin.x, j + origin.y, k + origin.z, color);
+        }
+        else
+        {
+            SetColor(i, j, k, color);
+        }
     }
 
     public Color GetColor(int i, int j, int k) {
@@ -106,27 +147,17 @@ public class Chunk
         return color;
     }
 
-    public void SetNormal(int i, int j, int k, Vector3 normal) {
-        var index = getIndex(i, j, k);
-        normals[index] = normal;
-    }
-
-    public void SetWater(int i, int j, int k, bool flag) {
-        var index = getIndex(i, j, k);
-        if (flag) {
-            waters.Add(index);
-        } else {
-            waters.Remove(index);
-        }
-    }
-
-    public bool GetWater(int i, int j, int k) {
-        var index = getIndex(i, j, k);
-        return waters.Contains(index);
-    }
-
     private int getIndex(int i, int j, int k) {
         int index = i * size * size + j * size + k;
         return index;
+    }
+
+    public bool InBound(int i, int j, int k) {
+        int max = size - 1;
+        if (i < 0 || i > max || j < 0 || j > max || k < 0 || k > max)
+        {
+            return false;
+        }
+        return true;
     }
 }

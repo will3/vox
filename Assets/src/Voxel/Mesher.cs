@@ -4,9 +4,7 @@ using System.Collections.Generic;
 
 public class Mesher
 {
-    private static MarchingCubes marching = new MarchingCubes();
-
-    public static void MeshChunk(Chunk chunk, Chunks chunks, Transform transform, Material material) {
+    public static void MeshChunk(Chunk chunk, Chunks chunks, Transform transform, Material material, MarchingCubes marching) {
         if (!chunk.Dirty) {
             return;
         }
@@ -43,10 +41,10 @@ public class Mesher
         chunk.Dirty = false;
     }
 
-    public static void MeshChunks(Chunks chunks, Transform transform, Material material) {
+    public static void MeshChunks(Chunks chunks, Transform transform, Material material, MarchingCubes marching) {
         foreach(var kv in chunks.Map) {
             var chunk = kv.Value;
-            MeshChunk(chunk, chunks, transform, material);
+            MeshChunk(chunk, chunks, transform, material, marching);
         }
     }
 }

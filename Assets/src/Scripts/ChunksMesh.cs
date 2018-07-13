@@ -6,6 +6,7 @@ public class ChunksMesh : MonoBehaviour
 {
     private Chunks chunks = new Chunks(32);
     public Material material;
+    private MarchingCubes marching = new MarchingCubes();
 
     public Chunks Chunks
     {
@@ -25,6 +26,6 @@ public class ChunksMesh : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-        Mesher.MeshChunks(chunks, transform, material);
+        Mesher.MeshChunks(chunks, transform, material, marching);
 	}
 }

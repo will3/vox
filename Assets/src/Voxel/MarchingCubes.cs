@@ -7,6 +7,7 @@ public class MarchingCubes
 {
     private Vector3[] EdgeVertex { get; set; }
     private float surface;
+    public bool AccurateOffset = true;
 
     public float Surface { get { return surface; } }
 
@@ -42,8 +43,11 @@ public class MarchingCubes
             //if there is an intersection on this edge
             if ((edgeFlags & (1 << i)) != 0)
             {
-                offset = 0.5f;
-                //offset = GetOffset(cube[EdgeConnection[i, 0]], cube[EdgeConnection[i, 1]]);
+                if (AccurateOffset) {
+                    offset = GetOffset(cube[EdgeConnection[i, 0]], cube[EdgeConnection[i, 1]]);    
+                } else {
+                    offset = 0.5f;
+                }
 
                 EdgeVertex[i].x = x + (VertexOffset[EdgeConnection[i, 0], 0] + offset * EdgeDirection[i, 0]);
                 EdgeVertex[i].y = y + (VertexOffset[EdgeConnection[i, 0], 1] + offset * EdgeDirection[i, 1]);
@@ -484,6 +488,7 @@ public class MarchingCubes
             {
                 for (z = 0; z < depth; z++)
                 {
+                    Color? color = null;
                     //Get the values in the 8 neighbours which make up a cube
                     for (i = 0; i < 8; i++)
                     {
@@ -492,12 +497,16 @@ public class MarchingCubes
                         iz = z + VertexOffset[i, 2];
 
                         Cube[i] = GetValue(chunk, ix, iy, iz);
+
+                        if (Cube[i] > surface && !color.HasValue) {
+                            color = GetColor(chunk, ix, iy, iz);
+                        }
                     }
 
-                    Color color = chunk.GetColor(x, y, z);
-
-                    //Perform algorithm
-                    March(x, y, z, Cube, color, verts, indices, colors);
+                    if (color.HasValue) {
+                        //Perform algorithm
+                        March(x, y, z, Cube, color.Value, verts, indices, colors);        
+                    }
                 }
             }
         }
@@ -512,6 +521,17 @@ public class MarchingCubes
             return chunk.Chunks.Get(i + origin.x, j + origin.y, k + origin.z);
         }
         return chunk.Get(i, j, k);
+    }
+
+    public Color GetColor(Chunk chunk, int i, int j, int k) 
+    {
+        int max = chunk.Size - 1;
+        if (i < 0 || i > max || j < 0 || j > max || k < 0 || k > max)
+        {
+            var origin = chunk.Origin;
+            return chunk.Chunks.GetColor(i + origin.x, j + origin.y, k + origin.z);
+        }
+        return chunk.GetColor(i, j, k);
     }
 
     /// <summary>
