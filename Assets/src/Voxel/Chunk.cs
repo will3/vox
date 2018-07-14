@@ -42,21 +42,6 @@ namespace FarmVox
 
             foreach(var coord in surfaceCoords) {
                 shadowMap.CalcShadow(this, coord, chunksList);
-                shadowMap.CalcShadow(this, new Vector3Int(coord.x + 1, coord.y, coord.z), chunksList);
-                shadowMap.CalcShadow(this, new Vector3Int(coord.x - 1, coord.y, coord.z), chunksList);
-                shadowMap.CalcShadow(this, new Vector3Int(coord.x, coord.y, coord.z + 1), chunksList);
-                shadowMap.CalcShadow(this, new Vector3Int(coord.x, coord.y, coord.z - 1), chunksList);
-
-
-                shadowMap.CalcShadow(this, new Vector3Int(coord.x + 2, coord.y, coord.z), chunksList);
-                shadowMap.CalcShadow(this, new Vector3Int(coord.x - 2, coord.y, coord.z), chunksList);
-                shadowMap.CalcShadow(this, new Vector3Int(coord.x, coord.y, coord.z + 2), chunksList);
-                shadowMap.CalcShadow(this, new Vector3Int(coord.x, coord.y, coord.z - 2), chunksList);
-
-                shadowMap.CalcShadow(this, new Vector3Int(coord.x - 1, coord.y, coord.z - 1), chunksList);
-                shadowMap.CalcShadow(this, new Vector3Int(coord.x + 1, coord.y, coord.z - 1), chunksList);
-                shadowMap.CalcShadow(this, new Vector3Int(coord.x - 1, coord.y, coord.z + 1), chunksList);
-                shadowMap.CalcShadow(this, new Vector3Int(coord.x + 1, coord.y, coord.z + 1), chunksList);
             }
 
             shadowsDirty = false;
@@ -315,7 +300,7 @@ namespace FarmVox
             return GetLighting(coord);
         }
 
-        private float shadowStrength = 0.4f;
+        private float shadowStrength = 0.3f;
 
         private float getShadow(Vector3Int coord) {
             return shadowMap.GetShadow(this, coord);
@@ -323,21 +308,7 @@ namespace FarmVox
 
         public float GetLighting(Vector3Int coord)
         {
-            var total = getShadow(coord) * 1.0f +
-                                            getShadow(new Vector3Int(coord.x + 1, coord.y, coord.z)) * 0.6f +
-                                            getShadow(new Vector3Int(coord.x - 1, coord.y, coord.z)) * 0.6f +
-                                            getShadow(new Vector3Int(coord.x, coord.y, coord.z + 1)) * 0.6f +
-                                            getShadow(new Vector3Int(coord.x, coord.y, coord.z - 1)) * 0.6f +
-                                            getShadow(new Vector3Int(coord.x + 2, coord.y, coord.z)) * 0.2f +
-                                            getShadow(new Vector3Int(coord.x - 2, coord.y, coord.z)) * 0.2f +
-                                            getShadow(new Vector3Int(coord.x, coord.y, coord.z + 2)) * 0.2f +
-                                            getShadow(new Vector3Int(coord.x, coord.y, coord.z - 2)) * 0.2f +
-                                            getShadow(new Vector3Int(coord.x - 1, coord.y, coord.z - 1)) * 0.4f +
-                                            getShadow(new Vector3Int(coord.x + 1, coord.y, coord.z - 1)) * 0.4f  +
-                                            getShadow(new Vector3Int(coord.x - 1, coord.y, coord.z + 1)) * 0.4f +
-                                            getShadow(new Vector3Int(coord.x + 1, coord.y, coord.z + 1)) * 0.4f;
-            
-            var shadow = total / 5.8f;
+            var shadow = getShadow(coord);
 
             return 1.0f - shadow * shadowStrength;
         }
