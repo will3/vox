@@ -8,9 +8,9 @@ public class Cone
     float[] profile;
     int width;
     int height;
-    private Array3 shape;
+    private Array3<float> shape;
 
-    public Array3 Shape
+    public Array3<float> Shape
     {
         get
         {
@@ -30,7 +30,7 @@ public class Cone
         width = radius * 2 + 1;
         height = Mathf.CeilToInt(h);
 
-        shape = new Array3(width, height, width);
+        shape = new Array3<float>(width, height, width);
         var minR = 1.0f;
 
         for (var j = 0; j < height; j++) {

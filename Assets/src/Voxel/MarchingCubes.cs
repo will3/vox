@@ -12,7 +12,7 @@ public class MarchingCubes
 
     public float Surface { get { return surface; } }
 
-    public MarchingCubes(float surface = 0.5f)
+    public MarchingCubes(float surface = 0.0f)
     {
         this.surface = surface;
         cube = new float[8];
@@ -131,7 +131,7 @@ public class MarchingCubes
         var b = EdgeVertex[TriangleConnectionTable[flagIndex, 1]];
         var c = EdgeVertex[TriangleConnectionTable[flagIndex, 2]];
 
-        return Vector3.Cross(a - b, a - c);
+        return Vector3.Cross(a - b, a - c).normalized;
     }
 
     /// <summary>

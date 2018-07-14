@@ -10,7 +10,7 @@ public class Raycast4545
             coord.z += 1;
             coord.y += 1;
             var value = chunks.Get(coord.x, coord.y, coord.z);
-            if (value > 0.5f) {
+            if (value > 0) {
                 if (first) {
                     first = false;
                 } else {

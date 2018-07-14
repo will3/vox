@@ -47,7 +47,7 @@ public class Raycast
         float tyMax = tyDelta * ydist;
         float tzMax = tzDelta * zdist;
 
-        float steppedIndex = -1;
+        int steppedIndex = -1;
         bool first = true;
 
         // main loop along raycast vector
@@ -57,7 +57,7 @@ public class Raycast
             // exit check
             var b = chunks.Get((int)ix, (int)iy, (int)iz);
 
-            if (b > 0.5f)
+            if (b > 0)
             {
                 if (ignoreFirst && first) {
                     first = false;

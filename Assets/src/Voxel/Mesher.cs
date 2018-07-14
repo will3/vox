@@ -2,9 +2,15 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
+public enum MeshMethod
+{
+    MarchingCubes,
+    Voxel,
+}
+
 public class Mesher
 {
-    public static void MeshChunk(Chunk chunk, Chunks chunks, Transform transform, Material material, MarchingCubes marching) {
+    public static void MeshChunk(Chunk chunk, Chunks chunks, Transform transform, Material material, MarchingCubes marching, MeshMethod method = MeshMethod.Voxel) {
         if (!chunk.Dirty) {
             return;
         }
@@ -14,16 +20,22 @@ public class Mesher
             Object.Destroy(chunk.GameObject);
         }
 
-        var verts = new List<Vector3>();
-        var indices = new List<int>();
-        var colors = new List<Color>();
-
-        marching.Generate(chunk, verts, indices, colors);
-
         Mesh mesh = new Mesh();
-        mesh.SetVertices(verts);
-        mesh.SetTriangles(indices, 0);
-        mesh.SetColors(colors);
+
+        if (method == MeshMethod.MarchingCubes) {
+            var verts = new List<Vector3>();
+            var indices = new List<int>();
+            var colors = new List<Color>();
+
+            marching.Generate(chunk, verts, indices, colors);
+
+
+            mesh.SetVertices(verts);
+            mesh.SetTriangles(indices, 0);
+            mesh.SetColors(colors);    
+        } else if (method == MeshMethod.Voxel) {
+            VoxelMesher.Mesh(chunk, mesh);    
+        }
 
         mesh.RecalculateBounds();
         mesh.RecalculateNormals();

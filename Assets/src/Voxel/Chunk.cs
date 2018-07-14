@@ -154,11 +154,35 @@ public class Chunk
         }
     }
 
+    public float GetGlobal(int i, int j, int k) {
+        int max = size - 1;
+        if (i < 0 || i > max || j < 0 || j > max || k < 0 || k > max)
+        {
+            return Chunks.Get(i + origin.x, j + origin.y, k + origin.z);
+        }
+        else
+        {
+            return Get(i, j, k);
+        }
+    }
+
     public Color GetColor(int i, int j, int k) {
         var index = getIndex(i, j, k);
         Color color;
         colors.TryGetValue(index, out color);
         return color;
+    }
+
+    public Color GetColorGlobal(int i, int j, int k) {
+        int max = size - 1;
+        if (i < 0 || i > max || j < 0 || j > max || k < 0 || k > max)
+        {
+            return Chunks.GetColor(i + origin.x, j + origin.y, k + origin.z);
+        }
+        else
+        {
+            return GetColor(i, j, k);
+        }
     }
 
     private int getIndex(int i, int j, int k) {

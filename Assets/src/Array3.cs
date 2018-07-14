@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class Array3
+public class Array3<T>
 {
     private int width;
 
@@ -33,23 +33,23 @@ public class Array3
         }
     }
 
-    private float[] data;
+    private T[] data;
 
     public Array3(int width, int height, int depth)
     {
         this.width = width;
         this.height = height;
         this.depth = depth;
-        data = new float[width * height * depth];
+        data = new T[width * height * depth];
     }
 
-    public float Get(int i, int j, int k)
+    public T Get(int i, int j, int k)
     {
         var index = i * depth * height + j * depth + k;
         return data[index];
     }
 
-    public void Set(int i, int j, int k, float v)
+    public void Set(int i, int j, int k, T v)
     {
         var index = i * depth * height + j * depth + k;
         data[index] = v;
