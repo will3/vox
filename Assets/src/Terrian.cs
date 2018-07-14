@@ -30,6 +30,15 @@ namespace FarmVox
         public Vector3 Target;
 
         private Dictionary<Vector3Int, TerrianChunk> map = new Dictionary<Vector3Int, TerrianChunk>();
+
+        public Dictionary<Vector3Int, TerrianChunk> Map
+        {
+            get
+            {
+                return map;
+            }
+        }
+
         MarchingCubes marchingCubes = new MarchingCubes();
         Perlin heightNoise = new Perlin();
         Perlin grassNoise = new Perlin();
@@ -59,9 +68,8 @@ namespace FarmVox
                     for (int k = z - generateDis; k <= z + generateDis; k++)
                     {
                         var origin = new Vector3Int(i, j, k) * size;
-                        var terrianChunk = getTerrianChunk(origin);
+                        var terrianChunk = getOrCreateTerrianChunk(origin);
                         generateRock(terrianChunk);
-                        generateWater(terrianChunk);
                     }
                 }
             }
@@ -73,10 +81,12 @@ namespace FarmVox
 
                 if (terrianChunk.Distance < drawDis)
                 {
+                    generateWater(terrianChunk);
                     generateNormals(terrianChunk);
                     generateGrass(terrianChunk);
                     generateTrees(terrianChunk);
                     generateShadows(terrianChunk);
+                    terrianChunk.UpdateRoutes();
                 }
             }
 
@@ -102,7 +112,7 @@ namespace FarmVox
 
         private void generateWater(TerrianChunk terrianChunk)
         {
-            if (terrianChunk.GeneratedWater)
+            if (!terrianChunk.waterNeedsUpdate)
             {
                 return;
             }
@@ -132,12 +142,12 @@ namespace FarmVox
                 }
             }
 
-            terrianChunk.GeneratedWater = true;
+            terrianChunk.waterNeedsUpdate = false;
         }
 
         private void generateGrass(TerrianChunk terrianChunk)
         {
-            if (terrianChunk.GeneratedGrass)
+            if (!terrianChunk.grassNeedsUpdate)
             {
                 return;
             }
@@ -169,12 +179,12 @@ namespace FarmVox
                 chunk.SetColor(coord.x, coord.y, coord.z, Colors.grass);
             }
 
-            terrianChunk.GeneratedGrass = true;
+            terrianChunk.grassNeedsUpdate = false;
         }
 
         private void generateTrees(TerrianChunk terrianChunk)
         {
-            if (terrianChunk.GeneratedTrees)
+            if (!terrianChunk.treesNeedsUpdate)
             {
                 return;
             }
@@ -251,7 +261,7 @@ namespace FarmVox
                 treeChunk.UpdateSurfaceCoords();    
             }
 
-            terrianChunk.GeneratedTrees = true;
+            terrianChunk.treesNeedsUpdate = false;
         }
 
         float getVoxel(int i, int j, int k)
@@ -261,11 +271,11 @@ namespace FarmVox
             return value;
         }
 
-        TerrianChunk generateRock(TerrianChunk terrianChunk)
+        void generateRock(TerrianChunk terrianChunk)
         {
-            if (terrianChunk.generated)
+            if (!terrianChunk.rockNeedsUpdate)
             {
-                return terrianChunk;
+                return;
             }
 
             if (terrianChunk.Chunk == null)
@@ -303,12 +313,16 @@ namespace FarmVox
                 }
             }
 
-            terrianChunk.generated = true;
+            terrianChunk.rockNeedsUpdate = false;
+        }
 
+        public TerrianChunk GetTerrianChunk(Vector3Int origin) {
+            TerrianChunk terrianChunk = null;
+            map.TryGetValue(origin, out terrianChunk);
             return terrianChunk;
         }
 
-        TerrianChunk getTerrianChunk(Vector3Int origin)
+        TerrianChunk getOrCreateTerrianChunk(Vector3Int origin)
         {
             if (map.ContainsKey(origin))
             {
@@ -317,12 +331,13 @@ namespace FarmVox
 
             Vector3Int key = new Vector3Int(origin.x / size, origin.y / size, origin.z / size);
             map[origin] = new TerrianChunk(key, size);
+            map[origin].Terrian = this;
             return map[origin];
         }
 
         private void generateNormals(TerrianChunk terrianChunk)
         {
-            if (terrianChunk.GeneratedNormals)
+            if (!terrianChunk.normalsNeedsUpdate)
             {
                 return;
             }
@@ -339,12 +354,12 @@ namespace FarmVox
                 terrianChunk.SetNormal(coord, normal.Value);
             }
 
-            terrianChunk.GeneratedNormals = true;
+            terrianChunk.normalsNeedsUpdate = false;
         }
 
         private void generateShadows(TerrianChunk terrianChunk)
         {
-            if (terrianChunk.GeneratedShadows)
+            if (!terrianChunk.shadowsNeedsUpdate)
             {
                 return;
             }
@@ -360,7 +375,7 @@ namespace FarmVox
                 treeChunk.UpdateShadows(chunksList);
             }
 
-            terrianChunk.GeneratedShadows = true;
+            terrianChunk.shadowsNeedsUpdate = false;
         }
 
         private void generateHouses(TerrianChunk terrianChunk)
@@ -401,8 +416,44 @@ namespace FarmVox
             }
         }
 
-        private void SpawnDwarfs() {
-            
+        public void SpawnDwarfs() {
+            var origin = new Vector3Int(0, 0, 0);
+            var terrianChunk = map[origin];
+            var node = terrianChunk.Routes.GetNodeCloseTo(new Vector3Int(size / 2, 0, size / 2));
+
+            if (node != null) {
+                GameObject go = new GameObject("guy");
+                var actor = go.AddComponent<Actor>();
+                actor.terrian = this;
+                actor.SetNode(node.Value);
+            }
+        }
+
+        public HashSet<Vector3Int> GetNextNodes(Vector3Int node) {
+            var origin = getOrigin(node.x, node.y, node.z);
+            var terrianChunk = GetTerrianChunk(origin);
+            if (terrianChunk == null) {
+                return new HashSet<Vector3Int>();
+            }
+            var routesMap = terrianChunk.Routes.Map;
+            if (routesMap.ContainsKey(node)) {
+                return routesMap[node];
+            }
+
+            return new HashSet<Vector3Int>();
+        }
+
+        private Vector3Int getOrigin(int i, int j, int k)
+        {
+            return new Vector3Int(
+                Mathf.FloorToInt(i / this.sizeF) * this.size,
+                Mathf.FloorToInt(j / this.sizeF) * this.size,
+                Mathf.FloorToInt(k / this.sizeF) * this.size
+            );
+        }
+
+        public RaycastResult Trace(Vector3 pos, Vector3 dir, int maxD) {
+            return Raycast.Trace(defaultLayer.Chunks, pos, dir, maxD) ?? Raycast.Trace(treeLayer.Chunks, pos, dir, maxD);
         }
     }
 }

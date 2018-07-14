@@ -117,5 +117,11 @@ namespace FarmVox
             var chunk = GetOrCreateChunk(origin);
             chunk.SetColor(i - origin.x, j - origin.y, k - origin.z, v);
         }
+
+        public bool IsUp(Vector3Int vector) {
+            var origin = getOrigin(vector.x, vector.y, vector.z);
+            var chunk = GetOrCreateChunk(origin);
+            return chunk.SurfaceCoordsUp.Contains(vector - origin);
+        }
     }
 }

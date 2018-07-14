@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace FarmVox
 {
-    class TerrianChunk
+    public class TerrianChunk
     {
         private readonly Dictionary<Vector3Int, Vector3> normals = new Dictionary<Vector3Int, Vector3>();
 
@@ -17,16 +17,26 @@ namespace FarmVox
         }
 
         private readonly HashSet<int> waters = new HashSet<int>();
-        private Routes routes = new Routes();
+        private readonly Routes routes = new Routes();
+
+        public Routes Routes
+        {
+            get
+            {
+                return routes;
+            }
+        }
 
         private Vector3Int key;
-        public bool generated = false;
-        public bool GeneratedWater = false;
-        public bool GeneratedGrass = false;
-        public bool GeneratedTrees = false;
-        public bool GeneratedNormals = false;
-        public bool GeneratedShadows = false;
-        public bool GeneratedHouses = false;
+        public bool rockNeedsUpdate = true;
+        public bool waterNeedsUpdate = true;
+        public bool grassNeedsUpdate = true;
+        public bool treesNeedsUpdate = true;
+        public bool normalsNeedsUpdate = true;
+        public bool shadowsNeedsUpdate = true;
+        public bool housesNeedsUpdate = true;
+        public bool routesNeedsUpdate = true;
+        public Terrian Terrian;
 
         private int distance;
         private Vector3Int origin;
@@ -128,6 +138,27 @@ namespace FarmVox
                 }
             }
             return false;
+        }
+
+        public void UpdateRoutes() {
+            if (!routesNeedsUpdate) {
+                return;
+            }
+            routes.Clear();
+            routes.LoadChunk(Chunk);
+            routesNeedsUpdate = false;
+        }
+
+        public void DrawRoutesGizmos() {
+            Gizmos.color = Color.red;
+            var offset = new Vector3(0.5f, 1.5f, 0.5f);
+            foreach(var kv in routes.Map) {
+                var from = kv.Key + offset;
+                foreach(var b in kv.Value) {
+                    var to = b + offset;
+                    Gizmos.DrawLine(from, to);
+                }
+            }
         }
     }
 }

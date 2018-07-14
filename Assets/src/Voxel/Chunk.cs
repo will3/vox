@@ -17,9 +17,18 @@ namespace FarmVox
         public bool Hidden;
         public Chunks Chunks;
         public bool surfaceCoordsDirty = true;
-        private List<Vector3Int> surfaceCoords = new List<Vector3Int>();
         private bool shadowsDirty = true;
         private ChunkShadowMap shadowMap = new ChunkShadowMap();
+        private List<Vector3Int> surfaceCoords = new List<Vector3Int>();
+        private List<Vector3Int> surfaceCoordsUp = new List<Vector3Int>();
+
+        public List<Vector3Int> SurfaceCoordsUp
+        {
+            get
+            {
+                return surfaceCoordsUp;
+            }
+        }
 
         public List<Vector3Int> SurfaceCoords
         {
@@ -53,7 +62,9 @@ namespace FarmVox
             {
                 return;
             }
-            var list = new List<Vector3Int>();
+
+            surfaceCoords.Clear();
+            surfaceCoordsUp.Clear();
 
             for (var i = 0; i < size; i++)
             {
@@ -70,25 +81,27 @@ namespace FarmVox
                         if (v > 0 != left > 0)
                         {
                             var coord = v > 0 ? new Vector3Int(i, j, k) : new Vector3Int(i - 1, j, k);
-                            list.Add(coord);
+                            surfaceCoords.Add(coord);
                         }
 
                         if (v > 0 != bot > 0)
                         {
                             var coord = v > 0 ? new Vector3Int(i, j, k) : new Vector3Int(i, j - 1, k);
-                            list.Add(coord);
+                            surfaceCoords.Add(coord);
+                            if (bot > 0) {
+                                surfaceCoordsUp.Add(new Vector3Int(i, j - 1, k));
+                            }
                         }
 
                         if (v > 0 != back > 0)
                         {
                             var coord = v > 0 ? new Vector3Int(i, j, k) : new Vector3Int(i, j, k - 1);
-                            list.Add(coord);
+                            surfaceCoords.Add(coord);
                         }
                     }
                 }
             }
 
-            surfaceCoords = list;
             surfaceCoordsDirty = false;
         }
 

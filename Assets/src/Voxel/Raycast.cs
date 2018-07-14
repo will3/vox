@@ -3,15 +3,81 @@ using System.Collections;
 
 namespace FarmVox
 {
-    public class Raycast
-    {
-        public class RaycastResult
-        {
-            public Vector3 HitPos;
-            public Vector3 HitNormal;
+    class Cube {
+        private static Mesh left;
+        private static Mesh right;
+        private static Mesh bot;
+        private static Mesh top;
+        private static Mesh back;
+        private static Mesh front;
+
+        static Cube() {
+            left = get
         }
 
-        public static RaycastResult Trace(Chunks chunks, Vector3 pos, Vector3 dir, int max_d, bool ignoreFirst = true)
+        private Mesh getQuad(int d, bool front) {
+            var u = (d + 1) % 3;
+            var v = (d + 2) % 3;
+
+            var diffI = front ? 1.0f : 0.0f;
+
+            var v0 = getVector(diffI, 0, 0, d);
+            var v1 = getVector(diffI, 1.0f, 0, d);
+            var v2 = getVector(diffI, 1.0f, 1.0f, d);
+            var v3 = getVector(diffI, 0, 1.0f, d);
+
+            var mesh = new Mesh();
+            mesh.vertices = new Vector3[] { v0, v1, v2, v3 };
+            mesh.SetTriangles(new int[] { 0, 1, 2, 2, 3, 0 }, 0);
+            return mesh;        
+        }
+    }
+
+    public class RaycastResult
+    {
+        public Vector3 HitPos;
+        public Vector3 HitNormal;
+
+        public Vector3Int GetCoord() {
+            var point = HitPos - HitNormal * 0.5f;
+            return new Vector3Int(Mathf.FloorToInt(point.x), 
+                                  Mathf.FloorToInt(point.y), 
+                                  Mathf.FloorToInt(point.z));
+        }
+
+
+
+        public Mesh GetQuad() {
+            int d = 0;
+            var front = false;
+            if (HitNormal.x != 0.0f) {
+                d = 0;
+                front = HitNormal.x > 0;
+            } else if (HitNormal.y != 0.0f) {
+                d = 1;
+                front = HitNormal.y > 0;
+            } else if (HitNormal.z != 0.0f) {
+                d = 2;
+                front = HitNormal.z > 0;
+            }
+        }
+
+        private Vector3 getVector(float i, float j, float k, int d) {
+            if (d == 0)
+            {
+                return new Vector3(i, j, k);
+            }
+            else if (d == 1)
+            {
+                return new Vector3(k, i, j);
+            }
+            return new Vector3(j, k, i);
+        }
+    }
+
+    public class Raycast
+    {
+        public static RaycastResult Trace(Chunks chunks, Vector3 pos, Vector3 dir, int max_d)
         {
             float px = pos.x;
             float py = pos.y;
@@ -51,7 +117,6 @@ namespace FarmVox
             float tzMax = tzDelta * zdist;
 
             int steppedIndex = -1;
-            bool first = true;
 
             // main loop along raycast vector
             while (t <= max_d)
@@ -62,26 +127,19 @@ namespace FarmVox
 
                 if (b > 0)
                 {
-                    if (ignoreFirst && first)
-                    {
-                        first = false;
-                    }
-                    else
-                    {
-                        var result = new RaycastResult();
-                        result.HitPos.x = px + t * dx;
-                        result.HitPos.y = py + t * dy;
-                        result.HitPos.z = pz + t * dz;
+                    var result = new RaycastResult();
+                    result.HitPos.x = px + t * dx;
+                    result.HitPos.y = py + t * dy;
+                    result.HitPos.z = pz + t * dz;
 
 
-                        if (steppedIndex == 0) result.HitNormal.x = -stepx;
+                    if (steppedIndex == 0) result.HitNormal.x = -stepx;
 
-                        if (steppedIndex == 1) result.HitNormal.y = -stepy;
+                    if (steppedIndex == 1) result.HitNormal.y = -stepy;
 
-                        if (steppedIndex == 2) result.HitNormal.z = -stepz;
+                    if (steppedIndex == 2) result.HitNormal.z = -stepz;
 
-                        return result;
-                    }
+                    return result;
                 }
 
                 // advance t to next nearest voxel boundary
