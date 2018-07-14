@@ -3,7 +3,6 @@
 	Properties
 	{
 		_MainTex ("Texture", 2D) = "white" {}
-        // _Normals ("Normals", Float) = 0
 	}
 	SubShader
 	{
@@ -41,8 +40,7 @@
 
 			sampler2D _MainTex;
 			float4 _MainTex_ST;
-            float _Normals;
-			
+
 			v2f vert (appdata v)
 			{
 				v2f o;
@@ -60,14 +58,12 @@
                 float4 lightColor = float4(255 / 255.0, 244 / 255.0, 214 / 255.0, 1.0);
                 float4 diffuse;
 
-                if (_Normals > 0) {
-                    float3 light = normalize(float3(1.0, 1.0, 1.0));
-                    float ratio = clamp( dot(i.normal, light), 0, 1);
-                    ratio = 1 - ((1 - ratio) * 0.5);
-                    diffuse = color * ratio * lightColor;
-                } else {
-                    diffuse = color * lightColor;
-                }
+                //float3 light = normalize(float3(1.0, 1.0, 1.0));
+                //float ratio = clamp( dot(i.normal, light), 0, 1);
+                //ratio = 1 - ((1 - ratio) * 0.5);
+                //diffuse = color * ratio * lightColor;
+
+                diffuse = color * lightColor;
 
                 float ambientStrength = 0.5;
                 float4 ambient = float4(1.0, 1.0, 1.0, 1.0) * color * ambientStrength;
