@@ -166,6 +166,10 @@ public class Chunk
         }
     }
 
+    public float GetGlobal(Vector3Int coord) {
+        return GetGlobal(coord.x, coord.y, coord.z);
+    }
+
     public Color GetColor(int i, int j, int k) {
         var index = getIndex(i, j, k);
         Color color;

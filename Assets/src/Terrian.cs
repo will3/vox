@@ -10,7 +10,6 @@ public class Terrian
     private float sizeF;
 
     private Layer defaultLayer;
-    private Layer treeLayer;
 
     private int maxChunksY = 4;
     private int generateDis = 2;
@@ -38,7 +37,6 @@ public class Terrian
         sizeF = size;
 
         defaultLayer = new Layer(size);
-        treeLayer = new Layer(size);
 
         heightNoise.OctaveCount = 5;
     }
@@ -89,7 +87,6 @@ public class Terrian
             if (terrianChunk.Distance < drawDis)
             {
                 defaultLayer.Draw(terrianChunk.Origin, Transform, material);
-                treeLayer.Draw(terrianChunk.Origin, Transform, material);
             }
         }
     }
@@ -162,7 +159,7 @@ public class Terrian
         var smallCone = new Cone(2.0f, 8);
         var bigCone = new Cone(2.5f, 10);
 
-        var treeChunk = treeLayer.Chunks.GetOrCreateChunk(terrianChunk.Origin);
+        var chunk = terrianChunk.Chunk;
 
         foreach(var kv in terrianChunk.Normals) {
             var coord = kv.Key;
@@ -172,7 +169,7 @@ public class Terrian
             var k = coord.z;
             var vector = new Vector3(coord.x, coord.y, coord.z);
 
-            var absJ = j + treeChunk.Origin.y;
+            var absJ = j + chunk.Origin.y;
             if (absJ < minTreeJ) {
                 continue;
             }
@@ -236,8 +233,8 @@ public class Terrian
 
                         var density = shape.Get(it, jt, kt) - UnityEngine.Random.Range(0.0f, 0.1f);
 
-                        treeChunk.SetIfHigherGlobal(x, y, z, density);
-                        treeChunk.SetColorGlobal(x, y, z, Colors.leaf);
+                        chunk.SetIfHigherGlobal(x, y, z, density);
+                        chunk.SetColorGlobal(x, y, z, Colors.leaf);
 
 
                     }
@@ -333,7 +330,6 @@ public class Terrian
         }
 
         var chunk = terrianChunk.Chunk;
-        var treeChunk = treeLayer.Chunks.GetChunk(chunk.Origin);
         var origin = chunk.Origin;
 
         var coords = VoxelMesher.GetSurfaceVoxels(chunk);
@@ -342,7 +338,6 @@ public class Terrian
             var globalCoord = coord + origin;
             var shadow = calculateShadow(globalCoord);
             chunk.SetLighting(coord, shadow);
-            //treeChunk.SetLighting(coord, shadow);
         }
 
         terrianChunk.GeneratedShadows = true;
@@ -374,7 +369,7 @@ public class Terrian
 
     private float calculateShadow(Vector3Int coord) {
         var shadowStrength = 0.4f;
-        var result = Raycast4545.Trace(coord, defaultLayer.Chunks) || Raycast4545.Trace(coord, treeLayer.Chunks);
+        var result = Raycast4545.Trace(coord, defaultLayer.Chunks);
         if (result) {
             return 1 - shadowStrength;
         } else {

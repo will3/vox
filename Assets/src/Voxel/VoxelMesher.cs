@@ -8,6 +8,7 @@ public class VoxelMesher
     {
         var size = chunk.Size;
         var list = new List<Vector3Int>();
+
         for (var i = 0; i < size; i++)
         {
             for (var j = 0; j < size; j++)
@@ -44,71 +45,88 @@ public class VoxelMesher
         return list;
     }
 
+    private static Vector3Int getVector(int i, int j, int k, int d) {
+        if (d == 0) {
+            return new Vector3Int(i, j, k);
+        } else if (d == 1) {
+            return new Vector3Int(k, i, j);
+        }
+        return new Vector3Int(j, k, i);
+    }
+
     public static void Mesh(Chunk chunk, Mesh mesh) {
         var size = chunk.Size;
         var verts = new List<Vector3>();
         var indices = new List<int>();
         var colors = new List<Color>();
 
-        for (var i = 0; i < size; i++) {
-            for (var j = 0; j < size; j ++) {
-                for (var k = 0; k < size; k++) {
-                    var v = chunk.GetGlobal(i, j, k);
-                    var left = chunk.GetGlobal(i - 1, j, k);
-                    var bot = chunk.GetGlobal(i, j - 1, k);
-                    var back = chunk.GetGlobal(i, j, k - 1);
-                    var order = v > 0;
-                    var c = chunk.GetColorGlobal(i, j, k);
-                    var l = chunk.GetLightingGlobal(i, j, k);
-                    if (v > 0 != left > 0) {
-                        var coord = v > 0 ? new Vector3Int(i, j, k) : new Vector3Int(i - 1, j, k);
+        for (var d = 0; d < 3; d++) {
+            var u = (d + 1) % 3;
+            var v = (d + 2) % 3;
+
+            for (var i = 0; i < size; i ++) {
+
+                for (var j = 0; j < size; j ++) {
+                    
+                    for (var k = 0; k < size; k ++) {
+
+                        var coordA = getVector(i, j, k, d);
+                        var coordB = getVector(i + 1, j, k, d);
+                        var a = chunk.GetGlobal(coordA.x, coordA.y, coordA.z);
+                        var b = chunk.GetGlobal(coordB.x, coordB.y, coordB.z);
+
+                        if (a > 0 == b > 0) {
+                            continue;
+                        }
+
+                        var front = a > 0;
+
+                        var c = front ? new Vector3Int(i, j, k) : new Vector3Int(i + 1, j, k);
+                        var coord = getVector(c.x, c.y, c.z, d);
                         var color = chunk.GetColorGlobal(coord.x, coord.y, coord.z) * chunk.GetLightingGlobal(coord.x, coord.y, coord.z);
 
+                        var aoI = front ? i + 1 : i;
+                        // AO
+                        var c00 = getVector(aoI, j - 1, k - 1,  d);
+                        var c01 = getVector(aoI, j,     k - 1,  d);
+                        var c02 = getVector(aoI, j + 1, k - 1,  d);
+                        var c10 = getVector(aoI, j - 1, k,      d);
+                        var c12 = getVector(aoI, j + 1, k,      d);
+                        var c20 = getVector(aoI, j - 1, k + 1,  d);
+                        var c21 = getVector(aoI, j,     k + 1,  d);
+                        var c22 = getVector(aoI, j + 1, k + 1,  d);
+
+                        var v00 = chunk.GetGlobal(c00);
+                        var v01 = chunk.GetGlobal(c01);
+                        var v02 = chunk.GetGlobal(c02);
+                        var v10 = chunk.GetGlobal(c10);
+                        var v12 = chunk.GetGlobal(c12);
+                        var v20 = chunk.GetGlobal(c20);
+                        var v21 = chunk.GetGlobal(c21);
+                        var v22 = chunk.GetGlobal(c22);
+
+                        var ao00 = getAO(v10, v01, v00);
+                        var ao01 = getAO(v01, v12, v02);
+                        var ao11 = getAO(v12, v21, v22);
+                        var ao10 = getAO(v21, v10, v20);
+
+                        bool flipped = ao00 + ao11 > ao01 + ao10;
+
                         AddQuad(
-                            new Vector3(i, j, k),
-                            new Vector3(i, j + 1, k),
-                            new Vector3(i, j + 1, k + 1),
-                            new Vector3(i, j, k + 1),
+                            getVector(i + 1, j, k, d),
+                            getVector(i + 1, j + 1, k, d),
+                            getVector(i + 1, j + 1, k + 1, d),
+                            getVector(i + 1, j, k + 1, d),
                             color,
+                            ao00,
+                            ao01,
+                            ao11,
+                            ao10,
                             verts,
                             indices,
                             colors,
-                            !order
-                        );
-                    }
-
-                    if (v > 0 != bot > 0) {
-                        var coord = v > 0 ? new Vector3Int(i, j, k) : new Vector3Int(i, j - 1, k);
-                        var color = chunk.GetColorGlobal(coord.x, coord.y, coord.z) * chunk.GetLightingGlobal(coord.x, coord.y, coord.z);
-
-                        AddQuad(
-                            new Vector3(i, j, k),
-                            new Vector3(i + 1, j, k),
-                            new Vector3(i + 1, j, k + 1),
-                            new Vector3(i, j, k + 1),
-                            color,
-                            verts,
-                            indices,
-                            colors,
-                            order
-                        );
-                    }
-
-                    if (v > 0 != back > 0)
-                    {
-                        var coord = v > 0 ? new Vector3Int(i, j, k) : new Vector3Int(i, j, k - 1);
-                        var color = chunk.GetColorGlobal(coord.x, coord.y, coord.z) * chunk.GetLightingGlobal(coord.x, coord.y, coord.z);
-
-                        AddQuad(
-                            new Vector3(i, j, k),
-                            new Vector3(i + 1, j, k),
-                            new Vector3(i + 1, j + 1, k),
-                            new Vector3(i, j + 1, k),
-                            color,
-                            verts,
-                            indices,
-                            colors,
-                            !order
+                            front,
+                            flipped
                         );
                     }
                 }
@@ -120,7 +138,26 @@ public class VoxelMesher
         mesh.SetColors(colors);
     }
 
-    private static void AddQuad(Vector3 a, Vector3 b, Vector3 c, Vector3 d, Color color, IList<Vector3> verts, IList<int> indices, IList<Color> colors, bool order) {
+    private static float ao0 = 0.0f;
+    private static float ao1 = 0.33f;
+    private static float ao2 = 0.66f;
+    private static float ao3 = 1.0f;
+
+    private static float getAO(float s1, float s2, float c) {
+        if (s1 > 0 && s2 > 0) {
+            return ao3;
+        }
+
+        var count = 0;
+        if (s1 > 0) count++;
+        if (s2 > 0) count++;
+        if (c > 0) count++;
+        if (count == 0) return ao0;
+        if (count == 1) return ao1;
+        return ao2;
+    }
+
+    private static void AddQuad(Vector3 a, Vector3 b, Vector3 c, Vector3 d, Color color, float ao00, float ao01, float ao11, float ao10, IList<Vector3> verts, IList<int> indices, IList<Color> colors, bool order, bool flipped) {
         var index = verts.Count;
         verts.Add(a);
         verts.Add(b);
@@ -128,24 +165,46 @@ public class VoxelMesher
         verts.Add(d);
 
         if (order) {
-            indices.Add(index);
-            indices.Add(index + 1);
-            indices.Add(index + 2);
-            indices.Add(index);
-            indices.Add(index + 2);
-            indices.Add(index + 3);    
+            if (flipped) {
+                indices.Add(index);
+                indices.Add(index + 1);
+                indices.Add(index + 3);
+                indices.Add(index + 1);
+                indices.Add(index + 2);
+                indices.Add(index + 3);  
+            } else {
+                indices.Add(index);
+                indices.Add(index + 1);
+                indices.Add(index + 2);
+                indices.Add(index);
+                indices.Add(index + 2);
+                indices.Add(index + 3);        
+            }
         } else {
-            indices.Add(index + 2);
-            indices.Add(index + 1);
-            indices.Add(index);
-            indices.Add(index + 3);
-            indices.Add(index + 2);
-            indices.Add(index);       
+            if (flipped) {
+                indices.Add(index + 3);
+                indices.Add(index + 1);
+                indices.Add(index);
+                indices.Add(index + 3);
+                indices.Add(index + 2);
+                indices.Add(index + 1);
+            } else {
+                indices.Add(index + 2);
+                indices.Add(index + 1);
+                indices.Add(index);
+                indices.Add(index + 3);
+                indices.Add(index + 2);
+                indices.Add(index);           
+            }
         }
 
-        colors.Add(color);
-        colors.Add(color);
-        colors.Add(color);
-        colors.Add(color);
+        colors.Add(color * aoToLight(ao00));
+        colors.Add(color * aoToLight(ao01));
+        colors.Add(color * aoToLight(ao11));
+        colors.Add(color * aoToLight(ao10));
+    }
+
+    private static float aoToLight(float ao) {
+        return 1.0f - ao * 0.05f; 
     }
 }
