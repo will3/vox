@@ -256,7 +256,7 @@ namespace FarmVox
 
         float getVoxel(int i, int j, int k)
         {
-            var height = (1f - j / (float)terrainHeight) - 0.5f;
+            var height = (1f - j / (float)terrainHeight) - 1.0f;
             var value = height + (float)heightNoise.GetValue(new Vector3(i, j * 0.4f, k) * 0.015f);
             return value;
         }
@@ -351,22 +351,13 @@ namespace FarmVox
 
             var chunk = terrianChunk.Chunk;
             var origin = chunk.Origin;
-
-            foreach (var coord in chunk.SurfaceCoords)
-            {
-                var globalCoord = coord + origin;
-                var shadow = calculateShadow(globalCoord);
-                chunk.SetLighting(coord, shadow);
-            }
-
             var treeChunk = treeLayer.Chunks.GetChunk(origin);
+
+            var chunksList = new Chunks[] { defaultLayer.Chunks, treeLayer.Chunks };
+            chunk.UpdateShadows(chunksList);
+
             if (treeChunk != null) {
-                foreach (var coord in treeChunk.SurfaceCoords)
-                {
-                    var globalCoord = coord + origin;
-                    var shadow = calculateShadow(globalCoord);
-                    treeChunk.SetLighting(coord, shadow);
-                }    
+                treeChunk.UpdateShadows(chunksList);
             }
 
             terrianChunk.GeneratedShadows = true;
@@ -407,20 +398,6 @@ namespace FarmVox
                         layer.SetColor(x, y, z, voxel.color);
                     }
                 }
-            }
-        }
-
-        private float calculateShadow(Vector3Int coord)
-        {
-            var shadowStrength = 0.4f;
-            var result = Raycast4545.Trace(coord, defaultLayer.Chunks) || Raycast4545.Trace(coord, treeLayer.Chunks);
-            if (result)
-            {
-                return 1 - shadowStrength;
-            }
-            else
-            {
-                return 1.0f;
             }
         }
 

@@ -3,189 +3,198 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
-public class MarchingCubes
+namespace FarmVox
 {
-    private Vector3[] EdgeVertex { get; set; }
-    private float surface;
-    public bool AccurateOffset = true;
-    public bool UseLighting = true;
-
-    public float Surface { get { return surface; } }
-
-    public MarchingCubes(float surface = 0.0f)
+    public class MarchingCubes
     {
-        this.surface = surface;
-        cube = new float[8];
-        WindingOrder = new int[] { 0, 1, 2 };
-        EdgeVertex = new Vector3[12];
-    }
+        private Vector3[] EdgeVertex { get; set; }
+        private float surface;
+        public bool AccurateOffset = true;
+        public bool UseLighting = true;
 
-    private float GetLighting(int x, int y, int z, Chunk chunk) {
-        float a = chunk.GetLightingGlobal(x, y, z);
-        float b = chunk.GetLightingGlobal(x + 1, y, z);
-        float c = chunk.GetLightingGlobal(x, y + 1, z);
-        float d = chunk.GetLightingGlobal(x + 1, y + 1, z);
+        public float Surface { get { return surface; } }
 
-        float e = chunk.GetLightingGlobal(x + 1, y, z + 1);
-        float f = chunk.GetLightingGlobal(x, y, z + 1);
-        float g = chunk.GetLightingGlobal(x + 1, y + 1, z + 1);
-        float h = chunk.GetLightingGlobal(x, y + 1, z + 1);
-
-        return Mathf.Min(a, b, c, d, e, f, g, h);
-    }
-
-    //private float GetLightingAverage(int x, int y, int z, Chunk chunk) {
-    //    float a = GetLighting(x - 1, y, z, chunk);
-    //    float b = GetLighting(x + 1, y, z, chunk);
-    //    float c = GetLighting(x, y, z - 1, chunk);
-    //    float d = GetLighting(x, y, z + 1, chunk);
-
-    //    return (a + b + c + d) / 4.0f;
-    //}
-
-    /// <summary>
-    /// MarchCube performs the Marching Cubes algorithm on a single cube
-    /// </summary>
-    public void March(int x, int y, int z, Chunk chunk, IList<Vector3> vertList, IList<int> indexList, IList<Color> colors)
-    {
-        int i, j, vert, idx;
-        float offset = 0.0f;
-
-        CalcCube(x, y, z, chunk);
-
-        //If the cube is entirely inside or outside of the surface, then there will be no intersections
-        if (edgeFlags == 0) return;
-
-        //Find the point of intersection of the surface with each edge
-        for (i = 0; i < 12; i++)
+        public MarchingCubes(float surface = 0.0f)
         {
-            //if there is an intersection on this edge
-            if ((edgeFlags & (1 << i)) != 0)
+            this.surface = surface;
+            cube = new float[8];
+            WindingOrder = new int[] { 0, 1, 2 };
+            EdgeVertex = new Vector3[12];
+        }
+
+        private float GetLighting(int x, int y, int z, Chunk chunk)
+        {
+            float a = chunk.GetLightingGlobal(x, y, z);
+            float b = chunk.GetLightingGlobal(x + 1, y, z);
+            float c = chunk.GetLightingGlobal(x, y + 1, z);
+            float d = chunk.GetLightingGlobal(x + 1, y + 1, z);
+
+            float e = chunk.GetLightingGlobal(x + 1, y, z + 1);
+            float f = chunk.GetLightingGlobal(x, y, z + 1);
+            float g = chunk.GetLightingGlobal(x + 1, y + 1, z + 1);
+            float h = chunk.GetLightingGlobal(x, y + 1, z + 1);
+
+            return Mathf.Min(a, b, c, d, e, f, g, h);
+        }
+
+        //private float GetLightingAverage(int x, int y, int z, Chunk chunk) {
+        //    float a = GetLighting(x - 1, y, z, chunk);
+        //    float b = GetLighting(x + 1, y, z, chunk);
+        //    float c = GetLighting(x, y, z - 1, chunk);
+        //    float d = GetLighting(x, y, z + 1, chunk);
+
+        //    return (a + b + c + d) / 4.0f;
+        //}
+
+        /// <summary>
+        /// MarchCube performs the Marching Cubes algorithm on a single cube
+        /// </summary>
+        public void March(int x, int y, int z, Chunk chunk, IList<Vector3> vertList, IList<int> indexList, IList<Color> colors)
+        {
+            int i, j, vert, idx;
+            float offset = 0.0f;
+
+            CalcCube(x, y, z, chunk);
+
+            //If the cube is entirely inside or outside of the surface, then there will be no intersections
+            if (edgeFlags == 0) return;
+
+            //Find the point of intersection of the surface with each edge
+            for (i = 0; i < 12; i++)
             {
-                if (AccurateOffset) {
-                    offset = GetOffset(cube[EdgeConnection[i, 0]], cube[EdgeConnection[i, 1]]);    
-                } else {
-                    offset = 0.5f;
+                //if there is an intersection on this edge
+                if ((edgeFlags & (1 << i)) != 0)
+                {
+                    if (AccurateOffset)
+                    {
+                        offset = GetOffset(cube[EdgeConnection[i, 0]], cube[EdgeConnection[i, 1]]);
+                    }
+                    else
+                    {
+                        offset = 0.5f;
+                    }
+
+                    EdgeVertex[i].x = x + (VertexOffset[EdgeConnection[i, 0], 0] + offset * EdgeDirection[i, 0]);
+                    EdgeVertex[i].y = y + (VertexOffset[EdgeConnection[i, 0], 1] + offset * EdgeDirection[i, 1]);
+                    EdgeVertex[i].z = z + (VertexOffset[EdgeConnection[i, 0], 2] + offset * EdgeDirection[i, 2]);
                 }
-
-                EdgeVertex[i].x = x + (VertexOffset[EdgeConnection[i, 0], 0] + offset * EdgeDirection[i, 0]);
-                EdgeVertex[i].y = y + (VertexOffset[EdgeConnection[i, 0], 1] + offset * EdgeDirection[i, 1]);
-                EdgeVertex[i].z = z + (VertexOffset[EdgeConnection[i, 0], 2] + offset * EdgeDirection[i, 2]);
             }
-        }
 
-        Color color;
+            Color color;
 
-        if (UseLighting)
-        {
-            float lighting = GetLighting(x, y, z, chunk);
-            color = chunk.GetColor(x, y, z) *  lighting;
-        } else {
-            color = chunk.GetColor(x, y, z);
-        }
-
-        //Save the triangles that were found. There can be up to five per cube
-        for (i = 0; i < 5; i++)
-        {
-            if (TriangleConnectionTable[flagIndex, 3 * i] < 0) break;
-
-            idx = vertList.Count;
-
-            for (j = 0; j < 3; j++)
+            if (UseLighting)
             {
-                vert = TriangleConnectionTable[flagIndex, 3 * i + j];
-                indexList.Add(idx + WindingOrder[j]);
-                vertList.Add(EdgeVertex[vert]);
-                colors.Add(color);
+                float lighting = GetLighting(x, y, z, chunk);
+                color = chunk.GetColor(x, y, z) * lighting;
             }
-        }
-    }
-
-    int edgeFlags;
-    int flagIndex;
-
-    public Vector3? GetNormal(int x, int y, int z, Chunk chunk) {
-        return 
-            _GetNormal(x,       y,      z, chunk) ??
-            _GetNormal(x - 1,   y,      z, chunk) ??
-            _GetNormal(x,       y - 1,  z, chunk) ??
-            _GetNormal(x - 1,   y - 1,  z, chunk) ??
-            _GetNormal(x,       y,      z - 1, chunk) ??
-            _GetNormal(x - 1,   y,      z - 1, chunk) ??
-            _GetNormal(x,       y - 1,  z - 1, chunk) ??
-            _GetNormal(x - 1,   y - 1,  z - 1, chunk);
-    }
-    // Get Normal of a voxel
-    // If more than one surface, use first surface
-    public Vector3? _GetNormal(int x, int y, int z, Chunk chunk)
-    {
-        int i;
-
-        float offset = 0.0f;
-
-        CalcCube(x, y, z, chunk);
-
-        ////If the cube is entirely inside or outside of the surface, then there will be no intersections
-        if (edgeFlags == 0) return null;
-
-        ////Find the point of intersection of the surface with each edge
-        for (i = 0; i < 12; i++)
-        {
-            //if there is an intersection on this edge
-            if ((edgeFlags & (1 << i)) != 0)
+            else
             {
-                offset = GetOffset(cube[EdgeConnection[i, 0]], cube[EdgeConnection[i, 1]]);
+                color = chunk.GetColor(x, y, z);
+            }
 
-                EdgeVertex[i].x = x + (VertexOffset[EdgeConnection[i, 0], 0] + offset * EdgeDirection[i, 0]);
-                EdgeVertex[i].y = y + (VertexOffset[EdgeConnection[i, 0], 1] + offset * EdgeDirection[i, 1]);
-                EdgeVertex[i].z = z + (VertexOffset[EdgeConnection[i, 0], 2] + offset * EdgeDirection[i, 2]);
+            //Save the triangles that were found. There can be up to five per cube
+            for (i = 0; i < 5; i++)
+            {
+                if (TriangleConnectionTable[flagIndex, 3 * i] < 0) break;
+
+                idx = vertList.Count;
+
+                for (j = 0; j < 3; j++)
+                {
+                    vert = TriangleConnectionTable[flagIndex, 3 * i + j];
+                    indexList.Add(idx + WindingOrder[j]);
+                    vertList.Add(EdgeVertex[vert]);
+                    colors.Add(color);
+                }
             }
         }
 
-        var a = EdgeVertex[TriangleConnectionTable[flagIndex, 0]];
-        var b = EdgeVertex[TriangleConnectionTable[flagIndex, 1]];
-        var c = EdgeVertex[TriangleConnectionTable[flagIndex, 2]];
+        int edgeFlags;
+        int flagIndex;
 
-        return Vector3.Cross(a - b, a - c).normalized;
-    }
+        public Vector3? GetNormal(int x, int y, int z, Chunk chunk)
+        {
+            return
+                _GetNormal(x, y, z, chunk) ??
+                _GetNormal(x - 1, y, z, chunk) ??
+                _GetNormal(x, y - 1, z, chunk) ??
+                _GetNormal(x - 1, y - 1, z, chunk) ??
+                _GetNormal(x, y, z - 1, chunk) ??
+                _GetNormal(x - 1, y, z - 1, chunk) ??
+                _GetNormal(x, y - 1, z - 1, chunk) ??
+                _GetNormal(x - 1, y - 1, z - 1, chunk);
+        }
+        // Get Normal of a voxel
+        // If more than one surface, use first surface
+        public Vector3? _GetNormal(int x, int y, int z, Chunk chunk)
+        {
+            int i;
 
-    /// <summary>
-    /// EdgeConnection lists the index of the endpoint vertices for each 
-    /// of the 12 edges of the cube.
-    /// edgeConnection[12][2]
-    /// </summary>
-    private static readonly int[,] EdgeConnection = new int[,]
-    {
+            float offset = 0.0f;
+
+            CalcCube(x, y, z, chunk);
+
+            ////If the cube is entirely inside or outside of the surface, then there will be no intersections
+            if (edgeFlags == 0) return null;
+
+            ////Find the point of intersection of the surface with each edge
+            for (i = 0; i < 12; i++)
+            {
+                //if there is an intersection on this edge
+                if ((edgeFlags & (1 << i)) != 0)
+                {
+                    offset = GetOffset(cube[EdgeConnection[i, 0]], cube[EdgeConnection[i, 1]]);
+
+                    EdgeVertex[i].x = x + (VertexOffset[EdgeConnection[i, 0], 0] + offset * EdgeDirection[i, 0]);
+                    EdgeVertex[i].y = y + (VertexOffset[EdgeConnection[i, 0], 1] + offset * EdgeDirection[i, 1]);
+                    EdgeVertex[i].z = z + (VertexOffset[EdgeConnection[i, 0], 2] + offset * EdgeDirection[i, 2]);
+                }
+            }
+
+            var a = EdgeVertex[TriangleConnectionTable[flagIndex, 0]];
+            var b = EdgeVertex[TriangleConnectionTable[flagIndex, 1]];
+            var c = EdgeVertex[TriangleConnectionTable[flagIndex, 2]];
+
+            return Vector3.Cross(a - b, a - c).normalized;
+        }
+
+        /// <summary>
+        /// EdgeConnection lists the index of the endpoint vertices for each 
+        /// of the 12 edges of the cube.
+        /// edgeConnection[12][2]
+        /// </summary>
+        private static readonly int[,] EdgeConnection = new int[,]
+        {
             {0,1}, {1,2}, {2,3}, {3,0},
             {4,5}, {5,6}, {6,7}, {7,4},
             {0,4}, {1,5}, {2,6}, {3,7}
-    };
+        };
 
-    /// <summary>
-    /// edgeDirection lists the direction vector (vertex1-vertex0) for each edge in the cube.
-    /// edgeDirection[12][3]
-    /// </summary>
-    private static readonly float[,] EdgeDirection = new float[,]
-    {
+        /// <summary>
+        /// edgeDirection lists the direction vector (vertex1-vertex0) for each edge in the cube.
+        /// edgeDirection[12][3]
+        /// </summary>
+        private static readonly float[,] EdgeDirection = new float[,]
+        {
             {1.0f, 0.0f, 0.0f},{0.0f, 1.0f, 0.0f},{-1.0f, 0.0f, 0.0f},{0.0f, -1.0f, 0.0f},
             {1.0f, 0.0f, 0.0f},{0.0f, 1.0f, 0.0f},{-1.0f, 0.0f, 0.0f},{0.0f, -1.0f, 0.0f},
             {0.0f, 0.0f, 1.0f},{0.0f, 0.0f, 1.0f},{ 0.0f, 0.0f, 1.0f},{0.0f,  0.0f, 1.0f}
-    };
+        };
 
 
-    /// <summary>
-    /// For any edge, if one vertex is inside of the surface and the other 
-    /// is outside of the surface then the edge intersects the surface.
-    /// For each of the 8 vertices of the cube can be two possible states,
-    /// either inside or outside of the surface.
-    /// For any cube the are 2^8=256 possible sets of vertex states.
-    /// This table lists the edges intersected by the surface for all 256 
-    /// possible vertex states. There are 12 edges.  
-    /// For each entry in the table, if edge #n is intersected, then bit #n is set to 1.
-    /// cubeEdgeFlags[256]
-    /// </summary>
-    private static readonly int[] CubeEdgeFlags = new int[]
-    {
+        /// <summary>
+        /// For any edge, if one vertex is inside of the surface and the other 
+        /// is outside of the surface then the edge intersects the surface.
+        /// For each of the 8 vertices of the cube can be two possible states,
+        /// either inside or outside of the surface.
+        /// For any cube the are 2^8=256 possible sets of vertex states.
+        /// This table lists the edges intersected by the surface for all 256 
+        /// possible vertex states. There are 12 edges.  
+        /// For each entry in the table, if edge #n is intersected, then bit #n is set to 1.
+        /// cubeEdgeFlags[256]
+        /// </summary>
+        private static readonly int[] CubeEdgeFlags = new int[]
+        {
         0x000, 0x109, 0x203, 0x30a, 0x406, 0x50f, 0x605, 0x70c, 0x80c, 0x905, 0xa0f, 0xb06, 0xc0a, 0xd03, 0xe09, 0xf00,
         0x190, 0x099, 0x393, 0x29a, 0x596, 0x49f, 0x795, 0x69c, 0x99c, 0x895, 0xb9f, 0xa96, 0xd9a, 0xc93, 0xf99, 0xe90,
         0x230, 0x339, 0x033, 0x13a, 0x636, 0x73f, 0x435, 0x53c, 0xa3c, 0xb35, 0x83f, 0x936, 0xe3a, 0xf33, 0xc39, 0xd30,
@@ -202,19 +211,19 @@ public class MarchingCubes
         0xd30, 0xc39, 0xf33, 0xe3a, 0x936, 0x83f, 0xb35, 0xa3c, 0x53c, 0x435, 0x73f, 0x636, 0x13a, 0x033, 0x339, 0x230,
         0xe90, 0xf99, 0xc93, 0xd9a, 0xa96, 0xb9f, 0x895, 0x99c, 0x69c, 0x795, 0x49f, 0x596, 0x29a, 0x393, 0x099, 0x190,
         0xf00, 0xe09, 0xd03, 0xc0a, 0xb06, 0xa0f, 0x905, 0x80c, 0x70c, 0x605, 0x50f, 0x406, 0x30a, 0x203, 0x109, 0x000
-    };
+        };
 
 
-    /// <summary>
-    /// For each of the possible vertex states listed in cubeEdgeFlags there is a specific triangulation
-    /// of the edge intersection points.  triangleConnectionTable lists all of them in the form of
-    /// 0-5 edge triples with the list terminated by the invalid value -1.
-    /// For example: triangleConnectionTable[3] list the 2 triangles formed when corner[0] 
-    /// and corner[1] are inside of the surface, but the rest of the cube is not.
-    /// triangleConnectionTable[256][16]
-    /// </summary>
-    private static readonly int[,] TriangleConnectionTable = new int[,]
-    {
+        /// <summary>
+        /// For each of the possible vertex states listed in cubeEdgeFlags there is a specific triangulation
+        /// of the edge intersection points.  triangleConnectionTable lists all of them in the form of
+        /// 0-5 edge triples with the list terminated by the invalid value -1.
+        /// For example: triangleConnectionTable[3] list the 2 triangles formed when corner[0] 
+        /// and corner[1] are inside of the surface, but the rest of the cube is not.
+        /// triangleConnectionTable[256][16]
+        /// </summary>
+        private static readonly int[,] TriangleConnectionTable = new int[,]
+        {
         {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
         {0, 8, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
         {0, 1, 9, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
@@ -471,140 +480,142 @@ public class MarchingCubes
         {0, 9, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
         {0, 3, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
         {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}
-    };
+        };
 
-    private float[] cube { get; set; }
+        private float[] cube { get; set; }
 
-    /// <summary>
-    /// Winding order of triangles use 2,1,0 or 0,1,2
-    /// </summary>
-    protected int[] WindingOrder { get; private set; }
+        /// <summary>
+        /// Winding order of triangles use 2,1,0 or 0,1,2
+        /// </summary>
+        protected int[] WindingOrder { get; private set; }
 
-    private void CalcCube(int x, int y, int z, Chunk chunk) {
-        int i;
-        for (i = 0; i < 8; i++)
+        private void CalcCube(int x, int y, int z, Chunk chunk)
         {
-            cube[i] = GetValue(
-                chunk, 
-                x + VertexOffset[i, 0], 
-                y + VertexOffset[i, 1], 
-                z + VertexOffset[i, 2]);
-        }
-
-        flagIndex = 0;
-
-        ////Find which vertices are inside of the surface and which are outside
-        for (i = 0; i < 8; i++) if (cube[i] <= Surface) flagIndex |= 1 << i;
-
-        ////Find which edges are intersected by the surface
-        edgeFlags = CubeEdgeFlags[flagIndex];
-    }
-
-    public void Generate(Chunk chunk, IList<Vector3> verts, IList<int> indices, IList<Color> colors)
-    {
-        int width = chunk.Size;
-        int height = chunk.Size;
-        int depth = chunk.Size;
-
-        if (Surface > 0.0f)
-        {
-            WindingOrder[0] = 2;
-            WindingOrder[1] = 1;
-            WindingOrder[2] = 0;
-        }
-        else
-        {
-            WindingOrder[0] = 0;
-            WindingOrder[1] = 1;
-            WindingOrder[2] = 2;
-        }
-
-        int x, y, z, i;
-        int ix, iy, iz;
-        for (x = 0; x < width; x++)
-        {
-            for (y = 0; y < height; y++)
+            int i;
+            for (i = 0; i < 8; i++)
             {
-                for (z = 0; z < depth; z++)
+                cube[i] = GetValue(
+                    chunk,
+                    x + VertexOffset[i, 0],
+                    y + VertexOffset[i, 1],
+                    z + VertexOffset[i, 2]);
+            }
+
+            flagIndex = 0;
+
+            ////Find which vertices are inside of the surface and which are outside
+            for (i = 0; i < 8; i++) if (cube[i] <= Surface) flagIndex |= 1 << i;
+
+            ////Find which edges are intersected by the surface
+            edgeFlags = CubeEdgeFlags[flagIndex];
+        }
+
+        public void Generate(Chunk chunk, IList<Vector3> verts, IList<int> indices, IList<Color> colors)
+        {
+            int width = chunk.Size;
+            int height = chunk.Size;
+            int depth = chunk.Size;
+
+            if (Surface > 0.0f)
+            {
+                WindingOrder[0] = 2;
+                WindingOrder[1] = 1;
+                WindingOrder[2] = 0;
+            }
+            else
+            {
+                WindingOrder[0] = 0;
+                WindingOrder[1] = 1;
+                WindingOrder[2] = 2;
+            }
+
+            int x, y, z, i;
+            int ix, iy, iz;
+            for (x = 0; x < width; x++)
+            {
+                for (y = 0; y < height; y++)
                 {
-                    //Color? color = null;
-                    //var lighting = -1.0f;
-                    //Get the values in the 8 neighbours which make up a cube
-                    //for (i = 0; i < 8; i++)
-                    //{
-                    //    ix = x + VertexOffset[i, 0];
-                    //    iy = y + VertexOffset[i, 1];
-                    //    iz = z + VertexOffset[i, 2];
+                    for (z = 0; z < depth; z++)
+                    {
+                        //Color? color = null;
+                        //var lighting = -1.0f;
+                        //Get the values in the 8 neighbours which make up a cube
+                        //for (i = 0; i < 8; i++)
+                        //{
+                        //    ix = x + VertexOffset[i, 0];
+                        //    iy = y + VertexOffset[i, 1];
+                        //    iz = z + VertexOffset[i, 2];
 
-                    //    Cube[i] = GetValue(chunk, ix, iy, iz);
-                    //}
+                        //    Cube[i] = GetValue(chunk, ix, iy, iz);
+                        //}
 
-                    //if (Cube[i] > surface && !color.HasValue)
-                    //{
-                    //    color = GetColor(chunk, ix, iy, iz);
-                    //}
+                        //if (Cube[i] > surface && !color.HasValue)
+                        //{
+                        //    color = GetColor(chunk, ix, iy, iz);
+                        //}
 
-                    //if (Cube[i] > surface && lighting < 0)
-                    //{
-                    //    lighting = chunk.GetLightingGlobal(ix, iy, iz);
-                    //}
+                        //if (Cube[i] > surface && lighting < 0)
+                        //{
+                        //    lighting = chunk.GetLightingGlobal(ix, iy, iz);
+                        //}
 
-                    March(x, y, z, chunk, verts, indices, colors);
-                    //if (color.HasValue) {
-                    //    //Perform algorithm
-                    //    if (lighting < 0)
-                    //    {
-                    //        lighting = 0;
-                    //    }
-                    //    if (lighting != 1.0) {
-                    //        color *= lighting;    
-                    //    }
-                    //}
+                        March(x, y, z, chunk, verts, indices, colors);
+                        //if (color.HasValue) {
+                        //    //Perform algorithm
+                        //    if (lighting < 0)
+                        //    {
+                        //        lighting = 0;
+                        //    }
+                        //    if (lighting != 1.0) {
+                        //        color *= lighting;    
+                        //    }
+                        //}
+                    }
                 }
             }
         }
-    }
 
-    public float GetValue(Chunk chunk, int i, int j, int k)
-    {
-        int max = chunk.Size - 1;
-        if (i < 0 || i > max || j < 0 || j > max || k < 0 || k > max)
+        public float GetValue(Chunk chunk, int i, int j, int k)
         {
-            var origin = chunk.Origin;
-            return chunk.Chunks.Get(i + origin.x, j + origin.y, k + origin.z);
+            int max = chunk.Size - 1;
+            if (i < 0 || i > max || j < 0 || j > max || k < 0 || k > max)
+            {
+                var origin = chunk.Origin;
+                return chunk.Chunks.Get(i + origin.x, j + origin.y, k + origin.z);
+            }
+            return chunk.Get(i, j, k);
         }
-        return chunk.Get(i, j, k);
-    }
 
-    public Color GetColor(Chunk chunk, int i, int j, int k) 
-    {
-        int max = chunk.Size - 1;
-        if (i < 0 || i > max || j < 0 || j > max || k < 0 || k > max)
+        public Color GetColor(Chunk chunk, int i, int j, int k)
         {
-            var origin = chunk.Origin;
-            return chunk.Chunks.GetColor(i + origin.x, j + origin.y, k + origin.z);
+            int max = chunk.Size - 1;
+            if (i < 0 || i > max || j < 0 || j > max || k < 0 || k > max)
+            {
+                var origin = chunk.Origin;
+                return chunk.Chunks.GetColor(i + origin.x, j + origin.y, k + origin.z);
+            }
+            return chunk.GetColor(i, j, k);
         }
-        return chunk.GetColor(i, j, k);
-    }
 
-    /// <summary>
-    /// GetOffset finds the approximate point of intersection of the surface
-    /// between two points with the values v1 and v2
-    /// </summary>
-    protected virtual float GetOffset(float v1, float v2)
-    {
-        float delta = v2 - v1;
-        return (delta == 0.0f) ? Surface : (Surface - v1) / delta;
-    }
+        /// <summary>
+        /// GetOffset finds the approximate point of intersection of the surface
+        /// between two points with the values v1 and v2
+        /// </summary>
+        protected virtual float GetOffset(float v1, float v2)
+        {
+            float delta = v2 - v1;
+            return (delta == 0.0f) ? Surface : (Surface - v1) / delta;
+        }
 
-    /// <summary>
-    /// VertexOffset lists the positions, relative to vertex0, 
-    /// of each of the 8 vertices of a cube.
-    /// vertexOffset[8][3]
-    /// </summary>
-    protected static readonly int[,] VertexOffset = new int[,]
-    {
+        /// <summary>
+        /// VertexOffset lists the positions, relative to vertex0, 
+        /// of each of the 8 vertices of a cube.
+        /// vertexOffset[8][3]
+        /// </summary>
+        protected static readonly int[,] VertexOffset = new int[,]
+        {
             {0, 0, 0},{1, 0, 0},{1, 1, 0},{0, 1, 0},
             {0, 0, 1},{1, 0, 1},{1, 1, 1},{0, 1, 1}
-    };
+        };
+    }
 }
