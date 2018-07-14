@@ -3,6 +3,7 @@
 	Properties
 	{
 		_MainTex ("Texture", 2D) = "white" {}
+        // _Normals ("Normals", Float) = 0
 	}
 	SubShader
 	{
@@ -40,6 +41,7 @@
 
 			sampler2D _MainTex;
 			float4 _MainTex_ST;
+            float _Normals;
 			
 			v2f vert (appdata v)
 			{
@@ -54,18 +56,24 @@
 			
 			fixed4 frag (v2f i) : SV_Target
 			{         
-                float4 lightColor1 = float4(255 / 255.0, 244 / 255.0, 214 / 255.0, 1.0);
                 float4 color = tex2D(_MainTex, i.uv) * i.color;
-                float3 light1 = normalize(float3(1.0, 1.0, 1.0));
-                float ratio1 = clamp( dot(i.normal, light1), 0, 1);
-                ratio1 = 1 - ((1 - ratio1) * 0.5);
-                float4 color1 = color * ratio1 * lightColor1;
+                float4 lightColor = float4(255 / 255.0, 244 / 255.0, 214 / 255.0, 1.0);
+                float4 diffuse;
+
+                if (_Normals > 0) {
+                    float3 light = normalize(float3(1.0, 1.0, 1.0));
+                    float ratio = clamp( dot(i.normal, light), 0, 1);
+                    ratio = 1 - ((1 - ratio) * 0.5);
+                    diffuse = color * ratio * lightColor;
+                } else {
+                    diffuse = color * lightColor;
+                }
 
                 float ambientStrength = 0.5;
                 float4 ambient = float4(1.0, 1.0, 1.0, 1.0) * color * ambientStrength;
 
                 // sample the texture
-                fixed4 col = color1 + ambient;
+                fixed4 col = diffuse + ambient;
 
 				// apply fog
 				UNITY_APPLY_FOG(i.fogCoord, col);

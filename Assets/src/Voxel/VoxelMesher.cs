@@ -4,6 +4,46 @@ using System.Collections.Generic;
 
 public class VoxelMesher
 {
+    public static IList<Vector3Int> GetSurfaceVoxels(Chunk chunk)
+    {
+        var size = chunk.Size;
+        var list = new List<Vector3Int>();
+        for (var i = 0; i < size; i++)
+        {
+            for (var j = 0; j < size; j++)
+            {
+                for (var k = 0; k < size; k++)
+                {
+                    var v = chunk.GetGlobal(i, j, k);
+                    var left = chunk.GetGlobal(i - 1, j, k);
+                    var bot = chunk.GetGlobal(i, j - 1, k);
+                    var back = chunk.GetGlobal(i, j, k - 1);
+                    var order = v > 0;
+
+                    if (v > 0 != left > 0)
+                    {
+                        var coord = v > 0 ? new Vector3Int(i, j, k) : new Vector3Int(i - 1, j, k);
+                        list.Add(coord);
+                    }
+
+                    if (v > 0 != bot > 0)
+                    {
+                        var coord = v > 0 ? new Vector3Int(i, j, k) : new Vector3Int(i, j - 1, k);
+                        list.Add(coord);
+                    }
+
+                    if (v > 0 != back > 0)
+                    {
+                        var coord = v > 0 ? new Vector3Int(i, j, k) : new Vector3Int(i, j, k - 1);
+                        list.Add(coord);
+                    }
+                }
+            }
+        }
+
+        return list;
+    }
+
     public static void Mesh(Chunk chunk, Mesh mesh) {
         var size = chunk.Size;
         var verts = new List<Vector3>();

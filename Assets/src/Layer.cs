@@ -2,39 +2,57 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-public enum MeshMethod
-{
+public enum MeshMethod {
     MarchingCubes,
-    Voxel,
+    Voxel
 }
 
-public class Mesher
+public class Layer
 {
-    public static void MeshChunk(Chunk chunk, Chunks chunks, Transform transform, Material material, MarchingCubes marching, MeshMethod method = MeshMethod.Voxel) {
-        if (!chunk.Dirty) {
+    private int size;
+    public MeshMethod method = MeshMethod.Voxel;
+    public Chunks Chunks;
+    public bool AccurateOffset = false;
+    private MarchingCubes marching = new MarchingCubes();
+
+    public Layer(int size = 32) {
+        this.size = size;
+        Chunks = new Chunks(size);
+    }
+
+
+    public void Draw(Vector3Int origin, Transform transform, Material material) {
+        var chunk = Chunks.GetChunk(origin);
+
+        if (!chunk.Dirty)
+        {
             return;
         }
 
-        if (chunk.Mesh != null) {
+        if (chunk.Mesh != null)
+        {
             Object.Destroy(chunk.Mesh);
             Object.Destroy(chunk.GameObject);
         }
 
         Mesh mesh = new Mesh();
 
-        if (method == MeshMethod.MarchingCubes) {
+        if (method == MeshMethod.MarchingCubes)
+        {
             var verts = new List<Vector3>();
             var indices = new List<int>();
             var colors = new List<Color>();
 
+            marching.AccurateOffset = AccurateOffset;
             marching.Generate(chunk, verts, indices, colors);
-
 
             mesh.SetVertices(verts);
             mesh.SetTriangles(indices, 0);
-            mesh.SetColors(colors);    
-        } else if (method == MeshMethod.Voxel) {
-            VoxelMesher.Mesh(chunk, mesh);    
+            mesh.SetColors(colors);
+        }
+        else if (method == MeshMethod.Voxel)
+        {
+            VoxelMesher.Mesh(chunk, mesh);
         }
 
         mesh.RecalculateBounds();
@@ -51,12 +69,5 @@ public class Mesher
         chunk.Mesh = mesh;
         chunk.GameObject = go;
         chunk.Dirty = false;
-    }
-
-    public static void MeshChunks(Chunks chunks, Transform transform, Material material, MarchingCubes marching) {
-        foreach(var kv in chunks.Map) {
-            var chunk = kv.Value;
-            MeshChunk(chunk, chunks, transform, material, marching);
-        }
     }
 }

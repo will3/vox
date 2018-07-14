@@ -13,8 +13,8 @@ public static class Colors
 
     static Colors() {
         ColorUtility.TryParseHtmlString("#63912C", out grass);
-        //ColorUtility.TryParseHtmlString("#727D75", out rock);
-        ColorUtility.TryParseHtmlString("#A48474", out rock);
+        ColorUtility.TryParseHtmlString("#727D75", out rock);
+        //ColorUtility.TryParseHtmlString("#A48474", out rock);
         ColorUtility.TryParseHtmlString("#5A81AD", out water);
         ColorUtility.TryParseHtmlString("#3D3329", out trunk);
         //ColorUtility.TryParseHtmlString("#FF0000", out trunk);

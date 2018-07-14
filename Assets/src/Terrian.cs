@@ -8,8 +8,9 @@ public class Terrian
 {
     private int size;
     private float sizeF;
-    private Chunks chunks;
-    private Chunks treeLayer;
+
+    private Layer defaultLayer;
+    private Layer treeLayer;
 
     private int maxChunksY = 4;
     private int generateDis = 2;
@@ -35,8 +36,10 @@ public class Terrian
     public Terrian(int size = 32) {
         this.size = size;
         sizeF = size;
-        chunks = new Chunks(size);
-        treeLayer = new Chunks(size);
+
+        defaultLayer = new Layer(size);
+        treeLayer = new Layer(size);
+
         heightNoise.OctaveCount = 5;
     }
 
@@ -85,14 +88,8 @@ public class Terrian
             var terrianChunk = kv.Value;
             if (terrianChunk.Distance < drawDis)
             {
-                marchingCubes.AccurateOffset = false;
-                //marchingCubes.UseLighting = true;
-                Mesher.MeshChunk(terrianChunk.Chunk, chunks, Transform, material, marchingCubes);
-
-                //marchingCubes.UseLighting = false;
-				marchingCubes.AccurateOffset = true;
-                var treeChunk = treeLayer.GetChunk(terrianChunk.Origin);
-                Mesher.MeshChunk(treeChunk, chunks, Transform, material, marchingCubes);
+                defaultLayer.Draw(terrianChunk.Origin, Transform, material);
+                treeLayer.Draw(terrianChunk.Origin, Transform, material);
             }
         }
     }
@@ -165,7 +162,7 @@ public class Terrian
         var smallCone = new Cone(2.0f, 8);
         var bigCone = new Cone(2.5f, 10);
 
-        var treeChunk = treeLayer.GetOrCreateChunk(terrianChunk.Origin);
+        var treeChunk = treeLayer.Chunks.GetOrCreateChunk(terrianChunk.Origin);
 
         foreach(var kv in terrianChunk.Normals) {
             var coord = kv.Key;
@@ -265,7 +262,7 @@ public class Terrian
         }
 
         if (terrianChunk.Chunk == null) {
-            terrianChunk.Chunk = chunks.GetOrCreateChunk(terrianChunk.Origin);
+            terrianChunk.Chunk = defaultLayer.Chunks.GetOrCreateChunk(terrianChunk.Origin);
         }
         var chunk = terrianChunk.Chunk;
 
@@ -336,10 +333,12 @@ public class Terrian
         }
 
         var chunk = terrianChunk.Chunk;
-        var treeChunk = treeLayer.GetChunk(chunk.Origin);
+        var treeChunk = treeLayer.Chunks.GetChunk(chunk.Origin);
         var origin = chunk.Origin;
-        foreach(var kv in terrianChunk.Normals) {
-            var coord = kv.Key;
+
+        var coords = VoxelMesher.GetSurfaceVoxels(chunk);
+
+        foreach(var coord in coords) {
             var globalCoord = coord + origin;
             var shadow = calculateShadow(globalCoord);
             chunk.SetLighting(coord, shadow);
@@ -354,7 +353,7 @@ public class Terrian
             return;
         }
         var house = new House(3, 2, 5);
-        print(house.Shape, new Vector3Int(0, 10, 0), chunks);
+        print(house.Shape, new Vector3Int(0, 10, 0), defaultLayer.Chunks);
         terrianChunk.GeneratedHouses = true;
     }
 
@@ -375,7 +374,7 @@ public class Terrian
 
     private float calculateShadow(Vector3Int coord) {
         var shadowStrength = 0.4f;
-        var result = Raycast4545.Trace(coord, chunks) || Raycast4545.Trace(coord, treeLayer);
+        var result = Raycast4545.Trace(coord, defaultLayer.Chunks) || Raycast4545.Trace(coord, treeLayer.Chunks);
         if (result) {
             return 1 - shadowStrength;
         } else {

@@ -23,11 +23,15 @@ public class MarchingCubes
     private float GetLighting(int x, int y, int z, Chunk chunk) {
         float a = chunk.GetLightingGlobal(x, y, z);
         float b = chunk.GetLightingGlobal(x + 1, y, z);
-        float c = chunk.GetLightingGlobal(x - 1, y, z);
-        float d = chunk.GetLightingGlobal(x, y, z + 1);
-        float e = chunk.GetLightingGlobal(x, y, z - 1);
+        float c = chunk.GetLightingGlobal(x, y + 1, z);
+        float d = chunk.GetLightingGlobal(x + 1, y + 1, z);
 
-        return Mathf.Min(a, b, c, d, e);
+        float e = chunk.GetLightingGlobal(x + 1, y, z + 1);
+        float f = chunk.GetLightingGlobal(x, y, z + 1);
+        float g = chunk.GetLightingGlobal(x + 1, y + 1, z + 1);
+        float h = chunk.GetLightingGlobal(x, y + 1, z + 1);
+
+        return Mathf.Min(a, b, c, d, e, f, g, h);
     }
 
     //private float GetLightingAverage(int x, int y, int z, Chunk chunk) {
@@ -493,15 +497,15 @@ public class MarchingCubes
 
         if (Surface > 0.0f)
         {
-            WindingOrder[0] = 0;
-            WindingOrder[1] = 1;
-            WindingOrder[2] = 2;
-        }
-        else
-        {
             WindingOrder[0] = 2;
             WindingOrder[1] = 1;
             WindingOrder[2] = 0;
+        }
+        else
+        {
+            WindingOrder[0] = 0;
+            WindingOrder[1] = 1;
+            WindingOrder[2] = 2;
         }
 
         int x, y, z, i;
