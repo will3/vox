@@ -79,7 +79,9 @@ public class Chunks
     }
 
     public Chunk GetChunk(Vector3Int origin) {
-        return map[origin];
+        Chunk chunk = null;
+        map.TryGetValue(origin, out chunk);
+        return chunk;
     }
 
     public bool HasChunk(Vector3Int origin) {

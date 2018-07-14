@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using FarmVox;
 
 public class CameraController : MonoBehaviour
 {
@@ -7,7 +8,11 @@ public class CameraController : MonoBehaviour
     private float speed = 20f;
     private float rotateSpeed = 80f;
     private Vector3 velocity;
-    private float friction = 0.001f; 
+    private float friction = 0.001f;
+
+    public Vector3 GetVector() {
+        return (Target - transform.position).normalized;
+    }
 
     public Vector3 Target
     {

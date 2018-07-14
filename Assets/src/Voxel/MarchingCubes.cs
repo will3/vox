@@ -104,9 +104,20 @@ public class MarchingCubes
     int edgeFlags;
     int flagIndex;
 
+    public Vector3? GetNormal(int x, int y, int z, Chunk chunk) {
+        return 
+            _GetNormal(x,       y,      z, chunk) ??
+            _GetNormal(x - 1,   y,      z, chunk) ??
+            _GetNormal(x,       y - 1,  z, chunk) ??
+            _GetNormal(x - 1,   y - 1,  z, chunk) ??
+            _GetNormal(x,       y,      z - 1, chunk) ??
+            _GetNormal(x - 1,   y,      z - 1, chunk) ??
+            _GetNormal(x,       y - 1,  z - 1, chunk) ??
+            _GetNormal(x - 1,   y - 1,  z - 1, chunk);
+    }
     // Get Normal of a voxel
     // If more than one surface, use first surface
-    public Vector3? GetNormal(int x, int y, int z, Chunk chunk)
+    public Vector3? _GetNormal(int x, int y, int z, Chunk chunk)
     {
         int i;
 

@@ -15,6 +15,60 @@ public class Chunk
     private bool dirty;
     public bool Hidden;
     public Chunks Chunks;
+    public bool surfaceCoordsDirty = true;
+    private List<Vector3Int> surfaceCoords = new List<Vector3Int>();
+
+    public List<Vector3Int> SurfaceCoords
+    {
+        get
+        {
+            return surfaceCoords;
+        }
+    }
+
+    public void UpdateSurfaceCoords()
+    {
+        if (!surfaceCoordsDirty) {
+            return;
+        }
+        var list = new List<Vector3Int>();
+
+        for (var i = 0; i < size; i++)
+        {
+            for (var j = 0; j < size; j++)
+            {
+                for (var k = 0; k < size; k++)
+                {
+                    var v = GetGlobal(i, j, k);
+                    var left = GetGlobal(i - 1, j, k);
+                    var bot = GetGlobal(i, j - 1, k);
+                    var back = GetGlobal(i, j, k - 1);
+                    var order = v > 0;
+
+                    if (v > 0 != left > 0)
+                    {
+                        var coord = v > 0 ? new Vector3Int(i, j, k) : new Vector3Int(i - 1, j, k);
+                        list.Add(coord);
+                    }
+
+                    if (v > 0 != bot > 0)
+                    {
+                        var coord = v > 0 ? new Vector3Int(i, j, k) : new Vector3Int(i, j - 1, k);
+                        list.Add(coord);
+                    }
+
+                    if (v > 0 != back > 0)
+                    {
+                        var coord = v > 0 ? new Vector3Int(i, j, k) : new Vector3Int(i, j, k - 1);
+                        list.Add(coord);
+                    }
+                }
+            }
+        }
+
+        surfaceCoords = list;
+        surfaceCoordsDirty = false;
+    }
 
     public Vector3Int Origin
     {
@@ -91,6 +145,7 @@ public class Chunk
         var index = getIndex(i, j, k);
         data[index] = v;
         dirty = true;
+        surfaceCoordsDirty = true;  // TODO fix when neighbour chunk
     }
 
     public void SetIfHigher(int i, int j, int k, float v) {

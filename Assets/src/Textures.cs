@@ -1,9 +1,13 @@
 using UnityEngine;
 using System.Collections;
 
-public class Textures
+namespace FarmVox
 {
-    public static Texture2D LoadTexture() {
-        return null;
+    public class Textures
+    {
+        public static Texture2D LoadTexture()
+        {
+            return null;
+        }
     }
 }

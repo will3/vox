@@ -3,6 +3,7 @@ using System.Collections;
 
 public class Raycast4545
 {
+    public static Vector3 LightDir = new Vector3(1, 1, 1);
     public static bool Trace(Vector3Int coord, Chunks chunks, int depth = 64) {
         bool first = true;
         for (var i = 0; i < depth; i ++) {
