@@ -128,16 +128,20 @@ namespace FarmVox
             return index;
         }
 
-        public bool HasTreeCloseBy(Vector3Int from, float minTreeDis)
+        public float GetOtherTrees(Vector3Int from)
         {
+            float min = 5.0f;
+            float sqrMin = min * min;
+            var amount = 0f;
             foreach (var coord in trees)
             {
-                if ((coord - from).magnitude < minTreeDis)
-                {
-                    return true;
+                var sqrDis = (coord - from).sqrMagnitude;
+                if (sqrDis < sqrMin) {
+                    amount += 1.0f / sqrDis;
                 }
             }
-            return false;
+
+            return amount;
         }
 
         public void UpdateRoutes() {

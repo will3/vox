@@ -37,7 +37,7 @@ namespace FarmVox
         // Update is called once per frame
         void Update()
         {
-            wander();
+            //wander();
         }
 
         private void wander() {

@@ -22,7 +22,9 @@ public class HighlightHoveredSurface : MonoBehaviour
         var result = terrian.Trace(ray.origin, ray.direction, 200);
         if (result != null) {
             var mesh = result.GetQuad();
+            var pos = result.GetCoord();
             go.GetComponent<MeshFilter>().mesh = mesh;
+            go.transform.position = pos + result.HitNormal * 0.1f;
         }
 	}
 }

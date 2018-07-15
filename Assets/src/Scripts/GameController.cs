@@ -5,21 +5,32 @@ using UnityEngine;
 using UnityEngine.Assertions;
 
 public class GameController : MonoBehaviour {
+    public bool drawRoutes = false;
     private Terrian terrian;
     private CameraController cameraController;
     private bool spawned = false;
-    private HighlightHoveredSurface highlight;
+    private GameObject highlight;
 
-	// Use this for initialization
-	void Start () {
+    public GameObject Highlight
+    {
+        get
+        {
+            return highlight;
+        }
+    }
+
+    // Use this for initialization
+    void Start () {
         cameraController = Camera.main.GetComponent<CameraController>();
         Assert.IsNotNull(cameraController);
 
         terrian = new Terrian();
         terrian.Transform = transform;
 
-        highlight = gameObject.AddComponent<HighlightHoveredSurface>();
-        highlight.terrian = terrian;
+        highlight = new GameObject("Highlight");
+        highlight.AddComponent<HighlightHoveredSurface>();
+        highlight.GetComponent<HighlightHoveredSurface>().terrian = terrian;
+        highlight.SetActive(false);
 	}
 	
 	// Update is called once per frame
@@ -34,7 +45,7 @@ public class GameController : MonoBehaviour {
 
 	private void OnDrawGizmos()
 	{
-        if (terrian != null) {
+        if (drawRoutes && terrian != null) {
             foreach (var kv in terrian.Map)
             {
                 var terrianChunk = kv.Value;

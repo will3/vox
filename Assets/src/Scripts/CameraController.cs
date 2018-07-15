@@ -9,6 +9,7 @@ public class CameraController : MonoBehaviour
     private float rotateSpeed = 80f;
     private Vector3 velocity;
     private float friction = 0.001f;
+    private float zoomRate = 1.1f;
 
     public Vector3 GetVector() {
         return (Target - transform.position).normalized;
@@ -31,9 +32,9 @@ public class CameraController : MonoBehaviour
         
 	}
 
-	// Update is called once per frame
-	void Update()
-	{
+    // Update is called once per frame
+    void Update()
+    {
         var f = Mathf.Pow(friction, Time.deltaTime);
 
         var forward = 0.0f;
@@ -49,6 +50,14 @@ public class CameraController : MonoBehaviour
         if (Input.GetKey(KeyCode.E)) rotate += 1.0f;
         rotation.y += rotate * Time.deltaTime * rotateSpeed;
 
+        if (Input.GetKeyDown(KeyCode.Equals)) {
+            distance /= zoomRate;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Minus)) {
+            distance *= zoomRate;
+        }
+    
         var forwardVector = (target - transform.position).normalized;
         forwardVector = Vector3.ProjectOnPlane(forwardVector, Vector3.up);
         var rightVector = Vector3.Cross(Vector3.up, forwardVector);

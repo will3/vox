@@ -15,15 +15,14 @@ namespace FarmVox
         private Layer treeLayer;
 
         private int maxChunksY = 4;
-        private int generateDis = 3;
+        private int generateDis = 2;
         private int drawDis = 2;
         private int waterLevel = 2;
         private int minTreeJ = 1;
         //private int maxHeight = 64;
 
-        private float terrainHeight = 64;
-        private float maxTreeDis = 16.0f;
-        private float minTreeDis = 8.0f;
+        private float hillHeight = 64;
+        private float plainHeight = 12;
 
         private Material material = new Material(Shader.Find("Unlit/voxelunlit"));
         public Transform Transform;
@@ -54,6 +53,11 @@ namespace FarmVox
             treeLayer = new Layer(size);
 
             heightNoise.OctaveCount = 5;
+            grassNoise.OctaveCount = 5;
+
+            treeNoise.Frequency = 0.05f;
+            treeNoise.OctaveCount = 5;
+            biomeNoise.Frequency = 0.01f;
         }
 
         public void Update()
@@ -84,9 +88,9 @@ namespace FarmVox
                     generateWater(terrianChunk);
                     generateNormals(terrianChunk);
                     generateGrass(terrianChunk);
-                    generateTrees(terrianChunk);
-                    generateShadows(terrianChunk);
-                    terrianChunk.UpdateRoutes();
+                    //generateTrees(terrianChunk);
+                    //generateShadows(terrianChunk);
+                    //terrianChunk.UpdateRoutes();
                 }
             }
 
@@ -171,7 +175,12 @@ namespace FarmVox
                 }
 
                 var upDot = Vector3.Dot(Vector3.up, normal);
-                if (upDot < 0.5)
+
+                Vector3 globalCoord = coord + chunk.Origin;
+
+                var value = grassNoise.GetValue(globalCoord * 0.05f) * 0.8f;
+
+                if (upDot + value < 0.5)
                 {
                     continue;
                 }
@@ -189,7 +198,7 @@ namespace FarmVox
                 return;
             }
 
-            var smallPine = new Pine(2.0f, 7);
+            var pine = new Pine(2.0f, 7);
 
             var chunk = terrianChunk.Chunk;
 
@@ -200,7 +209,6 @@ namespace FarmVox
                 var i = coord.x;
                 var j = coord.y;
                 var k = coord.z;
-                var vector = new Vector3(coord.x, coord.y, coord.z);
 
                 var absJ = j + chunk.Origin.y;
                 if (absJ < minTreeJ)
@@ -220,36 +228,14 @@ namespace FarmVox
                     continue;
                 }
 
-                var value = (float)treeNoise.GetValue(vector * 0.04f);
+                Vector3 globalCoord = coord + chunk.Origin;
+                var value = (float)treeNoise.GetValue(globalCoord);
 
-                if (value < 0)
-                {
-                    continue;
-                }
+                var otherTrees = terrianChunk.GetOtherTrees(coord);
 
-                var smallTree = value < 0.4;
+                value -= otherTrees * 4.0f;
 
-                var clamp = 1.0f;
-                if (value > clamp)
-                {
-                    value = clamp;
-                }
-                value /= clamp;
-                value = 1.0f - value;
-
-                var treeDis = (maxTreeDis - minTreeDis) * value + minTreeDis;
-
-                if (!smallTree)
-                {
-                    treeDis *= 1.5f;
-                }
-
-                if (terrianChunk.HasTreeCloseBy(coord, treeDis))
-                {
-                    continue;
-                }
-
-                var pine = smallPine;
+                if (value < 0.4f) { continue; }
 
                 print(pine.Shape, coord + chunk.Origin, treeLayer.Chunks, pine.Offset);
 
@@ -266,7 +252,15 @@ namespace FarmVox
 
         float getVoxel(int i, int j, int k)
         {
-            var height = (1f - j / (float)terrainHeight) - 1.0f;
+            var biome = biomeNoise.GetValue(new Vector3(i, j * 0.4f, k));
+            float terrainHeight;
+            if (biome > 0) {
+                terrainHeight = hillHeight;    
+            } else {
+                terrainHeight = plainHeight;
+            }
+
+            var height = (1f - j / (float)terrainHeight) - 0.5f;
             var value = height + (float)heightNoise.GetValue(new Vector3(i, j * 0.4f, k) * 0.015f);
             return value;
         }
@@ -453,7 +447,8 @@ namespace FarmVox
         }
 
         public RaycastResult Trace(Vector3 pos, Vector3 dir, int maxD) {
-            return Raycast.Trace(defaultLayer.Chunks, pos, dir, maxD) ?? Raycast.Trace(treeLayer.Chunks, pos, dir, maxD);
+            var list = new Chunks[] { defaultLayer.Chunks, treeLayer.Chunks };
+            return Raycast.Trace(list, pos, dir, maxD);
         }
     }
 }
