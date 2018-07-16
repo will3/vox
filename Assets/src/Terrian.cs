@@ -18,7 +18,6 @@ namespace FarmVox
         private int maxChunksY = 4;
         private int generateDis = 3;
         private int drawDis = 2;
-        private int waterLevel = 2;
         private int minTreeJ = 1;
         //private int maxHeight = 64;
 
@@ -98,7 +97,7 @@ namespace FarmVox
                     Profiler.EndSample();
 
                     Profiler.BeginSample("Water");
-                    generateWater(terrianChunk);
+                    terrianChunk.GenerateWaters();
                     Profiler.EndSample();
 
                     Profiler.BeginSample("Grass");
@@ -140,42 +139,6 @@ namespace FarmVox
                 }
             }
         }
-
-        private void generateWater(TerrianChunk terrianChunk)
-        {
-            if (!terrianChunk.waterNeedsUpdate)
-            {
-                return;
-            }
-
-            var chunk = terrianChunk.Chunk;
-            if (chunk.Origin.y < waterLevel)
-            {
-                float maxJ = waterLevel - chunk.Origin.y;
-                if (maxJ > chunk.Size)
-                {
-                    maxJ = chunk.Size;
-                }
-                for (var i = 0; i < chunk.Size; i++)
-                {
-                    for (var k = 0; k < chunk.Size; k++)
-                    {
-                        for (var j = 0; j < maxJ; j++)
-                        {
-                            if (chunk.Get(i, j, k) <= 0.5)
-                            {
-                                chunk.Set(i, j, k, 1);
-                                chunk.SetColor(i, j, k, Colors.water);
-                                terrianChunk.SetWater(i, j, k, true);
-                            }
-                        }
-                    }
-                }
-            }
-
-            terrianChunk.waterNeedsUpdate = false;
-        }
-
 
         private Curve grassCurve;
 
