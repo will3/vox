@@ -36,6 +36,8 @@ namespace FarmVox
         public bool shadowsNeedsUpdate = true;
         public bool housesNeedsUpdate = true;
         public bool routesNeedsUpdate = true;
+        public bool growthNeedsUpdate = true;
+
         public Terrian Terrian;
 
         private int distance;

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using LibNoise.Generator;
 using System;
+using UnityEngine.Profiling;
 
 namespace FarmVox
 {
@@ -15,13 +16,13 @@ namespace FarmVox
         private Layer treeLayer;
 
         private int maxChunksY = 4;
-        private int generateDis = 2;
+        private int generateDis = 3;
         private int drawDis = 2;
         private int waterLevel = 2;
         private int minTreeJ = 1;
         //private int maxHeight = 64;
 
-        private float hillHeight = 64;
+        private float hillHeight = 48;
         private float plainHeight = 12;
 
         private Material material = new Material(Shader.Find("Unlit/voxelunlit"));
@@ -40,9 +41,11 @@ namespace FarmVox
 
         MarchingCubes marchingCubes = new MarchingCubes();
         Perlin heightNoise = new Perlin();
+        Perlin growthNoise = new Perlin();
         Perlin grassNoise = new Perlin();
         Perlin treeNoise = new Perlin();
         Perlin biomeNoise = new Perlin();
+        Perlin heightNoise2 = new Perlin();
 
         public Terrian(int size = 32)
         {
@@ -53,7 +56,8 @@ namespace FarmVox
             treeLayer = new Layer(size);
 
             heightNoise.OctaveCount = 5;
-            grassNoise.OctaveCount = 5;
+            heightNoise2.OctaveCount = 8;
+            growthNoise.OctaveCount = 5;
 
             treeNoise.Frequency = 0.05f;
             treeNoise.OctaveCount = 5;
@@ -71,9 +75,13 @@ namespace FarmVox
                 {
                     for (int k = z - generateDis; k <= z + generateDis; k++)
                     {
+                        Profiler.BeginSample("Rock");
+
                         var origin = new Vector3Int(i, j, k) * size;
                         var terrianChunk = getOrCreateTerrianChunk(origin);
                         generateRock(terrianChunk);
+
+                        Profiler.EndSample();
                     }
                 }
             }
@@ -85,11 +93,26 @@ namespace FarmVox
 
                 if (terrianChunk.Distance < drawDis)
                 {
-                    generateWater(terrianChunk);
+                    Profiler.BeginSample("Normals");
                     generateNormals(terrianChunk);
+                    Profiler.EndSample();
+
+                    Profiler.BeginSample("Water");
+                    generateWater(terrianChunk);
+                    Profiler.EndSample();
+
+                    Profiler.BeginSample("Grass");
                     generateGrass(terrianChunk);
-                    //generateTrees(terrianChunk);
-                    //generateShadows(terrianChunk);
+                    Profiler.EndSample();
+
+                    Profiler.BeginSample("Trees");
+                    generateTrees(terrianChunk);
+                    Profiler.EndSample();
+
+                    Profiler.BeginSample("Shadows");
+                    generateShadows(terrianChunk);
+                    Profiler.EndSample();
+
                     //terrianChunk.UpdateRoutes();
                 }
             }
@@ -108,8 +131,12 @@ namespace FarmVox
                 var terrianChunk = kv.Value;
                 if (terrianChunk.Distance < drawDis)
                 {
+                    Profiler.BeginSample("Meshing");
+
                     defaultLayer.Draw(terrianChunk.Origin, Transform, material);
                     treeLayer.Draw(terrianChunk.Origin, Transform, material);
+
+                    Profiler.EndSample();
                 }
             }
         }
@@ -149,6 +176,21 @@ namespace FarmVox
             terrianChunk.waterNeedsUpdate = false;
         }
 
+
+        private Curve grassCurve;
+
+        public Curve GrassCurve
+        {
+            get
+            {
+                if (grassCurve == null) {
+                    grassCurve = new Curve();
+                    grassCurve.Add(0.3f, 0.8f);
+                }
+                return grassCurve;
+            }
+        }
+
         private void generateGrass(TerrianChunk terrianChunk)
         {
             if (!terrianChunk.grassNeedsUpdate)
@@ -178,17 +220,25 @@ namespace FarmVox
 
                 Vector3 globalCoord = coord + chunk.Origin;
 
-                var value = grassNoise.GetValue(globalCoord * 0.05f) * 0.8f;
+                var n = (float)grassNoise.GetValue(globalCoord * 0.05f) * 0.8f;
 
-                if (upDot + value < 0.5)
-                {
-                    continue;
-                }
+                var value = upDot + n;
 
-                chunk.SetColor(coord.x, coord.y, coord.z, Colors.grass);
+                value = Mathf.Clamp(value, 0.0f, 1.0f);
+
+                Color color = Color.Lerp(Colors.rock, Colors.grass, GrassCurve.GetValue(value));
+                chunk.SetColor(coord.x, coord.y, coord.z, color);
             }
 
             terrianChunk.grassNeedsUpdate = false;
+        }
+
+        private void generateGrowth(TerrianChunk terrianChunk) {
+            if (!terrianChunk.growthNeedsUpdate) {
+                return;
+            }
+
+            terrianChunk.growthNeedsUpdate = false;
         }
 
         private void generateTrees(TerrianChunk terrianChunk)
@@ -250,21 +300,6 @@ namespace FarmVox
             terrianChunk.treesNeedsUpdate = false;
         }
 
-        float getVoxel(int i, int j, int k)
-        {
-            var biome = biomeNoise.GetValue(new Vector3(i, j * 0.4f, k));
-            float terrainHeight;
-            if (biome > 0) {
-                terrainHeight = hillHeight;    
-            } else {
-                terrainHeight = plainHeight;
-            }
-
-            var height = (1f - j / (float)terrainHeight) - 0.5f;
-            var value = height + (float)heightNoise.GetValue(new Vector3(i, j * 0.4f, k) * 0.015f);
-            return value;
-        }
-
         void generateRock(TerrianChunk terrianChunk)
         {
             if (!terrianChunk.rockNeedsUpdate)
@@ -302,12 +337,37 @@ namespace FarmVox
                     {
                         float value = field.Sample(i / 2.0f, j / 2.0f, k / 2.0f);
                         chunk.Set(i, j, k, value);
-                        chunk.SetColor(i, j, k, Colors.rock);
+                        if (value > 0) {
+                            chunk.SetColor(i, j, k, Colors.rock);    
+                        }
                     }
                 }
             }
 
             terrianChunk.rockNeedsUpdate = false;
+        }
+
+        float getVoxel(int i, int j, int k)
+        {
+            var biome = biomeNoise.GetValue(new Vector3(i, j * 0.4f, k));
+            float terrainHeight;
+            if (biome < 0.1 && biome > -0.1) {
+                var ratio = (float)(biome + 0.1f) / 0.2f;
+                terrainHeight = plainHeight + (hillHeight - plainHeight) * ratio;
+            } else if (biome > 0)
+            {
+                terrainHeight = hillHeight;
+            }
+            else
+            {
+                terrainHeight = plainHeight;
+            }
+
+            var height = (1f - j / (float)terrainHeight) - 0.5f;
+            var value = height;
+            var n1 = (float)heightNoise.GetValue(new Vector3(i, j * 0.4f, k) * 0.015f);
+            // var n2 = (float)heightNoise2.GetValue(new Vector3(i, j * 0.4f, k) * 0.015f) * 0.5f;
+            return value + n1;
         }
 
         public TerrianChunk GetTerrianChunk(Vector3Int origin) {
@@ -338,14 +398,17 @@ namespace FarmVox
             var chunk = terrianChunk.Chunk;
 
             var origin = terrianChunk.Origin;
-            var treeChunk = treeLayer.Chunks.GetChunk(origin);
+            var treeChunk = defaultLayer.Chunks.GetChunk(origin);
 
             chunk.UpdateSurfaceCoords();
+
+            var lightDir = Raycast4545.LightDir;
 
             foreach (var coord in chunk.SurfaceCoords)
             {
                 var normal = marchingCubes.GetNormal(coord.x, coord.y, coord.z, chunk);
                 terrianChunk.SetNormal(coord, normal.Value);
+                chunk.lightNormals[coord] = Vector3.Dot(lightDir, normal.Value);
             }
 
             terrianChunk.normalsNeedsUpdate = false;
@@ -447,7 +510,7 @@ namespace FarmVox
         }
 
         public RaycastResult Trace(Vector3 pos, Vector3 dir, int maxD) {
-            var list = new Chunks[] { defaultLayer.Chunks, treeLayer.Chunks };
+            var list = new Chunks[] { defaultLayer.Chunks, defaultLayer.Chunks };
             return Raycast.Trace(list, pos, dir, maxD);
         }
     }

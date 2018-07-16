@@ -22,6 +22,7 @@ namespace FarmVox
             ColorUtility.TryParseHtmlString("#3D3329", out trunk);
             //ColorUtility.TryParseHtmlString("#FF0000", out trunk);
             ColorUtility.TryParseHtmlString("#3C5A30", out leaf);
+            //ColorUtility.TryParseHtmlString("#B7603A", out leaf);
             //ColorUtility.TryParseHtmlString("#E1952B", out leaf);
 
             ColorUtility.TryParseHtmlString("#674B3D", out roof);

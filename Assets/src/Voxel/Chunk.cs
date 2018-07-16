@@ -21,6 +21,7 @@ namespace FarmVox
         private ChunkShadowMap shadowMap = new ChunkShadowMap();
         private List<Vector3Int> surfaceCoords = new List<Vector3Int>();
         private List<Vector3Int> surfaceCoordsUp = new List<Vector3Int>();
+        public readonly Dictionary<Vector3Int, float> lightNormals = new Dictionary<Vector3Int, float>();
 
         public List<Vector3Int> SurfaceCoordsUp
         {
@@ -36,24 +37,6 @@ namespace FarmVox
             {
                 return surfaceCoords;
             }
-        }
-
-        public void UpdateShadows(IList<Chunks> chunksList)
-        {
-            if (!shadowsDirty)
-            {
-                return;
-            }
-
-            UpdateSurfaceCoords();
-
-            shadowMap.Clear();
-
-            foreach(var coord in surfaceCoords) {
-                shadowMap.CalcShadow(this, coord, chunksList);
-            }
-
-            shadowsDirty = false;
         }
 
         public void UpdateSurfaceCoords()
@@ -313,6 +296,36 @@ namespace FarmVox
             return GetLighting(coord);
         }
 
+        public float _GetLighting(Vector3Int coord)
+        {
+            var shadow = getShadow(coord);
+
+            return 1.0f - shadow * shadowStrength;
+        }
+
+        public void UpdateShadows(IList<Chunks> chunksList)
+        {
+            if (!shadowsDirty)
+            {
+                return;
+            }
+
+            UpdateSurfaceCoords();
+
+            shadowMap.Clear();
+
+            foreach (var coord in surfaceCoords)
+            {
+                shadowMap.CalcShadow(this, coord, chunksList);
+                shadowMap.CalcShadow(this, new Vector3Int(coord.x + 1, coord.y, coord.z), chunksList);
+                shadowMap.CalcShadow(this, new Vector3Int(coord.x - 1, coord.y, coord.z), chunksList);
+                shadowMap.CalcShadow(this, new Vector3Int(coord.x, coord.y, coord.z + 1), chunksList);
+                shadowMap.CalcShadow(this, new Vector3Int(coord.x, coord.y, coord.z - 1), chunksList);
+            }
+
+            shadowsDirty = false;
+        }
+
         private float shadowStrength = 0.3f;
 
         private float getShadow(Vector3Int coord) {
@@ -321,9 +334,13 @@ namespace FarmVox
 
         public float GetLighting(Vector3Int coord)
         {
-            var shadow = getShadow(coord);
+            var value = _GetLighting(coord) +
+                _GetLighting(new Vector3Int(coord.x + 1, coord.y, coord.z)) * 0.5f +
+                _GetLighting(new Vector3Int(coord.x - 1, coord.y, coord.z)) * 0.5f+
+                _GetLighting(new Vector3Int(coord.x, coord.y, coord.z + 1)) * 0.5f+
+                _GetLighting(new Vector3Int(coord.x, coord.y, coord.z - 1))* 0.5f;
 
-            return 1.0f - shadow * shadowStrength;
+            return value / 3.0f;
         }
     }
 }
