@@ -2,12 +2,12 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-public class Curve
+public class ValueGradient
 {
     private readonly Dictionary<float, float> map = new Dictionary<float, float>();
     private readonly List<float> keys = new List<float>();
 
-    public Curve() {
+    public ValueGradient() {
         map[0.0f] = 0.0f;
         map[1.0f] = 1.0f;
 

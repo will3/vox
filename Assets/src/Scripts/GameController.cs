@@ -8,6 +8,18 @@ public class GameController : MonoBehaviour {
     public bool drawRoutes = false;
     private Terrian terrian;
     private CameraController cameraController;
+
+    public CameraController CameraController
+    {
+        get
+        {
+            if (cameraController == null) {
+                cameraController = Camera.main.GetComponent<CameraController>();
+            }
+            return cameraController;
+        }
+    }
+
     private bool spawned = false;
     private GameObject highlight;
 
@@ -21,8 +33,7 @@ public class GameController : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        cameraController = Camera.main.GetComponent<CameraController>();
-        Assert.IsNotNull(cameraController);
+        Assert.IsNotNull(CameraController);
 
         terrian = new Terrian();
         terrian.Transform = transform;
@@ -35,7 +46,7 @@ public class GameController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        terrian.Target = cameraController.Target;
+        terrian.Target = CameraController.Target;
         terrian.Update();
         if (!spawned) {
             terrian.SpawnDwarfs();

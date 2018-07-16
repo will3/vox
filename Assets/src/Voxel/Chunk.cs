@@ -296,13 +296,6 @@ namespace FarmVox
             return GetLighting(coord);
         }
 
-        public float _GetLighting(Vector3Int coord)
-        {
-            var shadow = getShadow(coord);
-
-            return 1.0f - shadow * shadowStrength;
-        }
-
         public void UpdateShadows(IList<Chunks> chunksList)
         {
             if (!shadowsDirty)
@@ -326,7 +319,7 @@ namespace FarmVox
             shadowsDirty = false;
         }
 
-        private float shadowStrength = 0.3f;
+        private float shadowStrength = 0.5f;
 
         private float getShadow(Vector3Int coord) {
             return shadowMap.GetShadow(this, coord);
@@ -334,13 +327,42 @@ namespace FarmVox
 
         public float GetLighting(Vector3Int coord)
         {
-            var value = _GetLighting(coord) +
-                _GetLighting(new Vector3Int(coord.x + 1, coord.y, coord.z)) * 0.5f +
-                _GetLighting(new Vector3Int(coord.x - 1, coord.y, coord.z)) * 0.5f+
-                _GetLighting(new Vector3Int(coord.x, coord.y, coord.z + 1)) * 0.5f+
-                _GetLighting(new Vector3Int(coord.x, coord.y, coord.z - 1))* 0.5f;
+            var shadow = getShadow(coord);
+            return shadow * shadowStrength;
+        }
 
-            return value / 3.0f;
+        private MarchingCubes marchingCubes = new MarchingCubes();
+        private bool normalsNeedsUpdate = true;
+
+        public void UpdateNormals()
+        {
+            if (!normalsNeedsUpdate)
+            {
+                return;
+            }
+
+            UpdateSurfaceCoords();
+
+            var lightDir = Raycast4545.LightDir;
+
+            foreach (var coord in SurfaceCoords)
+            {
+                var normal = marchingCubes.GetNormal(coord.x, coord.y, coord.z, this);
+                normals[coord] = normal.Value;
+                lightNormals[coord] = Vector3.Dot(lightDir, normal.Value);
+            }
+
+            normalsNeedsUpdate = false;
+        }
+
+        private readonly Dictionary<Vector3Int, Vector3> normals = new Dictionary<Vector3Int, Vector3>();
+
+        public Dictionary<Vector3Int, Vector3> Normals
+        {
+            get
+            {
+                return normals;
+            }
         }
     }
 }

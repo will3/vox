@@ -5,7 +5,8 @@ namespace FarmVox
 {
     public class Raycast4545
     {
-        public static Vector3 LightDir = new Vector3(1, 1, 1);
+        public static Vector3 LightDir = new Vector3(1, 1, 1).normalized;
+
         public static Vector3Int? Trace(Vector3Int coord, Chunks chunks, int depth = 64)
         {
             for (var i = 0; i < depth; i++)

@@ -6,16 +6,6 @@ namespace FarmVox
 {
     public class TerrianChunk
     {
-        private readonly Dictionary<Vector3Int, Vector3> normals = new Dictionary<Vector3Int, Vector3>();
-
-        public IDictionary<Vector3Int, Vector3> Normals
-        {
-            get
-            {
-                return normals;
-            }
-        }
-
         private readonly HashSet<int> waters = new HashSet<int>();
         private readonly Routes routes = new Routes();
 
@@ -32,7 +22,6 @@ namespace FarmVox
         public bool waterNeedsUpdate = true;
         public bool grassNeedsUpdate = true;
         public bool treesNeedsUpdate = true;
-        public bool normalsNeedsUpdate = true;
         public bool shadowsNeedsUpdate = true;
         public bool housesNeedsUpdate = true;
         public bool routesNeedsUpdate = true;
@@ -94,16 +83,6 @@ namespace FarmVox
         public bool GetTree(Vector3Int coord)
         {
             return trees.Contains(coord);
-        }
-
-        public void SetNormal(Vector3Int coord, Vector3 normal)
-        {
-            normals[coord] = normal;
-        }
-
-        public Vector3 GetNormal(Vector3Int coord)
-        {
-            return normals[coord];
         }
 
         public void SetWater(int i, int j, int k, bool flag)

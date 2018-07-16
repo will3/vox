@@ -3,6 +3,7 @@ using System.Collections;
 
 namespace FarmVox
 {
+
     public static class Colors
     {
         public static Color grass;
@@ -13,20 +14,29 @@ namespace FarmVox
         public static Color roof;
         public static Color brick;
 
+        public static ColorGradient grassGradient;
+
+        //
         static Colors()
         {
-            ColorUtility.TryParseHtmlString("#509644", out grass);
-            ColorUtility.TryParseHtmlString("#727D75", out rock);
-            //ColorUtility.TryParseHtmlString("#A48474", out rock);
-            ColorUtility.TryParseHtmlString("#5A81AD", out water);
-            ColorUtility.TryParseHtmlString("#3D3329", out trunk);
-            //ColorUtility.TryParseHtmlString("#FF0000", out trunk);
-            ColorUtility.TryParseHtmlString("#3C5A30", out leaf);
-            //ColorUtility.TryParseHtmlString("#B7603A", out leaf);
-            //ColorUtility.TryParseHtmlString("#E1952B", out leaf);
+            grass = GetColor("#509644");
+            var grass2 = GetColor("#1e5c14");
+            rock = GetColor("#413535");
+            water = GetColor("#5A81AD");
+            trunk = GetColor("#4f402a");
+            leaf = GetColor("#337828");
+            roof = GetColor("#674B3D");
+            brick = GetColor("#663D2D");
 
-            ColorUtility.TryParseHtmlString("#674B3D", out roof);
-            ColorUtility.TryParseHtmlString("#663D2D", out brick);
+            grassGradient = new ColorGradient(rock, grass);
+            //grassGradient.Add(0.5f, grass);
+        }
+
+        private static Color GetColor(string hex)
+        {
+            Color color = Color.white;
+            ColorUtility.TryParseHtmlString(hex, out color);
+            return color;
         }
     }
 }

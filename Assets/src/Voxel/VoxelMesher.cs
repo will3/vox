@@ -55,12 +55,17 @@ namespace FarmVox
                             var c = front ? new Vector3Int(i, j, k) : new Vector3Int(i + 1, j, k);
                             var coord = getVector(c.x, c.y, c.z, d);
 
-                            var lightNormal = 1.0f;
-                            chunk.lightNormals.TryGetValue(coord, out lightNormal);
+                            float lightNormal;
+                            if (chunk.lightNormals.ContainsKey(coord)) {
+                                lightNormal = chunk.lightNormals[coord];
+                            } else {
+                                lightNormal = 1.0f;
+                            }
+
+                            var shadow = chunk.GetLightingGlobal(coord.x, coord.y, coord.z);
+                            var dot = lightNormalToLight(lightNormal);
                             var color =
-                                chunk.GetColorGlobal(coord.x, coord.y, coord.z) *
-                                    chunk.GetLightingGlobal(coord.x, coord.y, coord.z) * 
-                                     lightNormalToLight(lightNormal);
+                                chunk.GetColorGlobal(coord.x, coord.y, coord.z) * (1 - shadow) * (1 - dot);
 
                             var aoI = front ? i + 1 : i;
                             // AO
@@ -195,11 +200,11 @@ namespace FarmVox
 
         private static float aoToLight(float ao)
         {
-            return 1.0f - ao * 0.05f;
+            return 1.0f - ao * 0.1f;
         }
 
         private static float lightNormalToLight(float lightNormal) {
-            return 1.0f - (1.0f - lightNormal) * 0.1f;
+            return (1.0f - lightNormal) * 0.4f;
         }
     }
 }

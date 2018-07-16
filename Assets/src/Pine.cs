@@ -12,20 +12,30 @@ namespace FarmVox
         int height;
         private Array3<Voxel> shape;
         public Vector3Int Offset;
+        private int trunkHeight;
 
-        public Array3<Voxel> Shape
-        {
-            get
-            {
-                return shape;
-            }
-        }
-
-        public Pine(float r, float h)
+        public Pine(float r, float h, int trunkHeight)
         {
             this.r = r;
             this.h = h;
+            this.trunkHeight = trunkHeight;
             calcShape();
+        }
+
+        public Array3<Voxel> GetShape() {
+            var copy = new Array3<Voxel>(shape.Width, shape.Height, shape.Depth);
+            for (var i = 0; i < shape.Width; i++) {
+                for (var j = 0; j < shape.Height; j++) {
+                    for (var k = 0; k < shape.Depth; k++) {
+                        var v = shape.Get(i, j, k);
+                        if (v != null) {
+                            v.value -= Random.Range(0.0f, 1.0f) * 0.5f;
+                            copy.Set(i, j, k, v);        
+                        }
+                    }
+                }
+            }
+            return copy;
         }
 
         private void calcShape()
@@ -33,7 +43,6 @@ namespace FarmVox
             int radius = Mathf.CeilToInt(r);
             int mid = radius + 1;
             width = radius * 2 + 1;
-            int trunkHeight = 2;
             height = Mathf.CeilToInt(h) + trunkHeight;
             shape = new Array3<Voxel>(width, height, width);
 
