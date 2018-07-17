@@ -8,7 +8,6 @@ namespace FarmVox
     {
         public static void Generate(TerrianChunk terrianChunk, TerrianConfig config)
         {
-            var minTreeJ = config.minTreeJ;
             var grassNoise = config.grassNoise;
 
             if (!terrianChunk.grassNeedsUpdate)
@@ -27,13 +26,6 @@ namespace FarmVox
                     continue;
                 }
 
-                var absJ = coord.y + chunk.Origin.y;
-
-                if (absJ < minTreeJ)
-                {
-                    continue;
-                }
-
                 var upDot = Vector3.Dot(Vector3.up, normal);
 
                 Vector3 globalCoord = coord + chunk.Origin;
@@ -41,6 +33,10 @@ namespace FarmVox
                 var n = (float)grassNoise.GetValue(globalCoord * 0.05f) * 0.1f;
 
                 var value = upDot + n;
+
+                if (value < 0.0f) {
+                    continue;
+                }
 
                 value = Mathf.Clamp(value, 0.0f, 1.0f);
 

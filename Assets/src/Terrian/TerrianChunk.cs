@@ -18,7 +18,7 @@ namespace FarmVox
             }
         }
 
-        private Vector3Int key;
+        public readonly Vector3Int key;
         public bool rockNeedsUpdate = true;
         public bool waterNeedsUpdate = true;
         public bool grassNeedsUpdate = true;

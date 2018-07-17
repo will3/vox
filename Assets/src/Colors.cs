@@ -21,11 +21,11 @@ namespace FarmVox
         //
         static Colors()
         {
-            grass = GetColor("#509644");
+            grass = GetColor("#457828");
             rock = GetColor("#413535");
             water = GetColor("#5A81AD");
             trunk = GetColor("#4f402a");
-            leaf = GetColor("#337828");
+            leaf = GetColor("#295e21");
             roof = GetColor("#BD5222");
             brick = GetColor("#52575A");
             //road = GetColor("#74614c");

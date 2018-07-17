@@ -59,9 +59,13 @@ namespace FarmVox
                     {
                         var origin = new Vector3Int(i, j, k) * size;
                         var terrianChunk = getOrCreateTerrianChunk(origin);
-                        generateRock(terrianChunk);
                     }
                 }
+            }
+
+            foreach(var kv in map) {
+                var terrianChunk = kv.Value;
+                generateRock(terrianChunk);
             }
 
             var drawDis = config.generateDis;
@@ -86,7 +90,7 @@ namespace FarmVox
 
                     //generateTowns(terrianChunk);
 
-                    //generateShadows(terrianChunk);
+                    generateShadows(terrianChunk);
                 }
             }
 
@@ -293,10 +297,38 @@ namespace FarmVox
             return map[origin];
         }
 
+        private bool CheckShadow(Vector3Int key, int i, int j, int k) {
+            key.x += i;
+            key.y += j;
+            key.z += k;
+            var origin = key * size;
+
+            var ready = !getOrCreateTerrianChunk(origin).rockNeedsUpdate;
+            return ready;
+        }
+
+        private bool ShouldGenerateShadows(TerrianChunk terrianChunk) {
+            var key = terrianChunk.key;
+
+            var ready = true;
+            for (var j = 0; j < config.maxChunksY - key.y; j ++)  {
+                ready &= CheckShadow(key, 0, j, 0);
+                ready &= CheckShadow(key, -1, j, 0);
+                ready &= CheckShadow(key, 0, j, -1);
+                ready &= CheckShadow(key, -1, j, -1);
+            }
+            return ready;
+        }
+
         private void generateShadows(TerrianChunk terrianChunk)
         {
+            
             if (!terrianChunk.shadowsNeedsUpdate)
             {
+                return;
+            }
+
+            if (!ShouldGenerateShadows(terrianChunk)) {
                 return;
             }
 
