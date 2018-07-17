@@ -7,16 +7,12 @@ using UnityEngine.Assertions;
 public class GameController : MonoBehaviour {
     public bool drawRoutes = false;
     private Terrian terrian;
-    private CameraController cameraController;
 
-    public CameraController CameraController
+    public Terrian Terrian
     {
         get
         {
-            if (cameraController == null) {
-                cameraController = Camera.main.GetComponent<CameraController>();
-            }
-            return cameraController;
+            return terrian;
         }
     }
 
@@ -33,24 +29,24 @@ public class GameController : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        Assert.IsNotNull(CameraController);
-
         terrian = new Terrian();
         terrian.Transform = transform;
 
         highlight = new GameObject("Highlight");
         highlight.AddComponent<HighlightHoveredSurface>();
-        highlight.GetComponent<HighlightHoveredSurface>().terrian = terrian;
-        highlight.SetActive(false);
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        terrian.Target = CameraController.Target;
-        terrian.Update();
-        if (!spawned) {
-            terrian.SpawnDwarfs();
-            spawned = true;
+        var cameraController = Finder.FindCameraController();
+        if (cameraController != null) {
+            terrian.Target = cameraController.Target;
+            terrian.Update();
+            if (!spawned)
+            {
+                terrian.SpawnDwarfs();
+                spawned = true;
+            }    
         }
 	}
 

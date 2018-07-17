@@ -13,6 +13,8 @@ namespace FarmVox
         public static Color leaf;
         public static Color roof;
         public static Color brick;
+        public static Color road;
+        public static Color special;
 
         public static ColorGradient grassGradient;
 
@@ -20,13 +22,15 @@ namespace FarmVox
         static Colors()
         {
             grass = GetColor("#509644");
-            var grass2 = GetColor("#1e5c14");
             rock = GetColor("#413535");
             water = GetColor("#5A81AD");
             trunk = GetColor("#4f402a");
             leaf = GetColor("#337828");
             roof = GetColor("#674B3D");
             brick = GetColor("#663D2D");
+            //road = GetColor("#74614c");
+            road = GetColor("#bbaf4d");
+            special = GetColor("#ff0000");
 
             grassGradient = new ColorGradient(rock, grass);
             //grassGradient.Add(0.5f, grass);

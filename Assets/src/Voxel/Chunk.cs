@@ -4,6 +4,10 @@ using UnityEngine;
 
 namespace FarmVox
 {
+    public interface IChunkColorProvider {
+        Color GetColor(int i, int j, int k);
+    }
+
     public class Chunk
     {
         private readonly float[] data;
@@ -64,13 +68,17 @@ namespace FarmVox
                         if (v > 0 != left > 0)
                         {
                             var coord = v > 0 ? new Vector3Int(i, j, k) : new Vector3Int(i - 1, j, k);
-                            surfaceCoords.Add(coord);
+                            if (InBound(coord)) {
+                                surfaceCoords.Add(coord);    
+                            }
                         }
 
                         if (v > 0 != bot > 0)
                         {
                             var coord = v > 0 ? new Vector3Int(i, j, k) : new Vector3Int(i, j - 1, k);
-                            surfaceCoords.Add(coord);
+                            if (InBound(coord)) {
+                                surfaceCoords.Add(coord);    
+                            }
                             if (bot > 0) {
                                 surfaceCoordsUp.Add(new Vector3Int(i, j - 1, k));
                             }
@@ -79,7 +87,9 @@ namespace FarmVox
                         if (v > 0 != back > 0)
                         {
                             var coord = v > 0 ? new Vector3Int(i, j, k) : new Vector3Int(i, j, k - 1);
-                            surfaceCoords.Add(coord);
+                            if (InBound(coord)) {
+                                surfaceCoords.Add(coord);    
+                            }
                         }
                     }
                 }
@@ -280,6 +290,10 @@ namespace FarmVox
             return index;
         }
 
+        private bool InBound(Vector3Int coord) {
+            return InBound(coord.x, coord.y, coord.z);
+        }
+
         public bool InBound(int i, int j, int k)
         {
             int max = size - 1;
@@ -353,6 +367,13 @@ namespace FarmVox
             }
 
             normalsNeedsUpdate = false;
+        }
+
+        public Vector3? GetNormal(Vector3Int coord) {
+            if (normals.ContainsKey(coord)) {
+                return normals[coord];
+            }
+            return null;
         }
 
         private readonly Dictionary<Vector3Int, Vector3> normals = new Dictionary<Vector3Int, Vector3>();

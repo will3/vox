@@ -1,47 +1,13 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using LibNoise.Generator;
 using System;
 using UnityEngine.Profiling;
 
 namespace FarmVox
 {
-    public class TerrianConfig {
-        public int maxChunksY = 4;
-        public int generateDis = 2;
-        public int drawDis = 2;
-        public int minTreeJ = 1;
-        //private int maxHeight = 64;
-        public float hillHeight = 48;
-        public float plainHeight = 12;
 
-        public ValueGradient grassCurve;
-
-        public Perlin heightNoise = new Perlin();
-        public Perlin growthNoise = new Perlin();
-        public Perlin grassNoise = new Perlin();
-        public Perlin treeNoise = new Perlin();
-        public Perlin biomeNoise = new Perlin();
-        public Perlin heightNoise2 = new Perlin();
-
-        public TerrianConfig() {
-            grassCurve = new ValueGradient();
-            grassCurve.Add(0.3f, 0.8f);
-
-            grassNoise.Frequency = 0.5f;
-
-            heightNoise.OctaveCount = 5;
-            heightNoise2.OctaveCount = 8;
-            growthNoise.OctaveCount = 5;
-
-            treeNoise.Frequency = 0.05f;
-            treeNoise.OctaveCount = 5;
-            biomeNoise.Frequency = 0.01f;
-        }
-    }
-
-    public class Terrian
+    public partial class Terrian
     {
         private int size;
         private float sizeF;
@@ -135,7 +101,7 @@ namespace FarmVox
                     generateShadows(terrianChunk);
                     Profiler.EndSample();
 
-                    //terrianChunk.UpdateRoutes();
+                    generateRoads(terrianChunk);
                 }
             }
 
@@ -161,6 +127,59 @@ namespace FarmVox
                     Profiler.EndSample();
                 }
             }
+        }
+
+        private void generateRoads(TerrianChunk terrianChunk) {
+            if (!terrianChunk.roadsNeedsUpdate) {
+                return;
+            }
+
+            var chunk = terrianChunk.Chunk;
+            chunk.UpdateSurfaceCoords();
+            chunk.UpdateNormals();
+
+            var origin = chunk.Origin;
+
+            var townField = new Field(chunk.Size);
+            var generator = new TownGenerator(config);
+            var townRandom = config.townRandom;
+
+            townField.Generate(generator, origin);
+
+            foreach(var coord in chunk.SurfaceCoords) {
+                var r = townRandom.NextDouble();
+                if (r > 0.002)
+                {
+                    continue;
+                }
+
+                var normal = chunk.GetNormal(coord);
+                if (normal == null) {
+                    continue;
+                }
+
+                var dot = Vector3.Dot(normal.Value, Vector3.up);
+                if (dot < 0.5f) {
+                    continue;
+                }
+
+                var water = terrianChunk.GetWater(coord.x, coord.y, coord.z);
+                if (water) {
+                    continue;
+                }
+
+                var absY = coord.y + origin.y;
+                var height = - absY / config.maxHeight;
+
+                var n = townField.Sample(coord.x, coord.y, coord.z);
+                var value = n + height;
+
+                if (value > 0) {
+                    chunk.SetColor(coord.x, coord.y, coord.z, Colors.special);
+                }
+            }
+
+            terrianChunk.roadsNeedsUpdate = false;
         }
 
         private void generateGrowth(TerrianChunk terrianChunk) {
@@ -246,21 +265,9 @@ namespace FarmVox
             }
             var chunk = terrianChunk.Chunk;
 
-            var halfSize = size / 2 + 1;
-
-            var field = new Field(halfSize);
-
-            for (var i = 0; i < halfSize; i++)
-            {
-                for (var j = 0; j < halfSize; j++)
-                {
-                    for (var k = 0; k < halfSize; k++)
-                    {
-                        float value = getVoxel(i * 2 + chunk.Origin.x, j * 2 + chunk.Origin.y, k * 2 + chunk.Origin.z);
-                        field.Set(i, j, k, value);
-                    }
-                }
-            }
+            var field = new Field(size);
+            var generator = new HeightGenerator(config);
+            field.Generate(generator, chunk.Origin);
 
             for (var i = 0; i < size; i++)
             {
@@ -268,7 +275,7 @@ namespace FarmVox
                 {
                     for (var k = 0; k < size; k++)
                     {
-                        float value = field.Sample(i / 2.0f, j / 2.0f, k / 2.0f);
+                        float value = field.Sample(i, j, k);
                         chunk.Set(i, j, k, value);
                         if (value > 0) {
                             chunk.SetColor(i, j, k, Colors.rock);    
@@ -278,35 +285,6 @@ namespace FarmVox
             }
 
             terrianChunk.rockNeedsUpdate = false;
-        }
-
-        float getVoxel(int i, int j, int k)
-        {
-            var biomeNoise = config.biomeNoise;
-            var plainHeight = config.plainHeight;
-            var hillHeight = config.hillHeight;
-            var heightNoise = config.heightNoise;
-            var heightNoise2 = config.heightNoise2;
-
-            var biome = biomeNoise.GetValue(new Vector3(i, j * 0.4f, k));
-            float terrainHeight;
-            if (biome < 0.1 && biome > -0.1) {
-                var ratio = (float)(biome + 0.1f) / 0.2f;
-                terrainHeight = plainHeight + (hillHeight - plainHeight) * ratio;
-            } else if (biome > 0)
-            {
-                terrainHeight = hillHeight;
-            }
-            else
-            {
-                terrainHeight = plainHeight;
-            }
-
-            var height = (1f - j / (float)terrainHeight) - 0.5f;
-            var value = height;
-            var n1 = (float)heightNoise.GetValue(new Vector3(i, j * 0.4f, k) * 0.015f);
-            var n2 = (float)heightNoise2.GetValue(new Vector3(i, j * 0.4f, k) * 0.015f) * 0.5f;
-            return value + n1;
         }
 
         public TerrianChunk GetTerrianChunk(Vector3Int origin) {
@@ -393,10 +371,12 @@ namespace FarmVox
             var node = terrianChunk.Routes.GetNodeCloseTo(new Vector3Int(size / 2, 0, size / 2));
 
             if (node != null) {
-                GameObject go = new GameObject("guy");
-                var actor = go.AddComponent<Actor>();
-                actor.terrian = this;
-                actor.SetNode(node.Value);
+                var house = new House(3, 2, 5);
+                print(house.Shape, node.Value, defaultLayer.Chunks, new Vector3Int());
+                //GameObject go = new GameObject("guy");
+                //var actor = go.AddComponent<Actor>();
+                //actor.terrian = this;
+                //actor.SetNode(node.Value);
             }
         }
 

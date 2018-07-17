@@ -64,8 +64,7 @@ namespace FarmVox
 
                             var shadow = chunk.GetLightingGlobal(coord.x, coord.y, coord.z);
                             var dot = lightNormalToLight(lightNormal);
-                            var color =
-                                chunk.GetColorGlobal(coord.x, coord.y, coord.z) * (1 - shadow) * (1 - dot);
+                            var color = chunk.GetColor(coord.x, coord.y, coord.z) * (1 - shadow) * (1 - dot);
 
                             var aoI = front ? i + 1 : i;
                             // AO

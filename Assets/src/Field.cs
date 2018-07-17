@@ -1,17 +1,42 @@
 using UnityEngine;
 using System.Collections;
+using LibNoise.Generator;
+using System;
 
 namespace FarmVox
 {
+    public interface FieldGenerator {
+        float GetValue(int i, int j, int k);    
+    }
+
     public class Field
     {
         private float[] data;
         private int size;
+        private int fullSize;
+        private float resolution;
 
-        public Field(int size)
+        public Field(int fullSize, float resolution = 2.0f)
         {
-            this.size = size;
+            this.resolution = resolution;
+            this.fullSize = fullSize;
+            this.size = fullSize / 2 + 1;
             data = new float[size * size * size];
+        }
+
+        public void Generate(FieldGenerator generator, Vector3Int origin) {
+            for (var i = 0; i < size; i++)
+            {
+                for (var j = 0; j < size; j++)
+                {
+                    for (var k = 0; k < size; k++)
+                    {
+                        var r = (int)resolution;
+                        float v = generator.GetValue(i * r + origin.x, j * r + origin.y, k * r + origin.z);
+                        Set(i, j, k, v);
+                    }
+                }
+            }
         }
 
         public void Set(int i, int j, int k, float v)
@@ -26,7 +51,11 @@ namespace FarmVox
             return data[index];
         }
 
-        public float Sample(float i, float j, float k)
+        public float Sample(float i, float j, float k) {
+            return _Sample(i / resolution, j / resolution, k / resolution);
+        }
+
+        private float _Sample(float i, float j, float k)
         {
             int min_i = Mathf.FloorToInt(i);
             int min_j = Mathf.FloorToInt(j);
@@ -57,6 +86,15 @@ namespace FarmVox
                 ((e * ri + f * ri2) * rj + (g * ri + h * ri2) * rj2) * rk2;
 
             return v;
+        }
+
+        public bool OutOfBounds(Vector3Int coord)
+        {
+            return OutOfBounds(coord.x, coord.y, coord.z);
+        }
+
+        public bool OutOfBounds(int i, int j, int k) {
+            return i < 0 || i > fullSize - 1 || j < 0 || j > fullSize - 1 || k < 0 || k > fullSize - 1;
         }
     }
 }
