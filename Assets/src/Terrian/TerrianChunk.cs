@@ -1,10 +1,11 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace FarmVox
 {
-    public class TerrianChunk
+    public partial class TerrianChunk
     {
         private readonly HashSet<int> waters = new HashSet<int>();
         private readonly Routes routes = new Routes();
@@ -26,6 +27,7 @@ namespace FarmVox
         public bool housesNeedsUpdate = true;
         public bool routesNeedsUpdate = true;
         public bool growthNeedsUpdate = true;
+        public bool townPointsNeedsUpdate = true;
         public bool roadsNeedsUpdate = true;
 
         public Terrian Terrian;
@@ -99,6 +101,10 @@ namespace FarmVox
             }
         }
 
+        public bool GetWater(Vector3Int coord) {
+            return GetWater(coord.x, coord.y, coord.z);
+        }
+
         public bool GetWater(int i, int j, int k)
         {
             var index = getIndex(i, j, k);
@@ -119,7 +125,8 @@ namespace FarmVox
             foreach (var coord in trees)
             {
                 var sqrDis = (coord - from).sqrMagnitude;
-                if (sqrDis < sqrMin) {
+                if (sqrDis < sqrMin)
+                {
                     amount += 1.0f / sqrDis;
                 }
             }
@@ -127,8 +134,10 @@ namespace FarmVox
             return amount;
         }
 
-        public void UpdateRoutes() {
-            if (!routesNeedsUpdate) {
+        public void UpdateRoutes()
+        {
+            if (!routesNeedsUpdate)
+            {
                 return;
             }
             routes.Clear();
@@ -136,19 +145,23 @@ namespace FarmVox
             routesNeedsUpdate = false;
         }
 
-        public void DrawRoutesGizmos() {
+        public void DrawRoutesGizmos()
+        {
             Gizmos.color = Color.red;
             var offset = new Vector3(0.5f, 1.5f, 0.5f);
-            foreach(var kv in routes.Map) {
+            foreach (var kv in routes.Map)
+            {
                 var from = kv.Key + offset;
-                foreach(var b in kv.Value) {
-                    var to = b + offset;
+                foreach (var b in kv.Value)
+                {
+                    var to = b.node + offset;
                     Gizmos.DrawLine(from, to);
                 }
             }
         }
 
-        public void GenerateWaters() {
+        public void GenerateWaters()
+        {
             if (!waterNeedsUpdate)
             {
                 return;
@@ -180,6 +193,101 @@ namespace FarmVox
             }
 
             waterNeedsUpdate = false;
+        }
+
+        readonly HashSet<Vector3Int> townPoints = new HashSet<Vector3Int>();
+
+        public HashSet<Vector3Int> TownPoints
+        {
+            get
+            {
+                return townPoints;
+            }
+        }
+
+        public TerrianConfig Config
+        {
+            get
+            {
+                return config;
+            }
+
+            set
+            {
+                config = value;
+            }
+        }
+
+        public void AddTownPoint(Vector3Int townPoint)
+        {
+            townPoints.Add(townPoint);
+        }
+
+        public HashSet<Routes.Connection> GetConnections(Vector3Int node)
+        {
+            if (routes.Map.ContainsKey(node)) {
+                return routes.Map[node];
+            }
+
+            var origin = Terrian.getOrigin(node.x, node.y, node.z);
+            var terrianChunk = Terrian.GetTerrianChunk(origin);
+            if (terrianChunk == null) {
+                return new HashSet<Routes.Connection>();
+            }
+
+            if (!terrianChunk.routes.Map.ContainsKey(node)) {
+                return new HashSet<Routes.Connection>();
+            }
+
+            return terrianChunk.routes.Map[node];
+        }
+
+        private TerrianConfig config;
+
+        public RoadMap GetRoadMap(Vector3Int node, float maxDis) {
+            var roadMap = new RoadMap();
+            HashSet<Vector3Int> leads = new HashSet<Vector3Int>();
+            var map = new Dictionary<Vector3Int, float>();
+
+            leads.Add(node);
+            map[node] = 0;
+
+            while(leads.Count > 0) {
+                var currentNode = leads.First();
+                var cost = map[currentNode];
+
+                foreach (var connection in GetConnections(currentNode))
+                {
+                    var connectionCost = connection.cost;
+                    if (Terrian.GetWater(connection.node)) {
+                        connectionCost = Mathf.Infinity;
+                    }
+                    var nextCost = cost + connectionCost;
+                    if (nextCost > maxDis) {
+                        continue;   
+                    }
+
+                    if (map.ContainsKey(connection.node))
+                    {
+                        if (nextCost >= map[currentNode])
+                        {
+                            continue;
+                        }
+                    }
+
+                    map[connection.node] = nextCost;
+                    leads.Add(connection.node);
+                }
+
+                leads.Remove(currentNode);    
+            }
+
+            foreach (var kv in map)
+            {
+                roadMap.AddNode(kv.Key, kv.Value);
+            }
+
+            return roadMap;
         }
     }
 }

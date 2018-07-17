@@ -5,9 +5,18 @@ using System.Collections.Generic;
 namespace FarmVox {
     public class Routes
     {
-        private Dictionary<Vector3Int, HashSet<Vector3Int>> map = new Dictionary<Vector3Int, HashSet<Vector3Int>>();
+        public class Connection {
+            public Vector3Int node;
+            public float cost;
+            public Connection(Vector3Int next, float cost) {
+                this.node = next;
+                this.cost = cost;
+            }
+        }
 
-        public Dictionary<Vector3Int, HashSet<Vector3Int>> Map
+        private Dictionary<Vector3Int, HashSet<Connection>> map = new Dictionary<Vector3Int, HashSet<Connection>>();
+
+        public Dictionary<Vector3Int, HashSet<Connection>> Map
         {
             get
             {
@@ -22,7 +31,7 @@ namespace FarmVox {
             var origin = chunk.Origin;
 
             foreach (var coord in coords) {
-                map[coord + origin] = new HashSet<Vector3Int>();
+                map[coord + origin] = new HashSet<Connection>();
             }
 
             var keys = map.Keys;
@@ -32,9 +41,11 @@ namespace FarmVox {
                         continue;
                     }
 
-                    if ((a - b).sqrMagnitude <= 3) {
-                        map[a].Add(b);
-                        map[b].Add(a);
+                    var distanceSq = (a - b).sqrMagnitude;
+                    if (distanceSq <= 3) {
+                        var distance = Mathf.Sqrt(distanceSq);
+                        map[a].Add(new Connection(b, distance));
+                        map[b].Add(new Connection(a, distance));
                     }
                 }
 
@@ -49,7 +60,8 @@ namespace FarmVox {
                             var outsideCoord = new Vector3Int(a.x - 1, a.y + u, a.z + v);
                             if (chunks.IsUp(outsideCoord))
                             {
-                                map[a].Add(outsideCoord);
+                                var distance = (a - outsideCoord).magnitude;
+                                map[a].Add(new Connection(outsideCoord, distance));
                             }
                         }
                     }
@@ -64,7 +76,8 @@ namespace FarmVox {
                             var outsideCoord = new Vector3Int(a.x + 1, a.y + u, a.z + v);
                             if (chunks.IsUp(outsideCoord))
                             {
-                                map[a].Add(outsideCoord);
+                                var distance = (a - outsideCoord).magnitude;
+                                map[a].Add(new Connection(outsideCoord, distance));
                             }
                         }
                     }
@@ -79,7 +92,8 @@ namespace FarmVox {
                             var outsideCoord = new Vector3Int(a.x + u, a.y + v, a.z - 1);
                             if (chunks.IsUp(outsideCoord))
                             {
-                                map[a].Add(outsideCoord);
+                                var distance = (a - outsideCoord).magnitude;
+                                map[a].Add(new Connection(outsideCoord, distance));
                             }
                         }
                     }
@@ -94,7 +108,8 @@ namespace FarmVox {
                             var outsideCoord = new Vector3Int(a.x + u, a.y + v, a.z + 1);
                             if (chunks.IsUp(outsideCoord))
                             {
-                                map[a].Add(outsideCoord);
+                                var distance = (a - outsideCoord).magnitude;
+                                map[a].Add(new Connection(outsideCoord, distance));
                             }
                         }
                     }

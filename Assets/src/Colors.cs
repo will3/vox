@@ -26,8 +26,8 @@ namespace FarmVox
             water = GetColor("#5A81AD");
             trunk = GetColor("#4f402a");
             leaf = GetColor("#337828");
-            roof = GetColor("#674B3D");
-            brick = GetColor("#663D2D");
+            roof = GetColor("#BD5222");
+            brick = GetColor("#52575A");
             //road = GetColor("#74614c");
             road = GetColor("#bbaf4d");
             special = GetColor("#ff0000");

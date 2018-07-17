@@ -41,16 +41,16 @@ namespace FarmVox
         }
 
         private void wander() {
-            if (Time.time < nextWander) {
-                return;
-            }
-            var nextNodes = terrian.GetNextNodes(currentNode);
-            var index = Mathf.FloorToInt(Random.Range(0.0f, 1.0f) * nextNodes.Count);
-            var nextNode = nextNodes.ElementAt(index);
+            //if (Time.time < nextWander) {
+            //    return;
+            //}
+            //var nextNodes = terrian.GetNextNodes(currentNode);
+            //var index = Mathf.FloorToInt(Random.Range(0.0f, 1.0f) * nextNodes.Count);
+            //var nextNode = nextNodes.ElementAt(index);
 
-            SetNode(nextNode);
+            //SetNode(nextNode);
 
-            nextWander = Time.time + wanderWait;
+            //nextWander = Time.time + wanderWait;
         }
     }
 }

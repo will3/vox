@@ -23,6 +23,7 @@ namespace FarmVox
         public Perlin heightNoise2;
         public Perlin townNoise;
         public Random townRandom;
+        public Random roadRandom;
 
         private Random r;
 
@@ -50,6 +51,7 @@ namespace FarmVox
             heightNoise2 = NextNoise();
             townNoise = NextNoise();
             townRandom = NextRandom();
+            roadRandom = NextRandom();
 
             grassCurve = new ValueGradient();
             grassCurve.Add(0.3f, 0.8f);

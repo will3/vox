@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using UnityEngine.Profiling;
+using System.Linq;
 
 namespace FarmVox
 {
@@ -97,11 +98,13 @@ namespace FarmVox
                     }
                     Profiler.EndSample();
 
+                    terrianChunk.UpdateRoutes();
+
+                    generateRoads(terrianChunk);
+
                     Profiler.BeginSample("Shadows");
                     generateShadows(terrianChunk);
                     Profiler.EndSample();
-
-                    generateRoads(terrianChunk);
                 }
             }
 
@@ -129,8 +132,8 @@ namespace FarmVox
             }
         }
 
-        private void generateRoads(TerrianChunk terrianChunk) {
-            if (!terrianChunk.roadsNeedsUpdate) {
+        private void generateTownPoints(TerrianChunk terrianChunk) {
+            if (!terrianChunk.townPointsNeedsUpdate) {
                 return;
             }
 
@@ -148,7 +151,7 @@ namespace FarmVox
 
             foreach(var coord in chunk.SurfaceCoords) {
                 var r = townRandom.NextDouble();
-                if (r > 0.002)
+                if (r > 0.0005)
                 {
                     continue;
                 }
@@ -175,11 +178,89 @@ namespace FarmVox
                 var value = n + height;
 
                 if (value > 0) {
+                    terrianChunk.AddTownPoint(coord);
                     chunk.SetColor(coord.x, coord.y, coord.z, Colors.special);
                 }
             }
 
+            terrianChunk.townPointsNeedsUpdate = false;
+        }
+
+        private void generateRoads(TerrianChunk terrianChunk) {
+            if (!terrianChunk.roadsNeedsUpdate)
+            {
+                return;
+            }
+
+            generateTownPoints(terrianChunk);
+
+            var origin = terrianChunk.Origin;
+            var chunks = defaultLayer.Chunks;
+
+            foreach(var townPoint in terrianChunk.TownPoints) {
+                generateRoads(terrianChunk, townPoint);
+            }
+
+            //foreach(var coord in terrianChunk.roadMap.Coords) {
+            //    chunks.SetColor(coord, Colors.road);
+            //}
+            //foreach(var townPoint in terrianChunk.TownPoints) {
+            //    //generateRoads(terrianChunk, townPoint);
+            //}
+
             terrianChunk.roadsNeedsUpdate = false;
+        }
+
+        private void generateRoads(TerrianChunk terrianChunk, Vector3Int townPoint) {
+            ////int max = 100;
+            ////var next = townPoint;
+
+            var chunk = terrianChunk.Chunk;
+            var chunks = chunk.Chunks;
+            var origin = terrianChunk.Origin;
+
+            var routeCoord = townPoint + origin;
+            var roadMap = terrianChunk.GetRoadMap(routeCoord, 24);
+
+            foreach(var coord in roadMap.Coords) {
+                chunks.SetColor(coord, Colors.road);
+            }
+
+            chunk.SetColor(townPoint.x, townPoint.y, townPoint.z, Colors.special);
+
+            var house = new House(3, 2, 5);
+
+            //var random = config.townRandom;
+            var count = 0;
+
+            while(true) {
+                var coordValue = roadMap.GetClosestCoord();
+                if (!coordValue.HasValue) {
+                    break;
+                }
+                var coord = coordValue.Value;
+                if (house.CanPrint(coord, roadMap)) {
+                    
+                }
+            //        //house.Print(coord, chunks, roadMap);    
+            //    //} else {
+            //    //    roadMap.RemoveXZ(new Vector2Int(coord.x, coord.z));
+            }
+
+            //    count++;
+            //    if (count == 100) {
+            //        break;
+            //    }
+            //}
+
+            //for (var i = 0; i < max; i ++) {
+            //    chunks.SetColor(next.x, next.y, next.z, Colors.road);
+            //    var node = terrianChunk.GetRandomConnection(next);
+            //    if (node == null) {
+            //        break;
+            //    }
+            //    next = node.Value;
+            //}
         }
 
         private void generateGrowth(TerrianChunk terrianChunk) {
@@ -302,6 +383,7 @@ namespace FarmVox
 
             Vector3Int key = new Vector3Int(origin.x / size, origin.y / size, origin.z / size);
             map[origin] = new TerrianChunk(key, size);
+            map[origin].Config = config;
             map[origin].Terrian = this;
             return map[origin];
         }
@@ -371,8 +453,8 @@ namespace FarmVox
             var node = terrianChunk.Routes.GetNodeCloseTo(new Vector3Int(size / 2, 0, size / 2));
 
             if (node != null) {
-                var house = new House(3, 2, 5);
-                print(house.Shape, node.Value, defaultLayer.Chunks, new Vector3Int());
+                //var house = new House(3, 2, 5);
+                //print(house.Shape, node.Value, defaultLayer.Chunks, new Vector3Int());
                 //GameObject go = new GameObject("guy");
                 //var actor = go.AddComponent<Actor>();
                 //actor.terrian = this;
@@ -380,21 +462,21 @@ namespace FarmVox
             }
         }
 
-        public HashSet<Vector3Int> GetNextNodes(Vector3Int node) {
+        public HashSet<Routes.Connection> GetNextNodes(Vector3Int node) {
             var origin = getOrigin(node.x, node.y, node.z);
             var terrianChunk = GetTerrianChunk(origin);
             if (terrianChunk == null) {
-                return new HashSet<Vector3Int>();
+                return new HashSet<Routes.Connection>();
             }
             var routesMap = terrianChunk.Routes.Map;
             if (routesMap.ContainsKey(node)) {
                 return routesMap[node];
             }
 
-            return new HashSet<Vector3Int>();
+            return new HashSet<Routes.Connection>();
         }
 
-        private Vector3Int getOrigin(int i, int j, int k)
+        public Vector3Int getOrigin(int i, int j, int k)
         {
             return new Vector3Int(
                 Mathf.FloorToInt(i / this.sizeF) * this.size,
@@ -406,6 +488,15 @@ namespace FarmVox
         public RaycastResult Trace(Vector3 pos, Vector3 dir, int maxD) {
             var list = new Chunks[] { defaultLayer.Chunks, defaultLayer.Chunks };
             return Raycast.Trace(list, pos, dir, maxD);
+        }
+
+        public bool GetWater(Vector3Int coord) {
+            var origin = getOrigin(coord.x, coord.y, coord.z);
+            var terrianChunk = GetTerrianChunk(origin);
+            if (terrianChunk == null) {
+                return false;
+            }
+            return terrianChunk.GetWater(coord - terrianChunk.Origin);
         }
     }
 }
