@@ -23,26 +23,12 @@ namespace FarmVox
         public bool surfaceCoordsDirty = true;
         private bool shadowsDirty = true;
         private ChunkShadowMap shadowMap = new ChunkShadowMap();
-        private List<Vector3Int> surfaceCoords = new List<Vector3Int>();
-        private List<Vector3Int> surfaceCoordsUp = new List<Vector3Int>();
+        public HashSet<Vector3Int> surfaceCoords = new HashSet<Vector3Int>();
+        public HashSet<Vector3Int> surfaceCoordsUp = new HashSet<Vector3Int>();
         private readonly Dictionary<Vector3Int, float> lightNormals = new Dictionary<Vector3Int, float>();
         private bool normalsNeedsUpdate = true;
 
-        public List<Vector3Int> SurfaceCoordsUp
-        {
-            get
-            {
-                return surfaceCoordsUp;
-            }
-        }
-
-        public List<Vector3Int> SurfaceCoords
-        {
-            get
-            {
-                return surfaceCoords;
-            }
-        }
+        public readonly int dataSize;
 
         public void UpdateSurfaceCoords()
         {
@@ -54,44 +40,36 @@ namespace FarmVox
             surfaceCoords.Clear();
             surfaceCoordsUp.Clear();
 
-            for (var i = 0; i < size; i++)
+            for (var d = 0; d < 3; d++)
             {
-                for (var j = 0; j < size; j++)
+                for (var i = 0; i < dataSize - 1; i++)
                 {
-                    for (var k = 0; k < size; k++)
+
+                    for (var j = 0; j < dataSize - 1; j++)
                     {
-                        var v = GetGlobal(i, j, k);
-                        var left = GetGlobal(i - 1, j, k);
-                        var bot = GetGlobal(i, j - 1, k);
-                        var back = GetGlobal(i, j, k - 1);
-                        var order = v > 0;
 
-                        if (v > 0 != left > 0)
+                        for (var k = 0; k < dataSize - 1; k++)
                         {
-                            var coord = v > 0 ? new Vector3Int(i, j, k) : new Vector3Int(i - 1, j, k);
-                            if (InBound(coord)) {
-                                surfaceCoords.Add(coord);    
-                            }
-                        }
 
-                        if (v > 0 != bot > 0)
-                        {
-                            var coord = v > 0 ? new Vector3Int(i, j, k) : new Vector3Int(i, j - 1, k);
-                            if (InBound(coord)) {
-                                surfaceCoords.Add(coord);    
-                            }
-                            if (bot > 0) {
-                                surfaceCoordsUp.Add(new Vector3Int(i, j - 1, k));
-                            }
-                        }
+                            var coordA = Vectors.GetVector3Int(i, j, k, d);
+                            var coordB = Vectors.GetVector3Int(i + 1, j, k, d);
+                            var a = Get(coordA.x, coordA.y, coordA.z);
+                            var b = Get(coordB.x, coordB.y, coordB.z);
 
-                        if (v > 0 != back > 0)
-                        {
-                            var coord = v > 0 ? new Vector3Int(i, j, k) : new Vector3Int(i, j, k - 1);
-                            if (InBound(coord)) {
-                                surfaceCoords.Add(coord);    
+                            if (a > 0 == b > 0)
+                            {
+                                continue;
                             }
-                        }
+
+                            if (a > 0) {
+                                surfaceCoords.Add(coordA);
+                                if (d == 1) {
+                                    surfaceCoordsUp.Add(coordA);
+                                }
+                            } else {
+                                surfaceCoords.Add(coordB);
+                            }
+                        }   
                     }
                 }
             }
@@ -160,23 +138,30 @@ namespace FarmVox
         {
             this.size = size;
             this.origin = origin;
-            int dataSize = size + 2;
+            dataSize = size + 3;
             data = new float[dataSize * dataSize * dataSize];
-        }
-
-        private int getDataIndex(int i, int j, int k) {
-            return (i + 1) * size * size + (j + 1) * size + k + 1;
         }
 
         public float Get(int i, int j, int k)
         {
-            var index = getDataIndex(i, j, k);
+            if (i < 0 || i >= dataSize || 
+                j < 0 || j >= dataSize ||
+                k < 0 || k >= dataSize) {
+                throw new System.Exception("out of bounds:" + new Vector3Int(i, j, k).ToString());
+            }
+            var index = getIndex(i, j, k);
             return data[index];
         }
 
         public void Set(int i, int j, int k, float v)
         {
-            var index = getDataIndex(i, j, k);
+            if (i < 0 || i >= dataSize ||
+                j < 0 || j >= dataSize ||
+                k < 0 || k >= dataSize)
+            {
+                throw new System.Exception("out of bounds:" + new Vector3Int(i, j, k).ToString());
+            }
+            var index = getIndex(i, j, k);
             data[index] = v;
             dirty = true;
             surfaceCoordsDirty = true;
@@ -184,34 +169,11 @@ namespace FarmVox
             normalsNeedsUpdate = true;
         }
 
-        public void SetIfHigher(int i, int j, int k, float v)
-        {
-            var index = getDataIndex(i, j, k);
-            if (data[index] < v)
-            {
-                data[index] = v;
-            }
-            dirty = true;
-        }
-
         public void SetColor(int i, int j, int k, Color v)
         {
             var index = getIndex(i, j, k);
             colors[index] = v;
             dirty = true;
-        }
-
-        public void SetIfHigherGlobal(int i, int j, int k, float v)
-        {
-            int max = size - 1;
-            if (i < 0 || i > max || j < 0 || j > max || k < 0 || k > max)
-            {
-                Chunks.SetIfHigher(i + origin.x, j + origin.y, k + origin.z, v);
-            }
-            else
-            {
-                SetIfHigher(i, j, k, v);
-            }
         }
 
         public void SetGlobal(int i, int j, int k, float v)
@@ -253,24 +215,6 @@ namespace FarmVox
             }
         }
 
-        public float GetGlobal(int i, int j, int k)
-        {
-            int max = size - 1;
-            if (i < 0 || i > max || j < 0 || j > max || k < 0 || k > max)
-            {
-                return Chunks.Get(i + origin.x, j + origin.y, k + origin.z);
-            }
-            else
-            {
-                return Get(i, j, k);
-            }
-        }
-
-        public float GetGlobal(Vector3Int coord)
-        {
-            return GetGlobal(coord.x, coord.y, coord.z);
-        }
-
         public Color GetColor(int i, int j, int k)
         {
             var index = getIndex(i, j, k);
@@ -294,22 +238,8 @@ namespace FarmVox
 
         private int getIndex(int i, int j, int k)
         {
-            int index = i * size * size + j * size + k;
+            int index = i * dataSize * dataSize + j * dataSize + k;
             return index;
-        }
-
-        private bool InBound(Vector3Int coord) {
-            return InBound(coord.x, coord.y, coord.z);
-        }
-
-        public bool InBound(int i, int j, int k)
-        {
-            int max = size - 1;
-            if (i < 0 || i > max || j < 0 || j > max || k < 0 || k > max)
-            {
-                return false;
-            }
-            return true;
         }
 
         public float GetLighting(int i, int j, int k)
@@ -364,23 +294,20 @@ namespace FarmVox
 
             var lightDir = Raycast4545.LightDir;
 
-            foreach (var coord in SurfaceCoords)
-            {
-                var normal = CalcNormal(coord);
-                if (normal != null) {
-                    normals[coord] = normal.Value;
-                    lightNormals[coord] = Vector3.Dot(lightDir, normal.Value);    
+            foreach (var coord in surfaceCoords) {
+                if (coord.x >= dataSize - 1 || coord.y >= dataSize - 1 || coord.z >= dataSize - 1) {
+                    continue;
+                } else {
+                    var normal = CalcNormal(coord);
+                    normals[coord] = normal;
+                    lightNormals[coord] = Vector3.Dot(lightDir, normal);    
                 }
             }
 
             normalsNeedsUpdate = false;
         }
 
-        private Vector3? CalcNormal(Vector3Int coord) {
-            if (coord.x >= size - 1 || coord.y >= size - 1 || coord.z >= size - 1) {
-                return null;
-            }
-
+        private Vector3 CalcNormal(Vector3Int coord) {
             var n = new Vector3(-1, -1, -1) * Get(new Vector3Int(coord.x, coord.y, coord.z)) +
                 new Vector3(1, -1, -1) * Get(new Vector3Int(coord.x + 1, coord.y, coord.z)) +
                 new Vector3(-1, 1, -1) * Get(new Vector3Int(coord.x, coord.y + 1, coord.z)) +

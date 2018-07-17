@@ -104,13 +104,6 @@ namespace FarmVox
             chunk.Set(i - origin.x, j - origin.y, k - origin.z, v);
         }
 
-        public void SetIfHigher(int i, int j, int k, float v)
-        {
-            var origin = getOrigin(i, j, k);
-            var chunk = GetOrCreateChunk(origin);
-            chunk.SetIfHigher(i - origin.x, j - origin.y, k - origin.z, v);
-        }
-
         public void SetColor(int i, int j, int k, Color v)
         {
             var origin = getOrigin(i, j, k);
@@ -125,7 +118,7 @@ namespace FarmVox
         public bool IsUp(Vector3Int vector) {
             var origin = getOrigin(vector.x, vector.y, vector.z);
             var chunk = GetOrCreateChunk(origin);
-            return chunk.SurfaceCoordsUp.Contains(vector - origin);
+            return chunk.surfaceCoordsUp.Contains(vector - origin);
         }
     }
 }

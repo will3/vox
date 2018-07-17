@@ -27,7 +27,7 @@ namespace FarmVox {
         public void LoadChunk(Chunk chunk)
         {
             chunk.UpdateSurfaceCoords();
-            var coords = chunk.SurfaceCoordsUp;
+            var coords = chunk.surfaceCoordsUp;
             var origin = chunk.Origin;
 
             foreach (var coord in coords) {

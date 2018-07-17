@@ -171,13 +171,13 @@ namespace FarmVox
             if (chunk.Origin.y < waterLevel)
             {
                 float maxJ = waterLevel - chunk.Origin.y;
-                if (maxJ > chunk.Size)
+                if (maxJ > chunk.dataSize)
                 {
-                    maxJ = chunk.Size;
+                    maxJ = chunk.dataSize;
                 }
-                for (var i = 0; i < chunk.Size; i++)
+                for (var i = 0; i < chunk.dataSize; i++)
                 {
-                    for (var k = 0; k < chunk.Size; k++)
+                    for (var k = 0; k < chunk.dataSize; k++)
                     {
                         for (var j = 0; j < maxJ; j++)
                         {

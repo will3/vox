@@ -81,16 +81,12 @@ namespace FarmVox
                     //Grass.Generate(terrianChunk, config);
 
                     //generateTrees(terrianChunk);
-                    //var treeChunk = treeLayer.Chunks.GetChunk(origin);
-                    //if (treeChunk != null) {
-                    //    treeChunk.UpdateNormals();    
-                    //}
 
                     //terrianChunk.UpdateRoutes();
 
                     //generateTowns(terrianChunk);
 
-                    generateShadows(terrianChunk);
+                    //generateShadows(terrianChunk);
                 }
             }
 
@@ -99,7 +95,7 @@ namespace FarmVox
                 var terrianChunk = kv.Value;
                 if (terrianChunk.Distance < drawDis)
                 {
-                    generateHouses(terrianChunk);
+                    //generateHouses(terrianChunk);
                 }
             }
 
@@ -111,7 +107,7 @@ namespace FarmVox
                     Profiler.BeginSample("Meshing");
 
                     defaultLayer.Draw(terrianChunk.Origin, Transform, material, terrianChunk);
-                    treeLayer.Draw(terrianChunk.Origin, Transform, material, terrianChunk);
+                    //treeLayer.Draw(terrianChunk.Origin, Transform, material, terrianChunk);
 
                     Profiler.EndSample();
                 }
@@ -135,7 +131,7 @@ namespace FarmVox
 
             townField.Generate(generator, origin);
 
-            foreach(var coord in chunk.SurfaceCoords) {
+            foreach(var coord in chunk.surfaceCoords) {
                 var r = townRandom.NextDouble();
                 if (r > 0.001)
                 {
@@ -259,11 +255,11 @@ namespace FarmVox
             var generator = new HeightGenerator(config);
             field.Generate(generator, chunk.Origin);
 
-            for (var i = -1; i < size + 1; i++)
+            for (var i = 0; i < chunk.dataSize; i++)
             {
-                for (var j = -1; j < size + 1; j++)
+                for (var j = 0; j < chunk.dataSize; j++)
                 {
-                    for (var k = -1; k < size + 1; k++)
+                    for (var k = 0; k < chunk.dataSize; k++)
                     {
                         float value = field.Sample(i, j, k);
                         chunk.Set(i, j, k, value);

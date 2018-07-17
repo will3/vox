@@ -26,24 +26,20 @@ namespace FarmVox
             var indices = new List<int>();
             var colors = new List<Color>();
 
+            chunk.UpdateNormals();
+
             for (var d = 0; d < 3; d++)
             {
-                var u = (d + 1) % 3;
-                var v = (d + 2) % 3;
-
-                for (var i = 0; i < size; i++)
+                for (var i = 1; i < size + 1; i++)
                 {
-
-                    for (var j = 0; j < size; j++)
+                    for (var j = 1; j < size + 1; j++)
                     {
-
-                        for (var k = 0; k < size; k++)
+                        for (var k = 1; k < size + 1; k++)
                         {
-
                             var coordA = getVector(i, j, k, d);
                             var coordB = getVector(i + 1, j, k, d);
-                            var a = chunk.GetGlobal(coordA.x, coordA.y, coordA.z);
-                            var b = chunk.GetGlobal(coordB.x, coordB.y, coordB.z);
+                            var a = chunk.Get(coordA.x, coordA.y, coordA.z);
+                            var b = chunk.Get(coordB.x, coordB.y, coordB.z);
 
                             if (a > 0 == b > 0)
                             {
@@ -58,24 +54,19 @@ namespace FarmVox
                             var isWater = terrianChunk.GetWater(coord);
 
                             float lightNormal;
-                            bool badColor = false;
                             if (isWater) {
                                 lightNormal = 1.0f;
                             } else {
-                                var optionalNormalValue = chunk.GetLightNormal(coord);
-                                lightNormal = optionalNormalValue == null ? 1.0f : optionalNormalValue.Value;
-                                if (optionalNormalValue == null) {
-                                    badColor = true;    
+                                var ln = chunk.GetLightNormal(coord);
+                                if (ln == null) {
+                                    throw new System.Exception("no light normals for coord: " + coord.ToString());
                                 }
+                                lightNormal = ln.Value;
                             }
 
                             var dot = lightNormalToLight(lightNormal);
-                            var shadow = chunk.GetLightingGlobal(coord.x, coord.y, coord.z);
-                            var color = chunk.GetColorGlobal(coord.x, coord.y, coord.z) * (1 - shadow) * dot;
-
-                            if (badColor) {
-                                color = Colors.special;  
-                            } 
+                            var shadow = chunk.GetLighting(coord.x, coord.y, coord.z);
+                            var color = chunk.GetColor(coord.x, coord.y, coord.z) * (1 - shadow) * dot;
 
                             var aoI = front ? i + 1 : i;
                             // AO
@@ -88,14 +79,14 @@ namespace FarmVox
                             var c21 = getVector(aoI, j, k + 1, d);
                             var c22 = getVector(aoI, j + 1, k + 1, d);
 
-                            var v00 = chunk.GetGlobal(c00);
-                            var v01 = chunk.GetGlobal(c01);
-                            var v02 = chunk.GetGlobal(c02);
-                            var v10 = chunk.GetGlobal(c10);
-                            var v12 = chunk.GetGlobal(c12);
-                            var v20 = chunk.GetGlobal(c20);
-                            var v21 = chunk.GetGlobal(c21);
-                            var v22 = chunk.GetGlobal(c22);
+                            var v00 = chunk.Get(c00);
+                            var v01 = chunk.Get(c01);
+                            var v02 = chunk.Get(c02);
+                            var v10 = chunk.Get(c10);
+                            var v12 = chunk.Get(c12);
+                            var v20 = chunk.Get(c20);
+                            var v21 = chunk.Get(c21);
+                            var v22 = chunk.Get(c22);
 
                             var ao00 = getAO(v10, v01, v00);
                             var ao01 = getAO(v01, v12, v02);

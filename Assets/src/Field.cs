@@ -20,7 +20,7 @@ namespace FarmVox
         {
             this.resolution = resolution;
             this.fullSize = fullSize;
-            this.size = fullSize / 2 + 2;
+            this.size = fullSize / 2 + 3;
             data = new float[size * size * size];
         }
 
