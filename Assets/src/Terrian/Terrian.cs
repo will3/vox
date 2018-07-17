@@ -76,11 +76,11 @@ namespace FarmVox
                     var origin = terrianChunk.Origin;
                     defaultLayer.Chunks.GetChunk(origin).UpdateNormals();
 
-                    //terrianChunk.GenerateWaters();
+                    terrianChunk.GenerateWaters();
 
-                    //Grass.Generate(terrianChunk, config);
+                    Grass.Generate(terrianChunk, config);
 
-                    //generateTrees(terrianChunk);
+                    generateTrees(terrianChunk);
 
                     //terrianChunk.UpdateRoutes();
 
@@ -107,7 +107,7 @@ namespace FarmVox
                     Profiler.BeginSample("Meshing");
 
                     defaultLayer.Draw(terrianChunk.Origin, Transform, material, terrianChunk);
-                    //treeLayer.Draw(terrianChunk.Origin, Transform, material, terrianChunk);
+                    treeLayer.Draw(terrianChunk.Origin, Transform, material, terrianChunk);
 
                     Profiler.EndSample();
                 }

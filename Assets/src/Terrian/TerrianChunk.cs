@@ -62,7 +62,10 @@ namespace FarmVox
             this.key = key;
             this.origin = key * size;
             this.size = size;
+            this.dataSize = size + 3;
         }
+
+        public readonly int dataSize;
 
         public void UpdateDistance(int x, int z)
         {
@@ -113,7 +116,7 @@ namespace FarmVox
 
         private int getIndex(int i, int j, int k)
         {
-            int index = i * size * size + j * size + k;
+            int index = i * dataSize * dataSize + j * dataSize + k;
             return index;
         }
 
@@ -171,9 +174,9 @@ namespace FarmVox
             if (chunk.Origin.y < waterLevel)
             {
                 float maxJ = waterLevel - chunk.Origin.y;
-                if (maxJ > chunk.dataSize)
+                if (maxJ > chunk.Size)
                 {
-                    maxJ = chunk.dataSize;
+                    maxJ = chunk.Size;
                 }
                 for (var i = 0; i < chunk.dataSize; i++)
                 {
