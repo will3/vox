@@ -17,7 +17,7 @@ namespace FarmVox
                 var plainHeight = config.plainHeight;
                 var hillHeight = config.hillHeight;
                 var heightNoise = config.heightNoise;
-                var heightNoise2 = config.heightNoise2;
+                //var heightNoise2 = config.heightNoise2;
 
                 var canyonNoise = config.canyonNoise;
                 var biome = (float)canyonNoise.GetValue(new Vector3(i, j * 0.4f, k));
@@ -39,8 +39,8 @@ namespace FarmVox
 
                 var height = (1f - j / (float)terrainHeight) - 0.5f;
                 var value = height;
-                var n1 = (float)heightNoise.GetValue(new Vector3(i, j * 0.4f, k) * 0.015f);
-                var n2 = (float)heightNoise2.GetValue(new Vector3(i, j * 0.4f, k) * 0.015f) * 0.5f;
+                var n1 = (float)heightNoise.GetValue(new Vector3(i, j * 0.4f, k));
+                // var n2 = (float)heightNoise2.GetValue(new Vector3(i, j * 0.4f, k) * 0.015f) * 0.5f;
                 return value + n1;
             }
         }

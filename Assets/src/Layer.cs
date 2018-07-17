@@ -25,7 +25,7 @@ namespace FarmVox
         }
 
 
-        public void Draw(Vector3Int origin, Transform transform, Material material)
+        public void Draw(Vector3Int origin, Transform transform, Material material, TerrianChunk terrianChunk)
         {
             if (!Chunks.HasChunk(origin)) {
                 return;
@@ -61,7 +61,7 @@ namespace FarmVox
             }
             else if (method == MeshMethod.Voxel)
             {
-                VoxelMesher.Mesh(chunk, mesh);
+                VoxelMesher.Mesh(chunk, mesh, terrianChunk);
             }
 
             mesh.RecalculateBounds();

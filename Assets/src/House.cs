@@ -67,11 +67,6 @@ namespace FarmVox
             offset = new Vector3Int(width / 2, height / 2, length / 2) * -1;
         }
 
-
-        public bool CanPrint(Vector3Int pos, RoadMap roadMap) {
-
-        }
-
         public void Print(Vector3Int pos, Chunks chunks, RoadMap roadMap) {
             for (var i = 0; i < shape.Width; i++)
             {

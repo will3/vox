@@ -57,13 +57,9 @@ namespace FarmVox
                 {
                     for (int k = z - generateDis; k <= z + generateDis; k++)
                     {
-                        Profiler.BeginSample("Rock");
-
                         var origin = new Vector3Int(i, j, k) * size;
                         var terrianChunk = getOrCreateTerrianChunk(origin);
                         generateRock(terrianChunk);
-
-                        Profiler.EndSample();
                     }
                 }
             }
@@ -77,34 +73,24 @@ namespace FarmVox
 
                 if (terrianChunk.Distance < drawDis)
                 {
-                    Profiler.BeginSample("Normals");
                     var origin = terrianChunk.Origin;
                     defaultLayer.Chunks.GetChunk(origin).UpdateNormals();
-                    Profiler.EndSample();
 
-                    Profiler.BeginSample("Water");
-                    terrianChunk.GenerateWaters();
-                    Profiler.EndSample();
+                    //terrianChunk.GenerateWaters();
 
-                    Profiler.BeginSample("Grass");
-                    Grass.Generate(terrianChunk, config);
-                    Profiler.EndSample();
+                    //Grass.Generate(terrianChunk, config);
 
-                    Profiler.BeginSample("Trees");
-                    generateTrees(terrianChunk);
-                    var treeChunk = treeLayer.Chunks.GetChunk(origin);
-                    if (treeChunk != null) {
-                        treeChunk.UpdateNormals();    
-                    }
-                    Profiler.EndSample();
+                    //generateTrees(terrianChunk);
+                    //var treeChunk = treeLayer.Chunks.GetChunk(origin);
+                    //if (treeChunk != null) {
+                    //    treeChunk.UpdateNormals();    
+                    //}
 
-                    terrianChunk.UpdateRoutes();
+                    //terrianChunk.UpdateRoutes();
 
-                    generateRoads(terrianChunk);
+                    //generateTowns(terrianChunk);
 
-                    Profiler.BeginSample("Shadows");
                     generateShadows(terrianChunk);
-                    Profiler.EndSample();
                 }
             }
 
@@ -124,15 +110,15 @@ namespace FarmVox
                 {
                     Profiler.BeginSample("Meshing");
 
-                    defaultLayer.Draw(terrianChunk.Origin, Transform, material);
-                    treeLayer.Draw(terrianChunk.Origin, Transform, material);
+                    defaultLayer.Draw(terrianChunk.Origin, Transform, material, terrianChunk);
+                    treeLayer.Draw(terrianChunk.Origin, Transform, material, terrianChunk);
 
                     Profiler.EndSample();
                 }
             }
         }
 
-        private void generateTownPoints(TerrianChunk terrianChunk) {
+        private void generateTowns(TerrianChunk terrianChunk) {
             if (!terrianChunk.townPointsNeedsUpdate) {
                 return;
             }
@@ -151,7 +137,7 @@ namespace FarmVox
 
             foreach(var coord in chunk.SurfaceCoords) {
                 var r = townRandom.NextDouble();
-                if (r > 0.0005)
+                if (r > 0.001)
                 {
                     continue;
                 }
@@ -184,83 +170,6 @@ namespace FarmVox
             }
 
             terrianChunk.townPointsNeedsUpdate = false;
-        }
-
-        private void generateRoads(TerrianChunk terrianChunk) {
-            if (!terrianChunk.roadsNeedsUpdate)
-            {
-                return;
-            }
-
-            generateTownPoints(terrianChunk);
-
-            var origin = terrianChunk.Origin;
-            var chunks = defaultLayer.Chunks;
-
-            foreach(var townPoint in terrianChunk.TownPoints) {
-                generateRoads(terrianChunk, townPoint);
-            }
-
-            //foreach(var coord in terrianChunk.roadMap.Coords) {
-            //    chunks.SetColor(coord, Colors.road);
-            //}
-            //foreach(var townPoint in terrianChunk.TownPoints) {
-            //    //generateRoads(terrianChunk, townPoint);
-            //}
-
-            terrianChunk.roadsNeedsUpdate = false;
-        }
-
-        private void generateRoads(TerrianChunk terrianChunk, Vector3Int townPoint) {
-            ////int max = 100;
-            ////var next = townPoint;
-
-            var chunk = terrianChunk.Chunk;
-            var chunks = chunk.Chunks;
-            var origin = terrianChunk.Origin;
-
-            var routeCoord = townPoint + origin;
-            var roadMap = terrianChunk.GetRoadMap(routeCoord, 24);
-
-            foreach(var coord in roadMap.Coords) {
-                chunks.SetColor(coord, Colors.road);
-            }
-
-            chunk.SetColor(townPoint.x, townPoint.y, townPoint.z, Colors.special);
-
-            var house = new House(3, 2, 5);
-
-            //var random = config.townRandom;
-            var count = 0;
-
-            while(true) {
-                var coordValue = roadMap.GetClosestCoord();
-                if (!coordValue.HasValue) {
-                    break;
-                }
-                var coord = coordValue.Value;
-                if (house.CanPrint(coord, roadMap)) {
-                    
-                }
-            //        //house.Print(coord, chunks, roadMap);    
-            //    //} else {
-            //    //    roadMap.RemoveXZ(new Vector2Int(coord.x, coord.z));
-            }
-
-            //    count++;
-            //    if (count == 100) {
-            //        break;
-            //    }
-            //}
-
-            //for (var i = 0; i < max; i ++) {
-            //    chunks.SetColor(next.x, next.y, next.z, Colors.road);
-            //    var node = terrianChunk.GetRandomConnection(next);
-            //    if (node == null) {
-            //        break;
-            //    }
-            //    next = node.Value;
-            //}
         }
 
         private void generateGrowth(TerrianChunk terrianChunk) {
@@ -350,11 +259,11 @@ namespace FarmVox
             var generator = new HeightGenerator(config);
             field.Generate(generator, chunk.Origin);
 
-            for (var i = 0; i < size; i++)
+            for (var i = -1; i < size + 1; i++)
             {
-                for (var j = 0; j < size; j++)
+                for (var j = -1; j < size + 1; j++)
                 {
-                    for (var k = 0; k < size; k++)
+                    for (var k = -1; k < size + 1; k++)
                     {
                         float value = field.Sample(i, j, k);
                         chunk.Set(i, j, k, value);

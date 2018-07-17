@@ -19,7 +19,7 @@ namespace FarmVox
             return new Vector3Int(j, k, i);
         }
 
-        public static void Mesh(Chunk chunk, Mesh mesh)
+        public static void Mesh(Chunk chunk, Mesh mesh, TerrianChunk terrianChunk)
         {
             var size = chunk.Size;
             var verts = new List<Vector3>();
@@ -55,16 +55,27 @@ namespace FarmVox
                             var c = front ? new Vector3Int(i, j, k) : new Vector3Int(i + 1, j, k);
                             var coord = getVector(c.x, c.y, c.z, d);
 
+                            var isWater = terrianChunk.GetWater(coord);
+
                             float lightNormal;
-                            if (chunk.lightNormals.ContainsKey(coord)) {
-                                lightNormal = chunk.lightNormals[coord];
-                            } else {
+                            bool badColor = false;
+                            if (isWater) {
                                 lightNormal = 1.0f;
+                            } else {
+                                var optionalNormalValue = chunk.GetLightNormal(coord);
+                                lightNormal = optionalNormalValue == null ? 1.0f : optionalNormalValue.Value;
+                                if (optionalNormalValue == null) {
+                                    badColor = true;    
+                                }
                             }
 
-                            var shadow = chunk.GetLightingGlobal(coord.x, coord.y, coord.z);
                             var dot = lightNormalToLight(lightNormal);
-                            var color = chunk.GetColor(coord.x, coord.y, coord.z) * (1 - shadow) * (1 - dot);
+                            var shadow = chunk.GetLightingGlobal(coord.x, coord.y, coord.z);
+                            var color = chunk.GetColorGlobal(coord.x, coord.y, coord.z) * (1 - shadow) * dot;
+
+                            if (badColor) {
+                                color = Colors.special;  
+                            } 
 
                             var aoI = front ? i + 1 : i;
                             // AO
@@ -203,7 +214,7 @@ namespace FarmVox
         }
 
         private static float lightNormalToLight(float lightNormal) {
-            return (1.0f - lightNormal) * 0.4f;
+            return 1.0f - ((1.0f - lightNormal) * 0.4f);
         }
     }
 }

@@ -25,7 +25,8 @@ namespace FarmVox
         private ChunkShadowMap shadowMap = new ChunkShadowMap();
         private List<Vector3Int> surfaceCoords = new List<Vector3Int>();
         private List<Vector3Int> surfaceCoordsUp = new List<Vector3Int>();
-        public readonly Dictionary<Vector3Int, float> lightNormals = new Dictionary<Vector3Int, float>();
+        private readonly Dictionary<Vector3Int, float> lightNormals = new Dictionary<Vector3Int, float>();
+        private bool normalsNeedsUpdate = true;
 
         public List<Vector3Int> SurfaceCoordsUp
         {
@@ -159,27 +160,33 @@ namespace FarmVox
         {
             this.size = size;
             this.origin = origin;
-            data = new float[size * size * size];
+            int dataSize = size + 2;
+            data = new float[dataSize * dataSize * dataSize];
+        }
+
+        private int getDataIndex(int i, int j, int k) {
+            return (i + 1) * size * size + (j + 1) * size + k + 1;
         }
 
         public float Get(int i, int j, int k)
         {
-            var index = getIndex(i, j, k);
+            var index = getDataIndex(i, j, k);
             return data[index];
         }
 
         public void Set(int i, int j, int k, float v)
         {
-            var index = getIndex(i, j, k);
+            var index = getDataIndex(i, j, k);
             data[index] = v;
             dirty = true;
             surfaceCoordsDirty = true;
             shadowsDirty = true;
+            normalsNeedsUpdate = true;
         }
 
         public void SetIfHigher(int i, int j, int k, float v)
         {
-            var index = getIndex(i, j, k);
+            var index = getDataIndex(i, j, k);
             if (data[index] < v)
             {
                 data[index] = v;
@@ -191,6 +198,7 @@ namespace FarmVox
         {
             var index = getIndex(i, j, k);
             colors[index] = v;
+            dirty = true;
         }
 
         public void SetIfHigherGlobal(int i, int j, int k, float v)
@@ -345,9 +353,6 @@ namespace FarmVox
             return shadow * shadowStrength;
         }
 
-        private MarchingCubes marchingCubes = new MarchingCubes();
-        private bool normalsNeedsUpdate = true;
-
         public void UpdateNormals()
         {
             if (!normalsNeedsUpdate)
@@ -361,12 +366,39 @@ namespace FarmVox
 
             foreach (var coord in SurfaceCoords)
             {
-                var normal = marchingCubes.GetNormal(coord.x, coord.y, coord.z, this);
-                normals[coord] = normal.Value;
-                lightNormals[coord] = Vector3.Dot(lightDir, normal.Value);
+                var normal = CalcNormal(coord);
+                if (normal != null) {
+                    normals[coord] = normal.Value;
+                    lightNormals[coord] = Vector3.Dot(lightDir, normal.Value);    
+                }
             }
 
             normalsNeedsUpdate = false;
+        }
+
+        private Vector3? CalcNormal(Vector3Int coord) {
+            if (coord.x >= size - 1 || coord.y >= size - 1 || coord.z >= size - 1) {
+                return null;
+            }
+
+            var n = new Vector3(-1, -1, -1) * Get(new Vector3Int(coord.x, coord.y, coord.z)) +
+                new Vector3(1, -1, -1) * Get(new Vector3Int(coord.x + 1, coord.y, coord.z)) +
+                new Vector3(-1, 1, -1) * Get(new Vector3Int(coord.x, coord.y + 1, coord.z)) +
+                new Vector3(1, 1, -1) * Get(new Vector3Int(coord.x + 1, coord.y + 1, coord.z)) +
+
+                new Vector3(-1, -1, 1) * Get(new Vector3Int(coord.x, coord.y, coord.z + 1)) +
+                new Vector3(1, -1, 1) * Get(new Vector3Int(coord.x + 1, coord.y, coord.z + 1)) +
+                new Vector3(1, 1, 1) * Get(new Vector3Int(coord.x, coord.y + 1, coord.z + 1)) +
+                new Vector3(1, 1, 1) * Get(new Vector3Int(coord.x + 1, coord.y + 1, coord.z + 1));
+
+            return n.normalized * -1;
+        }
+
+        public float? GetLightNormal(Vector3Int coord) {
+            if (lightNormals.ContainsKey(coord)) {
+                return lightNormals[coord];
+            }
+            return null;
         }
 
         public Vector3? GetNormal(Vector3Int coord) {
@@ -384,6 +416,10 @@ namespace FarmVox
             {
                 return normals;
             }
+        }
+
+        public float Get(Vector3Int coord) {
+            return Get(coord.x, coord.y, coord.z);
         }
     }
 }

@@ -20,7 +20,7 @@ namespace FarmVox
         {
             this.resolution = resolution;
             this.fullSize = fullSize;
-            this.size = fullSize / 2 + 1;
+            this.size = fullSize / 2 + 2;
             data = new float[size * size * size];
         }
 
@@ -39,15 +39,19 @@ namespace FarmVox
             }
         }
 
-        public void Set(int i, int j, int k, float v)
+        private int getIndex(int i, int j, int k) {
+            return i * size * size + j * size + k;
+        }
+
+        private void Set(int i, int j, int k, float v)
         {
-            var index = i * size * size + j * size + k;
+            var index = getIndex(i, j, k);
             data[index] = v;
         }
 
-        public float Get(int i, int j, int k)
+        private float Get(int i, int j, int k)
         {
-            var index = i * size * size + j * size + k;
+            var index = getIndex(i, j, k);
             return data[index];
         }
 

@@ -10,7 +10,7 @@ namespace FarmVox
         public int drawDis = 2;
         public int minTreeJ = 1;
         public int maxHeight = 64;
-        public float hillHeight = 48;
+        public float hillHeight = 64;
         public float plainHeight = 12;
 
         public ValueGradient grassCurve;
@@ -58,6 +58,7 @@ namespace FarmVox
 
             grassNoise.Frequency = 0.5f;
 
+            heightNoise.Frequency = 0.01f;
             heightNoise.OctaveCount = 5;
             heightNoise2.OctaveCount = 8;
             growthNoise.OctaveCount = 5;

@@ -14,6 +14,7 @@ namespace FarmVox
         }
 
         private Dictionary<Vector3Int, Block> blocks = new Dictionary<Vector3Int, Block>();
+
         private HashSet<Vector3Int> coords = new HashSet<Vector3Int>();
 
         public HashSet<Vector3Int> Coords
@@ -71,33 +72,6 @@ namespace FarmVox
                 coords.Remove(coord);
             }
             xzMap.Remove(xz);
-        }
-
-        public bool CanAddBlock(Vector3Int pos) {
-            var start = new Vector2Int(pos.x - 2, pos.z - 2);
-            var end = new Vector2Int(pos.x + 2, pos.z + 2);
-
-            // Can't fit house
-            for (var i = start.x; i < end.x; i++)
-            {
-                for (var k = start.y; k < end.y; k++)
-                {
-                    if (!HasXZ(new Vector2Int(i, k)))
-                    {
-                        return false;
-                    }
-                }
-            }
-
-            return true;
-        }
-
-        public void AddBlock(Vector3Int vector) {
-            if (!CanAddBlock(vector)) {
-                return;
-            }
-
-            if (b)
         }
     }
 }
