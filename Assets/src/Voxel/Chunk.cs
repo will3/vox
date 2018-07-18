@@ -11,7 +11,15 @@ namespace FarmVox
     public class Chunk
     {
         private readonly float[] data;
-        private readonly Dictionary<int, Color> colors = new Dictionary<int, Color>();
+        private readonly Color[] colors;
+
+        public Color[] Colors
+        {
+            get
+            {
+                return colors;
+            }
+        }
 
         private Mesh mesh;
         private GameObject gameObject;
@@ -140,6 +148,7 @@ namespace FarmVox
             this.origin = origin;
             dataSize = size + 3;
             data = new float[dataSize * dataSize * dataSize];
+            colors = new Color[dataSize * dataSize * dataSize];
         }
 
         public float Get(int i, int j, int k)
@@ -218,9 +227,7 @@ namespace FarmVox
         public Color GetColor(int i, int j, int k)
         {
             var index = getIndex(i, j, k);
-            Color color;
-            colors.TryGetValue(index, out color);
-            return color;
+            return colors[index];
         }
 
         public Color GetColorGlobal(int i, int j, int k)

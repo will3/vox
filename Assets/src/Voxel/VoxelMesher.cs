@@ -19,6 +19,50 @@ namespace FarmVox
             return new Vector3Int(j, k, i);
         }
 
+        public static Mesh MeshGPU(Chunk chunk, TerrianChunk terrianChunk) {
+            var mesherGPU = new MesherGPU(chunk.Size);
+            var voxelBuffer = mesherGPU.CreateVoxelBuffer();
+            var colorsBuffer = mesherGPU.CreateColorBuffer();
+            var trianglesBuffer = mesherGPU.CreateTrianglesBuffer();
+
+            voxelBuffer.SetData(chunk.Data);
+            colorsBuffer.SetData(chunk.Colors);
+
+            mesherGPU.Dispatch(voxelBuffer, colorsBuffer, trianglesBuffer);
+
+            var triangles = mesherGPU.ReadTriangles(trianglesBuffer);
+
+            var vertices = new List<Vector3>();
+            var indices = new List<int>();
+            var colors = new List<Color>();
+
+            for (var i = 0; i < triangles.Length; i++) {
+                var triangle = triangles[i];
+                vertices.Add(triangle.a);
+                vertices.Add(triangle.b);
+                vertices.Add(triangle.c);
+
+                indices.Add(i * 3);
+                indices.Add(i * 3 + 1);
+                indices.Add(i * 3 + 2);
+
+                colors.Add(triangle.colorA);
+                colors.Add(triangle.colorB);
+                colors.Add(triangle.colorC);
+            }
+
+            var mesh = new Mesh();
+            mesh.SetVertices(vertices);
+            mesh.SetTriangles(indices, 0);
+            mesh.SetColors(colors);
+
+            voxelBuffer.Dispose();
+            colorsBuffer.Dispose();
+            trianglesBuffer.Dispose();
+
+            return mesh;
+        }
+
         public static void Mesh(Chunk chunk, Mesh mesh, TerrianChunk terrianChunk)
         {
             var size = chunk.Size;

@@ -4,19 +4,11 @@ using System.Collections.Generic;
 
 namespace FarmVox
 {
-    public enum MeshMethod
-    {
-        MarchingCubes,
-        Voxel
-    }
-
     public class Layer
     {
         private int size;
-        public MeshMethod method = MeshMethod.Voxel;
         public Chunks Chunks;
         public bool AccurateOffset = false;
-        private MarchingCubes marching = new MarchingCubes();
 
         public Layer(int size = 32)
         {
@@ -44,25 +36,10 @@ namespace FarmVox
                 Object.Destroy(chunk.GameObject);
             }
 
-            Mesh mesh = new Mesh();
+            //Mesh mesh = new Mesh();
+            //VoxelMesher.Mesh(chunk, mesh, terrianChunk);
 
-            if (method == MeshMethod.MarchingCubes)
-            {
-                var verts = new List<Vector3>();
-                var indices = new List<int>();
-                var colors = new List<Color>();
-
-                marching.AccurateOffset = AccurateOffset;
-                marching.Generate(chunk, verts, indices, colors);
-
-                mesh.SetVertices(verts);
-                mesh.SetTriangles(indices, 0);
-                mesh.SetColors(colors);
-            }
-            else if (method == MeshMethod.Voxel)
-            {
-                VoxelMesher.Mesh(chunk, mesh, terrianChunk);
-            }
+            var mesh = VoxelMesher.MeshGPU(chunk, terrianChunk);
 
             mesh.RecalculateBounds();
             mesh.RecalculateNormals();
