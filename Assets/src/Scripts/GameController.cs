@@ -19,8 +19,6 @@ public class GameController : MonoBehaviour {
     private bool spawned = false;
     private GameObject highlight;
 
-    public GameObject block;
-
     public GameObject Highlight
     {
         get
@@ -36,21 +34,7 @@ public class GameController : MonoBehaviour {
 
         highlight = new GameObject("Highlight");
         highlight.AddComponent<HighlightHoveredSurface>();
-
-        Spawn();
 	}
-
-    private GameObject Spawn() {
-        var go = Instantiate(block);
-        var color = Colors.special;
-        var mesh = go.GetComponent<MeshFilter>().mesh;
-        var colors = new List<Color>();
-        for (var i = 0; i < mesh.vertices.Length; i++) {
-            colors.Add(color);
-        }
-        mesh.SetColors(colors);
-        return go;
-    }
 	
 	// Update is called once per frame
 	void Update () {

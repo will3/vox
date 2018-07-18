@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace FarmVox
 {
+
     public class Voxel
     {
         public Voxel(float value, Color color)

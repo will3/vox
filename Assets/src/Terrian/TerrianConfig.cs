@@ -15,11 +15,12 @@ namespace FarmVox
 
         public ValueGradient grassCurve;
 
-        public Perlin heightNoise;
+        public Noise heightNoise;
+        public Noise canyonNoise;
+
         public Perlin growthNoise;
         public Perlin grassNoise;
         public Perlin treeNoise;
-        public Perlin canyonNoise;
         public Perlin heightNoise2;
         public Perlin townNoise;
         public Random townRandom;
@@ -27,10 +28,16 @@ namespace FarmVox
 
         private Random r;
 
-        private Perlin NextNoise()
+        private Perlin NextPerlin()
         {
             var noise = new Perlin();
             noise.Seed = r.Next();
+            return noise;
+        }
+
+        private Noise NextNoise() {
+            var noise = new Noise();
+            noise.seed = r.Next();
             return noise;
         }
 
@@ -44,12 +51,12 @@ namespace FarmVox
         {
             r = new Random(seed);
             heightNoise = NextNoise();
-            growthNoise = NextNoise();
-            grassNoise = NextNoise();
-            treeNoise = NextNoise();
+            growthNoise = NextPerlin();
+            grassNoise = NextPerlin();
+            treeNoise = NextPerlin();
             canyonNoise = NextNoise();
-            heightNoise2 = NextNoise();
-            townNoise = NextNoise();
+            heightNoise2 = NextPerlin();
+            townNoise = NextPerlin();
             townRandom = NextRandom();
             roadRandom = NextRandom();
 
@@ -58,14 +65,15 @@ namespace FarmVox
 
             grassNoise.Frequency = 0.5f;
 
-            heightNoise.Frequency = 0.005f;
-            heightNoise.OctaveCount = 5;
+            heightNoise.frequency = 0.005f;
+            canyonNoise.frequency = 0.01f;
+            heightNoise.yScale = 0.4f;
+
             heightNoise2.OctaveCount = 8;
             growthNoise.OctaveCount = 5;
 
             treeNoise.Frequency = 0.05f;
             treeNoise.OctaveCount = 5;
-            canyonNoise.Frequency = 0.01f;
 
             townNoise.Frequency = 0.01f;
         }
