@@ -1,0 +1,192 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+struct Triangle {
+    float3 a;
+    float3 b;
+    float3 c;
+    float4 colorA;
+    float4 colorB;
+    float4 colorC;
+};
+
+int _Size;
+StructuredBuffer<float> _VoxelBuffer;
+StructuredBuffer<float4> _ColorsBuffer;
+AppendStructuredBuffer<Triangle> _TrianglesBuffer;
+
+int3 getVectorInt(int i, int j, int k, int d) {
+    if (d == 0) {
+        return int3(i, j, k);
+    } else if (d == 1) {
+        return int3(k, i, j);
+    } 
+
+    return int3(j, k, i);
+}
+
+float3 getVector(int i, int j, int k, int d) {
+    if (d == 0) {
+        return float3(i, j, k);
+    } else if (d == 1) {
+        return float3(k, i, j);
+    } 
+
+    return float3(j, k, i);
+}
+
+int getIndex(int3 coord) {
+    return coord.x * _Size * _Size + coord.y * _Size + coord.z;
+}
+
+float getVoxel(int3 coord) {
+    int index = getIndex(coord);
+    return _VoxelBuffer[index];
+}
+
+void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, float ab, float ac, float ad, bool order, bool flipped) {
+    Triangle t1;
+    Triangle t2;
+
+    if (order) {
+        t1.a = a;
+        t1.b = b;
+        t1.c = c;
+        t1.colorA = color * aa;
+        t1.colorB = color * ab;
+        t1.colorC = color * ac ;
+        _TrianglesBuffer.Append(t1);
+
+        t2.a = a;
+        t2.b = c;
+        t2.c = d;
+        t2.colorA = color * aa;
+        t2.colorB = color * ac;
+        t2.colorC = color * ad;
+        _TrianglesBuffer.Append(t2);
+    } else {
+        t1.a = c;
+        t1.b = b;
+        t1.c = a;
+        t1.colorA = color * ac;
+        t1.colorB = color * ab;
+        t1.colorC = color * aa;
+        _TrianglesBuffer.Append(t1);
+
+        t2.a = d;
+        t2.b = c;
+        t2.c = a;
+        t2.colorA = color * ad;
+        t2.colorB = color * ac;
+        t2.colorC = color * aa;
+        _TrianglesBuffer.Append(t2);
+    }
+}
+
+float4 getColor(int3 coord) {
+    int index = getIndex(coord);
+    return _ColorsBuffer[index];
+}
+
+float _getAO(float s1f, float s2f, float cf) {
+    bool s1 = s1f > 0;
+    bool s2 = s2f > 0;
+    bool c = cf > 0;
+
+    if (s1 && s2) {
+        return 1.0;
+    }
+
+    int count = 0;
+    if (s1 > 0) count ++;
+    if (s2 > 0) count ++;
+    if (c > 0) count ++;
+
+    if (count == 0) return 0.0;
+    if (count == 1) return 0.33;
+    return 0.66;
+}
+
+float getAO(float s1f, float s2f, float cf) {
+    return 1.0 - (_getAO(s1f, s2f, cf) * 0.1);
+}
+       
+[numthreads(8,8,8)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    int i = id.x / 3;
+    int j = id.y;
+    int k = id.z;
+    int d = id.x % 3;
+
+    int size = _Size;
+    int padding = 3;
+    if (i >= size - padding || j >= size - padding || k >= size - padding) {
+        return;
+    }
+
+    i += 1;
+    j += 1;
+    k += 1;
+
+    int u = (d + 1) % 3;
+    int v = (d + 2) % 3;
+
+    int3 coordA = getVectorInt(i, j, k, d);
+    int3 coordB = getVectorInt(i + 1, j, k, d);
+
+    float a = getVoxel(coordA);
+    float b = getVoxel(coordB);
+
+    bool front = a > 0;
+
+    if (a > 0 == b > 0 )
+    {
+        return;
+    }
+
+    int3 c = front ? int3(i, j, k) : int3(i + 1, j, k);
+    c = getVector(c.x, c.y, c.z, d);
+    float4 color = getColor(c);
+
+    int aoI = front ? i + 1 : i;
+    int3 c00 = getVectorInt(aoI, j - 1, k - 1, d);
+    int3 c01 = getVectorInt(aoI, j, k - 1, d);
+    int3 c02 = getVectorInt(aoI, j + 1, k - 1, d);
+    int3 c10 = getVectorInt(aoI, j - 1, k, d);
+    int3 c12 = getVectorInt(aoI, j + 1, k, d);
+    int3 c20 = getVectorInt(aoI, j - 1, k + 1, d);
+    int3 c21 = getVectorInt(aoI, j, k + 1, d);
+    int3 c22 = getVectorInt(aoI, j + 1, k + 1, d);
+
+    float v00 = getVoxel(c00);
+    float v01 = getVoxel(c01);
+    float v02 = getVoxel(c02);
+    float v10 = getVoxel(c10);
+    float v12 = getVoxel(c12);
+    float v20 = getVoxel(c20);
+    float v21 = getVoxel(c21);
+    float v22 = getVoxel(c22);
+
+    float ao00 = getAO(v10, v01, v00);
+    float ao01 = getAO(v01, v12, v02);
+    float ao11 = getAO(v12, v21, v22);
+    float ao10 = getAO(v21, v10, v20);
+
+    bool flipped = ao00 + ao11 > ao01 + ao10;
+
+    addQuad(
+        getVector(i + 1, j, k, d),
+        getVector(i + 1, j + 1, k, d),
+        getVector(i + 1, j + 1, k + 1, d),
+        getVector(i + 1, j, k + 1, d),
+        color,
+        ao00,
+        ao01,
+        ao11,
+        ao10,
+        front,
+        flipped
+    );
+}
+ No newline at end of file

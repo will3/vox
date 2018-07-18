@@ -9,7 +9,7 @@ namespace FarmVox
         private int size;
         private Noise noise;
 
-        private ComputeShader computeShader;
+        private ComputeShader shader;
         private ComputeBuffer results;
         private Vector3 origin;
 
@@ -18,7 +18,7 @@ namespace FarmVox
             this.noise = noise;
             this.size = size;
             this.origin = origin;
-            this.computeShader = Resources.Load<ComputeShader>("Shaders/Perlin3D");
+            this.shader = Resources.Load<ComputeShader>("Shaders/Perlin3D");
             this.results = new ComputeBuffer(size * size * size, sizeof(float));
         }
 
@@ -32,17 +32,17 @@ namespace FarmVox
             var octaves = noise.octaves;
             var yScale = noise.yScale;
 
-            computeShader.SetBuffer(0, "_Results", results);
-            computeShader.SetFloat("_Persistence", persistence);
-            computeShader.SetVector("_Origin", origin);
-            computeShader.SetInt("_Size", size);
-            computeShader.SetInt("_Seed", seed);
-            computeShader.SetFloat("_Frequency", frequency);
-            computeShader.SetFloat("_Lacunarity", lacunarity);
-            computeShader.SetInt("_Octaves", octaves);
-            computeShader.SetFloat("_YScale", yScale);
+            shader.SetBuffer(0, "_Results", results);
+            shader.SetFloat("_Persistence", persistence);
+            shader.SetVector("_Origin", origin);
+            shader.SetInt("_Size", size);
+            shader.SetInt("_Seed", seed);
+            shader.SetFloat("_Frequency", frequency);
+            shader.SetFloat("_Lacunarity", lacunarity);
+            shader.SetInt("_Octaves", octaves);
+            shader.SetFloat("_YScale", yScale);
             var dispatchNum = Mathf.CeilToInt(size / (float)workGroups);
-            computeShader.Dispatch(0, dispatchNum, dispatchNum, dispatchNum);
+            shader.Dispatch(0, dispatchNum, dispatchNum, dispatchNum);
         }
 
         public void Dispose()
