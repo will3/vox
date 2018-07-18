@@ -34,7 +34,7 @@ namespace FarmVox
 
                 var value = upDot + n;
 
-                if (value < 0.5f) {
+                if (value < 0.4f) {
                     continue;
                 }
 

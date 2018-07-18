@@ -34,7 +34,6 @@ namespace FarmVox
 
         MarchingCubes marchingCubes = new MarchingCubes();
 
-
         public Terrian(int size = 32)
         {
             this.size = size;
@@ -116,60 +115,6 @@ namespace FarmVox
                     Profiler.EndSample();
                 }
             }
-        }
-
-        private void generateTowns(TerrianChunk terrianChunk) {
-            if (!terrianChunk.townPointsNeedsUpdate) {
-                return;
-            }
-
-            var chunk = terrianChunk.Chunk;
-            chunk.UpdateSurfaceCoords();
-            chunk.UpdateNormals();
-
-            var origin = chunk.Origin;
-
-            var townField = new Field(chunk.Size);
-            var generator = new TownGenerator(config);
-            var townRandom = config.townRandom;
-
-            townField.Generate(generator, origin);
-
-            foreach(var coord in chunk.surfaceCoords) {
-                var r = townRandom.NextDouble();
-                if (r > 0.001)
-                {
-                    continue;
-                }
-
-                var normal = chunk.GetNormal(coord);
-                if (normal == null) {
-                    continue;
-                }
-
-                var dot = Vector3.Dot(normal.Value, Vector3.up);
-                if (dot < 0.5f) {
-                    continue;
-                }
-
-                var water = terrianChunk.GetWater(coord.x, coord.y, coord.z);
-                if (water) {
-                    continue;
-                }
-
-                var absY = coord.y + origin.y;
-                var height = - absY / config.maxHeight;
-
-                var n = townField.Sample(coord.x, coord.y, coord.z);
-                var value = n + height;
-
-                if (value > 0) {
-                    terrianChunk.AddTownPoint(coord);
-                    chunk.SetColor(coord.x, coord.y, coord.z, Colors.special);
-                }
-            }
-
-            terrianChunk.townPointsNeedsUpdate = false;
         }
 
         private void generateGrowth(TerrianChunk terrianChunk) {
@@ -254,10 +199,11 @@ namespace FarmVox
                 terrianChunk.Chunk = defaultLayer.Chunks.GetOrCreateChunk(terrianChunk.Origin);
             }
             var chunk = terrianChunk.Chunk;
+            var origin = chunk.Origin;
 
-            var field = new Field(size);
+            var field = new Field(size, origin);
             var generator = new HeightGenerator(config);
-            field.Generate(generator, chunk.Origin);
+            field.Generate(generator);
 
             for (var i = 0; i < chunk.dataSize; i++)
             {

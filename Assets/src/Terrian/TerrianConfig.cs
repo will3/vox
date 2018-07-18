@@ -58,7 +58,7 @@ namespace FarmVox
 
             grassNoise.Frequency = 0.5f;
 
-            heightNoise.Frequency = 0.01f;
+            heightNoise.Frequency = 0.005f;
             heightNoise.OctaveCount = 5;
             heightNoise2.OctaveCount = 8;
             growthNoise.OctaveCount = 5;

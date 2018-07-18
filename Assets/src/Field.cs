@@ -15,16 +15,18 @@ namespace FarmVox
         private int size;
         private int fullSize;
         private float resolution;
+        private Vector3Int origin;
 
-        public Field(int fullSize, float resolution = 2.0f)
+        public Field(int fullSize, Vector3Int origin, float resolution = 2.0f)
         {
             this.resolution = resolution;
             this.fullSize = fullSize;
             this.size = fullSize / 2 + 3;
+            this.origin = origin;
             data = new float[size * size * size];
         }
 
-        public void Generate(FieldGenerator generator, Vector3Int origin) {
+        public void Generate(FieldGenerator generator) {
             for (var i = 0; i < size; i++)
             {
                 for (var j = 0; j < size; j++)
