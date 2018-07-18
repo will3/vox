@@ -11,7 +11,6 @@ namespace FarmVox
         float[] profile;
         int width;
         int height;
-        private Array3<Voxel> shape;
         public Vector3Int Offset;
         private int trunkHeight;
 
@@ -20,32 +19,19 @@ namespace FarmVox
             this.r = r;
             this.h = h;
             this.trunkHeight = trunkHeight;
-            calcShape();
+
+            int radius = Mathf.CeilToInt(r);
+            int mid = radius + 1;
+            Offset = new Vector3Int(-mid, 1, -mid);
         }
 
-        public Array3<Voxel> GetShape() {
-            var copy = new Array3<Voxel>(shape.Width, shape.Height, shape.Depth);
-            for (var i = 0; i < shape.Width; i++) {
-                for (var j = 0; j < shape.Height; j++) {
-                    for (var k = 0; k < shape.Depth; k++) {
-                        var v = shape.Get(i, j, k);
-                        if (v != null) {
-                            v.value -= Random.Range(0.0f, 1.0f) * 0.5f;
-                            copy.Set(i, j, k, v);        
-                        }
-                    }
-                }
-            }
-            return copy;
-        }
-
-        private void calcShape()
+        public Array3<Voxel> GetShape()
         {
             int radius = Mathf.CeilToInt(r);
             int mid = radius + 1;
             width = radius * 2 + 1;
             height = Mathf.CeilToInt(h) + trunkHeight;
-            shape = new Array3<Voxel>(width, height, width);
+            var shape = new Array3<Voxel>(width, height, width);
 
             for (var j = 0; j < height; j++)
             {
@@ -77,6 +63,7 @@ namespace FarmVox
                             if (density > 0)
                             {
                                 var v = new Voxel(density, Colors.leaf);
+                                // v.value -= Random.Range(0.0f, 1.0f) * 0.5f;
                                 shape.Set(i, j, k, v);
                             }
                         }
@@ -84,7 +71,7 @@ namespace FarmVox
                 }
             }
 
-            Offset = new Vector3Int(-mid, 1, -mid);
+            return shape;
         }
     }
 }

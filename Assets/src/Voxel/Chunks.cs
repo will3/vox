@@ -33,6 +33,14 @@ namespace FarmVox
             this.sizeF = size;
         }
 
+        private Vector3Int getKey(int i, int j, int k) {
+            return new Vector3Int(
+                Mathf.FloorToInt(i / this.sizeF),
+                Mathf.FloorToInt(j / this.sizeF),
+                Mathf.FloorToInt(k / this.sizeF)
+            );
+        }
+
         private Vector3Int getOrigin(int i, int j, int k)
         {
             return new Vector3Int(
@@ -97,18 +105,85 @@ namespace FarmVox
             return map.ContainsKey(origin);
         }
 
+        private List<Vector3Int> GetKeys(int i, int j, int k) {
+            var key = getKey(i, j, k);
+            var list = new List<Vector3Int>();
+
+            var origin = key * size;
+            var ri = i - origin.x;
+            var rj = j - origin.y;
+            var rk = k - origin.z;
+
+            var iList = new List<int>();
+            iList.Add(0);
+            var jList = new List<int>();
+            jList.Add(0);
+            var kList = new List<int>();
+            kList.Add(0);
+
+            if (ri == 0 || ri == 1) {
+                iList.Add(-1);
+            }
+
+            if (rj == 0 || rj == 1) {
+                jList.Add(-1);
+            }
+
+            if (rk == 0 || rk == 1)
+            {
+                kList.Add(-1);
+            }
+
+            if (ri >= size) {
+                iList.Add(1);
+            }
+
+            if (rj >= size)
+            {
+                jList.Add(1);
+            }
+
+            if (rk >= size) {
+                kList.Add(1);
+            }
+
+            foreach(var di in iList) {
+                foreach(var dj in jList) {
+                    foreach(var dk in kList) {
+                        list.Add(new Vector3Int(key.x + di, key.y + dj, key.z + dk));
+                    }
+                }
+            }
+
+            return list;
+        }
+
         public void Set(int i, int j, int k, float v)
         {
-            var origin = getOrigin(i, j, k);
-            var chunk = GetOrCreateChunk(origin);
-            chunk.Set(i - origin.x, j - origin.y, k - origin.z, v);
+            //var origin = getOrigin(i, j, k);
+            //var chunk = GetOrCreateChunk(origin);
+            //chunk.Set(i - origin.x, j - origin.y, k - origin.z, v);
+
+            var keys = GetKeys(i, j, k);
+            foreach(var key in keys) {
+                var origin = key * size;
+                var chunk = GetOrCreateChunk(origin);
+                chunk.Set(i - origin.x, j - origin.y, k - origin.z, v);
+            }
         }
 
         public void SetColor(int i, int j, int k, Color v)
         {
-            var origin = getOrigin(i, j, k);
-            var chunk = GetOrCreateChunk(origin);
-            chunk.SetColor(i - origin.x, j - origin.y, k - origin.z, v);
+            //var origin = getOrigin(i, j, k);
+            //var chunk = GetOrCreateChunk(origin);
+            //chunk.SetColor(i - origin.x, j - origin.y, k - origin.z, v);
+
+            var keys = GetKeys(i, j, k);
+            foreach(var key in keys) {
+                var origin = key * size;
+                var chunk = GetOrCreateChunk(origin);
+                chunk.SetColor(i - origin.x, j - origin.y, k - origin.z, v);
+            }
         }
 
         public void SetColor(Vector3Int coord, Color v) {

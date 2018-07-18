@@ -194,7 +194,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &362043727
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -207,7 +207,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   drawRoutes: 0
-  block: {fileID: 1412883046240558, guid: 9b8f14ad613624ee081a1f1c5b075272, type: 2}
 --- !u!4 &362043728
 Transform:
   m_ObjectHideFlags: 0
@@ -338,7 +337,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1208336817
 MonoBehaviour:
   m_ObjectHideFlags: 0
