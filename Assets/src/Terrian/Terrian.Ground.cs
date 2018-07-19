@@ -86,11 +86,12 @@ namespace FarmVox
                         //{
                         //   
                         //}
-
-                        if (colors[index] != Colors.rock) {
-                            throw new System.Exception(new Vector3Int(i, j, k).ToString());
+                        if (Mathf.Approximately(voxelBufferData[index], value)) {
+                            throw new System.Exception("value not");
                         }
-
+                        if (colors[index] != Colors.rock) {
+                            throw new System.Exception("oh no");
+                        }
                         chunk.SetColor(i, j, k, colors[index]);
                         //chunk.Colors[index] = colors[index];
                     }
