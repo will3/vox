@@ -58,16 +58,6 @@ namespace FarmVox
             var voxelBufferData = new float[voxelBuffer.count];
             voxelBuffer.GetData(voxelBufferData);
 
-            var heightNoise = new Perlin3DGPU(config.heightNoise, chunk.dataSize, origin);
-            var canyonNoise = new Perlin3DGPU(config.canyonNoise, chunk.dataSize, origin);
-            heightNoise.Dispatch();
-            canyonNoise.Dispatch();
-
-            var heightNoiseData = heightNoise.Read();
-            var canyonNoiseData = canyonNoise.Read();
-            heightNoise.Dispose();
-            canyonNoise.Dispose();
-
             var colors = new Color[colorBuffer.count];
             colorBuffer.GetData(colors);
             chunk.SetColors(colors);
@@ -80,20 +70,8 @@ namespace FarmVox
                     for (var k = 0; k < chunk.dataSize; k++)
                     {
                         var index = i * dataSize * dataSize + j * dataSize + k;
-                        float value = GetValue(i, j, k, dataSize, origin, heightNoiseData, canyonNoiseData);
-                        chunk.Set(i, j, k, value);
-                        //if (value > 0)
-                        //{
-                        //   
-                        //}
-                        if (Mathf.Approximately(voxelBufferData[index], value)) {
-                            throw new System.Exception("value not");
-                        }
-                        if (colors[index] != Colors.rock) {
-                            throw new System.Exception("oh no");
-                        }
+                        chunk.Set(i, j, k, voxelBufferData[index]);
                         chunk.SetColor(i, j, k, colors[index]);
-                        //chunk.Colors[index] = colors[index];
                     }
                 }
             }
