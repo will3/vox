@@ -7,6 +7,7 @@ namespace FarmVox
     public static class Colors
     {
         public static Color grass;
+        public static Color soil;
         public static Color rock;
         public static Color water;
         public static Color trunk;
@@ -22,7 +23,7 @@ namespace FarmVox
         static Colors()
         {
             grass = GetColor("#457828");
-            rock = GetColor("#413535");
+            soil = GetColor("#413535");
             water = GetColor("#5A81AD");
             trunk = GetColor("#4f402a");
             leaf = GetColor("#295e21");
@@ -31,8 +32,9 @@ namespace FarmVox
             //road = GetColor("#74614c");
             road = GetColor("#bbaf4d");
             special = GetColor("#ff0000");
+            rock = GetColor("#6b615f");
 
-            grassGradient = new ColorGradient(rock, grass);
+            grassGradient = new ColorGradient(grass, grass);
             //grassGradient.Add(0.5f, grass);
         }
 

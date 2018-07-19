@@ -64,7 +64,7 @@ namespace FarmVox
 
             foreach(var kv in map) {
                 var terrianChunk = kv.Value;
-                generateRock(terrianChunk);
+                GenerateGround(terrianChunk);
             }
 
             var drawDis = config.generateDis;
@@ -81,9 +81,9 @@ namespace FarmVox
 
                     terrianChunk.GenerateWaters();
 
-                    Grass.Generate(terrianChunk, config);
+                    GenerateGrass(terrianChunk);
 
-                    generateTrees(terrianChunk);
+                    GenerateTrees(terrianChunk);
 
                     terrianChunk.UpdateRoutes();
 
@@ -121,80 +121,6 @@ namespace FarmVox
             }
 
             terrianChunk.growthNeedsUpdate = false;
-        }
-
-        private float getValue(int i, int j, int k, int dataSize, Vector3Int origin, float[] heightNoiseData, float[] canyonNoiseData) {
-            var plainHeight = config.plainHeight;
-            var hillHeight = config.hillHeight;
-
-            var index = i * dataSize * dataSize + j * dataSize + k;
-
-            var biome = canyonNoiseData[index];
-
-            float terrainHeight;
-            if (biome < 0.1 && biome > -0.1)
-            {
-                var ratio = (float)(biome + 0.1f) / 0.2f;
-                terrainHeight = plainHeight + (hillHeight - plainHeight) * ratio;
-            }
-            else if (biome > 0)
-            {
-                terrainHeight = hillHeight;
-            }
-            else
-            {
-                terrainHeight = plainHeight;
-            }
-
-            var absY = j + origin.y;
-            var height = (1f -  absY / (float)terrainHeight) - 0.5f;
-            var value = height;
-            var n1 = heightNoiseData[index];
-            // var n2 = (float)heightNoise2.GetValue(new Vector3(i, j * 0.4f, k) * ) * 0.5f;
-            return value + n1;
-        }
-
-        void generateRock(TerrianChunk terrianChunk)
-        {
-            if (!terrianChunk.rockNeedsUpdate)
-            {
-                return;
-            }
-
-            if (terrianChunk.Chunk == null)
-            {
-                terrianChunk.Chunk = defaultLayer.Chunks.GetOrCreateChunk(terrianChunk.Origin);
-            }
-            var chunk = terrianChunk.Chunk;
-            var origin = chunk.Origin;
-
-            var heightNoise = new Perlin3DGPU(config.heightNoise, chunk.dataSize, origin);
-            var canyonNoise = new Perlin3DGPU(config.canyonNoise, chunk.dataSize, origin);
-            heightNoise.Dispatch();
-            canyonNoise.Dispatch();
-            var heightNoiseData = heightNoise.Read();
-            var canyonNoiseData = canyonNoise.Read();
-            heightNoise.Dispose();
-            canyonNoise.Dispose();
-
-            var dataSize = chunk.dataSize;
-            for (var i = 0; i < chunk.dataSize; i++)
-            {
-                for (var j = 0; j < chunk.dataSize; j++)
-                {
-                    for (var k = 0; k < chunk.dataSize; k++)
-                    {
-                        var index = i * dataSize * dataSize + j * dataSize + k;
-                        float value = getValue(i, j, k, dataSize, origin, heightNoiseData, canyonNoiseData);
-                        chunk.Set(i, j, k, value);
-                        if (value > 0) {
-                            chunk.SetColor(i, j, k, Colors.rock);    
-                        }
-                    }
-                }
-            }
-
-            terrianChunk.rockNeedsUpdate = false;
         }
 
         public TerrianChunk GetTerrianChunk(Vector3Int origin) {

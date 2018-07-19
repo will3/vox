@@ -10,8 +10,8 @@ namespace FarmVox
 
     public class Chunk
     {
-        private readonly float[] data;
-        private readonly Color[] colors;
+        private float[] data;
+        private Color[] colors;
 
         public Color[] Colors
         {
@@ -19,6 +19,20 @@ namespace FarmVox
             {
                 return colors;
             }
+        }
+
+        public void SetColors(Color[] colors) {
+            if (colors.Length != this.colors.Length) {
+                throw new System.ArgumentException("invalid length");
+            }
+            this.colors = colors;
+        }
+
+        public void SetData(float[] data) {
+            if (data.Length != this.data.Length) {
+                throw new System.ArgumentException("invalid length");
+            }
+            this.data = data;
         }
 
         private Mesh mesh;

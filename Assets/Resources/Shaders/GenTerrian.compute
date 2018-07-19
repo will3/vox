@@ -1,0 +1,31 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+
+float _HillHeight;
+float _PlainHeight;
+float4 _RockColor;
+
+StructuredBuffer<float> _CanyonBuffer;
+StructuredBuffer<float> _HeightBuffer;
+RWStructuredBuffer<float> _VoxelBuffer;
+RWStructuredBuffer<float4> _ColorBuffer;
+int _Size;
+float3 _Origin;
+
+int getIndex(int3 coord) {
+    int dataSize = _Size + 3;
+    return coord.x * dataSize * dataSize + coord.y * dataSize + coord.z;
+}
+
+[numthreads(8,8,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    int3 coord = int3(id.x, id.y, id.z);
+    int index = getIndex(coord);
+
+
+    _ColorBuffer[index] = _RockColor;
+}

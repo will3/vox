@@ -11,6 +11,15 @@ namespace FarmVox
 
         private ComputeShader shader;
         private ComputeBuffer results;
+
+        public ComputeBuffer Results
+        {
+            get
+            {
+                return results;
+            }
+        }
+
         private Vector3 origin;
 
         public Perlin3DGPU(Noise noise, int size, Vector3 origin)

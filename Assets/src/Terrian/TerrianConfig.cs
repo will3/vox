@@ -6,8 +6,8 @@ namespace FarmVox
     public class TerrianConfig
     {
         public int maxChunksY = 4;
-        public int generateDis = 2;
-        public int drawDis = 2;
+        public int generateDis = 1;
+        public int drawDis = 1;
         public int minTreeJ = 1;
         public int maxHeight = 64;
         public float hillHeight = 64;
@@ -65,7 +65,7 @@ namespace FarmVox
 
             grassNoise.Frequency = 0.5f;
 
-            heightNoise.frequency = 0.005f;
+            heightNoise.frequency = 0.015f;
             canyonNoise.frequency = 0.01f;
             heightNoise.yScale = 0.4f;
 

@@ -5,7 +5,7 @@ namespace FarmVox
 
     public partial class Terrian
     {
-        private void generateTrees(TerrianChunk terrianChunk)
+        private void GenerateTrees(TerrianChunk terrianChunk)
         {
             var minTreeJ = config.minTreeJ;
             var treeNoise = config.treeNoise;

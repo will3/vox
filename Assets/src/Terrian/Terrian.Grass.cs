@@ -4,9 +4,8 @@ using LibNoise.Generator;
 
 namespace FarmVox
 {
-    public static class Grass
-    {
-        public static void Generate(TerrianChunk terrianChunk, TerrianConfig config)
+    partial class Terrian {
+        private void GenerateGrass(TerrianChunk terrianChunk)
         {
             var grassNoise = config.grassNoise;
 
