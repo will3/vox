@@ -6,8 +6,8 @@ namespace FarmVox
     public class TerrianConfig
     {
         public int maxChunksY = 4;
-        public int generateDis = 1;
-        public int drawDis = 1;
+        public int generateDis = 2;
+        public int drawDis = 2;
         public int minTreeJ = 1;
         public int maxHeight = 64;
         public float hillHeight = 64;
@@ -17,6 +17,7 @@ namespace FarmVox
 
         public Noise heightNoise;
         public Noise canyonNoise;
+        public Noise rockNoise;
 
         public Perlin growthNoise;
         public Perlin grassNoise;
@@ -59,15 +60,20 @@ namespace FarmVox
             townNoise = NextPerlin();
             townRandom = NextRandom();
             roadRandom = NextRandom();
+            rockNoise = NextNoise();
 
             grassCurve = new ValueGradient();
             grassCurve.Add(0.3f, 0.8f);
 
             grassNoise.Frequency = 0.5f;
 
+            rockNoise.frequency = 0.02f;
+
             heightNoise.frequency = 0.015f;
-            canyonNoise.frequency = 0.01f;
             heightNoise.yScale = 0.4f;
+
+            canyonNoise.frequency = 0.01f;
+            canyonNoise.yScale = 0.5f;
 
             heightNoise2.OctaveCount = 8;
             growthNoise.OctaveCount = 5;

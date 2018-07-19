@@ -19,7 +19,6 @@ namespace FarmVox
 
         public static ColorGradient grassGradient;
 
-        //
         static Colors()
         {
             grass = GetColor("#457828");
@@ -29,12 +28,12 @@ namespace FarmVox
             leaf = GetColor("#295e21");
             roof = GetColor("#BD5222");
             brick = GetColor("#52575A");
-            //road = GetColor("#74614c");
             road = GetColor("#bbaf4d");
             special = GetColor("#ff0000");
             rock = GetColor("#6b615f");
+            rock = GetColor("#555555");
 
-            grassGradient = new ColorGradient(grass, grass);
+            grassGradient = new ColorGradient(rock, grass);
             //grassGradient.Add(0.5f, grass);
         }
 

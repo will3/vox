@@ -163,7 +163,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
     int3 c = front ? int3(i, j, k) : int3(i + 1, j, k);
     c = getVector(c.x, c.y, c.z, d);
-    float normal = 1 - (1 - getDot(c.x, c.y, c.z)) * 0.4;
+    float normal = 1 - (1 - getDot(c.x, c.y, c.z)) * 0.6;
     float shadow = getShadow(c);
     float4 color = getColor(c) * normal * (1 - shadow);
 

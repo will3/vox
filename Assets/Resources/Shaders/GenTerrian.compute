@@ -4,9 +4,13 @@
 float _HillHeight;
 float _PlainHeight;
 float4 _RockColor;
+float4 _SoilColor;
+float4 _WaterColor;
 
 StructuredBuffer<float> _CanyonBuffer;
 StructuredBuffer<float> _HeightBuffer;
+StructuredBuffer<float> _RockBuffer;
+
 RWStructuredBuffer<float> _VoxelBuffer;
 RWStructuredBuffer<float4> _ColorBuffer;
 int _Size;
@@ -31,18 +35,13 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     float biome = _CanyonBuffer[index];
     float terrainHeight;
 
-    if (biome < 0.1 && biome > -0.1)
-    {
+    if (biome < -0.1) {
+        terrainHeight = _PlainHeight;
+    } else if (biome >= -0.1 && biome < 0.1) {
         float ratio = (biome + 0.1) / 0.2;
         terrainHeight = _PlainHeight + (_HillHeight - _PlainHeight) * ratio;
-    }
-    else if (biome > 0)
-    {
+    } else {
         terrainHeight = _HillHeight;
-    }
-    else
-    {
-        terrainHeight = _PlainHeight;
     }
 
     float absY = coord.y + _Origin.y;
@@ -50,6 +49,14 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     float height = _HeightBuffer[index];
     float value = height + gradient;
 
+    float rock = _RockBuffer[index] - gradient * 0.5;
+
+    bool isRock = rock > 0;
+
     _VoxelBuffer[index] = value;
-    _ColorBuffer[index] = _RockColor;
+    if (isRock) {
+        _ColorBuffer[index] = _RockColor;
+    } else {
+        _ColorBuffer[index] = _SoilColor;
+    }
 }
