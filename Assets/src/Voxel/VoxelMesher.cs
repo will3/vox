@@ -28,7 +28,7 @@ namespace FarmVox
             voxelBuffer.SetData(chunk.Data);
             colorsBuffer.SetData(chunk.Colors);
 
-            mesherGPU.Dispatch(voxelBuffer, colorsBuffer, trianglesBuffer);
+            mesherGPU.Dispatch(voxelBuffer, colorsBuffer, trianglesBuffer, terrianChunk);
 
             var triangles = mesherGPU.ReadTriangles(trianglesBuffer);
 

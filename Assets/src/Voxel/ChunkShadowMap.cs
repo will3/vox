@@ -24,7 +24,6 @@ namespace FarmVox
             }
 
             var shadow = coord.y < results[key];
-
             return shadow ? 1.0f : 0.0f;
         }
 
@@ -67,6 +66,11 @@ namespace FarmVox
         {
             var diff = height - coord.y;
             return new Vector3Int(coord.x + diff, coord.y + diff, coord.z + diff);
+        }
+
+        private Vector2Int flattenVector(Vector3Int coord) {
+            var v = liftVector(coord, 0);
+            return new Vector2Int(v.x, v.z);
         }
     }
 }

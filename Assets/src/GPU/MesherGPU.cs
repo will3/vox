@@ -46,12 +46,24 @@ namespace FarmVox
             return new ComputeBuffer(dataSize * dataSize * dataSize, sizeof(float) * 4);
         }
 
-        public void Dispatch(ComputeBuffer voxelBuffer, ComputeBuffer colorsBuffer, ComputeBuffer trianglesBuffer)
+        public void Dispatch(ComputeBuffer voxelBuffer, ComputeBuffer colorsBuffer, ComputeBuffer trianglesBuffer, TerrianChunk terrianChunk)
         {
             shader.SetInt("_DataSize", dataSize);
             shader.SetBuffer(0, "_VoxelBuffer", voxelBuffer);
             shader.SetBuffer(0, "_TrianglesBuffer", trianglesBuffer);
             shader.SetBuffer(0, "_ColorsBuffer", colorsBuffer);
+
+            var shadowBuffer = new ComputeBuffer(dataSize * dataSize * dataSize, sizeof(float));
+            var shadowBufferData = new float[dataSize * dataSize * dataSize];
+            foreach(var coord in terrianChunk.Chunk.surfaceCoords) {
+                var index = coord.x * dataSize * dataSize + coord.y * dataSize + coord.z;
+                var v = terrianChunk.Chunk.GetLighting(coord);
+                shadowBufferData[index] = v;
+            }
+
+            shadowBuffer.SetData(shadowBufferData);
+            shader.SetBuffer(0, "_ShadowBuffer", shadowBuffer);
+
 
             var disptachNumber = Mathf.CeilToInt(dataSize / (float)workGroups);
             shader.Dispatch(0, 3 * disptachNumber, disptachNumber, disptachNumber);

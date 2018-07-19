@@ -14,6 +14,7 @@ int _DataSize;
 StructuredBuffer<float> _VoxelBuffer;
 StructuredBuffer<float4> _ColorsBuffer;
 AppendStructuredBuffer<Triangle> _TrianglesBuffer;
+StructuredBuffer<float> _ShadowBuffer;
 
 int3 getVectorInt(int i, int j, int k, int d) {
     if (d == 0) {
@@ -42,6 +43,19 @@ int getIndex(int3 coord) {
 float getVoxel(int3 coord) {
     int index = getIndex(coord);
     return _VoxelBuffer[index];
+}
+
+float getDot(int i, int j, int k) {
+    float3 v =  float3(-1, -1, -1) *    getVoxel(int3(i, j, k)) +
+    float3(1, -1, -1) *     getVoxel(int3(i + 1, j, k)) +
+    float3(-1, 1, -1) *     getVoxel(int3(i, j + 1, k)) +
+    float3(1, 1, -1) *      getVoxel(int3(i + 1, j + 1, k)) +
+    float3(-1, -1, 1) *     getVoxel(int3(i, j, k + 1)) +
+    float3(1, -1, 1) *      getVoxel(int3(i + 1, j, k + 1)) +
+    float3(-1, 1, 1) *      getVoxel(int3(i, j + 1, k + 1)) +
+    float3(1, 1, 1) *       getVoxel(int3(i + 1, j + 1, k + 1));
+    float3 lightDir = normalize(float3(1, 1, 1));
+    return dot(-normalize(v), lightDir);
 }
 
 void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, float ab, float ac, float ad, bool order, bool flipped) {
@@ -88,6 +102,11 @@ float4 getColor(int3 coord) {
     return _ColorsBuffer[index];
 }
 
+float getShadow(int3 coord) {
+    int index = getIndex(coord);
+    return _ShadowBuffer[index];
+}
+
 float _getAO(float s1f, float s2f, float cf) {
     bool s1 = s1f > 0;
     bool s2 = s2f > 0;
@@ -122,7 +141,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     int size = _DataSize;
 
     if (i == 0 || j == 0 || k == 0 ||
-        i >= size - 1 || j >= size - 1 || k >= size - 1) {
+        i >= size - 2 || j >= size - 2 || k >= size - 2) {
         return;
     }
 
@@ -144,7 +163,9 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
     int3 c = front ? int3(i, j, k) : int3(i + 1, j, k);
     c = getVector(c.x, c.y, c.z, d);
-    float4 color = getColor(c);
+    float normal = 1 - (1 - getDot(c.x, c.y, c.z)) * 0.4;
+    float shadow = getShadow(c);
+    float4 color = getColor(c) * normal * (1 - shadow);
 
     int aoI = front ? i + 1 : i;
     int3 c00 = getVectorInt(aoI, j - 1, k - 1, d);
