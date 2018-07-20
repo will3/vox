@@ -13,7 +13,9 @@ namespace FarmVox
         public float hillHeight = 64;
         public float plainHeight = 12;
 
+        public Perlin grassNoise;
         public ValueGradient grassCurve;
+        public Random grassRandom;
 
         public Noise heightNoise;
         public Noise canyonNoise;
@@ -22,7 +24,6 @@ namespace FarmVox
         public Noise scultNoise;
 
         public Perlin growthNoise;
-        public Perlin grassNoise;
 
         public Perlin heightNoise2;
         public Perlin townNoise;
@@ -76,6 +77,7 @@ namespace FarmVox
             roadRandom = NextRandom();
             monsterRandom = NextRandom();
             treeRandom = NextRandom();
+            grassRandom = NextRandom();
 
             grassCurve = new ValueGradient();
             grassCurve.Add(0.3f, 0.8f);

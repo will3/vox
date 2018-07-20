@@ -8,6 +8,7 @@ namespace FarmVox
     {
         private float sizeF;
         private int size;
+        public bool useNormals = true;
 
         public int Size
         {

@@ -13,8 +13,8 @@ namespace FarmVox
         private int size;
         private float sizeF;
 
-        private Layer defaultLayer;
-        private Layer treeLayer;
+        private Chunks defaultLayer;
+        private Chunks treeLayer;
 
         private Material material = new Material(Shader.Find("Unlit/voxelunlit"));
         public Transform Transform;
@@ -35,13 +35,16 @@ namespace FarmVox
 
         MarchingCubes marchingCubes = new MarchingCubes();
 
+        private Chunks[] chunksToDraw;
         public Terrian(int size = 32)
         {
             this.size = size;
             sizeF = size;
 
-            defaultLayer = new Layer(size);
-            treeLayer = new Layer(size);
+            defaultLayer = new Chunks(size);
+            treeLayer = new Chunks(size);
+
+            chunksToDraw = new Chunks[] { defaultLayer, treeLayer };
         }
 
         public void Update()
@@ -78,7 +81,7 @@ namespace FarmVox
                 if (terrianChunk.Distance < drawDis)
                 {
                     var origin = terrianChunk.Origin;
-                    defaultLayer.Chunks.GetChunk(origin).UpdateNormals();
+                    defaultLayer.GetChunk(origin).UpdateNormals();
 
                     terrianChunk.GenerateWaters();
 
@@ -110,8 +113,9 @@ namespace FarmVox
                 {
                     Profiler.BeginSample("Meshing");
 
-                    defaultLayer.Draw(terrianChunk.Origin, Transform, material, terrianChunk);
-                    treeLayer.Draw(terrianChunk.Origin, Transform, material, terrianChunk);
+                    foreach(var chunks in chunksToDraw) {
+                        Draw(chunks, terrianChunk.Origin, Transform, material, terrianChunk);    
+                    }
 
                     Profiler.EndSample();
                 }
@@ -183,13 +187,13 @@ namespace FarmVox
 
             var chunk = terrianChunk.Chunk;
             var origin = chunk.Origin;
-            var treeChunk = treeLayer.Chunks.GetChunk(origin);
+            var treeChunk = treeLayer.GetChunk(origin);
 
-            var chunksList = new Chunks[] { defaultLayer.Chunks, treeLayer.Chunks };
-            chunk.UpdateShadows(chunksList);
-
-            if (treeChunk != null) {
-                treeChunk.UpdateShadows(chunksList);
+            foreach(var chunks in chunksToDraw) {
+                var c = chunks.GetChunk(origin);
+                if (c != null) {
+                    c.UpdateShadows(chunksToDraw);
+                }
             }
 
             terrianChunk.shadowsNeedsUpdate = false;
@@ -272,7 +276,7 @@ namespace FarmVox
         }
 
         public RaycastResult Trace(Vector3 pos, Vector3 dir, int maxD) {
-            var list = new Chunks[] { defaultLayer.Chunks, defaultLayer.Chunks };
+            var list = new Chunks[] { defaultLayer, defaultLayer };
             return Raycast.Trace(list, pos, dir, maxD);
         }
 
@@ -283,6 +287,47 @@ namespace FarmVox
                 return false;
             }
             return terrianChunk.GetWater(coord - terrianChunk.Origin);
+        }
+
+        public void Draw(Chunks chunks, Vector3Int origin, Transform transform, Material material, TerrianChunk terrianChunk)
+        {
+            if (!chunks.HasChunk(origin))
+            {
+                return;
+            }
+
+            var chunk = chunks.GetChunk(origin);
+
+            if (!chunk.Dirty)
+            {
+                return;
+            }
+
+            if (chunk.Mesh != null)
+            {
+                UnityEngine.Object.Destroy(chunk.Mesh);
+                UnityEngine.Object.Destroy(chunk.GameObject);
+            }
+
+            //Mesh mesh = new Mesh();
+            //VoxelMesher.Mesh(chunk, mesh, terrianChunk);
+
+            var mesh = VoxelMesher.MeshGPU(chunk, terrianChunk);
+
+            mesh.RecalculateBounds();
+            mesh.RecalculateNormals();
+
+            GameObject go = new GameObject("Mesh");
+            go.transform.parent = transform;
+            go.AddComponent<MeshFilter>();
+            go.AddComponent<MeshRenderer>();
+            go.GetComponent<Renderer>().material = material;
+            go.GetComponent<MeshFilter>().mesh = mesh;
+            go.transform.localPosition = chunk.Origin;
+
+            chunk.Mesh = mesh;
+            chunk.GameObject = go;
+            chunk.Dirty = false;
         }
     }
 }

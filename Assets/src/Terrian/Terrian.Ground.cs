@@ -45,7 +45,7 @@ namespace FarmVox
 
             if (terrianChunk.Chunk == null)
             {
-                terrianChunk.Chunk = defaultLayer.Chunks.GetOrCreateChunk(terrianChunk.Origin);
+                terrianChunk.Chunk = defaultLayer.GetOrCreateChunk(terrianChunk.Origin);
             }
             var chunk = terrianChunk.Chunk;
             var origin = chunk.Origin;

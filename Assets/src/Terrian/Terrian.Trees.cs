@@ -62,12 +62,12 @@ namespace FarmVox
 
                 if (value < 0.5f) { continue; }
 
-                print(pine.GetShape(), coord + chunk.Origin, treeLayer.Chunks, pine.Offset);
+                print(pine.GetShape(), coord + chunk.Origin, treeLayer, pine.Offset);
 
                 terrianChunk.SetTree(coord, true);
             }
 
-            var treeChunk = treeLayer.Chunks.GetChunk(terrianChunk.Origin);
+            var treeChunk = treeLayer.GetChunk(terrianChunk.Origin);
             if (treeChunk != null)
             {
                 treeChunk.UpdateSurfaceCoords();

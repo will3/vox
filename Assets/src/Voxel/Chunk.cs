@@ -257,6 +257,18 @@ namespace FarmVox
             }
         }
 
+        public float GetGlobal(int i, int j, int k) {
+            int max = size - 1;
+            if (i < 0 || i > max || j < 0 || j > max || k < 0 || k > max)
+            {
+                return Chunks.Get(i + origin.x, j + origin.y, k + origin.z);
+            }
+            else
+            {
+                return Get(i, j, k);
+            }
+        }
+
         public int GetIndex(Vector3Int coord) {
             return GetIndex(coord.x, coord.y, coord.z);
         }

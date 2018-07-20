@@ -26,6 +26,8 @@ namespace FarmVox
         private readonly int size;
         private readonly int dataSize;
         private readonly int workGroups = 8;
+        public int normalBranding = 5;
+        public bool useNormals = true;
 
         public MesherGPU(int size)
         {
@@ -52,6 +54,8 @@ namespace FarmVox
             shader.SetBuffer(0, "_VoxelBuffer", voxelBuffer);
             shader.SetBuffer(0, "_TrianglesBuffer", trianglesBuffer);
             shader.SetBuffer(0, "_ColorsBuffer", colorsBuffer);
+            shader.SetInt("_NormalBranding", normalBranding);
+            shader.SetInt("_UseNormals", useNormals ? 1 : 0);
 
             var shadowBuffer = new ComputeBuffer(dataSize * dataSize * dataSize, sizeof(float));
             var shadowBufferData = new float[dataSize * dataSize * dataSize];

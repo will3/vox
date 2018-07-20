@@ -15,7 +15,8 @@ StructuredBuffer<float> _VoxelBuffer;
 StructuredBuffer<float4> _ColorsBuffer;
 AppendStructuredBuffer<Triangle> _TrianglesBuffer;
 StructuredBuffer<float> _ShadowBuffer;
-float _NormalBranding;
+int _NormalBranding;
+int _UseNormals;
 
 int3 getVectorInt(int i, int j, int k, int d) {
     if (d == 0) {
@@ -43,7 +44,8 @@ int getIndex(int3 coord) {
 
 float getVoxel(int3 coord) {
     int index = getIndex(coord);
-    return _VoxelBuffer[index];
+    float v = _VoxelBuffer[index];
+    return v;
 }
 
 float getDot(int i, int j, int k) {
@@ -164,10 +166,20 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
     int3 c = front ? int3(i, j, k) : int3(i + 1, j, k);
     c = getVector(c.x, c.y, c.z, d);
-    float _normal = getDot(c.x, c.y, c.z);
-    if (_NormalBranding > 0) {
-        _normal = floor(_normal * _NormalBranding) / _NormalBranding;
+
+    float _normal;
+
+    if (_UseNormals > 0) {
+        _normal = getDot(c.x, c.y, c.z);
+
+        float normalBranding = _NormalBranding;
+        if (_NormalBranding > 0) {
+            _normal = floor(_normal * normalBranding) / normalBranding;
+        }
+    } else {
+        _normal = 1.0;
     }
+
     float normal = 1 - (1 - _normal) * 0.4;
     float shadow = getShadow(c);
     float4 color = getColor(c) * normal * (1 - shadow);
