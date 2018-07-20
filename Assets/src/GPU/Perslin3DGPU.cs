@@ -40,6 +40,7 @@ namespace FarmVox
             var persistence = noise.persistence;
             var octaves = noise.octaves;
             var yScale = noise.yScale;
+            var xzScale = noise.xzScale;
 
             shader.SetBuffer(0, "_Results", results);
             shader.SetFloat("_Persistence", persistence);
@@ -50,6 +51,8 @@ namespace FarmVox
             shader.SetFloat("_Lacunarity", lacunarity);
             shader.SetInt("_Octaves", octaves);
             shader.SetFloat("_YScale", yScale);
+            shader.SetFloat("_XZScale", xzScale);
+
             var dispatchNum = Mathf.CeilToInt(size / (float)workGroups);
             shader.Dispatch(0, dispatchNum, dispatchNum, dispatchNum);
         }

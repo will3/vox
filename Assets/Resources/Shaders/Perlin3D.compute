@@ -10,6 +10,7 @@ float _Persistence;
 int _Octaves;
 float3 _Origin;
 float _YScale;
+float _XZScale;
 
 float3 mod289(float3 x)
 {
@@ -248,6 +249,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     }
     float3 c = float3(id.x, id.y, id.z) + _Origin;
     c.y *= _YScale;
+    c.xz *= _XZScale;
 
     c.z += _Seed % 1000000;
 

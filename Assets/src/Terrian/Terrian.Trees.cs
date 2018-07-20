@@ -27,8 +27,13 @@ namespace FarmVox
                 var j = coord.y;
                 var k = coord.z;
 
-                var absJ = j + chunk.Origin.y;
-                if (absJ < minTreeJ)
+                if (config.treeRandom.NextDouble() > 0.1)
+                {
+                    continue;
+                }
+
+                var absY = j + chunk.Origin.y;
+                if (absY < minTreeJ)
                 {
                     continue;
                 }
@@ -52,7 +57,10 @@ namespace FarmVox
 
                 value -= otherTrees * 4.0f;
 
-                if (value < 0.4f) { continue; }
+                var treeHeightFactor = config.treeHeightGradient.GetValue(absY / config.maxHeight);
+                value *= treeHeightFactor;
+
+                if (value < 0.5f) { continue; }
 
                 print(pine.GetShape(), coord + chunk.Origin, treeLayer.Chunks, pine.Offset);
 

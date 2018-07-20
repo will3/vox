@@ -10,6 +10,7 @@ float4 _WaterColor;
 StructuredBuffer<float> _CanyonBuffer;
 StructuredBuffer<float> _HeightBuffer;
 StructuredBuffer<float> _RockBuffer;
+StructuredBuffer<float> _ScultBuffer;
 
 RWStructuredBuffer<float> _VoxelBuffer;
 RWStructuredBuffer<float4> _ColorBuffer;
@@ -48,6 +49,10 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     float gradient = (1.0 - (absY / terrainHeight)) - 0.5;
     float height = _HeightBuffer[index];
     float value = height + gradient;
+    float sculpt = _ScultBuffer[index];
+    if (sculpt > 0) {
+        value -= sculpt;
+    }
 
     float rock = _RockBuffer[index] - gradient * 0.5;
 
@@ -60,4 +65,6 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     } else {
         _ColorBuffer[index] = _SoilColor;
     }
+
+    _ColorBuffer[index] = _RockColor;
 }

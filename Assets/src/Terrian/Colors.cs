@@ -31,13 +31,15 @@ namespace FarmVox
             road = GetColor("#bbaf4d");
             special = GetColor("#ff0000");
             rock = GetColor("#6b615f");
-            rock = GetColor("#555555");
+            rock = GetColor("#cec479");
+
+            //rock = GetColor("#555555");
 
             grassGradient = new ColorGradient(rock, grass);
             //grassGradient.Add(0.5f, grass);
         }
 
-        private static Color GetColor(string hex)
+        public static Color GetColor(string hex)
         {
             Color color = Color.white;
             ColorUtility.TryParseHtmlString(hex, out color);

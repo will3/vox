@@ -19,16 +19,22 @@ namespace FarmVox
         public Noise canyonNoise;
         public Noise rockNoise;
         public Noise monsterNoise;
+        public Noise scultNoise;
 
         public Perlin growthNoise;
         public Perlin grassNoise;
-        public Perlin treeNoise;
+
         public Perlin heightNoise2;
         public Perlin townNoise;
 
         public Random townRandom;
         public Random roadRandom;
         public Random monsterRandom;
+
+        public Perlin treeNoise;
+        public Random treeRandom;
+        public ValueGradient treeHeightGradient;
+        public ColorGradient rockColorGradient;
 
         private Random r;
 
@@ -58,6 +64,7 @@ namespace FarmVox
             canyonNoise = NextNoise();
             rockNoise = NextNoise();
             monsterNoise = NextNoise();
+            scultNoise = NextNoise();
 
             growthNoise = NextPerlin();
             grassNoise = NextPerlin();
@@ -68,13 +75,16 @@ namespace FarmVox
             townRandom = NextRandom();
             roadRandom = NextRandom();
             monsterRandom = NextRandom();
+            treeRandom = NextRandom();
 
             grassCurve = new ValueGradient();
             grassCurve.Add(0.3f, 0.8f);
-
             grassNoise.Frequency = 0.5f;
 
             rockNoise.frequency = 0.02f;
+            scultNoise.frequency = 0.01f;
+            scultNoise.yScale = 5f;
+            scultNoise.octaves = 1;
 
             heightNoise.frequency = 0.015f;
             heightNoise.yScale = 0.4f;
@@ -89,6 +99,20 @@ namespace FarmVox
             treeNoise.OctaveCount = 5;
 
             townNoise.Frequency = 0.01f;
+
+            treeHeightGradient = new ValueGradient();
+            treeHeightGradient.Add(0, 1);
+            treeHeightGradient.Add(0.5f, 0);
+            treeHeightGradient.Add(1, 0);
+
+            //rockColorGradient = new ColorGradient(GetColor("#ce8643"), GetColor("#cec479"));
         }
+
+        //public static Color GetColor(string hex)
+        //{
+        //    Color color = Color.white;
+        //    ColorUtility.TryParseHtmlString(hex, out color);
+        //    return color;
+        //}
     }
 }

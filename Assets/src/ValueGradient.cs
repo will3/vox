@@ -16,9 +16,12 @@ public class ValueGradient
     }
 
     public void Add(float position, float v) {
+        bool existing = map.ContainsKey(position);
         map[position] = v;
-        keys.Add(position);
-        keys.Sort();
+        if (!existing) {
+            keys.Add(position);
+            keys.Sort();    
+        }
     }
 
     public float GetValue(float ratio) {
