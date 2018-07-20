@@ -172,7 +172,7 @@ namespace FarmVox
                 k < 0 || k >= dataSize) {
                 throw new System.Exception("out of bounds:" + new Vector3Int(i, j, k).ToString());
             }
-            var index = getIndex(i, j, k);
+            var index = GetIndex(i, j, k);
             return data[index];
         }
 
@@ -184,7 +184,7 @@ namespace FarmVox
             {
                 throw new System.Exception("out of bounds:" + new Vector3Int(i, j, k).ToString());
             }
-            var index = getIndex(i, j, k);
+            var index = GetIndex(i, j, k);
             data[index] = v;
             dirty = true;
             surfaceCoordsDirty = true;
@@ -194,7 +194,7 @@ namespace FarmVox
 
         public void SetColor(int i, int j, int k, Color v)
         {
-            var index = getIndex(i, j, k);
+            var index = GetIndex(i, j, k);
             colors[index] = v;
             dirty = true;
         }
@@ -240,7 +240,7 @@ namespace FarmVox
 
         public Color GetColor(int i, int j, int k)
         {
-            var index = getIndex(i, j, k);
+            var index = GetIndex(i, j, k);
             return colors[index];
         }
 
@@ -257,7 +257,11 @@ namespace FarmVox
             }
         }
 
-        private int getIndex(int i, int j, int k)
+        public int GetIndex(Vector3Int coord) {
+            return GetIndex(coord.x, coord.y, coord.z);
+        }
+
+        public int GetIndex(int i, int j, int k)
         {
             int index = i * dataSize * dataSize + j * dataSize + k;
             return index;

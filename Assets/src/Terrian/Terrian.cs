@@ -21,6 +21,7 @@ namespace FarmVox
         public Vector3 Target;
 
         private Dictionary<Vector3Int, TerrianChunk> map = new Dictionary<Vector3Int, TerrianChunk>();
+        private HashSet<Actor> actors = new HashSet<Actor>();
 
         public Dictionary<Vector3Int, TerrianChunk> Map
         {
@@ -88,6 +89,8 @@ namespace FarmVox
                     terrianChunk.UpdateRoutes();
 
                     generateShadows(terrianChunk);
+
+                    GenerateEnemies(terrianChunk);
                 }
             }
 

@@ -3,20 +3,22 @@ using System.Collections;
 using System.IO;
 using FarmVox;
 
-public class Card : MonoBehaviour
+public partial class Card : MonoBehaviour
 {
+
     private Material material;
     private MeshFilter meshFilter;
     private Vector3 up = Vector3.up;
     private CameraController cameraController;
-    public string textureName = "tiny_top";
+
+    public string spriteSheetName = "monster";
 
 	// Use this for initialization
 	void Start()
 	{
+        var spriteSheet = SpriteSheets.Get(spriteSheetName);
         material = new Material(Shader.Find("Unlit/Transparent"));
-        var texture = Resources.Load<Texture2D>("Textures/" + textureName);
-        material.SetTexture("_MainTex", texture);
+        material.SetTexture("_MainTex", Textures.Load(spriteSheet.idle_0));
 
         var mesh = getQuad();
 
@@ -26,17 +28,14 @@ public class Card : MonoBehaviour
         gameObject.GetComponent<MeshFilter>().mesh = mesh;
 
         cameraController = Camera.main.GetComponent<CameraController>();
+
+        transform.localScale = new Vector3(spriteSheet.scale, spriteSheet.scale, spriteSheet.scale);
 	}
 
     private Mesh getQuad() {
         var mesh = new Mesh();
 
         var vertices = new Vector3[4];
-
-        //vertices[0] = new Vector3(-0.5f, 0, 0);
-        //vertices[1] = new Vector3(0.5f, 0, 0);
-        //vertices[2] = new Vector3(0.5f, 1.0f, 0);
-        //vertices[3] = new Vector3(-0.5f, 1.0f, 0);
 
         vertices[0] = new Vector3(-0.5f, -0.5f, 0);
         vertices[1] = new Vector3(0.5f, -0.5f, 0);
@@ -84,7 +83,6 @@ public class Card : MonoBehaviour
         //var face = Vector3.Cross(right, up);
 
         //transform.LookAt(transform.position + face, Vector3.up);
-
 
         // Billboard
         transform.LookAt(cameraController.transform.position, Vector3.up);

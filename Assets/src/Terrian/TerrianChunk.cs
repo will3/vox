@@ -29,6 +29,7 @@ namespace FarmVox
         public bool growthNeedsUpdate = true;
         public bool townPointsNeedsUpdate = true;
         public bool roadsNeedsUpdate = true;
+        public bool enemiesNeedsUpdate = true;
 
         public Terrian Terrian;
 

@@ -18,14 +18,17 @@ namespace FarmVox
         public Noise heightNoise;
         public Noise canyonNoise;
         public Noise rockNoise;
+        public Noise monsterNoise;
 
         public Perlin growthNoise;
         public Perlin grassNoise;
         public Perlin treeNoise;
         public Perlin heightNoise2;
         public Perlin townNoise;
+
         public Random townRandom;
         public Random roadRandom;
+        public Random monsterRandom;
 
         private Random r;
 
@@ -52,15 +55,19 @@ namespace FarmVox
         {
             r = new Random(seed);
             heightNoise = NextNoise();
+            canyonNoise = NextNoise();
+            rockNoise = NextNoise();
+            monsterNoise = NextNoise();
+
             growthNoise = NextPerlin();
             grassNoise = NextPerlin();
             treeNoise = NextPerlin();
-            canyonNoise = NextNoise();
             heightNoise2 = NextPerlin();
             townNoise = NextPerlin();
+
             townRandom = NextRandom();
             roadRandom = NextRandom();
-            rockNoise = NextNoise();
+            monsterRandom = NextRandom();
 
             grassCurve = new ValueGradient();
             grassCurve.Add(0.3f, 0.8f);

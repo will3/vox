@@ -6,28 +6,31 @@ namespace FarmVox
 {
     public class Actor : MonoBehaviour
     {
-        private Card card;
         public Terrian terrian;
+        public string spriteSheetName = "monster";
+
+        private Card card;
         private Vector3Int currentNode;
         float nextWander;
         float wanderWait = 0.1f;
-        // Use this for initialization
+
         void Start()
         {
             card = gameObject.AddComponent<Card>();
+            card.spriteSheetName = spriteSheetName;
             var scale = 2.0f;
             card.transform.localScale = new Vector3(scale, scale, scale);
-            updatePosition();
+            UpdatePosition();
             nextWander = Time.time + wanderWait;
         }
 
         public void SetNode(Vector3Int node)
         {
             currentNode = node;
-            updatePosition();
+            UpdatePosition();
         }
 
-        private void updatePosition() {
+        private void UpdatePosition() {
             if (card == null) {
                 return;
             }

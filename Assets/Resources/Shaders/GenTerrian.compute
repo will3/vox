@@ -54,6 +54,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     bool isRock = rock > 0;
 
     _VoxelBuffer[index] = value;
+
     if (isRock) {
         _ColorBuffer[index] = _RockColor;
     } else {
