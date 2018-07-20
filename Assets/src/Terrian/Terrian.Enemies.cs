@@ -9,6 +9,8 @@ namespace FarmVox
                 return;
             }
 
+            return;
+
             var chunk = terrianChunk.Chunk;
             var origin = terrianChunk.Origin;
 
