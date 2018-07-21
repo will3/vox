@@ -16,12 +16,19 @@ namespace FarmVox
         public System.DateTime nextStart;
         public int minWait = 10;
         private IWorker currentWorker;
+
+        private HashSet<IWorker> buffer = new HashSet<IWorker>();
+
         public void Add(IWorker worker) {
-            workers.Add(worker);
-            //StartAnyWorker();
+            buffer.Add(worker);
         }
 
         public void Update() {
+            foreach(var worker in buffer) {
+                workers.Add(worker);
+            }
+            buffer.Clear();
+
             if (currentWorker != null && currentWorker.IsDone()) {
                 currentWorker = null;
             }

@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace FarmVox
 {
@@ -18,6 +19,7 @@ namespace FarmVox
         public static Color special;
 
         public static ColorGradient grassGradient;
+        public static ColorGradient rockColorGradient;
 
         static Colors()
         {
@@ -38,6 +40,14 @@ namespace FarmVox
             grassGradient = new ColorGradient(grass, grass);
             grassGradient.banding = 6;
             //grassGradient.Add(0.5f, grass);
+
+            rockColorGradient = new ColorGradient(new Dictionary<float, Color>() {
+                {0, GetColor("#7e752f")},
+                {0.8f, GetColor("#cec479")},
+                {1, GetColor("#cec479")}
+            });
+
+            rockColorGradient.banding = 8;
         }
 
         public static Color GetColor(string hex)

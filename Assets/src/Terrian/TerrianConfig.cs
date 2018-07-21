@@ -21,9 +21,11 @@ namespace FarmVox
         public Noise rockNoise;
         public Noise scultNoise;
         public ColorGradient rockColorGradient;
+
+        public Noise rockColorNoise;
 #endregion
 
-        #region grass
+#region grass
         public Noise grassNoise;
         public Random grassRandom;
         public ValueGradient grassHeightFilter;
@@ -78,6 +80,11 @@ namespace FarmVox
             rockNoise = NextNoise();
             monsterNoise = NextNoise();
             scultNoise = NextNoise();
+
+            rockColorNoise = NextNoise();
+            rockColorNoise.frequency = 0.05f;
+            rockColorNoise.yScale = 5.0f;
+            rockColorNoise.amplitude = 1.0f;
 
             growthNoise = NextPerlin();
             grassNoise = NextNoise();

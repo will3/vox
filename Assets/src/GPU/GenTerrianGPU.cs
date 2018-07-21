@@ -34,11 +34,13 @@ namespace FarmVox
             var canyonNoise = new Perlin3DGPU(config.canyonNoise, dataSize, origin);
             var rockNoise = new Perlin3DGPU(config.rockNoise, dataSize, origin);
             var sculptNoise = new Perlin3DGPU(config.scultNoise, dataSize, origin);
+            var rockColorNoise = new Perlin3DGPU(config.rockColorNoise, dataSize, origin);
 
             heightNoise.Dispatch();
             canyonNoise.Dispatch();
             rockNoise.Dispatch();
             sculptNoise.Dispatch();
+            rockColorNoise.Dispatch();
 
             shader.SetBuffer(0, "_HeightBuffer", heightNoise.Results);
             shader.SetBuffer(0, "_CanyonBuffer", canyonNoise.Results);
@@ -46,6 +48,7 @@ namespace FarmVox
             shader.SetBuffer(0, "_VoxelBuffer", voxelBuffer);
             shader.SetBuffer(0, "_ColorBuffer", colorBuffer);
             shader.SetBuffer(0, "_ScultBuffer", sculptNoise.Results);
+            shader.SetFloat("_MaxHeight", config.maxHeight);
 
             shader.SetVector("_RockColor", Colors.rock);
             shader.SetVector("_SoilColor", Colors.soil);
@@ -56,6 +59,18 @@ namespace FarmVox
             shader.SetFloat("_HillHeight", config.hillHeight);
             shader.SetFloat("_PlainHeight", config.plainHeight);
 
+            var rockGradientIntervalsBuffer = new ComputeBuffer(Colors.rockColorGradient.Count, sizeof(float));
+            rockGradientIntervalsBuffer.SetData(Colors.rockColorGradient.GetKeys());
+
+            var rockGradientBuffer = new ComputeBuffer(Colors.rockColorGradient.Count, sizeof(float) * 4);
+            rockGradientBuffer.SetData(Colors.rockColorGradient.GetValues());
+
+            shader.SetBuffer(0, "_RockGradient", rockGradientBuffer);
+            shader.SetBuffer(0, "_RockGradientIntervals", rockGradientIntervalsBuffer);
+            shader.SetInt("_RockGradientSize", Colors.rockColorGradient.Count);
+            shader.SetFloat("_RockGradientBanding", Colors.rockColorGradient.banding);
+            shader.SetBuffer(0, "_RockColorNoise", rockColorNoise.Results);
+
             var dispatchNum = Mathf.CeilToInt(dataSize / (float)workGroups);
             shader.Dispatch(0, dispatchNum, dispatchNum, dispatchNum);
 
@@ -63,6 +78,8 @@ namespace FarmVox
             canyonNoise.Dispose();
             rockNoise.Dispose();
             sculptNoise.Dispose();
+            rockGradientBuffer.Dispose();
+            rockGradientIntervalsBuffer.Dispose();
         }
     }
 }

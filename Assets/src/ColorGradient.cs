@@ -10,6 +10,10 @@ namespace FarmVox
         private List<float> keys = new List<float>();
         public int banding = 0;
 
+        public int Count {
+            get { return map.Count; }
+        }
+
         public ColorGradient(Color a, Color b)
         {
             keys.Add(0);
@@ -58,5 +62,17 @@ namespace FarmVox
 
             throw new Exception("ratio must be between 0 and 1");
         }
-    }
+
+        public Color[] GetValues() {
+            var list = new List<Color>();
+            foreach(var key in keys) {
+                list.Add(map[key]);
+            }
+            return list.ToArray();
+        }
+
+        public float[] GetKeys() {
+            return keys.ToArray();
+        }
+	}
 }
