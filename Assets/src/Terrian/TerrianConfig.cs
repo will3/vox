@@ -42,6 +42,11 @@ namespace FarmVox
         public float treeAmount = 2.0f;
 #endregion
 
+#region waterfall
+        public Random waterfallRandom;
+        public ValueGradient waterfallHeightFilter;
+#endregion
+
         public Noise monsterNoise;
         public Perlin growthNoise;
         public Perlin heightNoise2;
@@ -97,6 +102,14 @@ namespace FarmVox
             monsterRandom = NextRandom();
             treeRandom = NextRandom();
             grassRandom = NextRandom();
+
+            waterfallRandom = NextRandom();
+            waterfallHeightFilter = new ValueGradient(new Dictionary<float, float>()
+            {
+                {0, 0},
+                {0.5f, 0},
+                {1.0f, 1}
+            });
 
             grassNoise.frequency = 0.02f;
 

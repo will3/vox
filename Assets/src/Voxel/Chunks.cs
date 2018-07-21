@@ -52,6 +52,10 @@ namespace FarmVox
             );
         }
 
+        public float Get(Vector3Int coord) {
+            return Get(coord.x, coord.y, coord.z);
+        }
+
         public float Get(int i, int j, int k)
         {
             var origin = getOrigin(i, j, k);
@@ -160,6 +164,10 @@ namespace FarmVox
             return list;
         }
 
+        public void Set(Vector3Int coord, float v) {
+            Set(coord.x, coord.y, coord.z, v);
+        }
+
         public void Set(int i, int j, int k, float v)
         {
             //var origin = getOrigin(i, j, k);
@@ -196,6 +204,32 @@ namespace FarmVox
             var origin = getOrigin(vector.x, vector.y, vector.z);
             var chunk = GetOrCreateChunk(origin);
             return chunk.surfaceCoordsUp.Contains(vector - origin);
+        }
+
+        public bool GetWaterfall(Vector3Int coord)
+        {
+            var origin = getOrigin(coord.x, coord.y, coord.z);
+            var terrianChunk = GetChunk(origin);
+            if (terrianChunk == null)
+            {
+                return false;
+            }
+            return terrianChunk.GetWaterfall(coord - terrianChunk.Origin);
+        }
+
+        public void SetWaterfall(Vector3Int coord, float value)
+        {
+            var i = coord.x;
+            var j = coord.y;
+            var k = coord.z;
+
+            var keys = GetKeys(i, j, k);
+            foreach (var key in keys)
+            {
+                var origin = key * size;
+                var chunk = GetOrCreateChunk(origin);
+                chunk.SetWaterfall(i - origin.x, j - origin.y, k - origin.z, value);
+            }
         }
     }
 }

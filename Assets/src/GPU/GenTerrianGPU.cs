@@ -80,6 +80,7 @@ namespace FarmVox
             sculptNoise.Dispose();
             rockGradientBuffer.Dispose();
             rockGradientIntervalsBuffer.Dispose();
+            rockColorNoise.Dispose();
         }
     }
 }

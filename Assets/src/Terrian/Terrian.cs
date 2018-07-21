@@ -30,6 +30,7 @@ namespace FarmVox
         public Vector3 Target;
 
         private Dictionary<Vector3Int, TerrianChunk> map = new Dictionary<Vector3Int, TerrianChunk>();
+
         private HashSet<Actor> actors = new HashSet<Actor>();
 
         public Dictionary<Vector3Int, TerrianChunk> Map
@@ -54,6 +55,7 @@ namespace FarmVox
             defaultLayer = new Chunks(size);
             treeLayer = new Chunks(size);
             waterLayer = new Chunks(size);
+
             waterLayer.useNormals = false;
             waterLayer.isWater = true;
 
@@ -108,6 +110,8 @@ namespace FarmVox
                     }
 
                     GenerateWaters(terrianChunk);
+
+                    GenerateWaterfalls(terrianChunk);
 
                     GenerateGrass(terrianChunk);
 
@@ -231,6 +235,16 @@ namespace FarmVox
                 return false;
             }
             return terrianChunk.GetWater(coord - terrianChunk.Origin);
+        }
+
+        public void SetWater(Vector3Int coord) {
+            var origin = GetOrigin(coord.x, coord.y, coord.z);
+            var terrianChunk = GetTerrianChunk(origin);
+            if (terrianChunk == null)
+            {
+                return;
+            }
+            terrianChunk.SetWater(coord - terrianChunk.Origin, true);
         }
     }
 }

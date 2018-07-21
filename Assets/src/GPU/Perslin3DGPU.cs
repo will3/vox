@@ -1,9 +1,10 @@
 using UnityEngine;
 using System.Collections;
+using System;
 
 namespace FarmVox
 {
-    public class Perlin3DGPU
+    public class Perlin3DGPU : IDisposable
     {
         private int workGroups = 8;
         private int size;

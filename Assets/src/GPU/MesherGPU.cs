@@ -32,14 +32,11 @@ namespace FarmVox
         public bool useNormals = true;
         public bool isWater = false;
 
-        private ComputeBuffer shadowBuffer;
-
         public MesherGPU(int size)
         {
             this.size = size;
             this.dataSize = size + 3;
             shader = Resources.Load<ComputeShader>("Shaders/Mesher");
-            shadowBuffer = new ComputeBuffer(dataSize * dataSize * dataSize, sizeof(float));
         }
 
         public ComputeBuffer CreateTrianglesBuffer() {
@@ -65,18 +62,38 @@ namespace FarmVox
             shader.SetInt("_IsWater", isWater ? 1 : 0);
             shader.SetFloat("_NormalStrength", normalStrength);
 
+            var shadowBuffer = new ComputeBuffer(dataSize * dataSize * dataSize, sizeof(float));
+            var waterfallBuffer = new ComputeBuffer(dataSize * dataSize * dataSize, sizeof(float));
+
             var shadowBufferData = new float[dataSize * dataSize * dataSize];
             foreach(var coord in chunk.surfaceCoords) {
                 var index = coord.x * dataSize * dataSize + coord.y * dataSize + coord.z;
                 var v = chunk.GetShadow(coord);
                 shadowBufferData[index] = v * shadowStrength;
             }
-
             shadowBuffer.SetData(shadowBufferData);
             shader.SetBuffer(0, "_ShadowBuffer", shadowBuffer);
 
+            if (chunk.Waterfalls.Count > 0) {
+                shader.SetInt("_HasWaterfalls", 1);
+                var waterfallData = new float[dataSize * dataSize * dataSize];
+                foreach(var kv in chunk.Waterfalls) {
+                    var coord = kv.Key;
+                    var index = coord.x * dataSize * dataSize + coord.y * dataSize + coord.z;
+                    var value = kv.Value;
+                    waterfallData[index] = value;
+                }
+                waterfallBuffer.SetData(waterfallData);
+                shader.SetBuffer(0, "_WaterfallBuffer", waterfallBuffer);
+            } else {
+                shader.SetInt("_HasWaterfalls", 0);
+            }
+
             var disptachNumber = Mathf.CeilToInt(dataSize / (float)workGroups);
             shader.Dispatch(0, 3 * disptachNumber, disptachNumber, disptachNumber);
+
+            shadowBuffer.Dispose();
+            waterfallBuffer.Dispose();
         }
 
         public int Count(ComputeBuffer from) {
@@ -99,10 +116,6 @@ namespace FarmVox
             trianglesBuffer.GetData(triangles);
 
             return triangles;
-        }
-
-        public void Dispose() {
-            shadowBuffer.Dispose();
         }
     }
 }

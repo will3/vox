@@ -30,6 +30,7 @@ namespace FarmVox
         public bool roadsNeedsUpdate = true;
         public bool enemiesNeedsUpdate = true;
         public bool floatingNeedsUpdate = true;
+        public bool waterfallsNeedsUpdate = true;
 
         public Terrian Terrian;
 
@@ -88,6 +89,10 @@ namespace FarmVox
         public bool GetTree(Vector3Int coord)
         {
             return trees.Contains(coord);
+        }
+
+        public void SetWater(Vector3Int coord, bool flag) {
+            SetWater(coord.x, coord.y, coord.z, flag);    
         }
 
         public void SetWater(int i, int j, int k, bool flag)

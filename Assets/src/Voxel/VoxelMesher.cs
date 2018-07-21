@@ -32,7 +32,6 @@ namespace FarmVox
 
             mesherGPU.Dispatch(voxelBuffer, colorsBuffer, trianglesBuffer, terrianChunk, chunk);
             var triangles = mesherGPU.ReadTriangles(trianglesBuffer);
-            mesherGPU.Dispose();
 
             var vertices = new List<Vector3>();
             var indices = new List<int>();

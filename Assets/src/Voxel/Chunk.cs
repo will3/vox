@@ -35,6 +35,16 @@ namespace FarmVox
             this.data = data;
         }
 
+        private readonly Dictionary<Vector3Int, float> waterfalls = new Dictionary<Vector3Int, float>();
+
+        public Dictionary<Vector3Int, float> Waterfalls
+        {
+            get
+            {
+                return waterfalls;
+            }
+        }
+
         private Mesh mesh;
         private GameObject gameObject;
         private readonly int size;
@@ -358,6 +368,28 @@ namespace FarmVox
 
         public float Get(Vector3Int coord) {
             return Get(coord.x, coord.y, coord.z);
+        }
+
+        public void SetWaterfall(Vector3Int coord, float v)
+        {
+            SetWaterfall(coord.x, coord.y, coord.z, v);
+        }
+
+        public void SetWaterfall(int i, int j, int k, float v)
+        {
+            var coord = new Vector3Int(i, j, k);
+            waterfalls[coord] = v;
+        }
+
+        public bool GetWaterfall(Vector3Int coord)
+        {
+            return GetWaterfall(coord.x, coord.y, coord.z);
+        }
+
+        public bool GetWaterfall(int i, int j, int k)
+        {
+            var coord = new Vector3Int(i, j, k);
+            return waterfalls.ContainsKey(coord);
         }
     }
 }
