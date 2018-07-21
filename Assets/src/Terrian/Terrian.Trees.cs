@@ -52,15 +52,13 @@ namespace FarmVox
                 }
 
                 Vector3 globalCoord = coord + chunk.Origin;
-                var value = (float)treeNoise.GetValue(globalCoord);
-
+                var noise = (float)treeNoise.GetValue(globalCoord);
                 var otherTrees = terrianChunk.GetOtherTrees(coord);
 
-                value -= otherTrees * 4.0f;
-
-                var height = (1f - absY / config.maxHeight) - 0.5f;
+                var height = absY / config.maxHeight;
                 var treeHeightValue = config.treeHeightGradient.GetValue(height);
-                value += treeHeightValue;
+
+                var value = noise * treeHeightValue * config.treeAmount - otherTrees * config.treeSparse;
 
                 if (value < 0.5f) { continue; }
 

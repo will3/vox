@@ -15,33 +15,39 @@ namespace FarmVox
         public float plainHeight = 12;
         public int waterLevel = 1;
 
+#region ground
+        public Noise heightNoise;
+        public Noise canyonNoise;
+        public Noise rockNoise;
+        public Noise scultNoise;
+        public ColorGradient rockColorGradient;
+#endregion
+
+        #region grass
         public Noise grassNoise;
         public Random grassRandom;
         public ValueGradient grassHeightFilter;
         public ValueGradient grassNormalFilter;
         public float grassOffset = 0f;
         public float grassMultiplier = 1.2f;
+#endregion
 
+#region tree
         public Perlin treeNoise;
         public Random treeRandom;
         public ValueGradient treeHeightGradient;
+        public float treeSparse = 4.0f;
+        public float treeAmount = 2.0f;
+#endregion
 
-        public Noise heightNoise;
-        public Noise canyonNoise;
-        public Noise rockNoise;
         public Noise monsterNoise;
-        public Noise scultNoise;
-
         public Perlin growthNoise;
-
         public Perlin heightNoise2;
         public Perlin townNoise;
 
         public Random townRandom;
         public Random roadRandom;
         public Random monsterRandom;
-
-        public ColorGradient rockColorGradient;
 
         private Random r;
 
