@@ -94,7 +94,7 @@ namespace FarmVox
 
                     GenerateGrass(terrianChunk);
 
-                    GenerateTrees(terrianChunk);
+                    // GenerateTrees(terrianChunk);
 
                     terrianChunk.UpdateRoutes();
 

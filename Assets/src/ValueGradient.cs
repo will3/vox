@@ -6,16 +6,23 @@ public class ValueGradient
 {
     private readonly Dictionary<float, float> map = new Dictionary<float, float>();
     private readonly List<float> keys = new List<float>();
+    public int banding = 0;
 
-    public ValueGradient() {
-        map[0.0f] = 0.0f;
-        map[1.0f] = 1.0f;
+    public ValueGradient(float min, float max) {
+        map[0.0f] = min;
+        map[1.0f] = max;
 
         keys.Add(0.0f);
         keys.Add(1.0f);
     }
 
-    public void Add(float position, float v) {
+    public ValueGradient(Dictionary<float, float> map) {
+        foreach(var kv in map) {
+            Set(kv.Key, kv.Value);
+        }
+    }
+
+    public void Set(float position, float v) {
         bool existing = map.ContainsKey(position);
         map[position] = v;
         if (!existing) {
@@ -25,6 +32,9 @@ public class ValueGradient
     }
 
     public float GetValue(float ratio) {
+        if (banding > 0) {
+            ratio = Mathf.Floor(ratio * (float)banding) / (float)banding;
+        }
         for (int i = 0; i < keys.Count - 1; i++) {
             float min = keys[i];
             float max = keys[i + 1];

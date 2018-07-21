@@ -11,6 +11,7 @@ int _Octaves;
 float3 _Origin;
 float _YScale;
 float _XZScale;
+float _Amplitude;
 
 float3 mod289(float3 x)
 {
@@ -255,5 +256,5 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
     float value = fBm(c, _Octaves);
     int index = getIndex(id.x, id.y, id.z);
-    _Results[index] = value;
+    _Results[index] = value * _Amplitude;
 }

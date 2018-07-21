@@ -23,6 +23,7 @@ public class CameraController : MonoBehaviour
         }
     }
 
+    public float rotateX = 45;
     private Vector3 rotation = new Vector3(45, 45, 0);
     private float distance = 200;
 
@@ -48,6 +49,7 @@ public class CameraController : MonoBehaviour
         var rotate = 0.0f;
         if (Input.GetKey(KeyCode.Q)) rotate -= 1.0f;
         if (Input.GetKey(KeyCode.E)) rotate += 1.0f;
+        rotation.x = rotateX;
         rotation.y += rotate * Time.deltaTime * rotateSpeed;
 
         if (Input.GetKeyDown(KeyCode.Equals)) {

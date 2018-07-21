@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using LibNoise.Generator;
 
 namespace FarmVox
@@ -9,14 +10,17 @@ namespace FarmVox
         public int generateDis = 2;
         public int drawDis = 2;
         public int minTreeJ = 1;
-        public int maxHeight = 64;
+        public float maxHeight = 64;
         public float hillHeight = 64;
         public float plainHeight = 12;
         public int waterLevel = 2;
 
         public Noise grassNoise;
-        public ValueGradient grassCurve;
         public Random grassRandom;
+        public ValueGradient grassHeightFilter;
+        public ValueGradient grassNormalFilter;
+        public float grassOffset = 0f;
+        public float grassMultiplier = 1.2f;
 
         public Noise heightNoise;
         public Noise canyonNoise;
@@ -80,9 +84,7 @@ namespace FarmVox
             treeRandom = NextRandom();
             grassRandom = NextRandom();
 
-            grassCurve = new ValueGradient();
-            grassCurve.Add(0.3f, 0.8f);
-            grassNoise.frequency = 0.1f;
+            grassNoise.frequency = 0.02f;
 
             rockNoise.frequency = 0.02f;
             scultNoise.frequency = 0.01f;
@@ -103,10 +105,18 @@ namespace FarmVox
 
             townNoise.Frequency = 0.01f;
 
-            treeHeightGradient = new ValueGradient();
-            treeHeightGradient.Add(0, 1);
-            treeHeightGradient.Add(0.5f, 0);
-            treeHeightGradient.Add(1, 0);
+            treeHeightGradient = new ValueGradient(1, 0);
+            grassHeightFilter = new ValueGradient(new Dictionary<float, float>{
+                { 0, 1 },
+                { 1, 0 } });
+
+            grassNormalFilter = new ValueGradient(
+                new Dictionary<float, float>{
+                { -1, 0 },
+                { 0, 0 },
+                { 0.49f, 0},
+                { 0.5f, 1 },
+                { 1, 1 } });
 
             //rockColorGradient = new ColorGradient(GetColor("#ce8643"), GetColor("#cec479"));
         }

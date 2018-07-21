@@ -22,28 +22,37 @@ namespace FarmVox
             foreach (var kv in chunk.Normals)
             {
                 var coord = kv.Key;
-                var normal = kv.Value;
+                var voxelNormal = kv.Value;
                 if (terrianChunk.GetWater(coord.x, coord.y, coord.z))
                 {
                     continue;
                 }
 
-                var upDot = Vector3.Dot(Vector3.up, normal);
+                var normal = Vector3.Dot(Vector3.up, voxelNormal);
+                var normalValue = config.grassNormalFilter.GetValue(normal);
 
-                Vector3 globalCoord = coord + chunk.Origin;
+                if (normalValue <= 0) {
+                    continue;
+                }
 
                 var index = chunk.GetIndex(coord);
-                var grassNoiseValue = grassNoiseData[index];
-
-                var value = upDot + grassNoiseValue * 0.2f;
-
-                if (value < 0.4f)
+                var grassNoiseValue = (float)grassNoiseData[index];
+                var absY = coord.y + chunk.Origin.y;
+                var height = absY / config.maxHeight;
+                var heightValue = config.grassHeightFilter.GetValue(height);
+                                        
+                if (heightValue <= 0f)
                 {
                     continue;
                 }
 
-                var v = config.grassCurve.GetValue(value);
-                var c = Colors.grassGradient.GetValue(v);
+                var value = normalValue * heightValue * config.grassMultiplier + grassNoiseValue + config.grassOffset;
+
+                if (value < 0) {
+                    continue;
+                }
+
+                var c = Colors.grassGradient.GetValue(value);
 
                 chunk.SetColor(coord.x, coord.y, coord.z, c);
             }

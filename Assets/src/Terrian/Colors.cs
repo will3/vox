@@ -36,6 +36,7 @@ namespace FarmVox
             //rock = GetColor("#555555");
 
             grassGradient = new ColorGradient(rock, grass);
+            grassGradient.banding = 3;
             //grassGradient.Add(0.5f, grass);
         }
 
