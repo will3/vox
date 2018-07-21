@@ -3,13 +3,14 @@ using UnityEngine.Profiling;
 
 namespace FarmVox
 {
-    public class DrawWorker : IWorker {
+    public class MeshWorker : IWorker {
         private Chunk chunk;
         private TerrianChunk terrianChunk;
         Transform transform;
         Material material;
+        private bool done;
 
-        public DrawWorker(Chunk chunk, TerrianChunk terrianChunk, Transform transform, Material material) {
+        public MeshWorker(Chunk chunk, TerrianChunk terrianChunk, Transform transform, Material material) {
             this.chunk = chunk;
             this.terrianChunk = terrianChunk;
             this.transform = transform;
@@ -39,8 +40,15 @@ namespace FarmVox
 
             chunk.Mesh = mesh;
             chunk.GameObject = go;
+
+            done = true;
+        }
+
+        public bool IsDone() {
+            return done;
         }
     }
+
     public partial class Terrian
     {
         public void Draw(Chunks chunks, Vector3Int origin, Transform transform, Material material, TerrianChunk terrianChunk)
@@ -57,8 +65,8 @@ namespace FarmVox
                 return;
             }
 
-            var worker = new DrawWorker(chunk, terrianChunk, transform, material);
-            Finder.FindGameController().meshQueue.Add(worker);
+            var worker = new MeshWorker(chunk, terrianChunk, transform, material);
+            WorkerQueues.meshQueue.Add(worker);
 
             chunk.Dirty = false;
         }

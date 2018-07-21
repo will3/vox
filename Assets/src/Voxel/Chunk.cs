@@ -299,8 +299,6 @@ namespace FarmVox
                 //shadowMap.CalcShadow(this, new Vector3Int(coord.x, coord.y, coord.z + 1), chunksList);
                 //shadowMap.CalcShadow(this, new Vector3Int(coord.x, coord.y, coord.z - 1), chunksList);
             }
-
-            dirty = true;
         }
 
         private float shadowStrength = 0.5f;

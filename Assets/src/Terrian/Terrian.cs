@@ -18,6 +18,15 @@ namespace FarmVox
         private Chunks waterLayer;
 
         private Material material = new Material(Shader.Find("Unlit/voxelunlit"));
+
+        public Material Material
+        {
+            get
+            {
+                return material;
+            }
+        }
+
         public Transform Transform;
         public Vector3 Target;
 
@@ -76,7 +85,7 @@ namespace FarmVox
                     for (int k = z - generateDis; k <= z + generateDis; k++)
                     {
                         var origin = new Vector3Int(i, j, k) * size;
-                        var terrianChunk = getOrCreateTerrianChunk(origin);
+                        var terrianChunk = GetOrCreateTerrianChunk(origin);
                     }
                 }
             }
@@ -127,8 +136,6 @@ namespace FarmVox
                 }
             }
 
-            var start = System.DateTime.Now;
-
             foreach (var kv in map)
             {
                 var terrianChunk = kv.Value;
@@ -139,20 +146,6 @@ namespace FarmVox
                     }
                 }
             }
-
-            var end = System.DateTime.Now;
-
-            if ((end - start).Milliseconds > 10) {
-                Debug.Log((end - start).Milliseconds);    
-            }
-        }
-
-        private void generateGrowth(TerrianChunk terrianChunk) {
-            if (!terrianChunk.growthNeedsUpdate) {
-                return;
-            }
-
-            terrianChunk.growthNeedsUpdate = false;
         }
 
         public TerrianChunk GetTerrianChunk(Vector3Int origin) {
@@ -161,7 +154,7 @@ namespace FarmVox
             return terrianChunk;
         }
 
-        TerrianChunk getOrCreateTerrianChunk(Vector3Int origin)
+        TerrianChunk GetOrCreateTerrianChunk(Vector3Int origin)
         {
             if (map.ContainsKey(origin))
             {
@@ -173,17 +166,6 @@ namespace FarmVox
             map[origin].Config = config;
             map[origin].Terrian = this;
             return map[origin];
-        }
-
-        private void generateHouses(TerrianChunk terrianChunk)
-        {
-            //if (terrianChunk.GeneratedHouses)
-            //{
-            //    return;
-            //}
-            //var house = new House(3, 2, 5);
-            //print(house.Shape, new Vector3Int(0, 20, 0), defaultLayer.Chunks, new Vector3Int());
-            //terrianChunk.GeneratedHouses = true;
         }
 
         private void print(Array3<Voxel> shape, Vector3Int pos, Chunks layer, Vector3Int offset)
@@ -213,23 +195,8 @@ namespace FarmVox
             }
         }
 
-        public void SpawnDwarfs() {
-            var origin = new Vector3Int(0, 0, 0);
-            var terrianChunk = map[origin];
-            var node = terrianChunk.Routes.GetNodeCloseTo(new Vector3Int(size / 2, 0, size / 2));
-
-            if (node != null) {
-                //var house = new House(3, 2, 5);
-                //print(house.Shape, node.Value, defaultLayer.Chunks, new Vector3Int());
-                //GameObject go = new GameObject("guy");
-                //var actor = go.AddComponent<Actor>();
-                //actor.terrian = this;
-                //actor.SetNode(node.Value);
-            }
-        }
-
         public HashSet<Routes.Connection> GetNextNodes(Vector3Int node) {
-            var origin = getOrigin(node.x, node.y, node.z);
+            var origin = GetOrigin(node.x, node.y, node.z);
             var terrianChunk = GetTerrianChunk(origin);
             if (terrianChunk == null) {
                 return new HashSet<Routes.Connection>();
@@ -242,7 +209,7 @@ namespace FarmVox
             return new HashSet<Routes.Connection>();
         }
 
-        public Vector3Int getOrigin(int i, int j, int k)
+        public Vector3Int GetOrigin(int i, int j, int k)
         {
             return new Vector3Int(
                 Mathf.FloorToInt(i / this.sizeF) * this.size,
@@ -257,7 +224,7 @@ namespace FarmVox
         }
 
         public bool GetWater(Vector3Int coord) {
-            var origin = getOrigin(coord.x, coord.y, coord.z);
+            var origin = GetOrigin(coord.x, coord.y, coord.z);
             var terrianChunk = GetTerrianChunk(origin);
             if (terrianChunk == null) {
                 return false;

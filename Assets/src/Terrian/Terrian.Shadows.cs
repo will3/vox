@@ -1,38 +1,57 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Threading;
+using UnityEngine;
 
 namespace FarmVox
 {
+    public class ShadowWorker : IWorker
+    {
+        private bool done = false;
+
+        TerrianChunk terrianChunk;
+        IList<Chunks> chunksReceivingShadows;
+        IList<Chunks> chunksCastingShadows;
+        Terrian terrian;
+
+        public ShadowWorker(TerrianChunk terrianChunk, IList<Chunks> chunksReceivingShadows, IList<Chunks> chunksCastingShadows, Terrian terrian) {
+            this.terrianChunk = terrianChunk;
+            this.chunksReceivingShadows = chunksReceivingShadows;
+            this.chunksCastingShadows = chunksCastingShadows;
+            this.terrian = terrian;
+        }
+
+        public bool IsDone()
+        {
+            return done;
+        }
+
+        public void Start()
+        {
+            Thread thread = new Thread(Work);
+            thread.Start();
+        }
+
+        private void Work() {
+            var origin = terrianChunk.Origin;
+
+            foreach (var chunks in chunksReceivingShadows)
+            {
+                var c = chunks.GetChunk(origin);
+                if (c != null)
+                {
+                    c.UpdateSurfaceCoords();
+                    c.UpdateShadows(chunksCastingShadows);
+
+                    var meshWorker = new MeshWorker(c, terrianChunk, terrian.Transform, terrian.Material);
+                    WorkerQueues.meshQueue.Add(meshWorker);
+                }
+            }
+            done = true;
+        }
+    }
 
     public partial class Terrian
     {
-        //private bool CheckShadow(Vector3Int key, int i, int j, int k)
-        //{
-        //    key.x += i;
-        //    key.y += j;
-        //    key.z += k;
-        //    var origin = key * size;
-
-        //    var terrianChunk = getOrCreateTerrianChunk(origin);
-        //    terrianChunk.generatedForShadows = true;
-        //    var ready = !terrianChunk.rockNeedsUpdate && !terrianChunk.treesNeedsUpdate;
-        //    return ready;
-        //}
-
-        //private bool CheckShadow(TerrianChunk terrianChunk)
-        //{
-        //    var key = terrianChunk.key;
-
-        //    var ready = true;
-        //    for (var j = 0; j < config.maxChunksY - key.y; j++)
-        //    {
-        //        ready &= CheckShadow(key, 0 + j, j, 0 + j);
-        //        ready &= CheckShadow(key, 1 + j, j, 0 + j);
-        //        ready &= CheckShadow(key, 0 + j, j, 1 + j);
-        //        ready &= CheckShadow(key, 1 + j, j, 1 + j);
-        //    }
-        //    return ready;
-        //}
-
         public void UpdateShadowNeedsUpdate(Vector3Int from) {
             var key = new Vector3Int(from.x / size, from.y / size, from.z / size);
             for (var offset = 0; offset <= key.y; offset++) {
@@ -53,25 +72,13 @@ namespace FarmVox
 
         private void GenerateShadows(TerrianChunk terrianChunk)
         {
-
             if (!terrianChunk.shadowsNeedsUpdate)
             {
                 return;
             }
 
-            var origin = terrianChunk.Origin;
-            var chunk = defaultLayer.GetChunk(origin);
-            var treeChunk = treeLayer.GetChunk(origin);
-
-            foreach (var chunks in chunksReceivingShadows)
-            {
-                var c = chunks.GetChunk(origin);
-                if (c != null)
-                {
-                    c.UpdateSurfaceCoords();
-                    c.UpdateShadows(chunksCastingShadows);
-                }
-            }
+            var worker = new ShadowWorker(terrianChunk, chunksReceivingShadows, chunksCastingShadows, this);
+            WorkerQueues.shadowQueue.Add(worker);
 
             terrianChunk.shadowsNeedsUpdate = false;
         }

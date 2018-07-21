@@ -26,7 +26,6 @@ namespace FarmVox
         public bool shadowsNeedsUpdate = false;
         public bool housesNeedsUpdate = true;
         public bool routesNeedsUpdate = true;
-        public bool growthNeedsUpdate = true;
         public bool townPointsNeedsUpdate = true;
         public bool roadsNeedsUpdate = true;
         public bool enemiesNeedsUpdate = true;
@@ -197,7 +196,7 @@ namespace FarmVox
                 return routes.Map[node];
             }
 
-            var origin = Terrian.getOrigin(node.x, node.y, node.z);
+            var origin = Terrian.GetOrigin(node.x, node.y, node.z);
             var terrianChunk = Terrian.GetTerrianChunk(origin);
             if (terrianChunk == null) {
                 return new HashSet<Routes.Connection>();

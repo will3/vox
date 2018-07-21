@@ -19,8 +19,6 @@ public class GameController : MonoBehaviour {
     private bool spawned = false;
     private GameObject highlight;
 
-    public WorkerQueue meshQueue = new WorkerQueue();
-
     public GameObject Highlight
     {
         get
@@ -40,14 +38,16 @@ public class GameController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        meshQueue.Update();
+        WorkerQueues.meshQueue.Update();
+        WorkerQueues.shadowQueue.Update();
+
         var cameraController = Finder.FindCameraController();
         if (cameraController != null) {
             terrian.Target = cameraController.Target;
             terrian.Update();
             if (!spawned)
             {
-                terrian.SpawnDwarfs();
+                // TODO
                 spawned = true;
             }    
         }
