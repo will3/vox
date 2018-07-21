@@ -31,7 +31,7 @@ namespace FarmVox
             }
 
             var worker = new ShadowWorker(terrianChunk, chunksReceivingShadows, chunksCastingShadows, this);
-            WorkerQueues.shadowQueue.Add(worker);
+            WorkerQueues.meshQueue.Add(worker);
 
             terrianChunk.shadowsNeedsUpdate = false;
         }

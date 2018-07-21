@@ -36,6 +36,7 @@ namespace FarmVox
             var vertices = new List<Vector3>();
             var indices = new List<int>();
             var colors = new List<Color>();
+            var uv = new List<Vector2>();
 
             for (var i = 0; i < triangles.Length; i++) {
                 var triangle = triangles[i];
@@ -50,12 +51,17 @@ namespace FarmVox
                 colors.Add(triangle.colorA);
                 colors.Add(triangle.colorB);
                 colors.Add(triangle.colorC);
+
+                uv.Add(new Vector2(triangle.waterfall, 0));
+                uv.Add(new Vector2(triangle.waterfall, 0));
+                uv.Add(new Vector2(triangle.waterfall, 0));
             }
 
             var mesh = new Mesh();
             mesh.SetVertices(vertices);
             mesh.SetTriangles(indices, 0);
             mesh.SetColors(colors);
+            mesh.uv = uv.ToArray();
 
             voxelBuffer.Dispose();
             colorsBuffer.Dispose();

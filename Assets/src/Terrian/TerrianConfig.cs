@@ -44,6 +44,7 @@ namespace FarmVox
 
 #region waterfall
         public Random waterfallRandom;
+        public Noise waterfallNoise;
         public ValueGradient waterfallHeightFilter;
 #endregion
 
@@ -101,9 +102,12 @@ namespace FarmVox
             roadRandom = NextRandom();
             monsterRandom = NextRandom();
             treeRandom = NextRandom();
+            waterfallRandom = NextRandom();
             grassRandom = NextRandom();
 
-            waterfallRandom = NextRandom();
+            waterfallNoise = NextNoise();
+            waterfallNoise.frequency = 0.005f;
+
             waterfallHeightFilter = new ValueGradient(new Dictionary<float, float>()
             {
                 {0, 0},

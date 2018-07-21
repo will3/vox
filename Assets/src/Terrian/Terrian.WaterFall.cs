@@ -35,17 +35,20 @@ namespace FarmVox
             var origin = terrianChunk.Origin;
 
             var chunk = defaultLayer.GetChunk(origin);
-
+            var dataSize = chunk.dataSize;
             chunk.UpdateSurfaceCoords();
+            var waterFallNoise = new Perlin3DGPU(config.waterfallNoise, chunk.dataSize, origin);
+            waterFallNoise.Dispatch();
+            var waterFallNoiseData = waterFallNoise.Read();
 
             foreach(var coord in chunk.surfaceCoords) {
                 var r = config.waterfallRandom.NextDouble();
-
+                var index = coord.x * dataSize * dataSize + coord.y * dataSize + coord.z;
                 var absY = coord.y + origin.y;
                 var height = absY / config.maxHeight;
                 var heightValue = config.waterfallHeightFilter.GetValue(height);
-
-                if (r / heightValue > 0.03f)
+                var v = r / heightValue; // / waterFallNoiseData[index];
+                if (v < 0 || v > 0.05f)
                 {
                     continue;
                 }
@@ -54,41 +57,137 @@ namespace FarmVox
             }
 
             terrianChunk.waterfallsNeedsUpdate = false;
+            terrianChunk.shadowsNeedsUpdate = true;
+
+            waterFallNoise.Dispose();
+        }
+
+        class WaterTracker {
+            private float speed = 0.0f;
+            private bool freefall = false;
+            private float freefallFriction = 0f;
+            private float friction = 0.9f;
+            private float lastCost = 0.0f;
+            private float maxSpeed = 5;
+            private bool didReachedWater = false;
+            private List<Vector3Int> coords = new List<Vector3Int>();
+            private List<Vector3Int> emptyCoords = new List<Vector3Int>();
+            private List<float> costs = new List<float>();
+
+            public bool DidReachedWater
+            {
+                get
+                {
+                    return didReachedWater;
+                }
+            }
+
+            public float LastCost
+            {
+                get
+                {
+                    return lastCost;
+                }
+            }
+
+            public void Start(Vector3Int coord) {
+                coords.Add(coord);
+                costs.Add(1.0f);
+            }
+
+            public void Freefall(Vector3Int coord) {
+                speed += 1f;
+                freefall = true;
+                lastCost = 1 / speed;
+
+                speed *= friction;
+
+                if (speed > maxSpeed) {
+                    speed = maxSpeed;
+                }
+
+                coords.Add(coord);
+                costs.Add(costs[costs.Count - 1] + lastCost);
+
+                emptyCoords.Add(coord);
+            }
+
+            public void Flow(Vector3Int from, Vector3Int to) {
+                if (freefall) {
+                    speed *= freefallFriction;
+                    freefall = false;
+                }
+
+                speed += 0.5f;
+
+                speed *= friction;
+
+                lastCost = (from - to).magnitude / speed;
+
+                coords.Add(to);
+                costs.Add(costs[costs.Count - 1] + lastCost);
+            }
+
+            public void ReachedWater() {
+                didReachedWater = true;
+            }
+
+            public void Apply(Chunks chunks) {
+                for (var i = 0; i < coords.Count; i++) {
+                    var coord = coords[i];
+                    var cost = costs[i];
+                    chunks.SetColor(coord.x, coord.y, coord.z, Colors.water);
+                    chunks.SetWaterfall(coord, cost);    
+                }
+                foreach(var coord in emptyCoords) {
+                    chunks.Set(coord, 1);
+                }
+            }
         }
 
         private void GenerateWaterfall(Vector3Int coord) {
-            defaultLayer.SetColor(coord.x, coord.y, coord.z, Colors.special);
 
             Vector3Int? nextPoint = coord;
 
-            var count = 0;
+            var cost = (float)config.waterfallRandom.NextDouble() * 1000.0f;
+
+            var waterTracker = new WaterTracker();
+            waterTracker.Start(coord);
 
             while (true) {
                 if (nextPoint == null) {
                     break;
                 }
-                if (nextPoint.Value.y <= config.waterLevel) {
+
+                nextPoint = ProcessNextWater(nextPoint.Value, waterTracker);
+
+                if (nextPoint == null)
+                {
                     break;
                 }
-                nextPoint = GetNextWaterPoint(nextPoint.Value);
-                defaultLayer.SetColor(nextPoint.Value.x, nextPoint.Value.y, nextPoint.Value.z, Colors.water);
-                defaultLayer.SetWaterfall(nextPoint.Value, count);
-                count++;
-                if (count > 1000) {
+
+                cost += waterTracker.LastCost;
+
+                if (cost > 1000) {
                     break;
                 }
             }
+
+            if (waterTracker.DidReachedWater) {
+                waterTracker.Apply(defaultLayer);    
+            }
         }
 
-        private Vector3Int? GetNextWaterPoint(Vector3Int coord) {
-            if (coord.y <= config.waterLevel) {
+        private Vector3Int? ProcessNextWater(Vector3Int coord, WaterTracker waterTracker) {
+            if (coord.y < config.waterLevel) {
+                waterTracker.ReachedWater();
                 return null;    
             }
 
             var down = new Vector3Int(coord.x, coord.y - 1, coord.z);
 
             if (defaultLayer.Get(down) < 0) {
-                defaultLayer.Set(down, 1);
+                waterTracker.Freefall(down);
                 return down;
             }
 
@@ -120,6 +219,7 @@ namespace FarmVox
                 } else {
                     // From the sides
                     if (i < 4) {
+                        waterTracker.Flow(coord, down);
                         return down;      
                     }
                 }
@@ -149,6 +249,10 @@ namespace FarmVox
                     minValue = value;
                     minCoord = listToUse[i];
                 }
+            }
+
+            if (minCoord.HasValue) {
+                waterTracker.Flow(coord, minCoord.Value);    
             }
 
             return minCoord;

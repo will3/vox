@@ -16,18 +16,15 @@ namespace FarmVox
         public System.DateTime nextStart;
         public int minWait = 10;
         private IWorker currentWorker;
-
-        private HashSet<IWorker> buffer = new HashSet<IWorker>();
+        private static Mutex mutex = new Mutex();
 
         public void Add(IWorker worker) {
-            buffer.Add(worker);
+            mutex.WaitOne();
+            workers.Add(worker);
+            mutex.ReleaseMutex();
         }
 
         public void Update() {
-            foreach(var worker in buffer) {
-                workers.Add(worker);
-            }
-            buffer.Clear();
 
             if (currentWorker != null && currentWorker.IsDone()) {
                 currentWorker = null;
@@ -42,7 +39,9 @@ namespace FarmVox
             if (System.DateTime.Now > nextStart)
             {
                 if (workers.Count > 0) {
+                    mutex.WaitOne();
                     var worker = workers.ElementAt(0);
+                    mutex.ReleaseMutex();
                     worker.Start();
                     currentWorker = worker;
                     workers.Remove(worker);

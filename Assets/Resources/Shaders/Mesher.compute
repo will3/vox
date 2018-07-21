@@ -8,6 +8,7 @@ struct Triangle {
     float4 colorA;
     float4 colorB;
     float4 colorC;
+    float waterfall;
 };
 
 int _DataSize;
@@ -65,7 +66,7 @@ float getDot(int i, int j, int k) {
     return dot(-normalize(v), lightDir);
 }
 
-void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, float ab, float ac, float ad, bool order, bool flipped) {
+void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, float ab, float ac, float ad, bool order, bool flipped, float waterfall) {
     Triangle t1;
     Triangle t2;
 
@@ -75,7 +76,8 @@ void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, flo
         t1.c = c;
         t1.colorA = color * aa;
         t1.colorB = color * ab;
-        t1.colorC = color * ac ;
+        t1.colorC = color * ac;
+        t1.waterfall = waterfall;
         _TrianglesBuffer.Append(t1);
 
         t2.a = a;
@@ -84,6 +86,7 @@ void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, flo
         t2.colorA = color * aa;
         t2.colorB = color * ac;
         t2.colorC = color * ad;
+        t2.waterfall = waterfall;
         _TrianglesBuffer.Append(t2);
     } else {
         t1.a = c;
@@ -92,6 +95,7 @@ void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, flo
         t1.colorA = color * ac;
         t1.colorB = color * ab;
         t1.colorC = color * aa;
+        t1.waterfall = waterfall;
         _TrianglesBuffer.Append(t1);
 
         t2.a = d;
@@ -100,6 +104,7 @@ void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, flo
         t2.colorA = color * ad;
         t2.colorB = color * ac;
         t2.colorC = color * aa;
+        t2.waterfall = waterfall;
         _TrianglesBuffer.Append(t2);
     }
 }
@@ -195,14 +200,20 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
     float normal = 1 - (1 - _normal) * _NormalStrength;
     float shadow = getShadow(c);
-    float4 color = getColor(c) * normal * (1 - shadow);
 
+    float waterfall;
     if (_HasWaterfalls) {
-        float waterfall = getWaterfall(c);
-        if (waterfall > 0) {
-            color = float4(1.0, 0, 1.0, 1.0);
-        }
+        waterfall = getWaterfall(c);
+    } else {
+        waterfall = 0.0;
     }
+
+    if (waterfall > 0.0) {
+        shadow *= 0.8;
+        normal = 1.0;
+    }
+
+    float4 color = getColor(c) * normal * (1 - shadow);
 
     int aoI = front ? i + 1 : i;
     int3 c00 = getVectorInt(aoI, j - 1, k - 1, d);
@@ -241,6 +252,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
         ao11,
         ao10,
         front,
-        flipped
+        flipped,
+        waterfall
     );
 }

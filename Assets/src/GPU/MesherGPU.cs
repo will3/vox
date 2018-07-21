@@ -10,12 +10,13 @@ namespace FarmVox
         public Color colorA;
         public Color colorB;
         public Color colorC;
+        public float waterfall;
 
         public static int Size
         {
             get
             {
-                return sizeof(float) * 3 * 3 + sizeof(float) * 4 * 3;
+                return sizeof(float) * 3 * 3 + sizeof(float) * 4 * 3 + sizeof(float);
             }
         }
     }
@@ -63,7 +64,7 @@ namespace FarmVox
             shader.SetFloat("_NormalStrength", normalStrength);
 
             var shadowBuffer = new ComputeBuffer(dataSize * dataSize * dataSize, sizeof(float));
-            var waterfallBuffer = new ComputeBuffer(dataSize * dataSize * dataSize, sizeof(float));
+            ComputeBuffer waterfallBuffer;
 
             var shadowBufferData = new float[dataSize * dataSize * dataSize];
             foreach(var coord in chunk.surfaceCoords) {
@@ -75,6 +76,8 @@ namespace FarmVox
             shader.SetBuffer(0, "_ShadowBuffer", shadowBuffer);
 
             if (chunk.Waterfalls.Count > 0) {
+                waterfallBuffer = new ComputeBuffer(dataSize * dataSize * dataSize, sizeof(float));
+
                 shader.SetInt("_HasWaterfalls", 1);
                 var waterfallData = new float[dataSize * dataSize * dataSize];
                 foreach(var kv in chunk.Waterfalls) {
@@ -86,7 +89,10 @@ namespace FarmVox
                 waterfallBuffer.SetData(waterfallData);
                 shader.SetBuffer(0, "_WaterfallBuffer", waterfallBuffer);
             } else {
+                waterfallBuffer = new ComputeBuffer(1, sizeof(float));
+
                 shader.SetInt("_HasWaterfalls", 0);
+                shader.SetBuffer(0, "_WaterfallBuffer", waterfallBuffer);
             }
 
             var disptachNumber = Mathf.CeilToInt(dataSize / (float)workGroups);

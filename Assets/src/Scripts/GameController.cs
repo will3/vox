@@ -39,7 +39,6 @@ public class GameController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         WorkerQueues.meshQueue.Update();
-        WorkerQueues.shadowQueue.Update();
 
         var cameraController = Finder.FindCameraController();
         if (cameraController != null) {
