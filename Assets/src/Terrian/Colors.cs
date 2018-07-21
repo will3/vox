@@ -41,13 +41,15 @@ namespace FarmVox
             grassGradient.banding = 6;
             //grassGradient.Add(0.5f, grass);
 
+            var mid = Color.Lerp(GetColor("#413535"), GetColor("#cec479"), 0.5f);
             rockColorGradient = new ColorGradient(new Dictionary<float, Color>() {
-                {0, GetColor("#7e752f")},
+                {0, GetColor("#413535")},
+                {0.3f, mid },
                 {0.8f, GetColor("#cec479")},
                 {1, GetColor("#cec479")}
             });
 
-            rockColorGradient.banding = 8;
+            rockColorGradient.banding = 10;
         }
 
         public static Color GetColor(string hex)

@@ -7,8 +7,8 @@ namespace FarmVox
     public class TerrianConfig
     {
         public int maxChunksY = 4;
-        public int generateDis = 3;
-        public int drawDis = 3;
+        public int generateDis = 2;
+        public int drawDis = 2;
         public int minTreeJ = 1;
         public float maxHeight = 64;
         public float hillHeight = 64;
@@ -38,7 +38,7 @@ namespace FarmVox
         public Perlin treeNoise;
         public Random treeRandom;
         public ValueGradient treeHeightGradient;
-        public float treeSparse = 4.0f;
+        public float treeSparse = 5.0f;
         public float treeAmount = 2.0f;
 #endregion
 
@@ -83,7 +83,7 @@ namespace FarmVox
 
             rockColorNoise = NextNoise();
             rockColorNoise.frequency = 0.05f;
-            rockColorNoise.yScale = 5.0f;
+            rockColorNoise.yScale = 6.0f;
             rockColorNoise.amplitude = 1.0f;
 
             growthNoise = NextPerlin();
