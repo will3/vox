@@ -18,7 +18,6 @@ namespace FarmVox
         private Chunks waterLayer;
 
         private Material material = new Material(Shader.Find("Unlit/voxelunlit"));
-
         public Material Material
         {
             get
@@ -120,6 +119,10 @@ namespace FarmVox
 
                     //GenerateEnemies(terrianChunk);
                 }
+            }
+
+            foreach (var kv in map) {
+                UpdateFloating(kv.Value);
             }
 
             foreach (var coord in updatedTerrianChunks)

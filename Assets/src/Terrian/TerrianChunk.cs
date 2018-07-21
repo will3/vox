@@ -29,6 +29,7 @@ namespace FarmVox
         public bool townPointsNeedsUpdate = true;
         public bool roadsNeedsUpdate = true;
         public bool enemiesNeedsUpdate = true;
+        public bool floatingNeedsUpdate = true;
 
         public Terrian Terrian;
 
@@ -255,6 +256,11 @@ namespace FarmVox
             }
 
             return roadMap;
+        }
+
+        private HashSet<Vector3Int> floating = new HashSet<Vector3Int>();
+        public void SetFloating(Vector3Int coord) {
+            floating.Add(coord);
         }
     }
 }
