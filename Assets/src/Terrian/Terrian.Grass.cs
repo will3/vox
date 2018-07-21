@@ -7,17 +7,17 @@ namespace FarmVox
     partial class Terrian {
         private void GenerateGrass(TerrianChunk terrianChunk)
         {
+            if (!terrianChunk.grassNeedsUpdate)
+            {
+                return;
+            }
+
             var chunk = terrianChunk.Chunk;
             var origin = terrianChunk.Origin;
             var grassNoise = new Perlin3DGPU(config.grassNoise, chunk.dataSize, origin);
             grassNoise.Dispatch();
             var grassNoiseData = grassNoise.Read();
             grassNoise.Dispose();
-
-            if (!terrianChunk.grassNeedsUpdate)
-            {
-                return;
-            }
 
             foreach (var kv in chunk.Normals)
             {
