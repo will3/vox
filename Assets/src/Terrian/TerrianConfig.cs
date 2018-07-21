@@ -13,7 +13,7 @@ namespace FarmVox
         public float maxHeight = 64;
         public float hillHeight = 64;
         public float plainHeight = 12;
-        public int waterLevel = 5;
+        public int waterLevel = 1;
 
         public Noise grassNoise;
         public Random grassRandom;
@@ -21,6 +21,10 @@ namespace FarmVox
         public ValueGradient grassNormalFilter;
         public float grassOffset = 0f;
         public float grassMultiplier = 1.2f;
+
+        public Perlin treeNoise;
+        public Random treeRandom;
+        public ValueGradient treeHeightGradient;
 
         public Noise heightNoise;
         public Noise canyonNoise;
@@ -37,9 +41,6 @@ namespace FarmVox
         public Random roadRandom;
         public Random monsterRandom;
 
-        public Perlin treeNoise;
-        public Random treeRandom;
-        public ValueGradient treeHeightGradient;
         public ColorGradient rockColorGradient;
 
         private Random r;
