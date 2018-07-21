@@ -43,7 +43,6 @@ namespace FarmVox
         public bool Hidden;
         public Chunks Chunks;
         public bool surfaceCoordsDirty = true;
-        private bool shadowsDirty = true;
         private ChunkShadowMap shadowMap = new ChunkShadowMap();
         public HashSet<Vector3Int> surfaceCoords = new HashSet<Vector3Int>();
         public HashSet<Vector3Int> surfaceCoordsUp = new HashSet<Vector3Int>();
@@ -189,7 +188,6 @@ namespace FarmVox
             data[index] = v;
             dirty = true;
             surfaceCoordsDirty = true;
-            shadowsDirty = true;
             normalsNeedsUpdate = true;
             empty = false;
         }
@@ -289,11 +287,6 @@ namespace FarmVox
 
         public void UpdateShadows(IList<Chunks> chunksList)
         {
-            if (!shadowsDirty)
-            {
-                return;
-            }
-
             UpdateSurfaceCoords();
 
             shadowMap.Clear();
@@ -307,7 +300,7 @@ namespace FarmVox
                 //shadowMap.CalcShadow(this, new Vector3Int(coord.x, coord.y, coord.z - 1), chunksList);
             }
 
-            shadowsDirty = false;
+            dirty = true;
         }
 
         private float shadowStrength = 0.5f;

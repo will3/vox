@@ -58,6 +58,12 @@ namespace FarmVox
 
         public void Update()
         {
+            if (Input.GetKeyDown(KeyCode.P)) {
+                foreach(var kv in map) {
+                    kv.Value.shadowsNeedsUpdate = true;
+                }
+            }
+
             int x = Mathf.FloorToInt(Target.x / sizeF);
             int z = Mathf.FloorToInt(Target.z / sizeF);
             var maxChunksY = config.maxChunksY;
@@ -81,15 +87,7 @@ namespace FarmVox
                 terrianChunk.UpdateDistance(x, z);
             }
 
-            // Generate rocks
-            foreach(var kv in map) {
-                var terrianChunk = kv.Value;
-
-                if (terrianChunk.Distance < config.drawDis)
-                {
-                    GenerateGround(terrianChunk);
-                }
-            }
+            HashSet<Vector3Int> updatedTerrianChunks = new HashSet<Vector3Int>();
 
             foreach (var kv in map)
             {
@@ -98,8 +96,10 @@ namespace FarmVox
                 if (terrianChunk.Distance < config.drawDis)
                 {
                     var origin = terrianChunk.Origin;
-                    defaultLayer.GetChunk(origin).UpdateNormals();
-                    var chunk = defaultLayer.GetChunk(origin);
+
+                    if (GenerateGround(terrianChunk)) {
+                        updatedTerrianChunks.Add(origin);
+                    }
 
                     GenerateWaters(terrianChunk);
 
@@ -111,8 +111,18 @@ namespace FarmVox
 
                     //GenerateEnemies(terrianChunk);
                 }
+            }
 
-                if (terrianChunk.Distance < config.drawDis) {
+            foreach (var coord in updatedTerrianChunks)
+            {
+                UpdateShadowNeedsUpdate(coord);
+            }
+
+            foreach(var kv in map) {
+                var terrianChunk = kv.Value;
+
+                if (terrianChunk.Distance < config.drawDis)
+                {
                     GenerateShadows(terrianChunk);
                 }
             }
@@ -275,7 +285,7 @@ namespace FarmVox
             mesh.RecalculateBounds();
             mesh.RecalculateNormals();
 
-            GameObject go = new GameObject("Mesh");
+            GameObject go = new GameObject("Mesh" + origin.ToString());
             go.transform.parent = transform;
             go.AddComponent<MeshFilter>();
             go.AddComponent<MeshRenderer>();
