@@ -12,8 +12,8 @@ namespace FarmVox
                 return;
             }
 
-            var chunk = terrianChunk.Chunk;
             var origin = terrianChunk.Origin;
+            var chunk = defaultLayer.GetChunk(origin);
             var grassNoise = new Perlin3DGPU(config.grassNoise, chunk.dataSize, origin);
             grassNoise.Dispatch();
             var grassNoiseData = grassNoise.Read();

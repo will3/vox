@@ -38,6 +38,7 @@ namespace FarmVox
 
         private Chunks[] chunksToDraw;
         private Chunks[] chunksCastingShadows;
+        private Chunks[] chunksReceivingShadows;
 
         public Terrian(int size = 32)
         {
@@ -52,6 +53,7 @@ namespace FarmVox
 
             chunksToDraw = new Chunks[] { defaultLayer, treeLayer, waterLayer };
             chunksCastingShadows = new Chunks[] { defaultLayer, treeLayer };
+            chunksReceivingShadows = new Chunks[] { waterLayer, defaultLayer, treeLayer }; 
         }
 
         public void Update()
@@ -73,58 +75,56 @@ namespace FarmVox
                 }
             }
 
+            // Update distance
             foreach(var kv in map) {
                 var terrianChunk = kv.Value;
-                GenerateGround(terrianChunk);
+                terrianChunk.UpdateDistance(x, z);
             }
 
-            var drawDis = config.generateDis;
+            // Generate rocks
+            foreach(var kv in map) {
+                var terrianChunk = kv.Value;
+
+                if (terrianChunk.Distance < config.drawDis)
+                {
+                    GenerateGround(terrianChunk);
+                }
+            }
 
             foreach (var kv in map)
             {
                 var terrianChunk = kv.Value;
-                terrianChunk.UpdateDistance(x, z);
 
-                if (terrianChunk.Distance < drawDis)
+                if (terrianChunk.Distance < config.drawDis)
                 {
                     var origin = terrianChunk.Origin;
                     defaultLayer.GetChunk(origin).UpdateNormals();
+                    var chunk = defaultLayer.GetChunk(origin);
 
                     GenerateWaters(terrianChunk);
 
                     GenerateGrass(terrianChunk);
 
-                    // GenerateTrees(terrianChunk);
+                    GenerateTrees(terrianChunk);
 
                     terrianChunk.UpdateRoutes();
 
-                    generateShadows(terrianChunk);
-
                     //GenerateEnemies(terrianChunk);
                 }
-            }
 
-            foreach (var kv in map)
-            {
-                var terrianChunk = kv.Value;
-                if (terrianChunk.Distance < drawDis)
-                {
-                    //generateHouses(terrianChunk);
+                if (terrianChunk.Distance < config.drawDis) {
+                    GenerateShadows(terrianChunk);
                 }
             }
 
             foreach (var kv in map)
             {
                 var terrianChunk = kv.Value;
-                if (terrianChunk.Distance < drawDis)
+                if (terrianChunk.Distance < config.drawDis)
                 {
-                    Profiler.BeginSample("Meshing");
-
                     foreach(var chunks in chunksToDraw) {
                         Draw(chunks, terrianChunk.Origin, Transform, material, terrianChunk);    
                     }
-
-                    Profiler.EndSample();
                 }
             }
         }
@@ -155,55 +155,6 @@ namespace FarmVox
             map[origin].Config = config;
             map[origin].Terrian = this;
             return map[origin];
-        }
-
-        private bool CheckShadow(Vector3Int key, int i, int j, int k) {
-            key.x += i;
-            key.y += j;
-            key.z += k;
-            var origin = key * size;
-
-            var ready = !getOrCreateTerrianChunk(origin).rockNeedsUpdate;
-            return ready;
-        }
-
-        private bool ShouldGenerateShadows(TerrianChunk terrianChunk) {
-            var key = terrianChunk.key;
-
-            var ready = true;
-            for (var j = 0; j < config.maxChunksY - key.y; j ++)  {
-                ready &= CheckShadow(key, 0, j, 0);
-                ready &= CheckShadow(key, -1, j, 0);
-                ready &= CheckShadow(key, 0, j, -1);
-                ready &= CheckShadow(key, -1, j, -1);
-            }
-            return ready;
-        }
-
-        private void generateShadows(TerrianChunk terrianChunk)
-        {
-            
-            if (!terrianChunk.shadowsNeedsUpdate)
-            {
-                return;
-            }
-
-            if (!ShouldGenerateShadows(terrianChunk)) {
-                return;
-            }
-
-            var chunk = terrianChunk.Chunk;
-            var origin = chunk.Origin;
-            var treeChunk = treeLayer.GetChunk(origin);
-
-            foreach (var chunks in chunksToDraw) {
-                var c = chunks.GetChunk(origin);
-                if (c != null) {
-                    c.UpdateShadows(chunksCastingShadows);
-                }
-            }
-
-            terrianChunk.shadowsNeedsUpdate = false;
         }
 
         private void generateHouses(TerrianChunk terrianChunk)

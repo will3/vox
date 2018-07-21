@@ -10,7 +10,8 @@
                 return;
             }
 
-            var chunk = terrianChunk.Chunk;
+            var origin = terrianChunk.Origin;
+            var chunk = defaultLayer.GetChunk(origin);
             var waterChunk = waterLayer.GetOrCreateChunk(terrianChunk.Origin);
             if (chunk.Origin.y < config.waterLevel)
             {

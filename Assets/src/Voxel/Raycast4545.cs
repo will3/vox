@@ -20,13 +20,8 @@ namespace FarmVox
                 foreach(var chunks in chunksList) {
                     value = chunks.Get(coord.x, coord.y, coord.z);
                     if (value > 0) {
-                        break;
+                        return coord;
                     }
-                }
-
-                if (value > 0)
-                {
-                    return coord;
                 }
             }
 

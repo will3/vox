@@ -44,7 +44,6 @@ namespace FarmVox
             }
         }
 
-        public Chunk Chunk;
         private readonly HashSet<Vector3Int> trees = new HashSet<Vector3Int>();
 
         private int size;
@@ -137,15 +136,16 @@ namespace FarmVox
             return amount;
         }
 
+        // TODO
         public void UpdateRoutes()
         {
-            if (!routesNeedsUpdate)
-            {
-                return;
-            }
-            routes.Clear();
-            routes.LoadChunk(Chunk);
-            routesNeedsUpdate = false;
+            //if (!routesNeedsUpdate)
+            //{
+            //    return;
+            //}
+            //routes.Clear();
+            //routes.LoadChunk(Chunk);
+            //routesNeedsUpdate = false;
         }
 
         public void DrawRoutesGizmos()

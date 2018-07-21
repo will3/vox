@@ -17,7 +17,8 @@ namespace FarmVox
 
             var pine = new Pine(3.0f, 10, 2);
 
-            var chunk = terrianChunk.Chunk;
+            var origin = terrianChunk.Origin;
+            var chunk = defaultLayer.GetChunk(origin);
 
             foreach (var kv in chunk.Normals)
             {

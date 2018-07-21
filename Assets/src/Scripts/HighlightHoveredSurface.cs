@@ -28,6 +28,8 @@ public class HighlightHoveredSurface : MonoBehaviour
         terrian = GetTerrian();
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
+
+
         var result = terrian.Trace(ray.origin, ray.direction, 400);
         if (result != null) {
             var mesh = result.GetQuad();

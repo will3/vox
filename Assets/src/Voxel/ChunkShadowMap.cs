@@ -49,7 +49,8 @@ namespace FarmVox
 
             var hit = coord.y >= results[key];
 
-            return hit ? 1.0f : 0.0f;
+            return 1.0f;
+            // return hit ? 1.0f : 0.0f;
         }
 
         public void Clear() {
