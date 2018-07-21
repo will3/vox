@@ -57,8 +57,9 @@ namespace FarmVox
 
                 value -= otherTrees * 4.0f;
 
-                var treeHeightFactor = config.treeHeightGradient.GetValue(absY / config.maxHeight);
-                value *= treeHeightFactor;
+                var height = (1f - absY / config.maxHeight) - 0.5f;
+                var treeHeightValue = config.treeHeightGradient.GetValue(height);
+                value += treeHeightValue;
 
                 if (value < 0.5f) { continue; }
 

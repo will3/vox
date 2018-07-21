@@ -15,6 +15,7 @@ namespace FarmVox
 
         private Chunks defaultLayer;
         private Chunks treeLayer;
+        private Chunks waterLayer;
 
         private Material material = new Material(Shader.Find("Unlit/voxelunlit"));
         public Transform Transform;
@@ -36,6 +37,8 @@ namespace FarmVox
         MarchingCubes marchingCubes = new MarchingCubes();
 
         private Chunks[] chunksToDraw;
+        private Chunks[] chunksCastingShadows;
+
         public Terrian(int size = 32)
         {
             this.size = size;
@@ -43,8 +46,12 @@ namespace FarmVox
 
             defaultLayer = new Chunks(size);
             treeLayer = new Chunks(size);
+            waterLayer = new Chunks(size);
+            waterLayer.useNormals = false;
+            waterLayer.isWater = true;
 
-            chunksToDraw = new Chunks[] { defaultLayer, treeLayer };
+            chunksToDraw = new Chunks[] { defaultLayer, treeLayer, waterLayer };
+            chunksCastingShadows = new Chunks[] { defaultLayer, treeLayer };
         }
 
         public void Update()
@@ -83,7 +90,7 @@ namespace FarmVox
                     var origin = terrianChunk.Origin;
                     defaultLayer.GetChunk(origin).UpdateNormals();
 
-                    terrianChunk.GenerateWaters();
+                    GenerateWaters(terrianChunk);
 
                     GenerateGrass(terrianChunk);
 
@@ -189,10 +196,10 @@ namespace FarmVox
             var origin = chunk.Origin;
             var treeChunk = treeLayer.GetChunk(origin);
 
-            foreach(var chunks in chunksToDraw) {
+            foreach (var chunks in chunksToDraw) {
                 var c = chunks.GetChunk(origin);
                 if (c != null) {
-                    c.UpdateShadows(chunksToDraw);
+                    c.UpdateShadows(chunksCastingShadows);
                 }
             }
 

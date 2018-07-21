@@ -66,24 +66,6 @@ namespace FarmVox
         {
             var data = new float[size * size * size];
             results.GetData(data);
-
-            var min = Mathf.Infinity;
-            var max = -Mathf.Infinity;
-
-            for (var i = 0; i < data.Length; i++)
-            {
-                var v = data[i];
-                if (v > max)
-                {
-                    max = v;
-                }
-                if (v < min)
-                {
-                    min = v;
-                }
-            }
-            Debug.Log(min);
-            Debug.Log(max);
             return data;
         }
     }

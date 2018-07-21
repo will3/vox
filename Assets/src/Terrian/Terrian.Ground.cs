@@ -77,6 +77,9 @@ namespace FarmVox
             }
 
             terrianChunk.rockNeedsUpdate = false;
+
+            voxelBuffer.Dispose();
+            colorBuffer.Dispose();
         }
     }
 }

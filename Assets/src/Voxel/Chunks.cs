@@ -9,6 +9,7 @@ namespace FarmVox
         private float sizeF;
         private int size;
         public bool useNormals = true;
+        public bool isWater = false;
 
         public int Size
         {

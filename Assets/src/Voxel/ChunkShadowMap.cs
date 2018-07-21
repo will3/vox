@@ -35,13 +35,7 @@ namespace FarmVox
             if (!results.ContainsKey(key)) {
                 var start = liftVector(coord, lightY);
 
-                Vector3Int? result = null;
-                foreach(var chunks in chunksList) {
-                    result = Raycast4545.Trace(start, chunks, lightY);
-                    if (result.HasValue) {
-                        break;
-                    }
-                }
+                Vector3Int? result = Raycast4545.Trace(start, chunksList, lightY);
                  
                 if (result.HasValue)
                 {

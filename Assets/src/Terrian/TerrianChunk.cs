@@ -35,7 +35,6 @@ namespace FarmVox
 
         private int distance;
         private Vector3Int origin;
-        private int waterLevel = 2;
 
         public Vector3Int Origin
         {
@@ -162,41 +161,6 @@ namespace FarmVox
                     Gizmos.DrawLine(from, to);
                 }
             }
-        }
-
-        public void GenerateWaters()
-        {
-            if (!waterNeedsUpdate)
-            {
-                return;
-            }
-
-            var chunk = Chunk;
-            if (chunk.Origin.y < waterLevel)
-            {
-                float maxJ = waterLevel - chunk.Origin.y;
-                if (maxJ > chunk.Size)
-                {
-                    maxJ = chunk.Size;
-                }
-                for (var i = 0; i < chunk.dataSize; i++)
-                {
-                    for (var k = 0; k < chunk.dataSize; k++)
-                    {
-                        for (var j = 0; j < maxJ; j++)
-                        {
-                            if (chunk.Get(i, j, k) <= 0.5)
-                            {
-                                chunk.Set(i, j, k, 1);
-                                chunk.SetColor(i, j, k, Colors.water);
-                                SetWater(i, j, k, true);
-                            }
-                        }
-                    }
-                }
-            }
-
-            waterNeedsUpdate = false;
         }
 
         readonly HashSet<Vector3Int> townPoints = new HashSet<Vector3Int>();

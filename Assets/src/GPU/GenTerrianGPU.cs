@@ -61,6 +61,8 @@ namespace FarmVox
 
             heightNoise.Dispose();
             canyonNoise.Dispose();
+            rockNoise.Dispose();
+            sculptNoise.Dispose();
         }
     }
 }

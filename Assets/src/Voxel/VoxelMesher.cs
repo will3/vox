@@ -25,13 +25,14 @@ namespace FarmVox
             var colorsBuffer = mesherGPU.CreateColorBuffer();
             var trianglesBuffer = mesherGPU.CreateTrianglesBuffer();
             mesherGPU.useNormals = chunk.Chunks.useNormals;
+            mesherGPU.isWater = chunk.Chunks.isWater;
 
             voxelBuffer.SetData(chunk.Data);
             colorsBuffer.SetData(chunk.Colors);
 
             mesherGPU.Dispatch(voxelBuffer, colorsBuffer, trianglesBuffer, terrianChunk);
-
             var triangles = mesherGPU.ReadTriangles(trianglesBuffer);
+            mesherGPU.Dispose();
 
             var vertices = new List<Vector3>();
             var indices = new List<int>();

@@ -28,12 +28,15 @@ namespace FarmVox
         private readonly int workGroups = 8;
         public int normalBranding = 5;
         public bool useNormals = true;
+        public bool isWater = false;
+        private ComputeBuffer shadowBuffer;
 
         public MesherGPU(int size)
         {
             this.size = size;
             this.dataSize = size + 3;
             shader = Resources.Load<ComputeShader>("Shaders/Mesher");
+            shadowBuffer = new ComputeBuffer(dataSize * dataSize * dataSize, sizeof(float));
         }
 
         public ComputeBuffer CreateTrianglesBuffer() {
@@ -56,8 +59,8 @@ namespace FarmVox
             shader.SetBuffer(0, "_ColorsBuffer", colorsBuffer);
             shader.SetInt("_NormalBranding", normalBranding);
             shader.SetInt("_UseNormals", useNormals ? 1 : 0);
+            shader.SetInt("_IsWater", isWater ? 1 : 0);
 
-            var shadowBuffer = new ComputeBuffer(dataSize * dataSize * dataSize, sizeof(float));
             var shadowBufferData = new float[dataSize * dataSize * dataSize];
             foreach(var coord in terrianChunk.Chunk.surfaceCoords) {
                 var index = coord.x * dataSize * dataSize + coord.y * dataSize + coord.z;
@@ -67,7 +70,6 @@ namespace FarmVox
 
             shadowBuffer.SetData(shadowBufferData);
             shader.SetBuffer(0, "_ShadowBuffer", shadowBuffer);
-
 
             var disptachNumber = Mathf.CeilToInt(dataSize / (float)workGroups);
             shader.Dispatch(0, 3 * disptachNumber, disptachNumber, disptachNumber);
@@ -93,6 +95,10 @@ namespace FarmVox
             trianglesBuffer.GetData(triangles);
 
             return triangles;
+        }
+
+        public void Dispose() {
+            shadowBuffer.Dispose();
         }
     }
 }
