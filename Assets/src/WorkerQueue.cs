@@ -1,37 +1,37 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
+using UnityEngine;
 
 namespace FarmVox
 {
-    public class Worker {
-        public bool done = false;
-        public void Start() {
-            
-        }
-
-        public void onDone() {
-            
-        }
+    public interface IWorker {
+        void Start();
     }
 
     public class WorkerQueue
     {
-        private HashSet<Worker> workers;
+        private HashSet<IWorker> workers = new HashSet<IWorker>();
+        public System.DateTime nextStart;
+        public int minWait = 10;
 
-        public void Add(Worker worker) {
+        public void Add(IWorker worker) {
             workers.Add(worker);
-
-            Thread thread = new Thread(worker.Start);
-            thread.Start();
+            StartAnyWorker();
         }
 
         public void Update() {
-            var copy = new HashSet<Worker>(workers);
+            StartAnyWorker();
+        }
 
-            foreach(var worker in copy) {
-                if (worker.done) {
-                    worker.onDone();
+        public void StartAnyWorker() {
+            if (System.DateTime.Now > nextStart)
+            {
+                if (workers.Count > 0) {
+                    var worker = workers.ElementAt(0);
+                    worker.Start();
                     workers.Remove(worker);
+                    nextStart = System.DateTime.Now.AddMilliseconds(minWait);
                 }
             }
         }

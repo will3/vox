@@ -7,5 +7,9 @@ namespace FarmVox
         public static CameraController FindCameraController() {
             return Camera.main.GetComponent<CameraController>();
         }
+
+        public static GameController FindGameController() {
+            return GameObject.FindWithTag("GameController").GetComponent<GameController>();
+        }
     }
 }

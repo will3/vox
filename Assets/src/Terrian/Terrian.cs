@@ -127,6 +127,8 @@ namespace FarmVox
                 }
             }
 
+            var start = System.DateTime.Now;
+
             foreach (var kv in map)
             {
                 var terrianChunk = kv.Value;
@@ -136,6 +138,12 @@ namespace FarmVox
                         Draw(chunks, terrianChunk.Origin, Transform, material, terrianChunk);    
                     }
                 }
+            }
+
+            var end = System.DateTime.Now;
+
+            if ((end - start).Milliseconds > 10) {
+                Debug.Log((end - start).Milliseconds);    
             }
         }
 
