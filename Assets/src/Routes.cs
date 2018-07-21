@@ -2,7 +2,8 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace FarmVox {
+namespace FarmVox
+{
     public class Routes
     {
         public class Connection {

@@ -19,6 +19,8 @@ public class GameController : MonoBehaviour {
     private bool spawned = false;
     private GameObject highlight;
 
+    public WorkerQueue queue = new WorkerQueue();
+
     public GameObject Highlight
     {
         get
@@ -38,6 +40,7 @@ public class GameController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        queue.Update();
         var cameraController = Finder.FindCameraController();
         if (cameraController != null) {
             terrian.Target = cameraController.Target;
