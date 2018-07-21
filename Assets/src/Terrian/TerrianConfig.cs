@@ -7,8 +7,8 @@ namespace FarmVox
     public class TerrianConfig
     {
         public int maxChunksY = 4;
-        public int generateDis = 2;
-        public int drawDis = 2;
+        public int generateDis = 3;
+        public int drawDis = 3;
         public int minTreeJ = 1;
         public float maxHeight = 64;
         public float hillHeight = 64;
@@ -115,6 +115,7 @@ namespace FarmVox
             treeHeightGradient = new ValueGradient(1, 0);
             grassHeightFilter = new ValueGradient(new Dictionary<float, float>{
                 { 0, 1 },
+                { 0.5f, 0},
                 { 1, 0 } });
 
             grassNormalFilter = new ValueGradient(

@@ -26,9 +26,12 @@ namespace FarmVox
         private readonly int size;
         private readonly int dataSize;
         private readonly int workGroups = 8;
-        public int normalBranding = 5;
+        public int normalBranding = 6;
+        public float normalStrength = 0.4f;
+        private float shadowStrength = 0.5f;
         public bool useNormals = true;
         public bool isWater = false;
+
         private ComputeBuffer shadowBuffer;
 
         public MesherGPU(int size)
@@ -60,12 +63,13 @@ namespace FarmVox
             shader.SetInt("_NormalBranding", normalBranding);
             shader.SetInt("_UseNormals", useNormals ? 1 : 0);
             shader.SetInt("_IsWater", isWater ? 1 : 0);
+            shader.SetFloat("_NormalStrength", normalStrength);
 
             var shadowBufferData = new float[dataSize * dataSize * dataSize];
             foreach(var coord in chunk.surfaceCoords) {
                 var index = coord.x * dataSize * dataSize + coord.y * dataSize + coord.z;
-                var v = chunk.GetLighting(coord);
-                shadowBufferData[index] = v;
+                var v = chunk.GetShadow(coord);
+                shadowBufferData[index] = v * shadowStrength;
             }
 
             shadowBuffer.SetData(shadowBufferData);

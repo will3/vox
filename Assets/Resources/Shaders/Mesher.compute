@@ -18,6 +18,7 @@ StructuredBuffer<float> _ShadowBuffer;
 int _NormalBranding;
 int _UseNormals;
 int _IsWater;
+float _NormalStrength;
 
 int3 getVectorInt(int i, int j, int k, int d) {
     if (d == 0) {
@@ -185,7 +186,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
         _normal = 1.0;
     }
 
-    float normal = 1 - (1 - _normal) * 0.4;
+    float normal = 1 - (1 - _normal) * _NormalStrength;
     float shadow = getShadow(c);
     float4 color = getColor(c) * normal * (1 - shadow);
 

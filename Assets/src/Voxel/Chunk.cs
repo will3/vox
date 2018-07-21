@@ -225,18 +225,7 @@ namespace FarmVox
             }
         }
 
-        public float GetLightingGlobal(int i, int j, int k)
-        {
-            int max = size - 1;
-            if (i < 0 || i > max || j < 0 || j > max || k < 0 || k > max)
-            {
-                return Chunks.GetLighting(i + origin.x, j + origin.y, k + origin.z);
-            }
-            else
-            {
-                return GetLighting(i, j, k);
-            }
-        }
+
 
         public Color GetColor(int i, int j, int k)
         {
@@ -282,7 +271,7 @@ namespace FarmVox
         public float GetLighting(int i, int j, int k)
         {
             Vector3Int coord = new Vector3Int(i, j, k);
-            return GetLighting(coord);
+            return GetShadow(coord);
         }
 
         public void UpdateShadows(IList<Chunks> chunksList)
@@ -301,16 +290,8 @@ namespace FarmVox
             }
         }
 
-        private float shadowStrength = 0.5f;
-
-        private float getShadow(Vector3Int coord) {
+        public float GetShadow(Vector3Int coord) {
             return shadowMap.GetShadow(this, coord);
-        }
-
-        public float GetLighting(Vector3Int coord)
-        {
-            var shadow = getShadow(coord);
-            return shadow * shadowStrength;
         }
 
         public void UpdateNormals()

@@ -42,8 +42,6 @@ namespace FarmVox
 
         private TerrianConfig config = new TerrianConfig();
 
-        MarchingCubes marchingCubes = new MarchingCubes();
-
         private Chunks[] chunksToDraw;
         private Chunks[] chunksCastingShadows;
         private Chunks[] chunksReceivingShadows;
@@ -121,9 +119,9 @@ namespace FarmVox
                 }
             }
 
-            foreach (var kv in map) {
-                UpdateFloating(kv.Value);
-            }
+            //foreach (var kv in map) {
+            //    UpdateFloating(kv.Value);
+            //}
 
             foreach (var coord in updatedTerrianChunks)
             {
