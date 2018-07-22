@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace FarmVox
 {
@@ -17,28 +18,25 @@ namespace FarmVox
             }
         }
 
+        public Routes(Terrian terrian)
+        {
+            this.terrian = terrian;
+            this.size = terrian.Size;
+        }
+
         private Dictionary<int, HashSet<Vector3Int>> sides = new Dictionary<int, HashSet<Vector3Int>>();
 
         private Terrian terrian;
         private int size;
 
-        public Routes(Terrian terrian) {
-            this.terrian = terrian;
-            this.size = terrian.Size;
-        }
-
         private Dictionary<Vector3Int, HashSet<Connection>> map = new Dictionary<Vector3Int, HashSet<Connection>>();
 
-        private bool CanEnter(Vector3Int coord) {
-            if(this.terrian.GetTree(coord)) {
-                return false;
-            }
-
-            return true;
-        }
+        private Mutex editingMutex = new Mutex();
 
         public void LoadChunk(Chunk chunk)
         {
+            editingMutex.WaitOne();
+
             LoadConnections(chunk);
 
             foreach(var kv in map) {
@@ -51,14 +49,83 @@ namespace FarmVox
             }
 
             LoadSides();
+
+            editingMutex.ReleaseMutex();
         }
 
-        void LoadSides() {
+        public void Clear() {
+            map.Clear();
+        }
+
+        public Vector3Int? GetNodeCloseTo(Vector3Int from)
+        {
+            var nodes = map.Keys;
+
+            Vector3Int? minNode = null;
+            var minDis = Mathf.Infinity;
+
+            foreach (var node in nodes)
+            {
+                var dis = (node - from).sqrMagnitude;
+                if (dis < minDis)
+                {
+                    minDis = dis;
+                    minNode = node;
+                }
+            }
+
+            return minNode;
+        }
+
+        public void DrawGizmos()
+        {
+            editingMutex.WaitOne();
+
+            Gizmos.color = new Color(0.8f, 0.8f, 0.8f);
+            var offset = new Vector3(0.5f, 1.5f, 0.5f);
+
+
+            foreach (var kv in map)
+            {
+                var from = kv.Key + offset;
+                foreach (var b in kv.Value)
+                {
+                    var to = b.node + offset;
+                    Gizmos.DrawLine(from, to);
+                }
+            }
+
+            Gizmos.color = new Color(1.0f, 0.0f, 0.0f);
+            var size = new Vector3(0.5f, 0.5f, 0.5f);
+            foreach (var kv in sides)
+            {
+                foreach (var side in kv.Value)
+                {
+                    Gizmos.DrawCube(side + offset, size);
+                }
+            }
+
+            editingMutex.ReleaseMutex();
+        }
+
+        bool CanEnter(Vector3Int coord)
+        {
+            if (this.terrian.GetTree(coord))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        void LoadSides()
+        {
             sides.Clear();
             foreach (var coord in map.Keys)
             {
-                if (!HasConnectionXZ(coord, -1, 0)) {
-                    var left = new Vector3Int(-1, 0, 0) + coord;    
+                if (!HasConnectionXZ(coord, -1, 0))
+                {
+                    var left = new Vector3Int(-1, 0, 0) + coord;
                     AddSide(left);
                 }
 
@@ -82,34 +149,41 @@ namespace FarmVox
             }
         }
 
-        bool HasConnectionXZ(Vector3Int from, int dx, int dz) {
+        bool HasConnectionXZ(Vector3Int from, int dx, int dz)
+        {
             var x = from.x + dx;
             var z = from.z + dz;
             var connections = map[from];
-            foreach (var coord in connections) {
-                if (coord.node.x == x && coord.node.z == z) {
+            foreach (var coord in connections)
+            {
+                if (coord.node.x == x && coord.node.z == z)
+                {
                     return true;
                 }
             }
             return false;
         }
 
-        void AddSide(Vector3Int side) {
-            if (!sides.ContainsKey(side.y)) {
+        void AddSide(Vector3Int side)
+        {
+            if (!sides.ContainsKey(side.y))
+            {
                 sides[side.y] = new HashSet<Vector3Int>();
             }
             sides[side.y].Add(side);
         }
 
-        void LoadConnections(Chunk chunk) {
+        void LoadConnections(Chunk chunk)
+        {
             chunk.UpdateSurfaceCoords();
             var coords = chunk.surfaceCoordsUp;
             var origin = chunk.Origin;
 
             foreach (var coord in coords)
             {
-                if (coord.x >= size || coord.y >= size || coord.z >= size || 
-                    coord.x < 0 || coord.y < 0 || coord.z < 0) {
+                if (coord.x >= size || coord.y >= size || coord.z >= size ||
+                    coord.x < 0 || coord.y < 0 || coord.z < 0)
+                {
                     continue;
                 }
                 map[coord + origin] = new HashSet<Connection>();
@@ -211,55 +285,6 @@ namespace FarmVox
                             }
                         }
                     }
-                }
-            }
-        }
-
-        public void Clear() {
-            map.Clear();
-        }
-
-        public Vector3Int? GetNodeCloseTo(Vector3Int from)
-        {
-            var nodes = map.Keys;
-
-            Vector3Int? minNode = null;
-            var minDis = Mathf.Infinity;
-
-            foreach (var node in nodes)
-            {
-                var dis = (node - from).sqrMagnitude;
-                if (dis < minDis)
-                {
-                    minDis = dis;
-                    minNode = node;
-                }
-            }
-
-            return minNode;
-        }
-
-        public void DrawGizmos()
-        {
-            Gizmos.color = new Color(0.8f, 0.8f, 0.8f);
-            var offset = new Vector3(0.5f, 1.5f, 0.5f);
-
-
-            foreach (var kv in map)
-            {
-                var from = kv.Key + offset;
-                foreach (var b in kv.Value)
-                {
-                    var to = b.node + offset;
-                    Gizmos.DrawLine(from, to);
-                }
-            }
-
-            Gizmos.color = new Color(1.0f, 0.0f, 0.0f);
-            var size = new Vector3(0.5f, 0.5f, 0.5f);
-            foreach(var kv in sides) {
-                foreach(var side in kv.Value) {
-                    Gizmos.DrawCube(side + offset, size);
                 }
             }
         }
