@@ -7,103 +7,166 @@ namespace FarmVox
 {
     public class Routes
     {
-        public class Connection
-        {
-            public Vector3Int node;
-            public float cost;
-            public Connection(Vector3Int next, float cost)
-            {
-                this.node = next;
-                this.cost = cost;
-            }
-        }
-
         public Routes(Terrian terrian)
         {
             this.terrian = terrian;
             this.size = terrian.Size;
         }
 
-        private Dictionary<int, HashSet<Vector3Int>> sides = new Dictionary<int, HashSet<Vector3Int>>();
-
         private Terrian terrian;
         private int size;
 
-        private Dictionary<Vector3Int, HashSet<Connection>> map = new Dictionary<Vector3Int, HashSet<Connection>>();
+        private HashSet<Vector3Int> coordsInside = new HashSet<Vector3Int>();
+        private HashSet<Vector3Int> connectedCoordsOutside = new HashSet<Vector3Int>();
+
+        public HashSet<Vector3Int> ConnectedCoordsOutside
+        {
+            get
+            {
+                return connectedCoordsOutside;
+            }
+        }
 
         private Mutex editingMutex = new Mutex();
 
-        public void LoadChunk(Chunk chunk)
+        public void LoadChunk(Chunk chunk, TerrianConfig config)
         {
             editingMutex.WaitOne();
 
-            LoadConnections(chunk);
-
-            foreach(var kv in map) {
-                if (kv.Key.x >= chunk.Origin.x + size || 
-                    kv.Key.y >= chunk.Origin.y + size ||
-                    kv.Key.z >= chunk.Origin.z + size) {
-
-                    Debug.Log("out of bounds");
-                }
-            }
-
-            LoadSides();
+            LoadConnections(chunk, config);
 
             editingMutex.ReleaseMutex();
         }
 
-        public void Clear() {
-            map.Clear();
-        }
-
-        public Vector3Int? GetNodeCloseTo(Vector3Int from)
+        public Vector3? AStar(Vector3 now, Vector3 to)
         {
-            var nodes = map.Keys;
-
-            Vector3Int? minNode = null;
-            var minDis = Mathf.Infinity;
-
-            foreach (var node in nodes)
+            if (!HasNodeBelow(now))
             {
-                var dis = (node - from).sqrMagnitude;
-                if (dis < minDis)
-                {
+                Debug.Log("invalid pos " + now.x + "," + now.y + "," + now.z);
+                return null;
+            }
+
+            var coord = new Vector3Int(Mathf.FloorToInt(now.x), Mathf.FloorToInt(now.y - 1), Mathf.FloorToInt(now.z));
+            var connected = GetConnectedCoords(coord);
+
+            var minDis = Mathf.Infinity;
+            Vector3Int? closestNext = null;
+
+            foreach(var next in connected) {
+                var dis = (next - to).sqrMagnitude;
+                if (dis < minDis) {
                     minDis = dis;
-                    minNode = node;
+                    closestNext = next;
                 }
             }
 
-            return minNode;
+            if (closestNext == null) {
+                return null;
+            }
+
+            var result = closestNext.Value + new Vector3(0.5f, 1.5f, 0.5f);
+
+            ValidateResult(result);    
+
+            return result;
+            //return Drag(now, result);
+        }
+
+        public Vector3? Drag(Vector3 now, Vector3 to) {
+            if (!HasNodeBelow(now))
+            {
+                Debug.Log("invalid pos " + now.x + "," + now.y + "," + now.z);
+                return null;
+            }
+
+            var diff = (to - now);
+            var maxMag = 0.4f;
+            if (diff.magnitude > maxMag)
+            {
+                diff = diff.normalized * maxMag;
+            }
+
+            var result = Drag(now, diff, 1.0f) ?? Drag(now, diff, 0) ?? Drag(now, diff, -1.0f);
+            if (result != null) {
+                ValidateResult(result.Value);    
+            }
+            return result;
+        }
+
+        Vector3? Drag(Vector3 now, Vector3 diff, float diffY)
+        {
+            diff.y = diffY;
+            var next = now + diff;
+
+            if (!HasNodeBelow(next))
+            {
+                return null;
+            }
+
+            return next;
+        }
+
+        void ValidateResult(Vector3 result) {
+            if (!HasNodeBelow(result)) {
+                throw new System.Exception("not supposed to happen");
+            }
+        }
+
+        private HashSet<Vector3Int> GetConnectedCoords(Vector3Int coord) {
+            var set = new HashSet<Vector3Int>();
+            for (var i = -1; i <= 1; i++) {
+                for (var j = -1; j <= 1; j++)
+                {
+                    for (var k = -1; k <= 1; k++)
+                    {
+                        if (i == 0 && j == 0 && k == 0) {
+                            continue;
+                        }
+                        var next = coord + new Vector3Int(i, j, k);
+                        if (HasCoord(next)) {
+                            set.Add(next);
+                        }
+                    }
+                }    
+            }
+            return set;
+        }
+
+        public bool HasCoord(Vector3Int coord) {
+            return coordsInside.Contains(coord) || connectedCoordsOutside.Contains(coord);
+        }
+
+        private bool HasNodeBelow(Vector3 node) {
+            var coord = new Vector3Int(Mathf.FloorToInt(node.x), Mathf.FloorToInt(node.y) - 1, Mathf.FloorToInt(node.z));
+            return coordsInside.Contains(coord) || connectedCoordsOutside.Contains(coord);
+        }
+
+        private bool HasNode(Vector3Int node) {
+            return coordsInside.Contains(node);
+        }
+
+        public void Clear() {
+            coordsInside.Clear();
+            connectedCoordsOutside.Clear();
         }
 
         public void DrawGizmos()
         {
             editingMutex.WaitOne();
 
-            Gizmos.color = new Color(0.8f, 0.8f, 0.8f);
-            var offset = new Vector3(0.5f, 1.5f, 0.5f);
+            //Gizmos.color = new Color(0.8f, 0.8f, 0.8f);
+            //var offset = new Vector3(0.5f, 1.5f, 0.5f);
 
 
-            foreach (var kv in map)
-            {
-                var from = kv.Key + offset;
-                foreach (var b in kv.Value)
-                {
-                    var to = b.node + offset;
-                    Gizmos.DrawLine(from, to);
-                }
-            }
-
-            Gizmos.color = new Color(1.0f, 0.0f, 0.0f);
-            var size = new Vector3(0.5f, 0.5f, 0.5f);
-            foreach (var kv in sides)
-            {
-                foreach (var side in kv.Value)
-                {
-                    Gizmos.DrawCube(side + offset, size);
-                }
-            }
+            //foreach (var coord in coords)
+            //{
+            //    var from = kv.Key + offset;
+            //    foreach (var b in kv.Value)
+            //    {
+            //        var to = b.node + offset;
+            //        Gizmos.DrawLine(from, to);
+            //    }
+            //}
 
             editingMutex.ReleaseMutex();
         }
@@ -118,62 +181,7 @@ namespace FarmVox
             return true;
         }
 
-        void LoadSides()
-        {
-            sides.Clear();
-            foreach (var coord in map.Keys)
-            {
-                if (!HasConnectionXZ(coord, -1, 0))
-                {
-                    var left = new Vector3Int(-1, 0, 0) + coord;
-                    AddSide(left);
-                }
-
-                if (!HasConnectionXZ(coord, 1, 0))
-                {
-                    var right = new Vector3Int(1, 0, 0) + coord;
-                    AddSide(right);
-                }
-
-                if (!HasConnectionXZ(coord, 0, -1))
-                {
-                    var back = new Vector3Int(0, 0, -1) + coord;
-                    AddSide(back);
-                }
-
-                if (!HasConnectionXZ(coord, 0, 1))
-                {
-                    var forward = new Vector3Int(0, 0, 1) + coord;
-                    AddSide(forward);
-                }
-            }
-        }
-
-        bool HasConnectionXZ(Vector3Int from, int dx, int dz)
-        {
-            var x = from.x + dx;
-            var z = from.z + dz;
-            var connections = map[from];
-            foreach (var coord in connections)
-            {
-                if (coord.node.x == x && coord.node.z == z)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        void AddSide(Vector3Int side)
-        {
-            if (!sides.ContainsKey(side.y))
-            {
-                sides[side.y] = new HashSet<Vector3Int>();
-            }
-            sides[side.y].Add(side);
-        }
-
-        void LoadConnections(Chunk chunk)
+        void LoadConnections(Chunk chunk, TerrianConfig config)
         {
             chunk.UpdateSurfaceCoords();
             var coords = chunk.surfaceCoordsUp;
@@ -186,35 +194,17 @@ namespace FarmVox
                 {
                     continue;
                 }
-                map[coord + origin] = new HashSet<Connection>();
+                if (coord.y + origin.y < config.waterLevel) {
+                    continue;
+                }
+                coordsInside.Add(coord + origin);
             }
 
-            var keys = map.Keys;
-            foreach (var a in keys)
+            foreach (var a in coordsInside)
             {
                 if (!CanEnter(a))
                 {
                     continue;
-                }
-                foreach (var b in keys)
-                {
-                    if (!CanEnter(b))
-                    {
-                        continue;
-                    }
-
-                    if (a == b)
-                    {
-                        continue;
-                    }
-
-                    var distanceSq = (a - b).sqrMagnitude;
-                    if (distanceSq <= 3)
-                    {
-                        var distance = Mathf.Sqrt(distanceSq);
-                        map[a].Add(new Connection(b, distance));
-                        map[b].Add(new Connection(a, distance));
-                    }
                 }
 
                 var chunks = chunk.Chunks;
@@ -226,11 +216,15 @@ namespace FarmVox
                         for (var v = -1; v <= 1; v++)
                         {
                             var outsideCoord = new Vector3Int(a.x - 1, a.y + u, a.z + v);
+                            var o = terrian.GetOrigin(outsideCoord.x, outsideCoord.y, outsideCoord.z);
+                            var tc = terrian.GetTerrianChunk(o);
+                            if (tc == null) continue;
                             if (!CanEnter(outsideCoord)) continue;
+
                             if (chunks.IsUp(outsideCoord))
                             {
-                                var distance = (a - outsideCoord).magnitude;
-                                map[a].Add(new Connection(outsideCoord, distance));
+                                connectedCoordsOutside.Add(outsideCoord);
+                                tc.Routes.connectedCoordsOutside.Add(a);
                             }
                         }
                     }
@@ -243,11 +237,15 @@ namespace FarmVox
                         for (var v = -1; v <= 1; v++)
                         {
                             var outsideCoord = new Vector3Int(a.x + 1, a.y + u, a.z + v);
+                            var o = terrian.GetOrigin(outsideCoord.x, outsideCoord.y, outsideCoord.z);
+                            var tc = terrian.GetTerrianChunk(o);
+                            if (tc == null) continue;
                             if (!CanEnter(outsideCoord)) continue;
+
                             if (chunks.IsUp(outsideCoord))
                             {
-                                var distance = (a - outsideCoord).magnitude;
-                                map[a].Add(new Connection(outsideCoord, distance));
+                                connectedCoordsOutside.Add(outsideCoord);
+                                tc.Routes.connectedCoordsOutside.Add(a);
                             }
                         }
                     }
@@ -260,11 +258,14 @@ namespace FarmVox
                         for (var v = -1; v <= 1; v++)
                         {
                             var outsideCoord = new Vector3Int(a.x + u, a.y + v, a.z - 1);
+                            var o = terrian.GetOrigin(outsideCoord.x, outsideCoord.y, outsideCoord.z);
+                            var tc = terrian.GetTerrianChunk(o);
+                            if (tc == null) continue;
                             if (!CanEnter(outsideCoord)) continue;
                             if (chunks.IsUp(outsideCoord))
                             {
-                                var distance = (a - outsideCoord).magnitude;
-                                map[a].Add(new Connection(outsideCoord, distance));
+                                connectedCoordsOutside.Add(outsideCoord);
+                                tc.Routes.connectedCoordsOutside.Add(a);
                             }
                         }
                     }
@@ -277,11 +278,14 @@ namespace FarmVox
                         for (var v = -1; v <= 1; v++)
                         {
                             var outsideCoord = new Vector3Int(a.x + u, a.y + v, a.z + 1);
+                            var o = terrian.GetOrigin(outsideCoord.x, outsideCoord.y, outsideCoord.z);
+                            var tc = terrian.GetTerrianChunk(o);
+                            if (tc == null) continue;
                             if (!CanEnter(outsideCoord)) continue;
                             if (chunks.IsUp(outsideCoord))
                             {
-                                var distance = (a - outsideCoord).magnitude;
-                                map[a].Add(new Connection(outsideCoord, distance));
+                                connectedCoordsOutside.Add(outsideCoord);
+                                tc.Routes.connectedCoordsOutside.Add(a);
                             }
                         }
                     }

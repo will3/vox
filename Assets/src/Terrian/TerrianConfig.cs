@@ -149,7 +149,7 @@ namespace FarmVox
                 { 0.49f, 0},
                 { 0.5f, 1 },
                 { 1, 1 } });
-
+            
             //rockColorGradient = new ColorGradient(GetColor("#ce8643"), GetColor("#cec479"));
         }
 

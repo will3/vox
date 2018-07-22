@@ -6,58 +6,84 @@ namespace FarmVox
 {
     public class Actor : MonoBehaviour
     {
-        public Terrian terrian;
         public string spriteSheetName = "robot";
 
         private Card card;
-        private Vector3Int currentNode;
-        float nextWander;
-        float wanderWait = 0.1f;
+        private Vector3 _position;
+        public Vector3 position {
+            get {
+                return _position;
+            }
+        }
+        public float radius = 0.5f;
+        public Vector3 scale = new Vector3(1.0f, 1.0f, 1.0f);
+
+        public void SetPosition(Vector3 position) {
+            _position = position;    
+        }
 
         void Start()
         {
             card = gameObject.AddComponent<Card>();
             card.spriteSheetName = spriteSheetName;
-            var scale = 2.0f;
-            card.transform.localScale = new Vector3(scale, scale, scale);
-            UpdatePosition();
-            nextWander = Time.time + wanderWait;
+            card.scale = scale;
         }
 
-        public void SetNode(Vector3Int node)
+        public void Place(Vector3Int above)
         {
-            currentNode = node;
-            UpdatePosition();
-        }
-
-        private void UpdatePosition() {
-            if (card == null) {
-                return;
-            }
-            card.transform.position = new Vector3(currentNode.x + 0.5f, currentNode.y + 2.0f, currentNode.z + 0.5f);    
+            SetPosition(new Vector3(above.x + 0.5f, above.y + 1.5f, above.z + 0.5f));
         }
 
         // Update is called once per frame
         void Update()
         {
-            //wander();
+            card.transform.position = position;
         }
 
-        private void wander() {
-            //if (Time.time < nextWander) {
-            //    return;
-            //}
-            //var nextNodes = terrian.GetNextNodes(currentNode);
-            //var index = Mathf.FloorToInt(Random.Range(0.0f, 1.0f) * nextNodes.Count);
-            //var nextNode = nextNodes.ElementAt(index);
+        public static Routes GetRoutes(Vector3 position) {
+            var terrian = Finder.FindTerrian();
+            if (terrian == null)
+            {
+                return null;
+            }
 
-            //SetNode(nextNode);
+            var origin = terrian.GetOrigin(position.x, position.y, position.z);
+            var tc = terrian.GetTerrianChunk(origin);
 
-            //nextWander = Time.time + wanderWait;
+            if (tc == null)
+            {
+                return null;
+            }
+            return tc.Routes;
         }
 
-        public void Goto(Vector3Int coord) {
-            SetNode(coord);
+        Routes GetRoutes() {
+            return GetRoutes(position);
+        }
+
+        public void Navigate(Vector3 to) {
+            var routes = GetRoutes();
+
+            var nextPosition = routes.Drag(position, to);
+
+            if (nextPosition == null) {
+                nextPosition = routes.AStar(position, to);
+            }
+
+            if (nextPosition != null) {
+                SetPosition(nextPosition.Value);
+            }
+        }
+
+        public void Drag(Vector3 to) {
+            var routes = GetRoutes();
+
+            var nextPosition = routes.Drag(position, to);
+
+            if (nextPosition != null)
+            {
+                SetPosition(nextPosition.Value);
+            }
         }
     }
 }

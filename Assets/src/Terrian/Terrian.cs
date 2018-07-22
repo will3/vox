@@ -40,8 +40,6 @@ namespace FarmVox
 
         private Dictionary<Vector3Int, TerrianChunk> map = new Dictionary<Vector3Int, TerrianChunk>();
 
-        private HashSet<Actor> actors = new HashSet<Actor>();
-
         public Dictionary<Vector3Int, TerrianChunk> Map
         {
             get
@@ -204,6 +202,15 @@ namespace FarmVox
                     }
                 }
             }
+        }
+
+        public Vector3Int GetOrigin(float i, float j, float k)
+        {
+            return new Vector3Int(
+               Mathf.FloorToInt(i / this.sizeF) * this.size,
+               Mathf.FloorToInt(j / this.sizeF) * this.size,
+               Mathf.FloorToInt(k / this.sizeF) * this.size
+            );
         }
 
         public Vector3Int GetOrigin(int i, int j, int k)

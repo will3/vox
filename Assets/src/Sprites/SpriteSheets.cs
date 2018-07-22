@@ -14,7 +14,6 @@
 
     class RobotSpriteSheet : SpriteSheet {
         public RobotSpriteSheet() {
-            scale = 16.0f;
             idle = new string[] { "rob_0" };
             walk = new string[] { "rob_0", "rob_1", "rob_2" };
         }

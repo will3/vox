@@ -13,10 +13,12 @@ namespace FarmVox
 
         TerrianChunk terrianChunk;
         Chunks defaultLayer;
+        TerrianConfig config;
 
-        public RouteWorker(TerrianChunk terrianChunk, Chunks defaultLayer) {
+        public RouteWorker(TerrianChunk terrianChunk, Chunks defaultLayer, TerrianConfig config) {
             this.terrianChunk = terrianChunk;
             this.defaultLayer = defaultLayer;
+            this.config = config;
         }
 
         public void Start()
@@ -29,38 +31,13 @@ namespace FarmVox
             var routes = terrianChunk.Routes;
             var chunk = defaultLayer.GetChunk(terrianChunk.Origin);
             routes.Clear();
-            routes.LoadChunk(chunk);
+            routes.LoadChunk(chunk, config);
             done = true;
         }
     }
 
     public partial class Terrian
     {
-        private bool ShouldUpdateRoutes(TerrianChunk terrianChunk) {
-            var key = terrianChunk.key;
-            for (var j = -1; j <= 1; j++)
-            {
-                for (var i = -1; i <= 1; i++)
-                {
-                    for (var k = -1; k <= 1; k++)
-                    {
-                        var key2 = key + new Vector3Int(i, j, k);
-                        if (key2.y < 0 || key2.y >= config.maxChunksY) {
-                            continue;
-                        }
-
-                        var origin = key2 * size;
-                        var tc = GetTerrianChunk(origin);
-                        if (tc == null || tc.rockNeedsUpdate) {
-                            return false;
-                        }
-                    }
-                }
-            }
-
-            return true;
-        }
-
         public void GenerateRoutes(TerrianChunk terrianChunk)
         {
             if (!terrianChunk.routesNeedsUpdate)
@@ -68,11 +45,7 @@ namespace FarmVox
                 return;
             }
 
-            if (!ShouldUpdateRoutes(terrianChunk)) {
-                return;
-            }
-
-            var worker = new RouteWorker(terrianChunk, defaultLayer);
+            var worker = new RouteWorker(terrianChunk, defaultLayer, config);
             WorkerQueues.routingQueue.Add(worker);
 
             terrianChunk.routesNeedsUpdate = false;

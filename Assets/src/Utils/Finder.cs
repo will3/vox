@@ -11,5 +11,9 @@ namespace FarmVox
         public static GameController FindGameController() {
             return GameObject.FindWithTag("GameController").GetComponent<GameController>();
         }
+
+        public static Terrian FindTerrian() {
+            return GameObject.FindWithTag("GameController").GetComponent<GameController>().Terrian;
+        }
     }
 }

@@ -23,7 +23,7 @@ namespace FarmVox
 
         static Colors()
         {
-            grass = GetColor("#457828");
+            grass = GetColor("#447c3e");
             soil = GetColor("#413535");
             water = GetColor("#5A81AD");
             trunk = GetColor("#4f402a");
@@ -41,15 +41,15 @@ namespace FarmVox
             grassGradient.banding = 6;
             //grassGradient.Add(0.5f, grass);
 
-            var mid = Color.Lerp(GetColor("#413535"), GetColor("#cec479"), 0.5f);
+            var mid = Color.Lerp(GetColor("#cec479"), GetColor("#d67042"), 0.5f);
             rockColorGradient = new ColorGradient(new Dictionary<float, Color>() {
-                {0, GetColor("#413535")},
-                {0.3f, mid },
-                {0.8f, GetColor("#cec479")},
-                {1, GetColor("#cec479")}
+                {0, GetColor("#cec479")},
+                //{0.3f, mid },
+                //{0.8f, GetColor("#d67042")},
+                {1, GetColor("#d95f28")}
             });
 
-            rockColorGradient.banding = 10;
+            rockColorGradient.banding = 8;
         }
 
         public static Color GetColor(string hex)

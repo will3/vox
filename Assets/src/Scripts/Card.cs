@@ -10,6 +10,7 @@ public partial class Card : MonoBehaviour
     private MeshFilter meshFilter;
     private Vector3 up = Vector3.up;
     private CameraController cameraController;
+    public Vector3 scale = new Vector3(1.0f, 1.0f, 1.0f);
 
     public string spriteSheetName = "robot";
 
@@ -28,8 +29,6 @@ public partial class Card : MonoBehaviour
         gameObject.GetComponent<MeshFilter>().mesh = mesh;
 
         cameraController = Camera.main.GetComponent<CameraController>();
-
-        transform.localScale = new Vector3(spriteSheet.scale, spriteSheet.scale, spriteSheet.scale);
 	}
 
     private Mesh getQuad() {
@@ -37,8 +36,8 @@ public partial class Card : MonoBehaviour
 
         var vertices = new Vector3[4];
 
-        vertices[0] = new Vector3(-0.5f, 0f, 0);
-        vertices[1] = new Vector3(0.5f, 0f, 0);
+        vertices[0] = new Vector3(-0.5f, 0, 0);
+        vertices[1] = new Vector3(0.5f, 0, 0);
         vertices[2] = new Vector3(0.5f, 1.0f, 0);
         vertices[3] = new Vector3(-0.5f, 1.0f, 0);
 
@@ -78,13 +77,20 @@ public partial class Card : MonoBehaviour
 	void Update()
 	{
         // Linear billboard
-        //var forward = cameraController.GetVector();
-        //var right = Vector3.Cross(up, forward);
-        //var face = Vector3.Cross(right, up);
+        var forward = cameraController.GetVector();
+        var right = Vector3.Cross(up, forward);
+        var face = Vector3.Cross(right, up);
 
-        //transform.LookAt(transform.position + face, Vector3.up);
+        transform.LookAt(transform.position + face, Vector3.up);
+
+        var flip = true;
+        var localScale = scale;
+        if (flip) {
+            localScale.x *= -1;
+        }
+        transform.localScale = localScale;
 
         // Billboard
-        transform.LookAt(cameraController.transform.position, Vector3.up);
+        //transform.LookAt(cameraController.transform.position, Vector3.up);
 	}
 }
