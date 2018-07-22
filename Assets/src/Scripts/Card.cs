@@ -12,14 +12,14 @@ public partial class Card : MonoBehaviour
     private CameraController cameraController;
     public Vector3 scale = new Vector3(1.0f, 1.0f, 1.0f);
 
-    public string spriteSheetName = "robot";
+    public string spriteSheetName = "";
 
 	// Use this for initialization
 	void Start()
 	{
         var spriteSheet = SpriteSheets.Get(spriteSheetName);
         material = new Material(Shader.Find("Unlit/Transparent"));
-        material.SetTexture("_MainTex", Textures.Load(spriteSheet.idle[0]));
+        material.SetTexture("_MainTex", Textures.Load(spriteSheet.prefix + spriteSheet.idle[0]));
 
         var mesh = getQuad();
 

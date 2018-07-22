@@ -65,7 +65,7 @@ public class GameController : MonoBehaviour {
                 if (routes != null && routes.HasCoord(coord)) {
                     var go = new GameObject("robot");
                     var actor = go.AddComponent<Actor>();
-                    actor.radius = 1.5f;
+                    actor.radius = 2.0f;
                     actor.scale = new Vector3(0.7f, 1.0f, 0.7f) * 14.0f;
                     actor.Place(coord);
                     actors.Add(actor);

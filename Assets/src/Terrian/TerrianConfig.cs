@@ -118,6 +118,7 @@ namespace FarmVox
             grassNoise.frequency = 0.02f;
 
             rockNoise.frequency = 0.02f;
+            rockNoise.amplitude = 1.5f;
             scultNoise.frequency = 0.01f;
             scultNoise.yScale = 5f;
             scultNoise.octaves = 1;

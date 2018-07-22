@@ -140,6 +140,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 479f0820b51e7468c9c765045a86aac3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  scale: {x: 1, y: 1, z: 1}
   spriteSheetName: monster
 --- !u!4 &117673871
 Transform:
@@ -247,7 +248,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b8e92769eacb4672b888f1ab521aeaf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  drawRoutes: 1
+  drawRoutes: 0
   hideTerrian: 0
 --- !u!4 &362043728
 Transform:
@@ -311,7 +312,7 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
-  orthographic: 0
+  orthographic: 1
   orthographic size: 100
   m_Depth: -1
   m_CullingMask:

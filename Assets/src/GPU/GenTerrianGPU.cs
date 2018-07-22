@@ -50,7 +50,6 @@ namespace FarmVox
             shader.SetBuffer(0, "_ScultBuffer", sculptNoise.Results);
             shader.SetFloat("_MaxHeight", config.maxHeight);
 
-            shader.SetVector("_RockColor", Colors.rock);
             shader.SetVector("_SoilColor", Colors.soil);
             shader.SetVector("_WaterColor", Colors.water);
 

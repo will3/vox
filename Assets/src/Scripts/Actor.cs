@@ -6,7 +6,7 @@ namespace FarmVox
 {
     public class Actor : MonoBehaviour
     {
-        public string spriteSheetName = "robot";
+        public string spriteSheetName = "archer";
 
         private Card card;
         private Vector3 _position;
