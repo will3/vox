@@ -7,7 +7,7 @@ namespace FarmVox
     public class Actor : MonoBehaviour
     {
         public Terrian terrian;
-        public string spriteSheetName = "monster";
+        public string spriteSheetName = "robot";
 
         private Card card;
         private Vector3Int currentNode;
@@ -54,6 +54,10 @@ namespace FarmVox
             //SetNode(nextNode);
 
             //nextWander = Time.time + wanderWait;
+        }
+
+        public void Goto(Vector3Int coord) {
+            SetNode(coord);
         }
     }
 }

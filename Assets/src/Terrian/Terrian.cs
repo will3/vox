@@ -11,6 +11,15 @@ namespace FarmVox
     public partial class Terrian
     {
         private int size;
+
+        public int Size
+        {
+            get
+            {
+                return size;
+            }
+        }
+
         private float sizeF;
 
         private Chunks defaultLayer;
@@ -117,9 +126,7 @@ namespace FarmVox
 
                     GenerateTrees(terrianChunk);
 
-                    terrianChunk.UpdateRoutes();
-
-                    //GenerateEnemies(terrianChunk);
+                    GenerateRoutes(terrianChunk);
                 }
             }
 
@@ -167,9 +174,8 @@ namespace FarmVox
             }
 
             Vector3Int key = new Vector3Int(origin.x / size, origin.y / size, origin.z / size);
-            map[origin] = new TerrianChunk(key, size);
+            map[origin] = new TerrianChunk(key, size, this);
             map[origin].Config = config;
-            map[origin].Terrian = this;
             return map[origin];
         }
 
@@ -200,20 +206,6 @@ namespace FarmVox
             }
         }
 
-        public HashSet<Routes.Connection> GetNextNodes(Vector3Int node) {
-            var origin = GetOrigin(node.x, node.y, node.z);
-            var terrianChunk = GetTerrianChunk(origin);
-            if (terrianChunk == null) {
-                return new HashSet<Routes.Connection>();
-            }
-            var routesMap = terrianChunk.Routes.Map;
-            if (routesMap.ContainsKey(node)) {
-                return routesMap[node];
-            }
-
-            return new HashSet<Routes.Connection>();
-        }
-
         public Vector3Int GetOrigin(int i, int j, int k)
         {
             return new Vector3Int(
@@ -234,7 +226,7 @@ namespace FarmVox
             if (terrianChunk == null) {
                 return false;
             }
-            return terrianChunk.GetWater(coord - terrianChunk.Origin);
+            return terrianChunk.GetWater(coord - origin);
         }
 
         public void SetWater(Vector3Int coord) {
@@ -245,6 +237,16 @@ namespace FarmVox
                 return;
             }
             terrianChunk.SetWater(coord - terrianChunk.Origin, true);
+        }
+
+        public bool GetTree(Vector3Int coord) {
+            var origin = GetOrigin(coord.x, coord.y, coord.z);
+            var terrianChunk = GetTerrianChunk(origin);
+            if (terrianChunk == null)
+            {
+                return false;
+            }
+            return terrianChunk.GetTree(coord - origin);
         }
     }
 }

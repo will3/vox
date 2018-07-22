@@ -11,14 +11,14 @@ public partial class Card : MonoBehaviour
     private Vector3 up = Vector3.up;
     private CameraController cameraController;
 
-    public string spriteSheetName = "monster";
+    public string spriteSheetName = "robot";
 
 	// Use this for initialization
 	void Start()
 	{
         var spriteSheet = SpriteSheets.Get(spriteSheetName);
         material = new Material(Shader.Find("Unlit/Transparent"));
-        material.SetTexture("_MainTex", Textures.Load(spriteSheet.idle_0));
+        material.SetTexture("_MainTex", Textures.Load(spriteSheet.idle[0]));
 
         var mesh = getQuad();
 
@@ -37,10 +37,10 @@ public partial class Card : MonoBehaviour
 
         var vertices = new Vector3[4];
 
-        vertices[0] = new Vector3(-0.5f, -0.5f, 0);
-        vertices[1] = new Vector3(0.5f, -0.5f, 0);
-        vertices[2] = new Vector3(0.5f, 0.5f, 0);
-        vertices[3] = new Vector3(-0.5f, 0.5f, 0);
+        vertices[0] = new Vector3(-0.5f, 0f, 0);
+        vertices[1] = new Vector3(0.5f, 0f, 0);
+        vertices[2] = new Vector3(0.5f, 1.0f, 0);
+        vertices[3] = new Vector3(-0.5f, 1.0f, 0);
 
         mesh.vertices = vertices;
 

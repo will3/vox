@@ -8,7 +8,7 @@ namespace FarmVox
     public partial class TerrianChunk
     {
         private readonly HashSet<int> waters = new HashSet<int>();
-        private readonly Routes routes = new Routes();
+        private readonly Routes routes;
 
         public Routes Routes
         {
@@ -32,7 +32,7 @@ namespace FarmVox
         public bool floatingNeedsUpdate = true;
         public bool waterfallsNeedsUpdate = true;
 
-        public Terrian Terrian;
+        private Terrian terrian;
 
         private int distance;
         private Vector3Int origin;
@@ -57,12 +57,14 @@ namespace FarmVox
             }
         }
 
-        public TerrianChunk(Vector3Int key, int size)
+        public TerrianChunk(Vector3Int key, int size, Terrian terrian)
         {
             this.key = key;
             this.origin = key * size;
             this.size = size;
             this.dataSize = size + 3;
+            this.terrian = terrian;
+            routes = new Routes(terrian);
         }
 
         public readonly int dataSize;
@@ -141,33 +143,6 @@ namespace FarmVox
             return amount;
         }
 
-        // TODO
-        public void UpdateRoutes()
-        {
-            //if (!routesNeedsUpdate)
-            //{
-            //    return;
-            //}
-            //routes.Clear();
-            //routes.LoadChunk(Chunk);
-            //routesNeedsUpdate = false;
-        }
-
-        public void DrawRoutesGizmos()
-        {
-            Gizmos.color = Color.red;
-            var offset = new Vector3(0.5f, 1.5f, 0.5f);
-            foreach (var kv in routes.Map)
-            {
-                var from = kv.Key + offset;
-                foreach (var b in kv.Value)
-                {
-                    var to = b.node + offset;
-                    Gizmos.DrawLine(from, to);
-                }
-            }
-        }
-
         readonly HashSet<Vector3Int> townPoints = new HashSet<Vector3Int>();
 
         public HashSet<Vector3Int> TownPoints
@@ -196,71 +171,53 @@ namespace FarmVox
             townPoints.Add(townPoint);
         }
 
-        public HashSet<Routes.Connection> GetConnections(Vector3Int node)
-        {
-            if (routes.Map.ContainsKey(node)) {
-                return routes.Map[node];
-            }
-
-            var origin = Terrian.GetOrigin(node.x, node.y, node.z);
-            var terrianChunk = Terrian.GetTerrianChunk(origin);
-            if (terrianChunk == null) {
-                return new HashSet<Routes.Connection>();
-            }
-
-            if (!terrianChunk.routes.Map.ContainsKey(node)) {
-                return new HashSet<Routes.Connection>();
-            }
-
-            return terrianChunk.routes.Map[node];
-        }
-
         private TerrianConfig config;
 
         public RoadMap GetRoadMap(Vector3Int node, float maxDis) {
-            var roadMap = new RoadMap();
-            HashSet<Vector3Int> leads = new HashSet<Vector3Int>();
-            var map = new Dictionary<Vector3Int, float>();
+            //var roadMap = new RoadMap();
+            //HashSet<Vector3Int> leads = new HashSet<Vector3Int>();
+            //var map = new Dictionary<Vector3Int, float>();
 
-            leads.Add(node);
-            map[node] = 0;
+            //leads.Add(node);
+            //map[node] = 0;
 
-            while(leads.Count > 0) {
-                var currentNode = leads.First();
-                var cost = map[currentNode];
+            //while(leads.Count > 0) {
+            //    var currentNode = leads.First();
+            //    var cost = map[currentNode];
 
-                foreach (var connection in GetConnections(currentNode))
-                {
-                    var connectionCost = connection.cost;
-                    if (Terrian.GetWater(connection.node)) {
-                        connectionCost = Mathf.Infinity;
-                    }
-                    var nextCost = cost + connectionCost;
-                    if (nextCost > maxDis) {
-                        continue;   
-                    }
+            //    foreach (var connection in GetConnections(currentNode))
+            //    {
+            //        var connectionCost = connection.cost;
+            //        if (terrian.GetWater(connection.node)) {
+            //            connectionCost = Mathf.Infinity;
+            //        }
+            //        var nextCost = cost + connectionCost;
+            //        if (nextCost > maxDis) {
+            //            continue;   
+            //        }
 
-                    if (map.ContainsKey(connection.node))
-                    {
-                        if (nextCost >= map[currentNode])
-                        {
-                            continue;
-                        }
-                    }
+            //        if (map.ContainsKey(connection.node))
+            //        {
+            //            if (nextCost >= map[currentNode])
+            //            {
+            //                continue;
+            //            }
+            //        }
 
-                    map[connection.node] = nextCost;
-                    leads.Add(connection.node);
-                }
+            //        map[connection.node] = nextCost;
+            //        leads.Add(connection.node);
+            //    }
 
-                leads.Remove(currentNode);    
-            }
+            //    leads.Remove(currentNode);    
+            //}
 
-            foreach (var kv in map)
-            {
-                roadMap.AddNode(kv.Key, kv.Value);
-            }
+            //foreach (var kv in map)
+            //{
+            //    roadMap.AddNode(kv.Key, kv.Value);
+            //}
 
-            return roadMap;
+            //return roadMap;
+            return null;
         }
 
         private HashSet<Vector3Int> floating = new HashSet<Vector3Int>();

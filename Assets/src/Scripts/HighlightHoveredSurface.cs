@@ -4,16 +4,20 @@ using FarmVox;
 
 public class HighlightHoveredSurface : MonoBehaviour
 {
-    private Terrian terrian;
+    private Terrian _terrian;
 
-    private Terrian GetTerrian() {
-        if (terrian == null) {
-            terrian = GameObject.FindWithTag("GameController").GetComponent<GameController>().Terrian;
+    private Terrian terrian {
+        get {
+            if (_terrian == null)
+            {
+                _terrian = GameObject.FindWithTag("GameController").GetComponent<GameController>().Terrian;
+            }
+            return _terrian;    
         }
-        return terrian;
     }
 
     private GameObject go;
+
 	// Use this for initialization
 	void Start()
 	{
@@ -25,7 +29,6 @@ public class HighlightHoveredSurface : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-        terrian = GetTerrian();
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
         var result = terrian.Trace(ray.origin, ray.direction, 400);
@@ -36,4 +39,9 @@ public class HighlightHoveredSurface : MonoBehaviour
             go.transform.position = pos + result.HitNormal * 0.1f;
         }
 	}
+
+    public RaycastResult Trace() {
+        var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        return terrian.Trace(ray.origin, ray.direction, 400);
+    }
 }

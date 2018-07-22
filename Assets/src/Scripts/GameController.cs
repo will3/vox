@@ -17,28 +17,28 @@ public class GameController : MonoBehaviour {
     }
 
     private bool spawned = false;
-    private GameObject highlight;
+    public bool hideTerrian = false;
 
-    public GameObject Highlight
-    {
-        get
-        {
-            return highlight;
-        }
-    }
+    private HighlightHoveredSurface highlight;
+    private List<GameObject> robots = new List<GameObject>();
+    private GameObject terrianObject;
 
     // Use this for initialization
     void Start () {
-        terrian = new Terrian();
-        terrian.Transform = transform;
+        terrianObject = new GameObject("terrian");
+        terrianObject.transform.parent = transform.parent;
 
-        highlight = new GameObject("Highlight");
-        highlight.AddComponent<HighlightHoveredSurface>();
+        terrian = new Terrian();
+        terrian.Transform = terrianObject.transform;
+
+        var go = new GameObject("Highlight");
+        highlight = go.AddComponent<HighlightHoveredSurface>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
         WorkerQueues.meshQueue.Update();
+        WorkerQueues.routingQueue.Update();
 
         var cameraController = Finder.FindCameraController();
         if (cameraController != null) {
@@ -50,6 +50,31 @@ public class GameController : MonoBehaviour {
                 spawned = true;
             }    
         }
+
+        var result = highlight.Trace();
+        if (Input.GetKeyDown(KeyCode.Mouse0)) {
+            if (result != null) {
+                var coord = result.GetCoord();
+                var robot = new GameObject("robot");
+                var actor = robot.AddComponent<Actor>();
+                actor.SetNode(coord);
+                robots.Add(robot);
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Mouse1)) {
+            if (result != null) {
+                foreach(var robot in robots) {
+                    robot.GetComponent<Actor>().Goto(result.GetCoord());
+                }
+            }
+        }
+
+        if (hideTerrian) {
+            terrianObject.SetActive(false);
+        } else {
+            terrianObject.SetActive(true);
+        }
 	}
 
 	private void OnDrawGizmos()
@@ -58,7 +83,7 @@ public class GameController : MonoBehaviour {
             foreach (var kv in terrian.Map)
             {
                 var terrianChunk = kv.Value;
-                terrianChunk.DrawRoutesGizmos();
+                terrianChunk.Routes.DrawGizmos();
             }    
         }
 	}
