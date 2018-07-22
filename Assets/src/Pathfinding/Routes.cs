@@ -32,81 +32,154 @@ namespace FarmVox
             editingMutex.ReleaseMutex();
         }
 
-        public Vector3? AStar(Vector3 now, Vector3 to)
+        public Vector3Int? AStar(Vector3 now, Vector3 to)
         {
-            if (!HasNodeBelow(now))
-            {
-                Debug.Log("invalid pos " + now.x + "," + now.y + "," + now.z);
-                return null;
-            }
+            //if (!HasNodeBelow(now))
+            //{
+            //    Debug.Log("invalid pos " + now.x + "," + now.y + "," + now.z);
+            //    return null;
+            //}
 
-            var coord = new Vector3Int(Mathf.FloorToInt(now.x), Mathf.FloorToInt(now.y - 1), Mathf.FloorToInt(now.z));
-            var connected = GetConnectedCoords(coord);
+            //var coord = new Vector3Int(Mathf.FloorToInt(now.x), Mathf.FloorToInt(now.y - 1), Mathf.FloorToInt(now.z));
+            //var connected = GetConnectedCoords(coord);
 
-            Vector3Int? closestNext = null;
-            var minDis = Mathf.Infinity;
+            //Vector3Int? closestNext = null;
+            //var minDis = Mathf.Infinity;
 
-            foreach(var next in connected) {
-                var dis = (next - to).sqrMagnitude;
-                if (dis < minDis) {
-                    minDis = dis;
-                    closestNext = next;
-                }
-            }
+            //foreach(var next in connected) {
+            //    var dis = (next - to).sqrMagnitude;
+            //    if (dis < minDis) {
+            //        minDis = dis;
+            //        closestNext = next;
+            //    }
+            //}
 
-            if (closestNext == null) {
-                return null;
-            }
+            //return closestNext;
+            return null;
+        }
 
-            var result = closestNext.Value + new Vector3(0.5f, 1.5f, 0.5f);
+        public Vector3 ForceDrag(Vector3 now, Vector3 to) {
+            return to;
+            //var diff = to - now;
+            //var maxMag = 0.4f;
+            //if (diff.magnitude > maxMag) {
+            //    diff = diff.normalized * maxMag;
+            //}
+            //return now - diff;
+        }
 
-            ValidateResult(result);
+        private Vector3Int PosToCoord(Vector3 pos)
+        {
+            return new Vector3Int(Mathf.FloorToInt(pos.x), Mathf.FloorToInt(pos.y) - 1, Mathf.FloorToInt(pos.z));
+        }
 
-            return Drag(now, result);
+        private Vector3 CoordToPos(Vector3Int coord)
+        {
+            return coord + new Vector3(0.5f, 1.5f, 0.5f);
         }
 
         public Vector3? Drag(Vector3 now, Vector3 to) {
-            if (!HasNodeBelow(now))
-            {
+            var coord = PosToCoord(now);
+            var connection = GetConnection(coord);
+            if (connection == null) {
                 Debug.Log("invalid pos " + now.x + "," + now.y + "," + now.z);
-                return null;
+                return null;    
             }
 
             var diff = (to - now);
+            diff.y = 0;
+
             var maxMag = 0.4f;
-            if (diff.magnitude > maxMag)
-            {
+            if (diff.magnitude > maxMag) {
                 diff = diff.normalized * maxMag;
             }
 
-            var result = Drag(now, diff, 1.0f) ?? Drag(now, diff, 0) ?? Drag(now, diff, -1.0f);
-            if (result != null) {
-                ValidateResult(result.Value);    
+            var projected = now + diff;
+
+            var currentCoord = PosToCoord(now);
+            var currentCoordMid = CoordToPos(currentCoord);
+
+            if (diff.x < 0) {
+                var left = GetConnection(currentCoord + new Vector3Int(-1, 0, 0));
+                if (left == null)
+                {
+                    if (projected.x < currentCoordMid.x) {
+                        projected.x = currentCoordMid.x;
+                    }
+                }    
             }
-            return result;
-        }
 
-        Vector3? Drag(Vector3 now, Vector3 diff, float diffY)
-        {
-            diff.y = diffY;
-            var next = now + diff;
+            if (diff.x > 0) {
+                var right = GetConnection(currentCoord + new Vector3Int(1, 0, 0));
+                if (right == null) {
+                    if (projected.x > currentCoordMid.x) {
+                        projected.x = currentCoordMid.x;
+                    }
+                }
+            }
 
-            if (!HasNodeBelow(next))
-            {
+            if (diff.z < 0) {
+                var back = GetConnection(currentCoord + new Vector3Int(0, 0, -1));
+                if (back == null) {
+                    if (projected.z < currentCoordMid.z) {
+                        projected.z = currentCoordMid.z;
+                    }
+                }
+            }
+
+            if (diff.z > 0) {
+                var front = GetConnection(currentCoord + new Vector3Int(0, 0, 1));
+                if (front == null) {
+                    if (projected.z > currentCoordMid.z)
+                    {
+                        projected.z = currentCoordMid.z;
+                    }
+                }
+            }
+
+            var nextCoord = PosToCoord(projected);
+
+            connection = GetConnection(nextCoord);
+
+            if (connection == null) {
+                // can't move
                 return null;
             }
 
-            return next;
+            projected.y = connection.Value.y + 1.5f;
+
+            return projected;
         }
 
-        void ValidateResult(Vector3 result) {
-            if (!HasNodeBelow(result)) {
-                throw new System.Exception("not supposed to happen");
+        private Vector3Int? GetConnection(Vector3Int coord) {
+            Vector3Int c = new Vector3Int(coord.x, coord.y + 2, coord.z);
+            if (HasNode(c))
+            {
+                return c;
             }
 
-            if (result.y % 1.0f != 0.5f) {
-                throw new System.Exception("not supposed to happen");
+            c = new Vector3Int(coord.x, coord.y + 1, coord.z);
+            if (HasNode(c)) {
+                return c;
             }
+
+            if (HasNode(coord))
+            {
+                return coord;
+            }
+
+            c = new Vector3Int(coord.x, coord.y - 1, coord.z);
+            if (HasNode(c))
+            {
+                return c;
+            }
+
+            c = new Vector3Int(coord.x, coord.y - 2, coord.z);
+            if (HasNode(c))
+            {
+                return c;
+            }
+            return null;
         }
 
         private HashSet<Vector3Int> GetConnectedCoords(Vector3Int coord) {
@@ -147,12 +220,6 @@ namespace FarmVox
 
         private bool HasNode(int i, int j, int k) {
             return HasNode(new Vector3Int(i, j, k));
-        }
-
-        private bool HasNodeBelow(Vector3 node) {
-            var coord = new Vector3Int(Mathf.FloorToInt(node.x), Mathf.FloorToInt(node.y), Mathf.FloorToInt(node.z));
-            coord.y -= 1;
-            return HasNode(coord);
         }
 
         public void Clear() {
