@@ -8,15 +8,6 @@ namespace FarmVox
     public partial class TerrianChunk
     {
         private readonly HashSet<int> waters = new HashSet<int>();
-        private readonly Routes routes;
-
-        public Routes Routes
-        {
-            get
-            {
-                return routes;
-            }
-        }
 
         public readonly Vector3Int key;
         public bool rockNeedsUpdate = true;
@@ -64,7 +55,6 @@ namespace FarmVox
             this.size = size;
             this.dataSize = size + 3;
             this.terrian = terrian;
-            routes = new Routes(terrian);
         }
 
         public readonly int dataSize;

@@ -56,13 +56,15 @@ public class GameController : MonoBehaviour {
         }
 
         var result = highlight.Trace();
+        var routesMap = terrian.RoutesMap;
         if (Input.GetKey(KeyCode.Mouse0)) {
             if (result != null) {
                 var coord = result.GetCoord();
 
-                var routes = Actor.GetRoutes(coord);
+                var origin = routesMap.GetOrigin(coord);
+                var routes = routesMap.GetRoutes(origin);
 
-                if (routes != null && routes.HasCoord(coord)) {
+                if (routes != null && routes.HasNode(coord)) {
                     var go = new GameObject("robot");
                     var actor = go.AddComponent<Actor>();
                     actor.radius = 2.0f;
@@ -119,15 +121,4 @@ public class GameController : MonoBehaviour {
             }
         }
     }
-
-	private void OnDrawGizmos()
-	{
-        if (drawRoutes && terrian != null) {
-            foreach (var kv in terrian.Map)
-            {
-                var terrianChunk = kv.Value;
-                terrianChunk.Routes.DrawGizmos();
-            }    
-        }
-	}
 }

@@ -7,25 +7,19 @@ namespace FarmVox
 {
     public class Routes
     {
-        public Routes(Terrian terrian)
+        Vector3Int origin;
+        public Routes(Vector3Int origin, Terrian terrian)
         {
             this.terrian = terrian;
             this.size = terrian.Size;
+            this.origin = origin;
         }
 
         private Terrian terrian;
         private int size;
+        public RoutesMap routesMap;
 
-        private HashSet<Vector3Int> coordsInside = new HashSet<Vector3Int>();
-        private HashSet<Vector3Int> connectedCoordsOutside = new HashSet<Vector3Int>();
-
-        public HashSet<Vector3Int> ConnectedCoordsOutside
-        {
-            get
-            {
-                return connectedCoordsOutside;
-            }
-        }
+        private HashSet<Vector3Int> nodes = new HashSet<Vector3Int>();
 
         private Mutex editingMutex = new Mutex();
 
@@ -49,8 +43,8 @@ namespace FarmVox
             var coord = new Vector3Int(Mathf.FloorToInt(now.x), Mathf.FloorToInt(now.y - 1), Mathf.FloorToInt(now.z));
             var connected = GetConnectedCoords(coord);
 
-            var minDis = Mathf.Infinity;
             Vector3Int? closestNext = null;
+            var minDis = Mathf.Infinity;
 
             foreach(var next in connected) {
                 var dis = (next - to).sqrMagnitude;
@@ -66,10 +60,9 @@ namespace FarmVox
 
             var result = closestNext.Value + new Vector3(0.5f, 1.5f, 0.5f);
 
-            ValidateResult(result);    
+            ValidateResult(result);
 
-            return result;
-            //return Drag(now, result);
+            return Drag(now, result);
         }
 
         public Vector3? Drag(Vector3 now, Vector3 to) {
@@ -110,6 +103,10 @@ namespace FarmVox
             if (!HasNodeBelow(result)) {
                 throw new System.Exception("not supposed to happen");
             }
+
+            if (result.y % 1.0f != 0.5f) {
+                throw new System.Exception("not supposed to happen");
+            }
         }
 
         private HashSet<Vector3Int> GetConnectedCoords(Vector3Int coord) {
@@ -123,7 +120,7 @@ namespace FarmVox
                             continue;
                         }
                         var next = coord + new Vector3Int(i, j, k);
-                        if (HasCoord(next)) {
+                        if (HasNode(next)) {
                             set.Add(next);
                         }
                     }
@@ -132,22 +129,34 @@ namespace FarmVox
             return set;
         }
 
-        public bool HasCoord(Vector3Int coord) {
-            return coordsInside.Contains(coord) || connectedCoordsOutside.Contains(coord);
+        public bool HasNode(Vector3Int coord) {
+            var o = routesMap.GetOrigin(coord);
+            if (o == origin)
+            {
+                return nodes.Contains(coord);
+            }
+
+            var routes = routesMap.GetRoutes(o);
+            if (routes == null)
+            {
+                return false;
+            }
+
+            return routes.HasNode(coord);
+        }
+
+        private bool HasNode(int i, int j, int k) {
+            return HasNode(new Vector3Int(i, j, k));
         }
 
         private bool HasNodeBelow(Vector3 node) {
-            var coord = new Vector3Int(Mathf.FloorToInt(node.x), Mathf.FloorToInt(node.y) - 1, Mathf.FloorToInt(node.z));
-            return coordsInside.Contains(coord) || connectedCoordsOutside.Contains(coord);
-        }
-
-        private bool HasNode(Vector3Int node) {
-            return coordsInside.Contains(node);
+            var coord = new Vector3Int(Mathf.FloorToInt(node.x), Mathf.FloorToInt(node.y), Mathf.FloorToInt(node.z));
+            coord.y -= 1;
+            return HasNode(coord);
         }
 
         public void Clear() {
-            coordsInside.Clear();
-            connectedCoordsOutside.Clear();
+            nodes.Clear();
         }
 
         public void DrawGizmos()
@@ -197,99 +206,7 @@ namespace FarmVox
                 if (coord.y + origin.y < config.waterLevel) {
                     continue;
                 }
-                coordsInside.Add(coord + origin);
-            }
-
-            foreach (var a in coordsInside)
-            {
-                if (!CanEnter(a))
-                {
-                    continue;
-                }
-
-                var chunks = chunk.Chunks;
-
-                if (a.x == origin.x)
-                {
-                    for (var u = -1; u <= 1; u++)
-                    {
-                        for (var v = -1; v <= 1; v++)
-                        {
-                            var outsideCoord = new Vector3Int(a.x - 1, a.y + u, a.z + v);
-                            var o = terrian.GetOrigin(outsideCoord.x, outsideCoord.y, outsideCoord.z);
-                            var tc = terrian.GetTerrianChunk(o);
-                            if (tc == null) continue;
-                            if (!CanEnter(outsideCoord)) continue;
-
-                            if (chunks.IsUp(outsideCoord))
-                            {
-                                connectedCoordsOutside.Add(outsideCoord);
-                                tc.Routes.connectedCoordsOutside.Add(a);
-                            }
-                        }
-                    }
-                }
-
-                if (a.x == origin.x + chunk.Size - 1)
-                {
-                    for (var u = -1; u <= 1; u++)
-                    {
-                        for (var v = -1; v <= 1; v++)
-                        {
-                            var outsideCoord = new Vector3Int(a.x + 1, a.y + u, a.z + v);
-                            var o = terrian.GetOrigin(outsideCoord.x, outsideCoord.y, outsideCoord.z);
-                            var tc = terrian.GetTerrianChunk(o);
-                            if (tc == null) continue;
-                            if (!CanEnter(outsideCoord)) continue;
-
-                            if (chunks.IsUp(outsideCoord))
-                            {
-                                connectedCoordsOutside.Add(outsideCoord);
-                                tc.Routes.connectedCoordsOutside.Add(a);
-                            }
-                        }
-                    }
-                }
-
-                if (a.z == origin.z)
-                {
-                    for (var u = -1; u <= 1; u++)
-                    {
-                        for (var v = -1; v <= 1; v++)
-                        {
-                            var outsideCoord = new Vector3Int(a.x + u, a.y + v, a.z - 1);
-                            var o = terrian.GetOrigin(outsideCoord.x, outsideCoord.y, outsideCoord.z);
-                            var tc = terrian.GetTerrianChunk(o);
-                            if (tc == null) continue;
-                            if (!CanEnter(outsideCoord)) continue;
-                            if (chunks.IsUp(outsideCoord))
-                            {
-                                connectedCoordsOutside.Add(outsideCoord);
-                                tc.Routes.connectedCoordsOutside.Add(a);
-                            }
-                        }
-                    }
-                }
-
-                if (a.z == origin.z + chunk.Size - 1)
-                {
-                    for (var u = -1; u <= 1; u++)
-                    {
-                        for (var v = -1; v <= 1; v++)
-                        {
-                            var outsideCoord = new Vector3Int(a.x + u, a.y + v, a.z + 1);
-                            var o = terrian.GetOrigin(outsideCoord.x, outsideCoord.y, outsideCoord.z);
-                            var tc = terrian.GetTerrianChunk(o);
-                            if (tc == null) continue;
-                            if (!CanEnter(outsideCoord)) continue;
-                            if (chunks.IsUp(outsideCoord))
-                            {
-                                connectedCoordsOutside.Add(outsideCoord);
-                                tc.Routes.connectedCoordsOutside.Add(a);
-                            }
-                        }
-                    }
-                }
+                nodes.Add(coord + origin);
             }
         }
     }

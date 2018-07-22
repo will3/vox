@@ -40,25 +40,11 @@ namespace FarmVox
             card.transform.position = position;
         }
 
-        public static Routes GetRoutes(Vector3 position) {
+        private Routes GetRoutes() {
             var terrian = Finder.FindTerrian();
-            if (terrian == null)
-            {
-                return null;
-            }
-
-            var origin = terrian.GetOrigin(position.x, position.y, position.z);
-            var tc = terrian.GetTerrianChunk(origin);
-
-            if (tc == null)
-            {
-                return null;
-            }
-            return tc.Routes;
-        }
-
-        Routes GetRoutes() {
-            return GetRoutes(position);
+            var routesMap = terrian.RoutesMap;
+            var origin = routesMap.GetOrigin(position);
+            return routesMap.GetRoutes(origin);
         }
 
         public void Navigate(Vector3 to) {

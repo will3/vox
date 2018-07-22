@@ -26,6 +26,16 @@ namespace FarmVox
         private Chunks treeLayer;
         private Chunks waterLayer;
 
+        private RoutesMap routesMap;
+
+        public RoutesMap RoutesMap
+        {
+            get
+            {
+                return routesMap;
+            }
+        }
+
         private Material material = new Material(Shader.Find("Unlit/voxelunlit"));
         public Material Material
         {
@@ -68,7 +78,9 @@ namespace FarmVox
 
             chunksToDraw = new Chunks[] { defaultLayer, treeLayer, waterLayer };
             chunksCastingShadows = new Chunks[] { defaultLayer, treeLayer };
-            chunksReceivingShadows = new Chunks[] { waterLayer, defaultLayer, treeLayer }; 
+            chunksReceivingShadows = new Chunks[] { waterLayer, defaultLayer, treeLayer };
+
+            routesMap = new RoutesMap(this);
         }
 
         public void Update()
