@@ -32,7 +32,6 @@ namespace FarmVox
         private void Work() {
             var routes = routesMap.GetOrCreateRoutes(origin);
             var chunk = defaultLayer.GetChunk(origin);
-            routes.Clear();
             routes.LoadChunk(chunk, config);
             done = true;
         }

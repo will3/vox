@@ -56,5 +56,9 @@ namespace FarmVox
             var index = i * depth * height + j * depth + k;
             data[index] = v;
         }
+
+        public void Clear() {
+            data = new T[width * height * depth];
+        }
     }
 }
