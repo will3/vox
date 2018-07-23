@@ -2,10 +2,11 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using Priority_Queue;
 
 namespace FarmVox
 {
-    public class Routes
+    public partial class Routes
     {
         Vector3Int origin;
         private Terrian terrian;
@@ -34,8 +35,52 @@ namespace FarmVox
             editingMutex.ReleaseMutex();
         }
 
-        public Vector3Int? AStar(Vector3 now, Vector3 to)
+        void AddConnectedNodes(FastPriorityQueue<RouteNode> leads, Vector3Int node) {
+            AddExistingNodeWithOffset(leads, node, -1, -1, 0);
+            AddExistingNodeWithOffset(leads, node, -1, 0, 0);
+            AddExistingNodeWithOffset(leads, node, -1, 1, 0);
+
+            AddExistingNodeWithOffset(leads, node, 1, -1, 0);
+            AddExistingNodeWithOffset(leads, node, 1, 0, 0);
+            AddExistingNodeWithOffset(leads, node, 1, 1, 0);
+
+            AddExistingNodeWithOffset(leads, node, 0, -1, -1);
+            AddExistingNodeWithOffset(leads, node, 0, 0, -1);
+            AddExistingNodeWithOffset(leads, node, 0, 1, -1);
+
+            AddExistingNodeWithOffset(leads, node, 0, -1, 1);
+            AddExistingNodeWithOffset(leads, node, 0, 0, 1);
+            AddExistingNodeWithOffset(leads, node, 0, 1, 1);
+        }
+
+        void AddExistingNodeWithOffset(FastPriorityQueue<RouteNode> leads, Vector3Int node, int stepX, int stepY, int stepZ) {
+            var n = node + new Vector3Int(stepX, stepY, stepZ) * 2;
+            if (HasNode(n)) {
+                var routeNode = new RouteNode(n);
+                float cost = 0.0f;
+                leads.Enqueue(routeNode, cost);
+            }
+        }
+
+        private const int maxNodeSize = 32768;
+
+        public Vector3Int[] AStar(Vector3 now, Vector3 to, int maxSteps = 16)
         {
+            var currentNode = GetNode(now);
+            var leads = new FastPriorityQueue<RouteNode>(maxNodeSize);
+            leads.Enqueue(new RouteNode(currentNode), 0.0f);
+
+            int stepCount = 0;
+            while (leads.Count > 0) {
+                AddConnectedNodes(leads, currentNode);
+
+                if (stepCount >= maxSteps)
+                {
+                    break;
+                }
+                stepCount++;
+            }
+
             //if (!HasNodeBelow(now))
             //{
             //    Debug.Log("invalid pos " + now.x + "," + now.y + "," + now.z);
@@ -58,16 +103,6 @@ namespace FarmVox
 
             //return closestNext;
             return null;
-        }
-
-        public Vector3 ForceDrag(Vector3 now, Vector3 to) {
-            return to;
-            //var diff = to - now;
-            //var maxMag = 0.4f;
-            //if (diff.magnitude > maxMag) {
-            //    diff = diff.normalized * maxMag;
-            //}
-            //return now - diff;
         }
 
         //private Vector3Int PosToCoord(Vector3 pos)
@@ -102,7 +137,7 @@ namespace FarmVox
                 }
                 return routes.HasNode(node);
             } else {
-                return nodes.Contains(node);    
+                return nodes.ContainsKey(node);
             }
         }
 
@@ -343,16 +378,17 @@ namespace FarmVox
             Gizmos.color = new Color(1.0f, 0.0f, 0.0f);
             //var offset = new Vector3(0.5f, 1.5f, 0.5f);
 
-            foreach(var node in nodes) {
-                var position = node + new Vector3(1, 2.0f, 1);
+            foreach(var kv in nodes) {
+                var coord = kv.Key;
+                var position = coord + new Vector3(1, 2.0f, 1);
                 Gizmos.DrawCube(position, new Vector3(1.0f, 1.0f, 1.0f));
             }
 
             editingMutex.ReleaseMutex();
         }
 
-        HashSet<Vector3Int> nodes = new HashSet<Vector3Int>();
-        HashSet<Vector3Int> coords = new HashSet<Vector3Int>();
+        readonly Dictionary<Vector3Int, RouteNode> nodes = new Dictionary<Vector3Int, RouteNode>();
+        readonly HashSet<Vector3Int> coords = new HashSet<Vector3Int>();
 
         void LoadConnections(Chunk chunk, TerrianConfig config)
         {
@@ -367,7 +403,7 @@ namespace FarmVox
                     Mathf.FloorToInt(coord.x / rf) * resolution,
                     Mathf.FloorToInt(coord.y / rf) * resolution,
                     Mathf.FloorToInt(coord.z / rf) * resolution) + origin;
-                nodes.Add(node);
+                nodes[node] = new RouteNode(node);
                 coords.Add(coord);
             }
         }

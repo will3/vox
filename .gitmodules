@@ -1,3 +1,6 @@
 [submodule "Assets/LibNoise.Unity"]
 	path = Assets/LibNoise.Unity
 	url = https://github.com/ricardojmendez/LibNoise.Unity.git
+[submodule "Assets/High-Speed-Priority-Queue-for-C-Sharp"]
+	path = Assets/High-Speed-Priority-Queue-for-C-Sharp
+	url = https://github.com/BlueRaja/High-Speed-Priority-Queue-for-C-Sharp.git
