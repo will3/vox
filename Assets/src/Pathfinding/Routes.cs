@@ -70,36 +70,145 @@ namespace FarmVox
             //return now - diff;
         }
 
-        private Vector3Int PosToCoord(Vector3 pos)
-        {
-            return new Vector3Int(Mathf.FloorToInt(pos.x), Mathf.FloorToInt(pos.y) - 1, Mathf.FloorToInt(pos.z));
+        //private Vector3Int PosToCoord(Vector3 pos)
+        //{
+        //    return new Vector3Int(Mathf.FloorToInt(pos.x), Mathf.FloorToInt(pos.y) - 1, Mathf.FloorToInt(pos.z));
+        //}
+
+        //private Vector3 CoordToPos(Vector3Int coord)
+        //{
+        //    return coord + new Vector3(0.5f, 1.5f, 0.5f);
+        //}
+
+        public Vector3Int? GetExistingNode(Vector3 vector) {
+            var rf = (float)resolution;
+            var node = new Vector3Int(
+                Mathf.FloorToInt(vector.x / rf) * resolution,
+                Mathf.FloorToInt(vector.y / rf) * resolution,
+                Mathf.FloorToInt(vector.z / rf) * resolution);
+
+            if (HasNode(node)) {
+                return node;    
+            }
+            return null;
         }
 
-        private Vector3 CoordToPos(Vector3Int coord)
-        {
-            return coord + new Vector3(0.5f, 1.5f, 0.5f);
+        private bool HasNode(Vector3Int node) {
+            var o = routesMap.GetOrigin(node.x, node.y, node.z);
+            if (o != this.origin) {
+                var routes = routesMap.GetRoutes(o);    
+                if (routes == null) {
+                    return false;
+                }
+                return routes.HasNode(node);
+            } else {
+                return nodes.Contains(node);    
+            }
+        }
+
+        public Vector3Int GetNode(Vector3 vector) {
+            var rf = (float)resolution;
+            return new Vector3Int(
+                Mathf.FloorToInt(vector.x / rf) * resolution,
+                Mathf.FloorToInt(vector.y / rf) * resolution,
+                Mathf.FloorToInt(vector.z / rf) * resolution);
+        }
+
+        public Vector3Int? SteppingNode(Vector3Int node) {
+            var up = new Vector3Int(node.x, node.y + resolution, node.z);
+            if (HasNode(up)) {
+                return up;
+            }
+
+            if (HasNode(node)) {
+                return node;
+            }
+
+            var down = new Vector3Int(node.x, node.y - resolution, node.z);
+            if (HasNode(down)) {
+                return down;
+            }
+
+            return null;
         }
 
         public Vector3? Drag(Vector3 now, Vector3 to) {
-            
-            return null;
+            var nodeNullable = GetExistingNode(now);
+            if (nodeNullable == null) {
+                Debug.Log("invalid position");
+                return null;
+            }
+            var node = nodeNullable.Value;
+
+            var diff = (to - now);
+            diff.y = 0;
+
+            var maxMag = 0.4f;
+            if (diff.magnitude > maxMag) {
+                diff = diff.normalized * maxMag;
+            }
+
+            var projected = now + diff;
+
+            if (diff.x > 0) {
+                var nextNode = SteppingNode(node + new Vector3Int(resolution, 0, 0));
+                if (nextNode == null) {
+                    if (projected.x > node.x + 1) {
+                        projected.x = node.x + 1;
+                    }
+                }
+            }
+
+            if (diff.x < 0) {
+                var nextNode = SteppingNode(node + new Vector3Int(-resolution, 0, 0));
+                if (nextNode == null) {
+                    if (projected.x < node.x + 1) {
+                        projected.x = node.x + 1;
+                    }
+                }
+            }
+
+            if (diff.z > 0)
+            {
+                var nextNode = SteppingNode(node + new Vector3Int(0, 0, resolution));
+                if (nextNode == null)
+                {
+                    if (projected.z > node.z + 1)
+                    {
+                        projected.z = node.z + 1;
+                    }
+                }
+            }
+
+            if (diff.z < 0)
+            {
+                var nextNode = SteppingNode(node + new Vector3Int(0, 0, -resolution));
+                if (nextNode == null)
+                {
+                    if (projected.z < node.z + 1)
+                    {
+                        projected.z = node.z + 1;
+                    }
+                }
+            }
+
+            ;
+            var projectedNode = GetNode(projected);
+            var projectedSteppingNode = SteppingNode(projectedNode);
+
+            if (projectedSteppingNode == null) {
+                // Huuhhhh?
+                return null;
+            }
+
+            projected.y = projectedSteppingNode.Value.y;
+            return projected;
             //var coord = PosToCoord(now);
             //var connection = GetConnection(coord);
             //if (connection == null) {
             //    Debug.Log("invalid pos " + now.x + "," + now.y + "," + now.z);
             //    return null;    
             //}
-
-            //var diff = (to - now);
-            //diff.y = 0;
-
-            //var maxMag = 0.4f;
-            //if (diff.magnitude > maxMag) {
-            //    diff = diff.normalized * maxMag;
-            //}
-
-            //var projected = now + diff;
-
             //var currentCoord = PosToCoord(now);
             //var currentCoordMid = CoordToPos(currentCoord);
 
@@ -231,67 +340,35 @@ namespace FarmVox
         {
             editingMutex.WaitOne();
 
-            //Gizmos.color = new Color(0.8f, 0.8f, 0.8f);
+            Gizmos.color = new Color(1.0f, 0.0f, 0.0f);
             //var offset = new Vector3(0.5f, 1.5f, 0.5f);
 
-
-            //foreach (var coord in coords)
-            //{
-            //    var from = kv.Key + offset;
-            //    foreach (var b in kv.Value)
-            //    {
-            //        var to = b.node + offset;
-            //        Gizmos.DrawLine(from, to);
-            //    }
-            //}
+            foreach(var node in nodes) {
+                var position = node + new Vector3(1, 2.0f, 1);
+                Gizmos.DrawCube(position, new Vector3(1.0f, 1.0f, 1.0f));
+            }
 
             editingMutex.ReleaseMutex();
         }
 
+        HashSet<Vector3Int> nodes = new HashSet<Vector3Int>();
         HashSet<Vector3Int> coords = new HashSet<Vector3Int>();
 
         void LoadConnections(Chunk chunk, TerrianConfig config)
         {
-            coords.Clear();
+            nodes.Clear();
 
-            var halfSize = chunk.Size / resolution;
-            var dots = new Array3<int>(halfSize, halfSize + 1, halfSize);
+            var rf = (float)resolution;
 
-            for (var i = 0; i < halfSize; i ++) 
-            {
-                for (var j = 0; j < halfSize + 1; j++)
-                {
-                    for (var k = 0; k < halfSize; k++)
-                    {
-                        var x = i * resolution;
-                        var y = j * resolution;
-                        var z = k * resolution;
+            chunk.UpdateSurfaceCoords();
 
-                        var total = chunk.Get(x, y, z) >= 0 ? 1 : 0 +
-                            chunk.Get(x + 1, y, z) >= 0 ? 1 : 0 +
-                            chunk.Get(x, y + 1, z) >= 0 ? 1 : 0 +
-                            chunk.Get(x + 1, y + 1, z) >= 0 ? 1 : 0 +
-                            chunk.Get(x, y, z + 1) >= 0 ? 1 : 0 +
-                            chunk.Get(x + 1, y, z + 1) >= 0 ? 1 : 0 +
-                            chunk.Get(x, y + 1, z + 1) >= 0 ? 1 : 0 +
-                            chunk.Get(x + 1, y + 1, z + 1) >= 0 ? 1 : 0;
-
-                        dots.Set(i, j, k, total);
-                    }
-                }
-            }
-
-            var surfaces = new HashSet<Vector3Int>();
-            for (var i = 0; i < halfSize; i++) {
-                for (var j = 0; j < halfSize; j++) {
-                    for (var k = 0; k < halfSize; k++) {
-                        var a = dots.Get(i, j, k);
-                        var b = dots.Get(i, j + 1, k);
-                        if (a == 8 && b < 8 || (a < 8 && b == 0)) {
-                            coords.Add(new Vector3Int(i, j, k) * resolution + origin);
-                        }
-                    }
-                }
+            foreach (var coord in chunk.surfaceCoordsUp) {
+                var node = new Vector3Int(
+                    Mathf.FloorToInt(coord.x / rf) * resolution,
+                    Mathf.FloorToInt(coord.y / rf) * resolution,
+                    Mathf.FloorToInt(coord.z / rf) * resolution) + origin;
+                nodes.Add(node);
+                coords.Add(coord);
             }
         }
     }

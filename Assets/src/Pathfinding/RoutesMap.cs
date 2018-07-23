@@ -38,5 +38,11 @@ namespace FarmVox
         public Vector3Int GetOrigin(float i, float j, float k) {
             return terrian.GetOrigin(i, j, k);
         }
+
+        public void DrawGizmos() {
+            foreach(var kv in map) {
+                kv.Value.DrawGizmos();
+            }
+        }
     }
 }

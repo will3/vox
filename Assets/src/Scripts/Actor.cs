@@ -20,9 +20,8 @@ namespace FarmVox
             card.scale = scale;
         }
 
-        public void Place(Vector3Int above)
-        {
-            routingAgent.position = new Vector3(above.x + 0.5f, above.y + 1.5f, above.z + 0.5f);
+        public void SetPosition(Vector3 position) {
+            routingAgent.position = position;
         }
 
         public Vector3 position {
@@ -34,7 +33,7 @@ namespace FarmVox
         // Update is called once per frame
         void Update()
         {
-            card.transform.position = routingAgent.position;
+            card.transform.position = routingAgent.position + new Vector3(1, 1, 1);
         }
 
         public void Navigate(Vector3 to) {
