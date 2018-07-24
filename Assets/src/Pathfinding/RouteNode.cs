@@ -7,19 +7,10 @@ namespace FarmVox
     {
         public RouteNode(Vector3Int node)
         {
-            this.node = node;
+            this.coord = node;
         }
 
-        readonly Vector3Int node;
+        public readonly Vector3Int coord;
         public float cost = 0.0f;
-
-        //public void SetCost(float cost) {
-        //    this.cost = cost;
-        //    Priority = cost;
-        //}
-
-        //public float GetCost() {
-        //    return cost;
-        //}
     }
 }

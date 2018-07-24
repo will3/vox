@@ -35,26 +35,29 @@ namespace FarmVox
             editingMutex.ReleaseMutex();
         }
 
-        void AddConnectedNodes(FastPriorityQueue<RouteNode> leads, Vector3Int node) {
-            AddExistingNodeWithOffset(leads, node, -1, -1, 0);
-            AddExistingNodeWithOffset(leads, node, -1, 0, 0);
-            AddExistingNodeWithOffset(leads, node, -1, 1, 0);
+        void AddConnectedNodes(FastPriorityQueue<RouteNode> leads, HashSet<Vector3Int> visited, Vector3Int node) {
+            AddExistingNodeWithOffset(leads, visited, node, -1, -1, 0);
+            AddExistingNodeWithOffset(leads, visited, node, -1, 0, 0);
+            AddExistingNodeWithOffset(leads, visited, node, -1, 1, 0);
 
-            AddExistingNodeWithOffset(leads, node, 1, -1, 0);
-            AddExistingNodeWithOffset(leads, node, 1, 0, 0);
-            AddExistingNodeWithOffset(leads, node, 1, 1, 0);
+            AddExistingNodeWithOffset(leads, visited, node, 1, -1, 0);
+            AddExistingNodeWithOffset(leads, visited, node, 1, 0, 0);
+            AddExistingNodeWithOffset(leads, visited, node, 1, 1, 0);
 
-            AddExistingNodeWithOffset(leads, node, 0, -1, -1);
-            AddExistingNodeWithOffset(leads, node, 0, 0, -1);
-            AddExistingNodeWithOffset(leads, node, 0, 1, -1);
+            AddExistingNodeWithOffset(leads, visited, node, 0, -1, -1);
+            AddExistingNodeWithOffset(leads, visited, node, 0, 0, -1);
+            AddExistingNodeWithOffset(leads, visited, node, 0, 1, -1);
 
-            AddExistingNodeWithOffset(leads, node, 0, -1, 1);
-            AddExistingNodeWithOffset(leads, node, 0, 0, 1);
-            AddExistingNodeWithOffset(leads, node, 0, 1, 1);
+            AddExistingNodeWithOffset(leads, visited, node, 0, -1, 1);
+            AddExistingNodeWithOffset(leads, visited, node, 0, 0, 1);
+            AddExistingNodeWithOffset(leads, visited, node, 0, 1, 1);
         }
 
-        void AddExistingNodeWithOffset(FastPriorityQueue<RouteNode> leads, Vector3Int node, int stepX, int stepY, int stepZ) {
+        void AddExistingNodeWithOffset(FastPriorityQueue<RouteNode> leads, HashSet<Vector3Int> visited, Vector3Int node, int stepX, int stepY, int stepZ) {
             var n = node + new Vector3Int(stepX, stepY, stepZ) * 2;
+            if (visited.Contains(n)) {
+                return;
+            }
             if (HasNode(n)) {
                 var routeNode = new RouteNode(n);
                 float cost = 0.0f;
@@ -69,16 +72,20 @@ namespace FarmVox
             var currentNode = GetNode(now);
             var leads = new FastPriorityQueue<RouteNode>(maxNodeSize);
             leads.Enqueue(new RouteNode(currentNode), 0.0f);
-
+            var visited = new HashSet<Vector3Int>();
+                
             int stepCount = 0;
             while (leads.Count > 0) {
-                AddConnectedNodes(leads, currentNode);
+                AddConnectedNodes(leads, visited, currentNode);
 
                 if (stepCount >= maxSteps)
                 {
                     break;
                 }
                 stepCount++;
+
+                var removed = leads.Dequeue();
+                visited.Add(removed.coord);
             }
 
             //if (!HasNodeBelow(now))
