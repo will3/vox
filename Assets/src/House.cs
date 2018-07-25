@@ -68,7 +68,8 @@ namespace FarmVox
             //offset = new Vector3Int(width / 2, height / 2, length / 2) * -1;
         }
 
-        public void Print(Vector3Int pos, Chunks chunks) {
+        public void Print(Vector3Int pos, Chunks chunks)
+        {
             //for (var i = 0; i < shape.Width; i++)
             //{
             //    for (var j = 0; j < shape.Height; j++)

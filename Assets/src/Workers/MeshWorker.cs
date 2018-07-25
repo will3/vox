@@ -38,10 +38,9 @@ namespace FarmVox
 
             GameObject go = new GameObject("Mesh" + origin.ToString());
             go.transform.parent = group.transform;
-            go.AddComponent<MeshFilter>();
-            go.AddComponent<MeshRenderer>();
-            go.GetComponent<Renderer>().material = material;
-            go.GetComponent<MeshFilter>().mesh = mesh;
+            go.AddComponent<MeshRenderer>().material = material;
+            go.AddComponent<MeshFilter>().sharedMesh = mesh;
+            go.AddComponent<MeshCollider>().sharedMesh = mesh;
             go.transform.localPosition = chunk.Origin;
 
             chunk.Mesh = mesh;

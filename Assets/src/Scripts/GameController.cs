@@ -73,25 +73,24 @@ public class GameController : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.Mouse0)) {
             RaycastHit hit;
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
             if (Physics.Raycast(ray, out hit)) {
                 var go = new GameObject("guy");
                 var actor = go.AddComponent<Actor>();
                 actor.radius = 2.0f;
-                var routingAgent = go.AddComponent<RoutingAgent>();
-                routingAgent.SetRoutesMap(routesMap);
-                routingAgent.position = hit.point;;
                 actors.Add(actor);
+                go.transform.position = hit.point;
             }
         }
 
         if (Input.GetKeyDown(KeyCode.Mouse1)) {
-            if (result != null) {
-                var pos = result.HitPos;
-                var node = routesMap.GetNode(pos);
-                if (routesMap.HasNode(node)) {
-                    foreach (var actor in actors) {
-                        actor.GetComponent<Actor>().SetDestination(pos);
-                    }
+            RaycastHit hit;
+            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            if (Physics.Raycast(ray, out hit))
+            {
+                foreach (var actor in actors) {
+                    actor.SetDestination(hit.point);
                 }
             }
         }
