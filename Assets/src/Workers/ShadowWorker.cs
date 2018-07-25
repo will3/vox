@@ -5,7 +5,7 @@ namespace FarmVox
 {
     public class ShadowWorker : IWorker
     {
-        private bool done = false;
+        bool done = false;
 
         TerrianChunk terrianChunk;
         IList<Chunks> chunksReceivingShadows;
@@ -27,11 +27,10 @@ namespace FarmVox
 
         public void Start()
         {
-            Thread thread = new Thread(Work);
-            thread.Start();
+            Work();
         }
 
-        private void Work()
+        void Work()
         {
             var origin = terrianChunk.Origin;
 

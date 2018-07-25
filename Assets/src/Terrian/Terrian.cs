@@ -129,8 +129,6 @@ namespace FarmVox
                 terrianChunk.UpdateDistance(x, z);
             }
 
-            HashSet<Vector3Int> updatedTerrianChunks = new HashSet<Vector3Int>();
-
             foreach (var kv in map)
             {
                 var terrianChunk = kv.Value;
@@ -139,9 +137,7 @@ namespace FarmVox
                 {
                     var origin = terrianChunk.Origin;
 
-                    if (GenerateGround(terrianChunk)) {
-                        updatedTerrianChunks.Add(origin);
-                    }
+                    GenerateGround(terrianChunk);
 
                     GenerateWaters(terrianChunk);
 
@@ -153,15 +149,6 @@ namespace FarmVox
                 }
             }
 
-            //foreach (var kv in map) {
-            //    UpdateFloating(kv.Value);
-            //}
-
-            foreach (var coord in updatedTerrianChunks)
-            {
-                UpdateShadowNeedsUpdate(coord);
-            }
-
             foreach(var kv in map) {
                 var terrianChunk = kv.Value;
 
@@ -171,6 +158,8 @@ namespace FarmVox
                 }
             }
 
+            var updatedTerrianChunks = new HashSet<Vector3Int>();
+
             foreach (var kv in map)
             {
                 var terrianChunk = kv.Value;
@@ -178,9 +167,16 @@ namespace FarmVox
                 {
                     foreach (var chunks in chunksToDraw)
                     {
-                        Draw(chunks, terrianChunk.Origin, Transform, material, terrianChunk);
+                        if (Draw(chunks, terrianChunk.Origin, Transform, material, terrianChunk)) {
+                            updatedTerrianChunks.Add(terrianChunk.Origin);
+                        }
                     }
                 }
+            }
+
+            foreach (var coord in updatedTerrianChunks)
+            {
+                UpdateShadowNeedsUpdate(coord);
             }
         }
 

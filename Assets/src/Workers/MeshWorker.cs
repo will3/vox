@@ -10,7 +10,6 @@ namespace FarmVox
         Transform transform;
         Material material;
         bool done;
-        bool isWater;
 
         public MeshWorker(Chunk chunk, TerrianChunk terrianChunk, Transform transform, Material material)
         {
@@ -18,7 +17,6 @@ namespace FarmVox
             this.terrianChunk = terrianChunk;
             this.transform = transform;
             this.material = material;
-            this.isWater = isWater;
         }
 
         public void Start()
