@@ -1,14 +1,16 @@
 ﻿using UnityEngine;
+using UnityEngine.AI;
 
 namespace FarmVox
 {
     public class MeshWorker : IWorker
     {
-        private Chunk chunk;
-        private TerrianChunk terrianChunk;
+        Chunk chunk;
+        TerrianChunk terrianChunk;
         Transform transform;
         Material material;
-        private bool done;
+        bool done;
+        bool isWater;
 
         public MeshWorker(Chunk chunk, TerrianChunk terrianChunk, Transform transform, Material material)
         {
@@ -16,6 +18,7 @@ namespace FarmVox
             this.terrianChunk = terrianChunk;
             this.transform = transform;
             this.material = material;
+            this.isWater = isWater;
         }
 
         public void Start()

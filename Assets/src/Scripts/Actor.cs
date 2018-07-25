@@ -86,9 +86,5 @@ namespace FarmVox
             this.destination = destination;
             stopDistance = 1.0f;
         }
-
-        public void Push(Vector3 to) {
-            //routingAgent.Push(to);
-        }
     }
 }
