@@ -16,23 +16,13 @@ public class GameController : MonoBehaviour {
         }
     }
 
-    RoutesMap routesMap;
-
-    public RoutesMap RoutesMap
-    {
-        get
-        {
-            return routesMap;
-        }
-    }
-
-    private bool spawned = false;
+    bool spawned = false;
     public bool hideTerrian = false;
     public bool hideTrees = false;
 
-    private HighlightHoveredSurface highlight;
-    private List<Actor> actors = new List<Actor>();
-    private GameObject terrianObject;
+    HighlightHoveredSurface highlight;
+    List<Actor> actors = new List<Actor>();
+    GameObject terrianObject;
 
     // Use this for initialization
     void Start () {
@@ -41,8 +31,6 @@ public class GameController : MonoBehaviour {
 
         terrian = new Terrian();
         terrian.Transform = terrianObject.transform;
-
-        routesMap = new RoutesMap(terrian);
 
         var go = new GameObject("Highlight");
         highlight = go.AddComponent<HighlightHoveredSurface>();
@@ -102,14 +90,5 @@ public class GameController : MonoBehaviour {
         }
 
         terrian.TreeLayer.SetActive(!this.hideTrees);
-
-        routesMap.Update();
-	}
-
-	void OnDrawGizmos()
-	{
-        if (drawRoutes) {
-            routesMap.DrawGizmos();    
-        }
 	}
 }

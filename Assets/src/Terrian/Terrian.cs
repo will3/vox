@@ -150,8 +150,6 @@ namespace FarmVox
                     GenerateGrass(terrianChunk);
 
                     GenerateTrees(terrianChunk);
-
-                    GenerateRoutes(terrianChunk);
                 }
             }
 
