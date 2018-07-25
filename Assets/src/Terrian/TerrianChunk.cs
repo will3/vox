@@ -83,8 +83,9 @@ namespace FarmVox
             return trees.Contains(coord);
         }
 
-        public void SetWater(Vector3Int coord, bool flag) {
-            SetWater(coord.x, coord.y, coord.z, flag);    
+        public void SetWater(Vector3Int coord, bool flag)
+        {
+            SetWater(coord.x, coord.y, coord.z, flag);
         }
 
         public void SetWater(int i, int j, int k, bool flag)
@@ -100,7 +101,8 @@ namespace FarmVox
             }
         }
 
-        public bool GetWater(Vector3Int coord) {
+        public bool GetWater(Vector3Int coord)
+        {
             return GetWater(coord.x, coord.y, coord.z);
         }
 
@@ -164,8 +166,18 @@ namespace FarmVox
         TerrianConfig config;
 
         HashSet<Vector3Int> floating = new HashSet<Vector3Int>();
-        public void SetFloating(Vector3Int coord) {
+        public void SetFloating(Vector3Int coord)
+        {
             floating.Add(coord);
+        }
+
+        public Bounds Bounds {
+            get {
+                var bounds = new Bounds();
+                bounds.min = origin;
+                bounds.max = origin + new Vector3(size, size, size);
+                return bounds;
+            }
         }
     }
 }

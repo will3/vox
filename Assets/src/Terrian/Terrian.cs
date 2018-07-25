@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine.Profiling;
 using System.Linq;
+using UnityEngine.AI;
 
 namespace FarmVox
 {
@@ -23,6 +24,15 @@ namespace FarmVox
         float sizeF;
 
         Chunks defaultLayer;
+
+        public Chunks DefaultLayer
+        {
+            get
+            {
+                return defaultLayer;
+            }
+        }
+
         Chunks treeLayer;
 
         public Chunks TreeLayer
@@ -34,6 +44,14 @@ namespace FarmVox
         }
 
         Chunks waterLayer;
+
+        public Chunks WaterLayer
+        {
+            get
+            {
+                return waterLayer;
+            }
+        }
 
         private Material material = new Material(Shader.Find("Unlit/voxelunlit"));
         public Material Material
@@ -160,8 +178,9 @@ namespace FarmVox
                 var terrianChunk = kv.Value;
                 if (terrianChunk.Distance < config.drawDis)
                 {
-                    foreach(var chunks in chunksToDraw) {
-                        Draw(chunks, terrianChunk.Origin, Transform, material, terrianChunk);    
+                    foreach (var chunks in chunksToDraw)
+                    {
+                        Draw(chunks, terrianChunk.Origin, Transform, material, terrianChunk);
                     }
                 }
             }

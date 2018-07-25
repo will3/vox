@@ -28,7 +28,6 @@ public class GameController : MonoBehaviour {
 
     private bool spawned = false;
     public bool hideTerrian = false;
-    public bool drawPath = false;
     public bool hideTrees = false;
 
     private HighlightHoveredSurface highlight;
@@ -72,18 +71,16 @@ public class GameController : MonoBehaviour {
         var result = highlight.Trace();
 
         if (Input.GetKeyDown(KeyCode.Mouse0)) {
-            if (result != null) {
-                var pos = result.HitPos;
-                var node = routesMap.GetNode(pos);
-                if (routesMap.HasNode(node)) {
-                    var go = new GameObject("guy");
-                    var actor = go.AddComponent<Actor>();
-                    actor.radius = 2.0f;
-                    var routingAgent = go.AddComponent<RoutingAgent>();
-                    routingAgent.SetRoutesMap(routesMap);
-                    routingAgent.position = node;
-                    actors.Add(actor);
-                }
+            RaycastHit hit;
+            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out hit)) {
+                var go = new GameObject("guy");
+                var actor = go.AddComponent<Actor>();
+                actor.radius = 2.0f;
+                var routingAgent = go.AddComponent<RoutingAgent>();
+                routingAgent.SetRoutesMap(routesMap);
+                routingAgent.position = hit.point;;
+                actors.Add(actor);
             }
         }
 
@@ -93,7 +90,7 @@ public class GameController : MonoBehaviour {
                 var node = routesMap.GetNode(pos);
                 if (routesMap.HasNode(node)) {
                     foreach (var actor in actors) {
-                        actor.GetComponent<Actor>().SetGoal(pos);
+                        actor.GetComponent<Actor>().SetDestination(pos);
                     }
                 }
             }
@@ -114,12 +111,6 @@ public class GameController : MonoBehaviour {
 	{
         if (drawRoutes) {
             routesMap.DrawGizmos();    
-        }
-
-        if (drawPath) {
-            foreach (var actor in actors) {
-                actor.RoutingAgent.DrawGizmos();
-            }
         }
 	}
 }

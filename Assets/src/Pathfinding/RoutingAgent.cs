@@ -207,7 +207,7 @@ namespace FarmVox
             return true;
         }
 
-        public void SetGoal(Vector3 vector) {
+        public void SetDestination(Vector3 vector) {
             this.goal = routesMap.GetNode(vector);
             reachedGoal = null;
             AStar(this.goal.Value);

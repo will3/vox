@@ -1,32 +1,22 @@
 using UnityEngine;
 using System.Collections;
 using System.Linq;
+using UnityEngine.AI;
 
 namespace FarmVox
 {
     public class Actor : MonoBehaviour
     {
-        RoutingAgent routingAgent;
         SpriteSheet spriteSheet;
-
-        public RoutingAgent RoutingAgent
-        {
-            get
-            {
-                return routingAgent;
-            }
-        }
 
         Card card;
         public float radius = 1.0f;
         public Vector3 scale = new Vector3(1.0f, 1.0f, 1.0f);
+        NavMeshAgent agent;
 
         void Start()
         {
             spriteSheet = new ArcherSpriteSheet();
-
-            routingAgent = GetComponent<RoutingAgent>();
-            routingAgent.radius = radius;
 
             card = gameObject.AddComponent<Card>();
 
@@ -38,33 +28,23 @@ namespace FarmVox
 
             spriteSheet.Walk();
             card.SetTexture(spriteSheet.CurrentTexture);
-        }
 
-        Vector3 getPosition() {
-            var pos = routingAgent.position + new Vector3(0, 1, 0);
-            pos.y += routingAgent.GetBumpY();
-            return pos;
+            agent = gameObject.AddComponent<NavMeshAgent>();
         }
 
         // Update is called once per frame
         void Update()
         {
-            var pos = getPosition();
-            card.transform.position = pos;
-
-            if (routingAgent.Moved) {
-                spriteSheet.Walk(1.0f);
-            } 
-
+            spriteSheet.Walk(1.0f);
             card.SetTexture(spriteSheet.CurrentTexture);
         }
 
-        public void SetGoal(Vector3 to) {
-            routingAgent.SetGoal(to);
+        public void SetDestination(Vector3 to) {
+            agent.SetDestination(to);
         }
 
         public void Push(Vector3 to) {
-            routingAgent.Push(to);
+            //routingAgent.Push(to);
         }
     }
 }

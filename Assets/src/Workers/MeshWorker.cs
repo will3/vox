@@ -33,6 +33,7 @@ namespace FarmVox
             mesh.RecalculateNormals();
 
             var group = chunk.Chunks.GameObject;
+            group.name = chunk.Chunks.groupName;
             group.transform.parent = transform;
 
             GameObject go = new GameObject("Mesh" + origin.ToString());
@@ -47,6 +48,8 @@ namespace FarmVox
             chunk.GameObject = go;
 
             done = true;
+
+            TerrianNavMeshBuilder.TriggerBuild();
         }
 
         public bool IsDone()
