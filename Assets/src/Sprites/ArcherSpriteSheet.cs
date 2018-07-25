@@ -7,7 +7,8 @@ namespace FarmVox
         public ArcherSpriteSheet()
         {
             idle = new string[] { "blue_0" };
-            walk = SpriteSheets.NamesWithPrefix("blue", 2);
+            walk = NamesWithPrefix("blue", 2);
+            walkFrameRate = 2.0f;
             scale = new Vector3(0.7f, 1.0f, 0.7f) * 14.0f;
         }
     }

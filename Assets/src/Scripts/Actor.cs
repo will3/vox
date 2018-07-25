@@ -6,7 +6,8 @@ namespace FarmVox
 {
     public class Actor : MonoBehaviour
     {
-        RoutingAgent routingAgent = new RoutingAgent();
+        readonly RoutingAgent routingAgent = new RoutingAgent();
+        SpriteSheet spriteSheet;
 
         public RoutingAgent RoutingAgent
         {
@@ -22,9 +23,18 @@ namespace FarmVox
 
         void Start()
         {
+            spriteSheet = new ArcherSpriteSheet();
+
             card = gameObject.AddComponent<Card>();
-            card.spriteSheet = new ArcherSpriteSheet();
-            card.scale = scale;
+
+            var cardScale = scale;
+            cardScale.x *= spriteSheet.Scale.x;
+            cardScale.y *= spriteSheet.Scale.y;
+            cardScale.z *= spriteSheet.Scale.z;
+            card.scale = cardScale;
+
+            spriteSheet.Walk();
+            card.SetTexture(spriteSheet.CurrentTexture);
         }
 
         public void SetPosition(Vector3 position) {
@@ -42,6 +52,9 @@ namespace FarmVox
         {
             card.transform.position = routingAgent.position + new Vector3(1, -1, 1);
             routingAgent.Update();
+
+            spriteSheet.Walk();
+            card.SetTexture(spriteSheet.CurrentTexture);
         }
 
         public void Navigate(Vector3 to) {

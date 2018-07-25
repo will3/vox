@@ -12,13 +12,11 @@ public partial class Card : MonoBehaviour
     private CameraController cameraController;
     public Vector3 scale = new Vector3(1.0f, 1.0f, 1.0f);
 
-    public SpriteSheet spriteSheet;
-
 	// Use this for initialization
 	void Start()
 	{
         material = new Material(Shader.Find("Unlit/Transparent"));
-        material.SetTexture("_MainTex", Textures.Load(spriteSheet.prefix + spriteSheet.idle[0]));
+
 
         var mesh = getQuad();
 
@@ -29,6 +27,14 @@ public partial class Card : MonoBehaviour
 
         cameraController = Camera.main.GetComponent<CameraController>();
 	}
+
+    public void SetTexture(Texture2D texture) {
+        material.SetTexture("_MainTex", texture);
+    }
+
+    public void SetTexture(string textureName) {
+        SetTexture(Textures.Load(textureName));
+    }
 
     private Mesh getQuad() {
         var mesh = new Mesh();
@@ -82,14 +88,11 @@ public partial class Card : MonoBehaviour
 
         transform.LookAt(transform.position + face, Vector3.up);
 
-        var flip = true;
+        var flip = false;
         var localScale = scale;
         if (flip) {
             localScale.x *= -1;
         }
-        localScale.x *= spriteSheet.scale.x;
-        localScale.y *= spriteSheet.scale.y;
-        localScale.z *= spriteSheet.scale.z;
 
         transform.localScale = localScale;
 

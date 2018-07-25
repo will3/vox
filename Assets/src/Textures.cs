@@ -5,7 +5,7 @@ public partial class Card
 {
     static class Textures
     {
-        private static Dictionary<string, Texture2D> textureMap = new Dictionary<string, Texture2D>();
+        static readonly Dictionary<string, Texture2D> textureMap = new Dictionary<string, Texture2D>();
 
         public static Texture2D Load(string name)
         {
