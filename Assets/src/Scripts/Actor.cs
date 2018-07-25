@@ -44,7 +44,7 @@ namespace FarmVox
 
         float stopDistance = 1.0f;
         Vector3 smoothVelocity = new Vector3();
-        float smoothRatio = 0.5f;
+        float smoothRatio = 0.8f;
         bool started = false;
 
         // Update is called once per frame
@@ -54,37 +54,53 @@ namespace FarmVox
                 return;
             }
 
+            var velocity = transform.position - lastPosition;
+            velocity.y = 0;
+
             var walking = agent.desiredVelocity.magnitude > 0;
             if (walking) {
-                spriteSheet.Walk(1.0f);    
+                //var amount = velocity.magnitude * 4.0f;
+                //if (amount < 0.3f) {
+                //    amount = 0.3f;
+                //}
+                var amount = 1.0f;
+                spriteSheet.Walk(amount);    
+            } else {
+                
             }
+
             card.SetTexture(spriteSheet.CurrentTexture);
 
-            var velocity = transform.position - lastPosition;
             smoothVelocity += velocity;
             smoothVelocity *= smoothRatio;
-            agent.stoppingDistance = stopDistance;
-            lastPosition = transform.position;
 
             if (destination != null)
             {
                 var distance = (destination.Value - transform.position).magnitude;
-                if (smoothVelocity.magnitude < 0.1f)
-                {
-                    stopDistance *= 1.2f;
+
+                if (distance < 10) {
+                    if (smoothVelocity.magnitude < 0.2f && stopDistance < distance)
+                    {
+                        stopDistance *= 1.6f;
+                    }
+                } else if (distance < 20) {
+                    if (smoothVelocity.magnitude < 0.1f && stopDistance < distance)
+                    {
+                        stopDistance *= 1.1f;
+                    }
                 }
             }
 
-            if (Mathf.Approximately(agent.desiredVelocity.magnitude, 0f)) {
-                stopDistance = 1.0f;
-                destination = null;
-            }
+            agent.stoppingDistance = stopDistance;
+
+            lastPosition = transform.position;
         }
 
         public void SetDestination(Vector3 destination) {
             agent.SetDestination(destination);
             this.destination = destination;
             stopDistance = 1.0f;
+            agent.isStopped = false;
         }
     }
 }

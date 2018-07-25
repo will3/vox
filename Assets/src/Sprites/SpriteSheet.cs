@@ -45,10 +45,10 @@ namespace FarmVox
 
         public void Walk(float factor = 1.0f) {
             var total = walk.Length;
-            var frame = Mathf.FloorToInt(frameCounter * walkFrameRate * factor);
+            var frame = Mathf.FloorToInt(frameCounter * walkFrameRate);
             frame %= total;
             currentTexture = walk[frame];
-            frameCounter += Time.deltaTime;
+            frameCounter += (Time.deltaTime * factor);
         }
     }
 }

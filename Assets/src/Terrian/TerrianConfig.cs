@@ -49,9 +49,6 @@ namespace FarmVox
 #endregion
 
         public Noise monsterNoise;
-        public Perlin growthNoise;
-        public Perlin heightNoise2;
-        public Perlin townNoise;
 
         public Random townRandom;
         public Random roadRandom;
@@ -92,11 +89,8 @@ namespace FarmVox
             rockColorNoise.yScale = 6.0f;
             rockColorNoise.amplitude = 1.0f;
 
-            growthNoise = NextPerlin();
             grassNoise = NextNoise();
             treeNoise = NextPerlin();
-            heightNoise2 = NextPerlin();
-            townNoise = NextPerlin();
 
             townRandom = NextRandom();
             roadRandom = NextRandom();
@@ -129,13 +123,8 @@ namespace FarmVox
             canyonNoise.frequency = 0.01f;
             canyonNoise.yScale = 0.5f;
 
-            heightNoise2.OctaveCount = 8;
-            growthNoise.OctaveCount = 5;
-
             treeNoise.Frequency = 0.05f;
             treeNoise.OctaveCount = 5;
-
-            townNoise.Frequency = 0.01f;
 
             treeHeightGradient = new ValueGradient(1, 0);
             grassHeightFilter = new ValueGradient(new Dictionary<float, float>{
