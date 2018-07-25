@@ -6,17 +6,16 @@ using FarmVox;
 public partial class Card : MonoBehaviour
 {
 
-    private Material material;
-    private MeshFilter meshFilter;
-    private Vector3 up = Vector3.up;
-    private CameraController cameraController;
+    Material material;
+    MeshFilter meshFilter;
+    Vector3 up = Vector3.up;
+    CameraController cameraController;
     public Vector3 scale = new Vector3(1.0f, 1.0f, 1.0f);
 
 	// Use this for initialization
 	void Start()
 	{
-        material = new Material(Shader.Find("Unlit/Transparent"));
-
+        material = material ?? new Material(Shader.Find("Unlit/Transparent"));
 
         var mesh = getQuad();
 
@@ -29,6 +28,7 @@ public partial class Card : MonoBehaviour
 	}
 
     public void SetTexture(Texture2D texture) {
+        material = material ?? new Material(Shader.Find("Unlit/Transparent"));
         material.SetTexture("_MainTex", texture);
     }
 

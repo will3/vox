@@ -6,7 +6,7 @@ namespace FarmVox
 {
     public class Actor : MonoBehaviour
     {
-        readonly RoutingAgent routingAgent = new RoutingAgent();
+        RoutingAgent routingAgent;
         SpriteSheet spriteSheet;
 
         public RoutingAgent RoutingAgent
@@ -18,12 +18,15 @@ namespace FarmVox
         }
 
         Card card;
-        public float radius = 0.5f;
+        public float radius = 1.0f;
         public Vector3 scale = new Vector3(1.0f, 1.0f, 1.0f);
 
         void Start()
         {
             spriteSheet = new ArcherSpriteSheet();
+
+            routingAgent = GetComponent<RoutingAgent>();
+            routingAgent.radius = radius;
 
             card = gameObject.AddComponent<Card>();
 
@@ -37,32 +40,31 @@ namespace FarmVox
             card.SetTexture(spriteSheet.CurrentTexture);
         }
 
-        public void SetPosition(Vector3 position) {
-            routingAgent.position = position;
-        }
-
-        public Vector3 position {
-            get {
-                return routingAgent.position;
-            }
+        Vector3 getPosition() {
+            var pos = routingAgent.position + new Vector3(0, 1, 0);
+            pos.y += routingAgent.GetBumpY();
+            return pos;
         }
 
         // Update is called once per frame
         void Update()
         {
-            card.transform.position = routingAgent.position + new Vector3(1, -1, 1);
-            routingAgent.Update();
+            var pos = getPosition();
+            card.transform.position = pos;
 
-            spriteSheet.Walk();
+            if (routingAgent.Moved) {
+                spriteSheet.Walk(1.0f);
+            } 
+
             card.SetTexture(spriteSheet.CurrentTexture);
         }
 
-        public void Navigate(Vector3 to) {
-            routingAgent.Navigate(to);
+        public void SetGoal(Vector3 to) {
+            routingAgent.SetGoal(to);
         }
 
-        public void Drag(Vector3 to) {
-            routingAgent.Drag(to);
+        public void Push(Vector3 to) {
+            routingAgent.Push(to);
         }
     }
 }

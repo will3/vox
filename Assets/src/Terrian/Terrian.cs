@@ -20,21 +20,20 @@ namespace FarmVox
             }
         }
 
-        private float sizeF;
+        float sizeF;
 
-        private Chunks defaultLayer;
-        private Chunks treeLayer;
-        private Chunks waterLayer;
+        Chunks defaultLayer;
+        Chunks treeLayer;
 
-        private RoutesMap routesMap;
-
-        public RoutesMap RoutesMap
+        public Chunks TreeLayer
         {
             get
             {
-                return routesMap;
+                return treeLayer;
             }
         }
+
+        Chunks waterLayer;
 
         private Material material = new Material(Shader.Find("Unlit/voxelunlit"));
         public Material Material
@@ -79,8 +78,6 @@ namespace FarmVox
             chunksToDraw = new Chunks[] { defaultLayer, treeLayer, waterLayer };
             chunksCastingShadows = new Chunks[] { defaultLayer, treeLayer };
             chunksReceivingShadows = new Chunks[] { waterLayer, defaultLayer, treeLayer };
-
-            routesMap = new RoutesMap(this);
         }
 
         public void Update()
@@ -245,7 +242,7 @@ namespace FarmVox
             if (terrianChunk == null) {
                 return false;
             }
-            return terrianChunk.GetWater(coord - origin);
+            return terrianChunk.GetWater(coord);
         }
 
         public void SetWater(Vector3Int coord) {
@@ -255,7 +252,7 @@ namespace FarmVox
             {
                 return;
             }
-            terrianChunk.SetWater(coord - terrianChunk.Origin, true);
+            terrianChunk.SetWater(coord, true);
         }
 
         public bool GetTree(Vector3Int coord) {
@@ -265,7 +262,13 @@ namespace FarmVox
             {
                 return false;
             }
-            return terrianChunk.GetTree(coord - origin);
+            return terrianChunk.GetTree(coord);
+        }
+
+        public void SetTree(Vector3Int coord) {
+            var origin = GetOrigin(coord.x, coord.y, coord.z);
+            var terrianChunk = GetOrCreateTerrianChunk(origin);
+            terrianChunk.SetTree(coord, true);
         }
     }
 }

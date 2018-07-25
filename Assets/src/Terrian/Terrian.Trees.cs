@@ -62,7 +62,7 @@ namespace FarmVox
 
                 if (value < 0.5f) { continue; }
 
-                print(pine.GetShape(), coord + chunk.Origin, treeLayer, pine.Offset);
+                pine.Place(this, treeLayer, coord + chunk.Origin, config);
 
                 terrianChunk.SetTree(coord, true);
             }

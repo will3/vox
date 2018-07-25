@@ -6,10 +6,20 @@ namespace FarmVox
 {
     public class Chunks
     {
-        private float sizeF;
-        private int size;
+        float sizeF;
+        int size;
         public bool useNormals = true;
         public bool isWater = false;
+        public string groupName = "chunks";
+        GameObject gameObject = new GameObject();
+
+        public GameObject GameObject
+        {
+            get
+            {
+                return gameObject;
+            }
+        }
 
         public int Size
         {
@@ -50,6 +60,10 @@ namespace FarmVox
                 Mathf.FloorToInt(j / this.sizeF) * this.size,
                 Mathf.FloorToInt(k / this.sizeF) * this.size
             );
+        }
+
+        public void SetActive(bool active) {
+            gameObject.SetActive(active);
         }
 
         public float Get(Vector3Int coord) {
@@ -198,12 +212,6 @@ namespace FarmVox
 
         public void SetColor(Vector3Int coord, Color v) {
             SetColor(coord.x, coord.y, coord.z, v);
-        }
-
-        public bool IsUp(Vector3Int vector) {
-            var origin = getOrigin(vector.x, vector.y, vector.z);
-            var chunk = GetOrCreateChunk(origin);
-            return chunk.surfaceCoordsUp.Contains(vector - origin);
         }
 
         public bool GetWaterfall(Vector3Int coord)

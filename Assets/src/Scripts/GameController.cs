@@ -6,7 +6,7 @@ using UnityEngine.Assertions;
 
 public class GameController : MonoBehaviour {
     public bool drawRoutes = false;
-    private Terrian terrian;
+    Terrian terrian;
 
     public Terrian Terrian
     {
@@ -16,9 +16,20 @@ public class GameController : MonoBehaviour {
         }
     }
 
+    RoutesMap routesMap;
+
+    public RoutesMap RoutesMap
+    {
+        get
+        {
+            return routesMap;
+        }
+    }
+
     private bool spawned = false;
     public bool hideTerrian = false;
     public bool drawPath = false;
+    public bool hideTrees = false;
 
     private HighlightHoveredSurface highlight;
     private List<Actor> actors = new List<Actor>();
@@ -31,6 +42,8 @@ public class GameController : MonoBehaviour {
 
         terrian = new Terrian();
         terrian.Transform = terrianObject.transform;
+
+        routesMap = new RoutesMap(terrian);
 
         var go = new GameObject("Highlight");
         highlight = go.AddComponent<HighlightHoveredSurface>();
@@ -57,33 +70,31 @@ public class GameController : MonoBehaviour {
         }
 
         var result = highlight.Trace();
-        var routesMap = terrian.RoutesMap;
+
         if (Input.GetKeyDown(KeyCode.Mouse0)) {
             if (result != null) {
-                var coord = result.GetCoord();
-                coord.y += 2;
-
-                var origin = routesMap.GetOrigin(coord);
-                var routes = routesMap.GetRoutes(origin);
-
-                if (routes != null) {
-                    var node = routes.GetExistingNode(coord);
-                    if (node != null) {
-                        var go = new GameObject("robot");
-                        var actor = go.AddComponent<Actor>();
-                        actor.radius = 2.0f;
-                        actor.SetPosition(node.Value);
-                        actors.Add(actor);
-                    }
+                var pos = result.HitPos;
+                var node = routesMap.GetNode(pos);
+                if (routesMap.HasNode(node)) {
+                    var go = new GameObject("guy");
+                    var actor = go.AddComponent<Actor>();
+                    actor.radius = 2.0f;
+                    var routingAgent = go.AddComponent<RoutingAgent>();
+                    routingAgent.SetRoutesMap(routesMap);
+                    routingAgent.position = node;
+                    actors.Add(actor);
                 }
             }
         }
 
         if (Input.GetKeyDown(KeyCode.Mouse1)) {
             if (result != null) {
-                foreach(var robot in actors) {
-                    var coord = result.GetCoord() + new Vector3(0.5f, 1.5f, 0.5f);
-                    robot.GetComponent<Actor>().Navigate(coord);
+                var pos = result.HitPos;
+                var node = routesMap.GetNode(pos);
+                if (routesMap.HasNode(node)) {
+                    foreach (var actor in actors) {
+                        actor.GetComponent<Actor>().SetGoal(pos);
+                    }
                 }
             }
         }
@@ -93,12 +104,16 @@ public class GameController : MonoBehaviour {
         } else {
             terrianObject.SetActive(true);
         }
+
+        terrian.TreeLayer.SetActive(!this.hideTrees);
+
+        routesMap.Update();
 	}
 
 	void OnDrawGizmos()
 	{
         if (drawRoutes) {
-            terrian.RoutesMap.DrawGizmos();    
+            routesMap.DrawGizmos();    
         }
 
         if (drawPath) {

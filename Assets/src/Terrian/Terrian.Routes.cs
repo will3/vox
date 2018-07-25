@@ -15,12 +15,13 @@ namespace FarmVox
         Vector3Int origin;
         Chunks defaultLayer;
         TerrianConfig config;
-
-        public RouteWorker(RoutesMap routesMap, Vector3Int origin, Chunks defaultLayer, TerrianConfig config) {
+        TerrianChunk terrianChunk;
+        public RouteWorker(RoutesMap routesMap, Vector3Int origin, Chunks defaultLayer, TerrianChunk terrianChunk, TerrianConfig config) {
             this.routesMap = routesMap;
             this.origin = origin;
             this.defaultLayer = defaultLayer;
             this.config = config;
+            this.terrianChunk = terrianChunk;
         }
 
         public void Start()
@@ -32,7 +33,7 @@ namespace FarmVox
         private void Work() {
             var routes = routesMap.GetOrCreateRoutes(origin);
             var chunk = defaultLayer.GetChunk(origin);
-            routes.LoadChunk(chunk, config);
+            routes.LoadChunk(chunk, terrianChunk, config);
             done = true;
         }
     }
@@ -46,7 +47,8 @@ namespace FarmVox
                 return;
             }
 
-            var worker = new RouteWorker(routesMap, terrianChunk.Origin, defaultLayer, config);
+            var routesMap = Finder.FindRoutesMap();
+            var worker = new RouteWorker(routesMap, terrianChunk.Origin, defaultLayer, terrianChunk, config);
             WorkerQueues.routingQueue.Add(worker);
 
             terrianChunk.routesNeedsUpdate = false;

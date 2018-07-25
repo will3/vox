@@ -22,8 +22,8 @@ namespace FarmVox
         {
             if (chunk.Mesh != null)
             {
-                UnityEngine.Object.Destroy(chunk.Mesh);
-                UnityEngine.Object.Destroy(chunk.GameObject);
+                Object.Destroy(chunk.Mesh);
+                Object.Destroy(chunk.GameObject);
             }
 
             var mesh = VoxelMesher.MeshGPU(chunk, terrianChunk);
@@ -32,8 +32,11 @@ namespace FarmVox
             mesh.RecalculateBounds();
             mesh.RecalculateNormals();
 
+            var group = chunk.Chunks.GameObject;
+            group.transform.parent = transform;
+
             GameObject go = new GameObject("Mesh" + origin.ToString());
-            go.transform.parent = transform;
+            go.transform.parent = group.transform;
             go.AddComponent<MeshFilter>();
             go.AddComponent<MeshRenderer>();
             go.GetComponent<Renderer>().material = material;
