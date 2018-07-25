@@ -12,7 +12,7 @@ namespace FarmVox
             this.terrian = terrian;    
         }
 
-        private Dictionary<Vector3Int, Routes> map = new Dictionary<Vector3Int, Routes>();
+        readonly Dictionary<Vector3Int, Routes> map = new Dictionary<Vector3Int, Routes>();
 
         public Routes GetOrCreateRoutes(Vector3Int origin) {
             if (!map.ContainsKey(origin)) {
@@ -44,5 +44,39 @@ namespace FarmVox
                 kv.Value.DrawGizmos();
             }
         }
+
+        // TODO
+        //void UpdatePhysics()
+        //{
+        //    for (var i = 0; i < actors.Count; i++)
+        //    {
+        //        for (var j = i; j < actors.Count; j++)
+        //        {
+        //            if (i == j)
+        //            {
+        //                continue;
+        //            }
+
+        //            var a = actors[i];
+        //            var b = actors[j];
+        //            var factor = 1.0f;
+
+        //            var diff = (b.position - a.position);
+        //            if (diff.magnitude == 0.0f)
+        //            {
+        //                diff = new Vector3(Random.Range(-1.0f, 1.0f), 0, Random.Range(-1.0f, 1.0f)).normalized * 0.01f;
+        //            }
+
+        //            var dis = diff.magnitude;
+        //            if (dis < a.radius + b.radius)
+        //            {
+        //                var dir = diff.normalized;
+        //                var force = dir * (a.radius + b.radius - dis) * factor;
+        //                b.Drag(b.position + force);
+        //                a.Drag(a.position - force);
+        //            }
+        //        }
+        //    }
+        //}
     }
 }

@@ -7,7 +7,7 @@ namespace FarmVox
 {
     public partial class TerrianChunk
     {
-        private readonly HashSet<int> waters = new HashSet<int>();
+        readonly HashSet<int> waters = new HashSet<int>();
 
         public readonly Vector3Int key;
         public bool rockNeedsUpdate = true;
@@ -23,10 +23,10 @@ namespace FarmVox
         public bool floatingNeedsUpdate = true;
         public bool waterfallsNeedsUpdate = true;
 
-        private Terrian terrian;
+        Terrian terrian;
 
-        private int distance;
-        private Vector3Int origin;
+        int distance;
+        Vector3Int origin;
 
         public Vector3Int Origin
         {
@@ -161,57 +161,9 @@ namespace FarmVox
             townPoints.Add(townPoint);
         }
 
-        private TerrianConfig config;
+        TerrianConfig config;
 
-        public RoadMap GetRoadMap(Vector3Int node, float maxDis) {
-            //var roadMap = new RoadMap();
-            //HashSet<Vector3Int> leads = new HashSet<Vector3Int>();
-            //var map = new Dictionary<Vector3Int, float>();
-
-            //leads.Add(node);
-            //map[node] = 0;
-
-            //while(leads.Count > 0) {
-            //    var currentNode = leads.First();
-            //    var cost = map[currentNode];
-
-            //    foreach (var connection in GetConnections(currentNode))
-            //    {
-            //        var connectionCost = connection.cost;
-            //        if (terrian.GetWater(connection.node)) {
-            //            connectionCost = Mathf.Infinity;
-            //        }
-            //        var nextCost = cost + connectionCost;
-            //        if (nextCost > maxDis) {
-            //            continue;   
-            //        }
-
-            //        if (map.ContainsKey(connection.node))
-            //        {
-            //            if (nextCost >= map[currentNode])
-            //            {
-            //                continue;
-            //            }
-            //        }
-
-            //        map[connection.node] = nextCost;
-            //        leads.Add(connection.node);
-            //    }
-
-            //    leads.Remove(currentNode);    
-            //}
-
-            //foreach (var kv in map)
-            //{
-            //    roadMap.AddNode(kv.Key, kv.Value);
-            //}
-
-            //return roadMap;
-
-            return null;
-        }
-
-        private HashSet<Vector3Int> floating = new HashSet<Vector3Int>();
+        HashSet<Vector3Int> floating = new HashSet<Vector3Int>();
         public void SetFloating(Vector3Int coord) {
             floating.Add(coord);
         }

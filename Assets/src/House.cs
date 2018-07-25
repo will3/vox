@@ -68,42 +68,42 @@ namespace FarmVox
             //offset = new Vector3Int(width / 2, height / 2, length / 2) * -1;
         }
 
-        public void Print(Vector3Int pos, Chunks chunks, RoadMap roadMap) {
-            for (var i = 0; i < shape.Width; i++)
-            {
-                for (var j = 0; j < shape.Height; j++)
-                {
-                    for (var k = 0; k < shape.Depth; k++)
-                    {
-                        var voxel = shape.Get(i, j, k);
-                        if (voxel == null)
-                        {
-                            continue;
-                        }
-                        if (voxel.value <= 0)
-                        {
-                            continue;
-                        }
-                        var x = pos.x + i + offset.x;
-                        var y = pos.y + j + offset.y;
-                        var z = pos.z + k + offset.z;
-                        chunks.Set(x, y, z, voxel.value);
-                        chunks.SetColor(x, y, z, voxel.color);
-                    }
-                }
-            }
+        public void Print(Vector3Int pos, Chunks chunks) {
+            //for (var i = 0; i < shape.Width; i++)
+            //{
+            //    for (var j = 0; j < shape.Height; j++)
+            //    {
+            //        for (var k = 0; k < shape.Depth; k++)
+            //        {
+            //            var voxel = shape.Get(i, j, k);
+            //            if (voxel == null)
+            //            {
+            //                continue;
+            //            }
+            //            if (voxel.value <= 0)
+            //            {
+            //                continue;
+            //            }
+            //            var x = pos.x + i + offset.x;
+            //            var y = pos.y + j + offset.y;
+            //            var z = pos.z + k + offset.z;
+            //            chunks.Set(x, y, z, voxel.value);
+            //            chunks.SetColor(x, y, z, voxel.color);
+            //        }
+            //    }
+            //}
 
-            var padding = 3;
-            var startI = pos.x + offset.x - padding;
-            var endI = startI + shape.Width + padding;
-            var startK = pos.z + offset.z - padding;
-            var endK = startK + shape.Depth + padding;
+            //var padding = 3;
+            //var startI = pos.x + offset.x - padding;
+            //var endI = startI + shape.Width + padding;
+            //var startK = pos.z + offset.z - padding;
+            //var endK = startK + shape.Depth + padding;
 
-            for (var i = startI; i < endI; i++) {
-                for (var k = startK; k < endK; k++) {
-                    roadMap.RemoveXZ(new Vector2Int(i, k));
-                }
-            }
+            //for (var i = startI; i < endI; i++) {
+            //    for (var k = startK; k < endK; k++) {
+            //        roadMap.RemoveXZ(new Vector2Int(i, k));
+            //    }
+            //}
         }
     }
 }

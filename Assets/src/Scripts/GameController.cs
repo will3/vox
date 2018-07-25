@@ -18,6 +18,7 @@ public class GameController : MonoBehaviour {
 
     private bool spawned = false;
     public bool hideTerrian = false;
+    public bool drawPath = false;
 
     private HighlightHoveredSurface highlight;
     private List<Actor> actors = new List<Actor>();
@@ -60,6 +61,7 @@ public class GameController : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.Mouse0)) {
             if (result != null) {
                 var coord = result.GetCoord();
+                coord.y += 2;
 
                 var origin = routesMap.GetOrigin(coord);
                 var routes = routesMap.GetRoutes(origin);
@@ -70,15 +72,14 @@ public class GameController : MonoBehaviour {
                         var go = new GameObject("robot");
                         var actor = go.AddComponent<Actor>();
                         actor.radius = 2.0f;
-                        actor.scale = new Vector3(0.7f, 1.0f, 0.7f) * 14.0f;
                         actor.SetPosition(node.Value);
-                        actors.Add(actor);    
+                        actors.Add(actor);
                     }
                 }
             }
         }
 
-        if (Input.GetKey(KeyCode.Mouse1)) {
+        if (Input.GetKeyDown(KeyCode.Mouse1)) {
             if (result != null) {
                 foreach(var robot in actors) {
                     var coord = result.GetCoord() + new Vector3(0.5f, 1.5f, 0.5f);
@@ -92,43 +93,18 @@ public class GameController : MonoBehaviour {
         } else {
             terrianObject.SetActive(true);
         }
-
-        UpdatePhysics();
-        UpdatePhysics();
 	}
 
-    private void UpdatePhysics() {
-        for (var i = 0; i < actors.Count; i++)
-        {
-            for (var j = i; j < actors.Count; j++) {
-                if (i == j) {
-                    continue;
-                }
-
-                var a = actors[i];
-                var b = actors[j];
-                var factor = 1.0f;
-
-                var diff = (b.position - a.position);
-                if (diff.magnitude == 0.0f) {
-                    diff = new Vector3(Random.Range(-1.0f, 1.0f), 0, Random.Range(-1.0f, 1.0f)).normalized * 0.01f;
-                }
-
-                var dis = diff.magnitude;
-                if (dis < a.radius + b.radius) {
-                    var dir = diff.normalized;
-                    var force = dir * (a.radius + b.radius - dis) * factor;
-                    b.Drag(b.position + force);
-                    a.Drag(a.position - force);
-                }
-            }
-        }
-    }
-
-	private void OnDrawGizmos()
+	void OnDrawGizmos()
 	{
         if (drawRoutes) {
             terrian.RoutesMap.DrawGizmos();    
+        }
+
+        if (drawPath) {
+            foreach (var actor in actors) {
+                actor.RoutingAgent.DrawGizmos();
+            }
         }
 	}
 }

@@ -6,17 +6,24 @@ namespace FarmVox
 {
     public class Actor : MonoBehaviour
     {
-        public string spriteSheetName = "archer";
+        RoutingAgent routingAgent = new RoutingAgent();
 
-        private RoutingAgent routingAgent = new RoutingAgent();
-        private Card card;
+        public RoutingAgent RoutingAgent
+        {
+            get
+            {
+                return routingAgent;
+            }
+        }
+
+        Card card;
         public float radius = 0.5f;
         public Vector3 scale = new Vector3(1.0f, 1.0f, 1.0f);
 
         void Start()
         {
             card = gameObject.AddComponent<Card>();
-            card.spriteSheetName = spriteSheetName;
+            card.spriteSheet = new ArcherSpriteSheet();
             card.scale = scale;
         }
 
@@ -33,7 +40,8 @@ namespace FarmVox
         // Update is called once per frame
         void Update()
         {
-            card.transform.position = routingAgent.position + new Vector3(1, 1, 1);
+            card.transform.position = routingAgent.position + new Vector3(1, -1, 1);
+            routingAgent.Update();
         }
 
         public void Navigate(Vector3 to) {

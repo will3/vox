@@ -12,12 +12,11 @@ public partial class Card : MonoBehaviour
     private CameraController cameraController;
     public Vector3 scale = new Vector3(1.0f, 1.0f, 1.0f);
 
-    public string spriteSheetName = "";
+    public SpriteSheet spriteSheet;
 
 	// Use this for initialization
 	void Start()
 	{
-        var spriteSheet = SpriteSheets.Get(spriteSheetName);
         material = new Material(Shader.Find("Unlit/Transparent"));
         material.SetTexture("_MainTex", Textures.Load(spriteSheet.prefix + spriteSheet.idle[0]));
 
@@ -88,6 +87,10 @@ public partial class Card : MonoBehaviour
         if (flip) {
             localScale.x *= -1;
         }
+        localScale.x *= spriteSheet.scale.x;
+        localScale.y *= spriteSheet.scale.y;
+        localScale.z *= spriteSheet.scale.z;
+
         transform.localScale = localScale;
 
         // Billboard
