@@ -1,18 +1,103 @@
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace FarmVox
 {
+    class VoxelMeshBuilder {
+        List<Vector3> vertices = new List<Vector3>();
+
+        public List<Vector3> Vertices
+        {
+            get
+            {
+                return vertices;
+            }
+        }
+
+        List<Color> colors = new List<Color>();
+
+        public List<Color> Colors
+        {
+            get
+            {
+                return colors;
+            }
+        }
+
+        List<Vector2> uvs = new List<Vector2>();
+
+        public List<Vector2> Uvs
+        {
+            get
+            {
+                return uvs;
+            }
+        }
+
+        List<int> indices = new List<int>();
+
+        public List<int> Indices
+        {
+            get
+            {
+                return indices;
+            }
+        }
+
+        Dictionary<Vector3, int> verticeMap = new Dictionary<Vector3, int>();
+
+        public void AddTriangle(Triangle triangle) {
+            int i = vertices.Count / 3;
+
+            vertices.Add(triangle.a);
+            vertices.Add(triangle.b);
+            vertices.Add(triangle.c);
+
+            indices.Add(i * 3);
+            indices.Add(i * 3 + 1);
+            indices.Add(i * 3 + 2);
+
+            colors.Add(triangle.colorA);
+            colors.Add(triangle.colorB);
+            colors.Add(triangle.colorC);
+
+            uvs.Add(new Vector2(triangle.waterfall, 0));
+            uvs.Add(new Vector2(triangle.waterfall, 0));
+            uvs.Add(new Vector2(triangle.waterfall, 0));
+
+            //var ia = AddVertice(triangle.a, triangle.colorA, triangle.waterfall);
+            //var ib = AddVertice(triangle.b, triangle.colorB, triangle.waterfall);
+            //var ic = AddVertice(triangle.c, triangle.colorC, triangle.waterfall);
+
+            //indices.Add(ia);
+            //indices.Add(ib);
+            //indices.Add(ic);
+        }
+
+        int AddVertice(Vector3 vector, Color color, float waterfall) {
+            if (verticeMap.ContainsKey(vector)) {
+                return verticeMap[vector];
+            }
+
+            vertices.Add(vector);
+            colors.Add(color);
+            uvs.Add(new Vector2(waterfall, 0));
+
+            int index = vertices.Count - 1;
+            verticeMap[vector] = index;
+            return index;
+        }
+    }
+
     public class VoxelMesher
     {
-        private static Vector3Int getVector(int i, int j, int k, int d)
+        static Vector3Int getVector(int i, int j, int k, int d)
         {
             if (d == 0)
             {
                 return new Vector3Int(i, j, k);
             }
-            else if (d == 1)
+            if (d == 1)
             {
                 return new Vector3Int(k, i, j);
             }
@@ -33,35 +118,18 @@ namespace FarmVox
             mesherGPU.Dispatch(voxelBuffer, colorsBuffer, trianglesBuffer, terrianChunk, chunk);
             var triangles = mesherGPU.ReadTriangles(trianglesBuffer);
 
-            var vertices = new List<Vector3>();
-            var indices = new List<int>();
-            var colors = new List<Color>();
-            var uv = new List<Vector2>();
+            var builder = new VoxelMeshBuilder();
 
-            for (var i = 0; i < triangles.Length; i++) {
-                var triangle = triangles[i];
-                vertices.Add(triangle.a);
-                vertices.Add(triangle.b);
-                vertices.Add(triangle.c);
-
-                indices.Add(i * 3);
-                indices.Add(i * 3 + 1);
-                indices.Add(i * 3 + 2);
-
-                colors.Add(triangle.colorA);
-                colors.Add(triangle.colorB);
-                colors.Add(triangle.colorC);
-
-                uv.Add(new Vector2(triangle.waterfall, 0));
-                uv.Add(new Vector2(triangle.waterfall, 0));
-                uv.Add(new Vector2(triangle.waterfall, 0));
+            foreach(var triangle in triangles) {
+                builder.AddTriangle(triangle);
             }
 
             var mesh = new Mesh();
-            mesh.SetVertices(vertices);
-            mesh.SetTriangles(indices, 0);
-            mesh.SetColors(colors);
-            mesh.uv = uv.ToArray();
+            mesh.SetVertices(builder.Vertices);
+            mesh.SetTriangles(builder.Indices, 0);
+
+            mesh.SetColors(builder.Colors);
+            mesh.uv = builder.Uvs.ToArray();
 
             voxelBuffer.Dispose();
             colorsBuffer.Dispose();
