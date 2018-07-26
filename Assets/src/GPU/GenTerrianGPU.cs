@@ -47,7 +47,6 @@ namespace FarmVox
             shader.SetBuffer(0, "_RockBuffer", rockNoise.Results);
             shader.SetBuffer(0, "_VoxelBuffer", voxelBuffer);
             shader.SetBuffer(0, "_ColorBuffer", colorBuffer);
-            shader.SetBuffer(0, "_ScultBuffer", sculptNoise.Results);
             shader.SetFloat("_MaxHeight", config.maxHeight);
 
             shader.SetVector("_SoilColor", Colors.soil);
