@@ -2,34 +2,34 @@
 
 namespace FarmVox
 {
-    public struct Triangle
-    {
-        public Vector3 a;
-        public Vector3 b;
-        public Vector3 c;
-        public Color colorA;
-        public Color colorB;
-        public Color colorC;
-        public float waterfall;
-
-        public static int Size
-        {
-            get
-            {
-                return sizeof(float) * 3 * 3 + sizeof(float) * 4 * 3 + sizeof(float);
-            }
-        }
-    }
-
     public class MesherGPU
     {
-        private readonly ComputeShader shader;
-        private readonly int size;
-        private readonly int dataSize;
-        private readonly int workGroups = 8;
+        public struct Triangle
+        {
+            public Vector3 a;
+            public Vector3 b;
+            public Vector3 c;
+            public Color colorA;
+            public Color colorB;
+            public Color colorC;
+            public float waterfall;
+
+            public static int Size
+            {
+                get
+                {
+                    return sizeof(float) * 3 * 3 + sizeof(float) * 4 * 3 + sizeof(float);
+                }
+            }
+        }
+
+        readonly ComputeShader shader;
+        readonly int size;
+        readonly int dataSize;
+        readonly int workGroups = 8;
         public int normalBranding = 6;
         public float normalStrength = 0.4f;
-        private float shadowStrength = 0.5f;
+        float shadowStrength = 0.5f;
         public bool useNormals = true;
         public bool isWater = false;
 

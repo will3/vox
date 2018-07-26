@@ -46,7 +46,7 @@ namespace FarmVox
 
         Dictionary<Vector3, int> verticeMap = new Dictionary<Vector3, int>();
 
-        public void AddTriangle(Triangle triangle) {
+        public void AddTriangle(MesherGPU.Triangle triangle) {
             int i = vertices.Count / 3;
 
             vertices.Add(triangle.a);
@@ -64,14 +64,6 @@ namespace FarmVox
             uvs.Add(new Vector2(triangle.waterfall, 0));
             uvs.Add(new Vector2(triangle.waterfall, 0));
             uvs.Add(new Vector2(triangle.waterfall, 0));
-
-            //var ia = AddVertice(triangle.a, triangle.colorA, triangle.waterfall);
-            //var ib = AddVertice(triangle.b, triangle.colorB, triangle.waterfall);
-            //var ic = AddVertice(triangle.c, triangle.colorC, triangle.waterfall);
-
-            //indices.Add(ia);
-            //indices.Add(ib);
-            //indices.Add(ic);
         }
 
         int AddVertice(Vector3 vector, Color color, float waterfall) {

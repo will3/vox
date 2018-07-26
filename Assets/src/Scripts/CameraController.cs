@@ -4,7 +4,7 @@ using FarmVox;
 
 public class CameraController : MonoBehaviour
 {
-    private Vector3 target;
+    private Vector3 target = new Vector3(16, 0, 16);
     private float speed = 20f;
     private float rotateSpeed = 80f;
     private Vector3 velocity;
