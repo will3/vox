@@ -61,7 +61,6 @@ namespace FarmVox
                 return material;
             }
         }
-
         public Transform Transform;
         public Vector3 Target;
 
@@ -141,11 +140,11 @@ namespace FarmVox
 
                     GenerateWaters(terrianChunk);
 
-                    GenerateWaterfalls(terrianChunk);
+                    //GenerateWaterfalls(terrianChunk);
 
-                    GenerateGrass(terrianChunk);
+                    //GenerateGrass(terrianChunk);
 
-                    GenerateTrees(terrianChunk);
+                    //GenerateTrees(terrianChunk);
                 }
             }
 
@@ -159,25 +158,14 @@ namespace FarmVox
             }
 
             var updatedTerrianChunks = new HashSet<Vector3Int>();
-
-            foreach (var kv in map)
-            {
-                var terrianChunk = kv.Value;
-                if (terrianChunk.Distance < config.drawDis)
-                {
-                    foreach (var chunks in chunksToDraw)
-                    {
-                        if (Draw(chunks, terrianChunk.Origin, Transform, material, terrianChunk)) {
-                            updatedTerrianChunks.Add(terrianChunk.Origin);
-                        }
-                    }
-                }
-            }
+            Draw(updatedTerrianChunks);
 
             foreach (var coord in updatedTerrianChunks)
             {
                 UpdateShadowNeedsUpdate(coord);
             }
+
+            UpdateVision();
         }
 
         public TerrianChunk GetTerrianChunk(Vector3Int origin) {

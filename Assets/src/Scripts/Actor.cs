@@ -15,6 +15,7 @@ namespace FarmVox
         NavMeshAgent agent;
         Vector3? destination;
         Vector3 lastPosition;
+        VisionSource visionSource;
 
         void Start()
         {
@@ -34,10 +35,12 @@ namespace FarmVox
             agent = gameObject.AddComponent<NavMeshAgent>();
             agent.radius = 0.2f;
             agent.height = 0.4f;
-            agent.speed = 24;
+            agent.speed = 40;
             agent.angularSpeed = 120;
             agent.acceleration = 1000;
             agent.obstacleAvoidanceType = ObstacleAvoidanceType.LowQualityObstacleAvoidance;
+
+            visionSource = gameObject.AddComponent<VisionSource>();
 
             started = true;
         }
@@ -59,10 +62,6 @@ namespace FarmVox
 
             var walking = agent.desiredVelocity.magnitude > 0;
             if (walking) {
-                //var amount = velocity.magnitude * 4.0f;
-                //if (amount < 0.3f) {
-                //    amount = 0.3f;
-                //}
                 var amount = 1.0f;
                 spriteSheet.Walk(amount);    
             } else {

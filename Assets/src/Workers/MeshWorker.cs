@@ -3,13 +3,12 @@ using UnityEngine.AI;
 
 namespace FarmVox
 {
-    public class MeshWorker : IWorker
+    public class MeshWorker : Worker
     {
         Chunk chunk;
         TerrianChunk terrianChunk;
         Transform transform;
         Material material;
-        bool done;
 
         public MeshWorker(Chunk chunk, TerrianChunk terrianChunk, Transform transform, Material material)
         {
@@ -19,7 +18,7 @@ namespace FarmVox
             this.material = material;
         }
 
-        public void Start()
+        public override void Start()
         {
             if (chunk.Mesh != null)
             {
@@ -27,7 +26,7 @@ namespace FarmVox
                 Object.Destroy(chunk.GameObject);
             }
 
-            var mesh = VoxelMesher.MeshGPU(chunk, terrianChunk);
+            var mesh = MeshGPU();
             var origin = chunk.Origin;
 
             mesh.RecalculateBounds();
@@ -47,14 +46,43 @@ namespace FarmVox
             chunk.Mesh = mesh;
             chunk.GameObject = go;
 
-            done = true;
-
             TerrianNavMeshBuilder.TriggerBuild();
         }
 
-        public bool IsDone()
+        Mesh MeshGPU()
         {
-            return done;
+            var mesherGPU = new MesherGPU(chunk.Size);
+            var voxelBuffer = mesherGPU.CreateVoxelBuffer();
+            var colorsBuffer = mesherGPU.CreateColorBuffer();
+            var trianglesBuffer = mesherGPU.CreateTrianglesBuffer();
+            mesherGPU.useNormals = chunk.Chunks.useNormals;
+            mesherGPU.isWater = chunk.Chunks.isWater;
+
+            voxelBuffer.SetData(chunk.Data);
+            colorsBuffer.SetData(chunk.Colors);
+
+            mesherGPU.Dispatch(voxelBuffer, colorsBuffer, trianglesBuffer, terrianChunk, chunk);
+            var triangles = mesherGPU.ReadTriangles(trianglesBuffer);
+
+            var builder = new VoxelMeshBuilder();
+
+            foreach (var triangle in triangles)
+            {
+                builder.AddTriangle(triangle);
+            }
+
+            var mesh = new Mesh();
+            mesh.SetVertices(builder.Vertices);
+            mesh.SetTriangles(builder.Indices, 0);
+
+            mesh.SetColors(builder.Colors);
+            mesh.uv = builder.Uvs.ToArray();
+
+            voxelBuffer.Dispose();
+            colorsBuffer.Dispose();
+            trianglesBuffer.Dispose();
+
+            return mesh;
         }
     }
 }

@@ -3,10 +3,8 @@ using System.Threading;
 
 namespace FarmVox
 {
-    public class ShadowWorker : IWorker
+    public class ShadowWorker : Worker
     {
-        bool done = false;
-
         TerrianChunk terrianChunk;
         IList<Chunks> chunksReceivingShadows;
         IList<Chunks> chunksCastingShadows;
@@ -20,17 +18,7 @@ namespace FarmVox
             this.terrian = terrian;
         }
 
-        public bool IsDone()
-        {
-            return done;
-        }
-
-        public void Start()
-        {
-            Work();
-        }
-
-        void Work()
+        public override void Start()
         {
             var origin = terrianChunk.Origin;
 
@@ -46,7 +34,6 @@ namespace FarmVox
                     WorkerQueues.meshQueue.Add(meshWorker);
                 }
             }
-            done = true;
         }
     }
 }

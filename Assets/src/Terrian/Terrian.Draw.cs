@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Profiling;
 
 namespace FarmVox
@@ -25,6 +26,23 @@ namespace FarmVox
 
             chunk.Dirty = false;
             return true;
+        }
+
+        public void Draw(HashSet<Vector3Int> updatedTerrianChunks) {
+            foreach (var kv in map)
+            {
+                var terrianChunk = kv.Value;
+                if (terrianChunk.Distance < config.drawDis)
+                {
+                    foreach (var chunks in chunksToDraw)
+                    {
+                        if (Draw(chunks, terrianChunk.Origin, Transform, material, terrianChunk))
+                        {
+                            updatedTerrianChunks.Add(terrianChunk.Origin);
+                        }
+                    }
+                }
+            }
         }
     }
 }
