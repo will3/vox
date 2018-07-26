@@ -7,21 +7,27 @@ float4 _SoilColor;
 float4 _WaterColor;
 float _MaxHeight;
 
+// Colors
 StructuredBuffer<float4> _RockGradient;
 StructuredBuffer<float> _RockGradientIntervals;
 float _RockGradientBanding;
 int _RockGradientSize;
 StructuredBuffer<float> _RockColorNoise;
 
+// Noise
 StructuredBuffer<float> _CanyonBuffer;
 StructuredBuffer<float> _HeightBuffer;
-StructuredBuffer<float> _RockBuffer;
 
+// Output
 RWStructuredBuffer<float> _VoxelBuffer;
 RWStructuredBuffer<float4> _ColorBuffer;
 
 int _Size;
 float3 _Origin;
+int _DataSize;
+int _Resolution;
+
+float Epsilon = 1e-10;
 
 float4 sampleColor(StructuredBuffer<float4> gradient, StructuredBuffer<float> intervals, int size, float banding, float ratio) {
     if (ratio < 0) {
@@ -53,6 +59,43 @@ int getIndex(int3 coord) {
     return (coord.x * dataSize * dataSize) + (coord.y * dataSize) + coord.z;
 }
 
+float readBuffer(StructuredBuffer<float> buffer, int3 coord) {
+    int index = coord.x * _DataSize * _DataSize + coord.y * _DataSize + coord.z;
+    return buffer[index];
+}
+
+float sampleNoise(StructuredBuffer<float> buffer, int3 coord) {
+    float x = coord.x / _Resolution;
+    float y = coord.y / _Resolution;
+    float z = coord.z / _Resolution;
+
+    int minx = floor(x);
+    int miny = float(y);
+    int minz = float(z);
+
+    int maxx = minx + 1;
+    int maxy = miny + 1;
+    int maxz = minz + 1;
+
+    float a = readBuffer(buffer, int3(coord.x, coord.y, coord.z));
+    float b = readBuffer(buffer, int3(coord.x + 1, coord.y, coord.z));
+    float c = readBuffer(buffer, int3(coord.x, coord.y + 1, coord.z));
+    float d = readBuffer(buffer, int3(coord.x + 1, coord.y + 1, coord.z));
+    float e = readBuffer(buffer, int3(coord.x, coord.y, coord.z + 1));
+    float f = readBuffer(buffer, int3(coord.x + 1, coord.y, coord.z + 1));
+    float g = readBuffer(buffer, int3(coord.x, coord.y + 1, coord.z + 1));
+    float h = readBuffer(buffer, int3(coord.x + 1, coord.y + 1, coord.z + 1));
+
+    float rx = maxx - x;
+    float ry = maxy - y;
+    float rz = maxz - z;
+
+    float v = ((a * rx + b * (1 - rx)) * ry + (c * rx + d * (1 - rx)) * (1 - ry)) * rz +
+    ((e * rx + f * (1 - rx)) * ry + (g * rx + h * (1 - rx)) * (1 - ry)) * (1 - rz);
+
+    return v;
+}
+
 [numthreads(8, 8, 8)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
@@ -64,7 +107,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     int3 coord = int3(id.x, id.y, id.z);
     int index = getIndex(coord);
 
-    float biome = _CanyonBuffer[index];
+    float biome = sampleNoise(_CanyonBuffer, coord);
     float terrainHeight;
 
     if (biome < -0.1) {
@@ -78,17 +121,13 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
     float absY = coord.y + _Origin.y;
     float gradient = (1.0 - (absY / terrainHeight)) - 0.5;
-    float height = _HeightBuffer[index];
+    float height = sampleNoise(_HeightBuffer, coord);
     float value = height + gradient;
-   
-    float rock = _RockBuffer[index] - gradient * 0.5;
-
-    bool isRock = rock > 0;
 
     _VoxelBuffer[index] = value;
 
     float heightRatio = absY / _MaxHeight;
-    float colorRatio = heightRatio + _RockColorNoise[index];
+    float colorRatio = heightRatio + sampleNoise(_RockColorNoise, coord);
     float4 rockColor = sampleColor(_RockGradient, _RockGradientIntervals, _RockGradientSize, _RockGradientBanding, colorRatio);
 
     _ColorBuffer[index] = rockColor;

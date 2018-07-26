@@ -12,6 +12,8 @@ float3 _Origin;
 float _YScale;
 float _XZScale;
 float _Amplitude;
+int _Resolution;
+int _DataSize;
 
 float3 mod289(float3 x)
 {
@@ -187,7 +189,8 @@ float4 snoise_grad(float3 v)
 // fractal sum, range -1.0 - 1.0
 float fBm(float3 p, int octaves)
 {
-    float freq = _Frequency, amp = 0.5;
+    float freq = _Frequency;
+    float amp = 0.5;
     float sum = 0;
     for(int i = 0; i < octaves; i++) 
     {
@@ -202,7 +205,8 @@ float fBm(float3 p, int octaves)
 float turbulence(float3 p, int octaves)
 {
     float sum = 0;
-    float freq = _Frequency, amp = 1.0;
+    float freq = _Frequency;
+    float amp = 1.0;
     for(int i = 0; i < octaves; i++) 
     {
         sum += abs(snoise(p*freq))*amp;
@@ -225,7 +229,8 @@ float ridge(float h, float offset)
 float ridgedmf(float3 p, int octaves, float offset)
 {
     float sum = 0;
-    float freq = _Frequency, amp = 0.5;
+    float freq = _Frequency;
+    float amp = 0.5;
     float prev = 1.0;
     for(int i = 0; i < octaves; i++) 
     {
@@ -239,16 +244,16 @@ float ridgedmf(float3 p, int octaves, float offset)
 }
 
 int getIndex(int i, int j, int k) {
-    return i * _Size * _Size + j * _Size + k;
+    return i * _DataSize * _DataSize + j * _DataSize + k;
 }
 
 [numthreads(8,8,8)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
-    if (id.x >= _Size || id.y >= _Size || id.z >= _Size) {
+    if (id.x >= _DataSize || id.y >= _DataSize || id.z >= _DataSize) {
         return;
     }
-    float3 c = float3(id.x, id.y, id.z) + _Origin;
+    float3 c = _Origin + float3(id.x, id.y, id.z) * _Resolution;
     c.y *= _YScale;
     c.xz *= _XZScale;
 

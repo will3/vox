@@ -32,19 +32,14 @@ namespace FarmVox
         public void Dispatch(ComputeBuffer voxelBuffer, ComputeBuffer colorBuffer) {
             var heightNoise = new Perlin3DGPU(config.heightNoise, dataSize, origin);
             var canyonNoise = new Perlin3DGPU(config.canyonNoise, dataSize, origin);
-            var rockNoise = new Perlin3DGPU(config.rockNoise, dataSize, origin);
-            var sculptNoise = new Perlin3DGPU(config.scultNoise, dataSize, origin);
             var rockColorNoise = new Perlin3DGPU(config.rockColorNoise, dataSize, origin);
 
             heightNoise.Dispatch();
             canyonNoise.Dispatch();
-            rockNoise.Dispatch();
-            sculptNoise.Dispatch();
             rockColorNoise.Dispatch();
 
             shader.SetBuffer(0, "_HeightBuffer", heightNoise.Results);
             shader.SetBuffer(0, "_CanyonBuffer", canyonNoise.Results);
-            shader.SetBuffer(0, "_RockBuffer", rockNoise.Results);
             shader.SetBuffer(0, "_VoxelBuffer", voxelBuffer);
             shader.SetBuffer(0, "_ColorBuffer", colorBuffer);
             shader.SetFloat("_MaxHeight", config.maxHeight);
@@ -69,13 +64,14 @@ namespace FarmVox
             shader.SetFloat("_RockGradientBanding", Colors.rockColorGradient.banding);
             shader.SetBuffer(0, "_RockColorNoise", rockColorNoise.Results);
 
+            shader.SetInt("_DataSize", heightNoise.DataSize);
+            shader.SetInt("_Resolution", heightNoise.Resolution);
+
             var dispatchNum = Mathf.CeilToInt(dataSize / (float)workGroups);
             shader.Dispatch(0, dispatchNum, dispatchNum, dispatchNum);
 
             heightNoise.Dispose();
             canyonNoise.Dispose();
-            rockNoise.Dispose();
-            sculptNoise.Dispose();
             rockGradientBuffer.Dispose();
             rockGradientIntervalsBuffer.Dispose();
             rockColorNoise.Dispose();

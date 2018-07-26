@@ -6,12 +6,12 @@ namespace FarmVox
 {
     public class Perlin3DGPU : IDisposable
     {
-        private int workGroups = 8;
-        private int size;
-        private Noise noise;
+        int workGroups = 8;
+        int size;
+        Noise noise;
 
-        private ComputeShader shader;
-        private ComputeBuffer results;
+        ComputeShader shader;
+        ComputeBuffer results;
 
         public ComputeBuffer Results
         {
@@ -21,15 +21,36 @@ namespace FarmVox
             }
         }
 
-        private Vector3 origin;
+        Vector3 origin;
+        int dataSize;
 
-        public Perlin3DGPU(Noise noise, int size, Vector3 origin)
+        public int DataSize
+        {
+            get
+            {
+                return dataSize;
+            }
+        }
+
+        int resolution;
+
+        public int Resolution
+        {
+            get
+            {
+                return resolution;
+            }
+        }
+
+        public Perlin3DGPU(Noise noise, int size, Vector3 origin, int resolution = 1)
         {
             this.noise = noise;
             this.size = size;
             this.origin = origin;
-            this.shader = Resources.Load<ComputeShader>("Shaders/Perlin3D");
-            this.results = new ComputeBuffer(size * size * size, sizeof(float));
+            shader = Resources.Load<ComputeShader>("Shaders/Perlin3D");
+            dataSize = Mathf.CeilToInt(size / (float)resolution) + 1;
+            results = new ComputeBuffer(dataSize * dataSize * dataSize, sizeof(float));
+            this.resolution = resolution;
         }
 
         public void Dispatch()
@@ -54,6 +75,8 @@ namespace FarmVox
             shader.SetFloat("_YScale", yScale);
             shader.SetFloat("_XZScale", xzScale);
             shader.SetFloat("_Amplitude", amplitude);
+            shader.SetInt("_DataSize", dataSize);
+            shader.SetInt("_Resolution", resolution);
 
             var dispatchNum = Mathf.CeilToInt(size / (float)workGroups);
             shader.Dispatch(0, dispatchNum, dispatchNum, dispatchNum);
