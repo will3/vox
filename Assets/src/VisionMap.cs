@@ -93,9 +93,9 @@ namespace FarmVox
 
                 // break signal
                 visionList[index] = new Vision(0, 0, 0);
-            }
 
-            visionBuffer.SetData(visionList);
+                visionBuffer.SetData(visionList);
+            }
 
             bufferDirty = false;
         }

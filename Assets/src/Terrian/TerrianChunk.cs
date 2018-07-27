@@ -48,6 +48,15 @@ namespace FarmVox
             }
         }
 
+        private Material material = new Material(Shader.Find("Unlit/voxelunlit"));
+        public Material Material
+        {
+            get
+            {
+                return material;
+            }
+        }
+
         public TerrianChunk(Vector3Int key, int size, Terrian terrian)
         {
             this.key = key;
@@ -178,6 +187,10 @@ namespace FarmVox
                 bounds.max = origin + new Vector3(size, size, size);
                 return bounds;
             }
+        }
+
+        public void Dispose() {
+            Object.Destroy(material);
         }
     }
 }

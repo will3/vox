@@ -83,6 +83,7 @@ public class GameController : MonoBehaviour
 
 	void OnDestroy()
 	{
-        visionMap.Dispose();
+        if (visionMap != null) visionMap.Dispose();
+        if (terrian != null) terrian.Dispose();
 	}
 }

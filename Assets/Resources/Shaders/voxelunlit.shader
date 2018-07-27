@@ -33,6 +33,7 @@ Shader "Unlit/voxelunlit"
             StructuredBuffer<Vision> _VisionBuffer;
             int _MaxVisionNumber;
             int _UseVision;
+            float3 _Origin;
 
 			struct appdata
 			{
@@ -136,6 +137,11 @@ Shader "Unlit/voxelunlit"
 
                 int index = floor(v.uv.y);
                 int3 coord = getCoord(index);
+
+                if (coord.y < 16) {
+                    // o.color = float4(0.4, 0, 0, 1.0);
+                    // return o;
+                }
 
                 if (_UseVision > 0) {
                     float3 worldPos = mul (unity_ObjectToWorld, v.vertex).xyz;

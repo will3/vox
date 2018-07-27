@@ -17,9 +17,9 @@ namespace FarmVox
             this.size = size;
         }
 
-        Dictionary<Vector2Int, Dictionary<Vector2Int, int>> data = 
-            new Dictionary<Vector2Int, Dictionary<Vector2Int, int>>();
+        Dictionary<Vector2Int, int[]> data = new Dictionary<Vector2Int, int[]>();
         Dictionary<Vector2Int, ShadowMapState> states = new Dictionary<Vector2Int, ShadowMapState>();
+        Dictionary<Vector2Int, ComputeBuffer> buffers = new Dictionary<Vector2Int, ComputeBuffer>();
         
         static int lightY = 100;
         static int minY = -100;
@@ -29,22 +29,6 @@ namespace FarmVox
                 Mathf.FloorToInt(coord.x / (float)size),
                 Mathf.FloorToInt(coord.y / (float)size)
             ) * size;
-        }
-
-        public float GetShadow(Vector3Int coord) {
-            var key = liftVector(coord, 0);
-            var uv = new Vector2Int(key.x, key.z);
-            return GetShadow(uv);
-        }
-
-        float GetShadow(Vector2Int uv) {
-            var origin = GetOrigin(uv);
-            if (!data.ContainsKey(origin))
-            {
-                return 0.0f;
-            }
-
-            return data[origin][uv];
         }
 
         public void Update() {
@@ -88,14 +72,21 @@ namespace FarmVox
 
         void Update(Vector2Int origin) {
             // Clear
-            data[origin] = new Dictionary<Vector2Int, int>();
-
+            data[origin] = new int[size * size];
+            var texture = data[origin];
             for (var i = 0; i < size; i ++) {
                 for (var j = 0; j < size; j++) {
+                    int index = i * size + j;
                     var v = CalcShadow(new Vector3Int(i, 0, j));
-                    data[origin][new Vector2Int(i, j)] = v;
+                    texture[index] = v;
                 }
             }
+
+            if (!buffers.ContainsKey(origin)) {
+                buffers[origin] = new ComputeBuffer(size * size, sizeof(float));
+            }
+
+            buffers[origin].SetData(texture);
         }
 
         int CalcShadow(Vector3Int coord)
@@ -125,6 +116,12 @@ namespace FarmVox
             return new Vector3Int(Mathf.FloorToInt(point.x),
                                   Mathf.FloorToInt(point.y),
                                   Mathf.FloorToInt(point.z));
+        }
+
+        public void Dispose() {
+            foreach(var buffer in buffers.Values) {
+                buffer.Dispose();
+            }
         }
     }
 }

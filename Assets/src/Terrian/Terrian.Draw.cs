@@ -42,7 +42,7 @@ namespace FarmVox
             {
                 foreach (var chunks in chunksToDraw)
                 {
-                    GenerateMesh(chunks, terrianChunk.Origin, material, terrianChunk);
+                    GenerateMesh(chunks, terrianChunk.Origin, terrianChunk.Material, terrianChunk);
                 }
 
                 shadowMap.ChunkDrawn(terrianChunk.Origin);

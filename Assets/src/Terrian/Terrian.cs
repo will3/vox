@@ -53,14 +53,6 @@ namespace FarmVox
             }
         }
 
-        private Material material = new Material(Shader.Find("Unlit/voxelunlit"));
-        public Material Material
-        {
-            get
-            {
-                return material;
-            }
-        }
         public Vector3 Target;
 
         private Dictionary<Vector3Int, TerrianChunk> map = new Dictionary<Vector3Int, TerrianChunk>();
@@ -185,6 +177,8 @@ namespace FarmVox
                 //GenerateWaterfalls(column);
             }
 
+            UpdateMaterial();
+
             foreach (var column in columns.Values)
             {
                 GenerateMeshes(column);
@@ -193,8 +187,6 @@ namespace FarmVox
             //foreach(var column in columns.Values) {
             //    GenerateShadows(column);
             //}
-
-            UpdateVision();
 
             shadowMap.Update();
 
@@ -306,6 +298,10 @@ namespace FarmVox
             var origin = GetOrigin(coord.x, coord.y, coord.z);
             var terrianChunk = GetOrCreateTerrianChunk(origin);
             terrianChunk.SetTree(coord, true);
+        }
+
+        public void Dispose() {
+            shadowMap.Dispose();
         }
     }
 }
