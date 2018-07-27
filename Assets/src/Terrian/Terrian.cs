@@ -162,11 +162,21 @@ namespace FarmVox
                 GenerateGround(column);
                 //GenerateWaters(column);
                 //GenerateTrees(column);
-                GenerateGrass(column);
+                //GenerateGrass(column);
+
                 GenerateColliders(column);
 
                 column.generatedTerrian = true;
             }
+
+            //var grassStart = System.DateTime.Now;
+            //foreach (var column in columns.Values) {
+            //    GenerateGrass(column);
+            //}
+            //var grassEnd = System.DateTime.Now;
+            //if ((grassEnd - grassStart).Milliseconds > 16) {
+            //    Debug.Log("Grass took: " + (grassEnd - grassStart).Milliseconds);        
+            //}
 
             foreach (var column in columns.Values)
             {

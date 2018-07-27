@@ -6,6 +6,26 @@ public class ValueGradient
 {
     private readonly Dictionary<float, float> map = new Dictionary<float, float>();
     private readonly List<float> keys = new List<float>();
+
+    public List<float> Keys
+    {
+        get
+        {
+            return keys;
+        }
+    }
+
+    public List<float> Values {
+        get 
+        {
+            var list = new List<float>();
+            foreach (var key in keys) {
+                list.Add(map[key]);
+            }
+            return list;
+        }
+    }
+
     public int banding = 0;
 
     public ValueGradient(float min, float max) {

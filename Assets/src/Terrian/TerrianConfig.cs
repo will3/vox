@@ -90,6 +90,7 @@ namespace FarmVox
             rockColorNoise.amplitude = 1.0f;
 
             grassNoise = NextNoise();
+
             treeNoise = NextPerlin();
 
             townRandom = NextRandom();
