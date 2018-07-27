@@ -13,12 +13,13 @@ namespace FarmVox
             public Color colorB;
             public Color colorC;
             public float waterfall;
+            public int index;
 
             public static int Size
             {
                 get
                 {
-                    return sizeof(float) * 3 * 3 + sizeof(float) * 4 * 3 + sizeof(float);
+                    return sizeof(float) * 3 * 3 + sizeof(float) * 4 * 3 + sizeof(float) + sizeof(int);
                 }
             }
         }

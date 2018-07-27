@@ -9,6 +9,7 @@ struct Triangle {
     float4 colorB;
     float4 colorC;
     float waterfall;
+    int index;
 };
 
 int _DataSize;
@@ -66,7 +67,7 @@ float getDot(int i, int j, int k) {
     return dot(-normalize(v), lightDir);
 }
 
-void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, float ab, float ac, float ad, bool order, bool flipped, float waterfall) {
+void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, float ab, float ac, float ad, bool order, bool flipped, float waterfall, int index) {
     Triangle t1;
     Triangle t2;
 
@@ -78,6 +79,7 @@ void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, flo
         t1.colorB = color * ab;
         t1.colorC = color * ac;
         t1.waterfall = waterfall;
+        t1.index = index;
         _TrianglesBuffer.Append(t1);
 
         t2.a = a;
@@ -87,6 +89,7 @@ void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, flo
         t2.colorB = color * ac;
         t2.colorC = color * ad;
         t2.waterfall = waterfall;
+        t2.index = index;
         _TrianglesBuffer.Append(t2);
     } else {
         t1.a = c;
@@ -96,6 +99,7 @@ void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, flo
         t1.colorB = color * ab;
         t1.colorC = color * aa;
         t1.waterfall = waterfall;
+        t1.index = index;
         _TrianglesBuffer.Append(t1);
 
         t2.a = d;
@@ -105,6 +109,7 @@ void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, flo
         t2.colorB = color * ac;
         t2.colorC = color * aa;
         t2.waterfall = waterfall;
+        t2.index = index;
         _TrianglesBuffer.Append(t2);
     }
 }
@@ -241,6 +246,8 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
     bool flipped = ao00 + ao11 > ao01 + ao10;
 
+    int index = getIndex(c);
+
     addQuad(
         getVector(i + 1, j, k, d),
         getVector(i + 1, j + 1, k, d),
@@ -253,6 +260,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
         ao10,
         front,
         flipped,
-        waterfall
+        waterfall,
+        index
     );
 }
