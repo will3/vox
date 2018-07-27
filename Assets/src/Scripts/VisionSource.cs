@@ -4,7 +4,8 @@ namespace FarmVox
 {
     public class VisionSource : MonoBehaviour
     {
-        public int radius = 10;
+        public float radius = 200;
+        public float blur = 40;
 
         void Start()
         {

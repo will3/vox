@@ -187,6 +187,8 @@ namespace FarmVox
                 GenerateMeshes(column, skipShadows);
             }
 
+            UpdateVision();
+
             var end = System.DateTime.Now;
             if ((end - start).Milliseconds > 16) {
                 Debug.Log("Terrian Update took: " + (end - start).Milliseconds);    

@@ -89,10 +89,6 @@ Shader "Unlit/voxelunlit"
                 o.uv = v.uv;
 
                 if (_VisionSize > 0) {
-                    // TODO test
-                    o.color = v.color;
-                    return o;
-
                     float3 worldPos = mul (unity_ObjectToWorld, v.vertex).xyz;
                     float vision = getVision(worldPos);
                     float4 color = v.color * vision;
