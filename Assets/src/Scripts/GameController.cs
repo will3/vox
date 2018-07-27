@@ -4,18 +4,13 @@ using FarmVox;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public class GameController : MonoBehaviour {
+public class GameController : MonoBehaviour
+{
     public bool drawRoutes = false;
     Terrian terrian;
-    VisionMap visionMap = new VisionMap(512, new Vector2Int(-256, -256));
+    readonly VisionMap visionMap = new VisionMap(512, new Vector2Int(-256, -256));
 
-    public VisionMap VisionMap
-    {
-        get
-        {
-            return visionMap;
-        }
-    }
+    public VisionMap VisionMap { get { return visionMap; } }
 
     public Terrian Terrian
     {
@@ -37,7 +32,6 @@ public class GameController : MonoBehaviour {
 
         var go = new GameObject("Highlight");
         highlight = go.AddComponent<HighlightHoveredSurface>();
-
         gameObject.AddComponent<VisionSource>();
 	}
 	
@@ -85,9 +79,7 @@ public class GameController : MonoBehaviour {
                 }
             }
         }
-
-        Vision.Instance.UpdateMap(visionMap);
-	}
+    }
 
 	void OnDestroy()
 	{

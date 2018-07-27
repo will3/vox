@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace FarmVox
 {
@@ -14,16 +15,6 @@ namespace FarmVox
             }
         }
 
-        int resolution;
-
-        public int Resolution
-        {
-            get
-            {
-                return resolution;
-            }
-        }
-
         int size;
 
         public int Size
@@ -34,81 +25,84 @@ namespace FarmVox
             }
         }
 
-        float[] data;
-        int dataSize;
+        public readonly static int MaxVisionNumber = 512;
 
-        public VisionMap(int size, Vector2Int origin, int resolution = 4)
+        public struct Vision {
+            float x;
+            float z;
+            float radius;
+
+            public Vision(float x, float z, float radius) {
+                this.x = x;
+                this.z = z;
+                this.radius = radius;
+            }
+
+            public static int Stride {
+                get {
+                    return sizeof(float) * 3;    
+                }
+            }
+        }
+
+        HashSet<VisionSource> sources = new HashSet<VisionSource>();
+        bool bufferDirty = false;
+        Vision[] visionList;
+        ComputeBuffer visionBuffer;
+
+        public ComputeBuffer VisionBuffer
+        {
+            get
+            {
+                return visionBuffer;
+            }
+        }
+
+        public VisionMap(int size, Vector2Int origin)
         {
             this.size = size;
             this.origin = origin;
-            this.resolution = resolution;
-            dataSize = size / resolution;
-            data = new float[dataSize * dataSize];
+            visionList = new Vision[MaxVisionNumber];
         }
 
-        void SetLocal(Vector2Int coord, float v)
-        {
-            var index = coord.x * dataSize + coord.y;
-            data[index] = v;
-        }
-
-        float GetLocal(Vector2Int coord)
-        {
-            var index = coord.x * dataSize + coord.y;
-            return data[index];
-        }
-
-        Vector2Int GetCoord(Vector2 position)
-        {
-            position -= origin;
-            return new Vector2Int(
-                Mathf.FloorToInt(position.x / (float)resolution),
-                Mathf.FloorToInt(position.y / (float)resolution)
-            );
-        }
-
-        public void Set(float x, float z, float amount) {
-            Set(new Vector2(x, z), amount);
-        }
-
-        public void Set(Vector2 position, float amount)
-        {
-            var coord = GetCoord(position);
-            SetLocal(coord, amount);
-        }
-
-        public float Get(Vector2 position)
-        {
-            var coord = GetCoord(position);
-            return GetLocal(coord);
-        }
-
-        public void Clear()
-        {
-            for (var i = 0; i < data.Length; i++)
-            {
-                data[i] = 0.0f;
+        public void Add(VisionSource source) {
+            if (sources.Count == MaxVisionNumber) {
+                Debug.LogWarning("Max vision number reached, discard");
+                return;
             }
+            sources.Add(source);
+            bufferDirty = true;
         }
 
-        ComputeBuffer buffer;
-        public ComputeBuffer GetComputeBuffer()
-        {
-            if (buffer == null)
-            {
-                buffer = new ComputeBuffer(dataSize * dataSize, sizeof(float));
+        public void Remove(VisionSource source) {
+            sources.Remove(source);
+            bufferDirty = true;
+        }
+
+        public void UpdateBuffer() {
+            if (visionBuffer == null) {
+                visionBuffer = new ComputeBuffer(MaxVisionNumber, Vision.Stride);    
             }
 
-            buffer.SetData(data);
+            if (bufferDirty) {
+                var index = 0;
+                foreach (var source in sources) {
+                    visionList[index] = new Vision(source.transform.position.x, source.transform.position.z, source.radius);
+                    index++;
+                }
 
-            return buffer;
+                // break signal
+                visionList[index] = new Vision(0, 0, 0);
+            }
+
+            visionBuffer.SetData(visionList);
+
+            bufferDirty = false;
         }
 
-        public void Dispose()
-        {
-            if (buffer != null)
-            {
-                buffer.Dispose();
+        public void Dispose() {
+            if (visionBuffer != null) {
+                visionBuffer.Dispose();    
             }
         }
     }

@@ -22,11 +22,17 @@ Shader "Unlit/voxelunlit"
 			#pragma multi_compile_fog
 			
 			#include "UnityCG.cginc"
-                     
-            StructuredBuffer<float> _VisionBuffer;
-            float2 _VisionOrigin;
-            float _VisionSize;
-            int _VisionResolution;
+
+
+            struct Vision {
+                float x;
+                float z;
+                float radius;
+            };
+
+            StructuredBuffer<Vision> _VisionBuffer;
+            int _MaxVisionNumber;
+            int _UseVision;
 
 			struct appdata
 			{
@@ -73,11 +79,42 @@ Shader "Unlit/voxelunlit"
             }
 
             float getVision(float3 worldPos) {
-                int visionX = floor((worldPos.x - _VisionOrigin.x) / _VisionResolution);
-                int visionZ = floor((worldPos.z - _VisionOrigin.y) / _VisionResolution);
+                float amount = 0;
+                float visionBlur = 33;
 
-                int index = visionX * (_VisionSize / _VisionResolution) + visionZ;
-                return _VisionBuffer[index];
+                // pos banding
+                worldPos /= 2.0;
+                worldPos = floor(worldPos);
+                worldPos *= 2.0;
+
+                for (int i = 0; i < _MaxVisionNumber; i++) {
+                    Vision vision = _VisionBuffer[i];
+                    // Break signal
+                    if (vision.radius == 0) {
+                        break;
+                    }
+
+                    float dx = vision.x - worldPos.x;
+                    float dz = vision.z - worldPos.z;
+
+                    float dis = sqrt(dx * dx + dz * dz);
+
+                    if (dis < (vision.radius - visionBlur)) {
+                        amount += 1.0;
+                    } else if (dis < vision.radius) {
+                        amount += (vision.radius - dis) / visionBlur;
+                    }
+                }
+                if (amount > 1.0) {
+                    amount = 1.0;
+                }
+
+                // amount banding
+                // amount *= 4;
+                // amount = floor(amount);
+                // amount /= 4;
+
+                return amount;
             }
 
 			v2f vert (appdata v)
@@ -88,7 +125,7 @@ Shader "Unlit/voxelunlit"
                 o.normal = v.normal;
                 o.uv = v.uv;
 
-                if (_VisionSize > 0) {
+                if (_UseVision > 0) {
                     float3 worldPos = mul (unity_ObjectToWorld, v.vertex).xyz;
                     float vision = getVision(worldPos);
                     float4 color = v.color * vision;

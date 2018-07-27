@@ -161,7 +161,7 @@ namespace FarmVox
 
                 GenerateGround(column);
                 GenerateWaters(column);
-                GenerateColliders(column);
+                //GenerateColliders(column);
 
                 column.generatedTerrian = true;
             }
@@ -180,7 +180,7 @@ namespace FarmVox
                 //GenerateWaterfalls(column);
             }
 
-            bool skipShadows = false;
+            bool skipShadows = true;
             foreach (var column in columns.Values)
             {
                 GenerateShadows(column);

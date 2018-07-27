@@ -38,7 +38,7 @@ namespace FarmVox
         }
 
         bool ShouldGenerateShadow(TerrianColumn column) {
-            var shadowLength = 3;
+            var shadowLength = config.maxChunksY;
             for (var i = 0; i < shadowLength; i++) {
                 for (var k = 0; k < shadowLength; k++) {
                     var origin = column.Origin + new Vector3Int(i, 0, k) * size;
