@@ -4,14 +4,15 @@ using UnityEngine;
 
 namespace FarmVox
 {
-    public interface IChunkColorProvider {
+    public interface IChunkColorProvider
+    {
         Color GetColor(int i, int j, int k);
     }
 
     public class Chunk
     {
-        private float[] data;
-        private Color[] colors;
+        float[] data;
+        Color[] colors;
 
         public Color[] Colors
         {
@@ -21,15 +22,19 @@ namespace FarmVox
             }
         }
 
-        public void SetColors(Color[] colors) {
-            if (colors.Length != this.colors.Length) {
+        public void SetColors(Color[] colors)
+        {
+            if (colors.Length != this.colors.Length)
+            {
                 throw new System.ArgumentException("invalid length");
             }
             this.colors = colors;
         }
 
-        public void SetData(float[] data) {
-            if (data.Length != this.data.Length) {
+        public void SetData(float[] data)
+        {
+            if (data.Length != this.data.Length)
+            {
                 throw new System.ArgumentException("invalid length");
             }
             this.data = data;
@@ -45,22 +50,72 @@ namespace FarmVox
             }
         }
 
-        private Mesh mesh;
-        private GameObject gameObject;
-        private readonly int size;
-        private Vector3Int origin;
-        private bool dirty;
+        Mesh mesh;
+        Mesh colliderMesh;
+
+        public Mesh ColliderMesh
+        {
+            get
+            {
+                return colliderMesh;
+            }
+            set 
+            {
+                colliderMesh = value;
+            }
+        }
+
+        bool dirty;
+        public bool colliderDirty;
+        public bool surfaceCoordsDirty = true;
+
+        GameObject gameObject;
+        readonly int size;
+        Vector3Int origin;
         public bool Hidden;
         public Chunks Chunks;
-        public bool surfaceCoordsDirty = true;
-        private ChunkShadowMap shadowMap = new ChunkShadowMap();
+        ChunkShadowMap shadowMap = new ChunkShadowMap();
         public HashSet<Vector3Int> surfaceCoords = new HashSet<Vector3Int>();
         public HashSet<Vector3Int> surfaceCoordsUp = new HashSet<Vector3Int>();
-        private readonly Dictionary<Vector3Int, float> lightNormals = new Dictionary<Vector3Int, float>();
-        private bool normalsNeedsUpdate = true;
+        readonly Dictionary<Vector3Int, float> lightNormals = new Dictionary<Vector3Int, float>();
+
+        bool normalsNeedsUpdate = true;
         public bool empty = true;
 
         public readonly int dataSize;
+
+        public GameObject GetGameObject() {
+            if (gameObject == null) {
+                gameObject = new GameObject();
+            }
+            return gameObject;
+        }
+
+        public MeshRenderer GetMeshRenderer() {
+            var meshRenderer = GetGameObject().GetComponent<MeshRenderer>();
+            if (meshRenderer != null) {
+                return meshRenderer;
+            }
+            return GetGameObject().AddComponent<MeshRenderer>();
+        }
+
+        public MeshFilter GetMeshFilter() {
+            var meshFilter = GetGameObject().GetComponent<MeshFilter>();
+            if (meshFilter != null)
+            {
+                return meshFilter;
+            }
+            return GetGameObject().AddComponent<MeshFilter>();
+        }
+
+        public MeshCollider GetMeshCollider() {
+            var meshCollider = GetGameObject().GetComponent<MeshCollider>();
+            if (meshCollider != null)
+            {
+                return meshCollider;
+            }
+            return GetGameObject().AddComponent<MeshCollider>();
+        }
 
         public void UpdateSurfaceCoords()
         {
@@ -93,15 +148,19 @@ namespace FarmVox
                                 continue;
                             }
 
-                            if (a > 0) {
+                            if (a > 0)
+                            {
                                 surfaceCoords.Add(coordA);
-                                if (d == 1) {
+                                if (d == 1)
+                                {
                                     surfaceCoordsUp.Add(coordA);
                                 }
-                            } else {
+                            }
+                            else
+                            {
                                 surfaceCoords.Add(coordB);
                             }
-                        }   
+                        }
                     }
                 }
             }
@@ -140,19 +199,6 @@ namespace FarmVox
             }
         }
 
-        public GameObject GameObject
-        {
-            get
-            {
-                return gameObject;
-            }
-
-            set
-            {
-                gameObject = value;
-            }
-        }
-
         public bool Dirty
         {
             get
@@ -177,9 +223,10 @@ namespace FarmVox
 
         public float Get(int i, int j, int k)
         {
-            if (i < 0 || i >= dataSize || 
+            if (i < 0 || i >= dataSize ||
                 j < 0 || j >= dataSize ||
-                k < 0 || k >= dataSize) {
+                k < 0 || k >= dataSize)
+            {
                 throw new System.Exception("out of bounds:" + new Vector3Int(i, j, k).ToString());
             }
             var index = GetIndex(i, j, k);
@@ -199,6 +246,7 @@ namespace FarmVox
             dirty = true;
             surfaceCoordsDirty = true;
             normalsNeedsUpdate = true;
+            colliderDirty = true;
             empty = false;
         }
 
@@ -256,7 +304,8 @@ namespace FarmVox
             }
         }
 
-        public float GetGlobal(int i, int j, int k) {
+        public float GetGlobal(int i, int j, int k)
+        {
             int max = size - 1;
             if (i < 0 || i > max || j < 0 || j > max || k < 0 || k > max)
             {
@@ -268,7 +317,8 @@ namespace FarmVox
             }
         }
 
-        public int GetIndex(Vector3Int coord) {
+        public int GetIndex(Vector3Int coord)
+        {
             return GetIndex(coord.x, coord.y, coord.z);
         }
 
@@ -300,7 +350,8 @@ namespace FarmVox
             }
         }
 
-        public float GetShadow(Vector3Int coord) {
+        public float GetShadow(Vector3Int coord)
+        {
             return shadowMap.GetShadow(this, coord);
         }
 
@@ -315,20 +366,25 @@ namespace FarmVox
 
             var lightDir = Raycast4545.LightDir;
 
-            foreach (var coord in surfaceCoords) {
-                if (coord.x >= dataSize - 1 || coord.y >= dataSize - 1 || coord.z >= dataSize - 1) {
+            foreach (var coord in surfaceCoords)
+            {
+                if (coord.x >= dataSize - 1 || coord.y >= dataSize - 1 || coord.z >= dataSize - 1)
+                {
                     continue;
-                } else {
+                }
+                else
+                {
                     var normal = CalcNormal(coord);
                     normals[coord] = normal;
-                    lightNormals[coord] = Vector3.Dot(lightDir, normal);    
+                    lightNormals[coord] = Vector3.Dot(lightDir, normal);
                 }
             }
 
             normalsNeedsUpdate = false;
         }
 
-        private Vector3 CalcNormal(Vector3Int coord) {
+        private Vector3 CalcNormal(Vector3Int coord)
+        {
             var n = new Vector3(-1, -1, -1) * Get(new Vector3Int(coord.x, coord.y, coord.z)) +
                 new Vector3(1, -1, -1) * Get(new Vector3Int(coord.x + 1, coord.y, coord.z)) +
                 new Vector3(-1, 1, -1) * Get(new Vector3Int(coord.x, coord.y + 1, coord.z)) +
@@ -342,15 +398,19 @@ namespace FarmVox
             return n.normalized * -1;
         }
 
-        public float? GetLightNormal(Vector3Int coord) {
-            if (lightNormals.ContainsKey(coord)) {
+        public float? GetLightNormal(Vector3Int coord)
+        {
+            if (lightNormals.ContainsKey(coord))
+            {
                 return lightNormals[coord];
             }
             return null;
         }
 
-        public Vector3? GetNormal(Vector3Int coord) {
-            if (normals.ContainsKey(coord)) {
+        public Vector3? GetNormal(Vector3Int coord)
+        {
+            if (normals.ContainsKey(coord))
+            {
                 return normals[coord];
             }
             return null;
@@ -366,7 +426,8 @@ namespace FarmVox
             }
         }
 
-        public float Get(Vector3Int coord) {
+        public float Get(Vector3Int coord)
+        {
             return Get(coord.x, coord.y, coord.z);
         }
 

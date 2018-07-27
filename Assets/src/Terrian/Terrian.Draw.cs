@@ -7,7 +7,7 @@ namespace FarmVox
 
     public partial class Terrian
     {
-        public bool Draw(Chunks chunks, Vector3Int origin, Transform transform, Material material, TerrianChunk terrianChunk)
+        public bool UpdateMesh(Chunks chunks, Vector3Int origin, Transform transform, Material material, TerrianChunk terrianChunk)
         {
             if (!chunks.HasChunk(origin))
             {
@@ -24,32 +24,29 @@ namespace FarmVox
             if (chunk.Mesh != null)
             {
                 Object.Destroy(chunk.Mesh);
-                Object.Destroy(chunk.GameObject);
             }
 
-            var mesh = MeshGPU(chunk, terrianChunk);
+            chunk.Mesh = MeshGPU(chunk, terrianChunk);
 
             var group = chunk.Chunks.GameObject;
             group.name = chunk.Chunks.groupName;
             group.transform.parent = transform;
 
-            GameObject go = new GameObject("Mesh" + origin.ToString());
+            var go = chunk.GetGameObject();
+            go.name = "Mesh" + origin.ToString();
             go.transform.parent = group.transform;
-            go.AddComponent<MeshRenderer>().material = material;
-            go.AddComponent<MeshFilter>().sharedMesh = mesh;
-            go.AddComponent<MeshCollider>().sharedMesh = mesh;
+
+            chunk.GetMeshRenderer().material = material;
+            chunk.GetMeshFilter().sharedMesh = chunk.Mesh;
+
             go.transform.localPosition = chunk.Origin;
 
-            chunk.Mesh = mesh;
-            chunk.GameObject = go;
-
-            TerrianNavMeshBuilder.TriggerBuild();
-
             chunk.Dirty = false;
+
             return true;
         }
 
-        public void Draw(HashSet<Vector3Int> updatedTerrianChunks) {
+        public void UpdateMeshes() {
             foreach (var kv in map)
             {
                 var terrianChunk = kv.Value;
@@ -57,10 +54,7 @@ namespace FarmVox
                 {
                     foreach (var chunks in chunksToDraw)
                     {
-                        if (Draw(chunks, terrianChunk.Origin, Transform, material, terrianChunk))
-                        {
-                            updatedTerrianChunks.Add(terrianChunk.Origin);
-                        }
+                        UpdateMesh(chunks, terrianChunk.Origin, Transform, material, terrianChunk);
                     }
                 }
             }

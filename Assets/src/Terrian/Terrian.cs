@@ -148,22 +148,11 @@ namespace FarmVox
                 }
             }
 
-            foreach(var kv in map) {
-                var terrianChunk = kv.Value;
+            GenerateColliders();
 
-                if (terrianChunk.Distance < config.drawDis)
-                {
-                    GenerateShadows(terrianChunk);
-                }
-            }
+            GenerateShadows();
 
-            var updatedTerrianChunks = new HashSet<Vector3Int>();
-            Draw(updatedTerrianChunks);
-
-            foreach (var coord in updatedTerrianChunks)
-            {
-                UpdateShadowNeedsUpdate(coord);
-            }
+            UpdateMeshes();
 
             UpdateVision();
         }

@@ -14,7 +14,7 @@ namespace FarmVox
         public bool waterNeedsUpdate = true;
         public bool grassNeedsUpdate = true;
         public bool treesNeedsUpdate = true;
-        public bool shadowsNeedsUpdate = false;
+        public bool shadowsNeedsUpdate = true;
         public bool housesNeedsUpdate = true;
         public bool routesNeedsUpdate = true;
         public bool townPointsNeedsUpdate = true;
