@@ -153,7 +153,7 @@ namespace FarmVox
 
                 if (terrianChunk.Distance < config.drawDis)
                 {
-                    //GenerateShadows(terrianChunk);
+                    GenerateShadows(terrianChunk);
                 }
             }
 
