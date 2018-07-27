@@ -73,15 +73,17 @@ namespace FarmVox
             }
         }
 
-        private TerrianConfig config = new TerrianConfig();
+        TerrianConfig config = new TerrianConfig();
 
-        private Chunks[] chunksToDraw;
-        private Chunks[] chunksCastingShadows;
-        private Chunks[] chunksReceivingShadows;
+        Chunks[] chunksToDraw;
+        Chunks[] chunksCastingShadows;
+        Chunks[] chunksReceivingShadows;
 
-        private Dictionary<Vector3Int, TerrianColumn> columns = new Dictionary<Vector3Int, TerrianColumn>();
+        Dictionary<Vector3Int, TerrianColumn> columns = new Dictionary<Vector3Int, TerrianColumn>();
 
         GameObject terrianObject;
+
+        VoxelShadowMap shadowMap;
 
         TerrianColumn GetColumn(Vector3Int origin) {
             if (columns.ContainsKey(origin)) {
@@ -114,6 +116,8 @@ namespace FarmVox
             chunksToDraw = new Chunks[] { defaultLayer, treeLayer, waterLayer };
             chunksCastingShadows = new Chunks[] { defaultLayer, treeLayer };
             chunksReceivingShadows = new Chunks[] { waterLayer, defaultLayer, treeLayer };
+
+            shadowMap = new VoxelShadowMap(size);
         }
 
         public void Update()
@@ -191,6 +195,8 @@ namespace FarmVox
             //}
 
             UpdateVision();
+
+            shadowMap.Update();
 
             var end = System.DateTime.Now;
             if ((end - start).Milliseconds > 16) {

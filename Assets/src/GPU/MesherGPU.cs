@@ -77,7 +77,8 @@ namespace FarmVox
             var shadowBufferData = new float[dataSize * dataSize * dataSize];
             foreach(var coord in chunk.surfaceCoords) {
                 var index = coord.x * dataSize * dataSize + coord.y * dataSize + coord.z;
-                var v = chunk.GetShadow(coord);
+                var v = 0.5f; // TODO
+                //var v = chunk.GetShadow(coord);
                 shadowBufferData[index] = v * shadowStrength;
             }
             shadowBuffer.SetData(shadowBufferData);

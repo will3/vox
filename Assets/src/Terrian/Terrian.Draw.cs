@@ -44,6 +44,8 @@ namespace FarmVox
                 {
                     GenerateMesh(chunks, terrianChunk.Origin, material, terrianChunk);
                 }
+
+                shadowMap.ChunkDrawn(terrianChunk.Origin);
             }
         }
 

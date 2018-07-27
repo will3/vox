@@ -74,7 +74,6 @@ namespace FarmVox
         Vector3Int origin;
         public bool Hidden;
         public Chunks Chunks;
-        ChunkShadowMap shadowMap = new ChunkShadowMap();
         public HashSet<Vector3Int> surfaceCoords = new HashSet<Vector3Int>();
         public HashSet<Vector3Int> surfaceCoordsUp = new HashSet<Vector3Int>();
         readonly Dictionary<Vector3Int, float> lightNormals = new Dictionary<Vector3Int, float>();
@@ -329,33 +328,6 @@ namespace FarmVox
         {
             int index = i * dataSize * dataSize + j * dataSize + k;
             return index;
-        }
-
-        public float GetLighting(int i, int j, int k)
-        {
-            Vector3Int coord = new Vector3Int(i, j, k);
-            return GetShadow(coord);
-        }
-
-        public void UpdateShadows(IList<Chunks> chunksList)
-        {
-            UpdateSurfaceCoords();
-
-            shadowMap.Clear();
-
-            foreach (var coord in surfaceCoords)
-            {
-                shadowMap.CalcShadow(this, coord, chunksList);
-                //shadowMap.CalcShadow(this, new Vector3Int(coord.x + 1, coord.y, coord.z), chunksList);
-                //shadowMap.CalcShadow(this, new Vector3Int(coord.x - 1, coord.y, coord.z), chunksList);
-                //shadowMap.CalcShadow(this, new Vector3Int(coord.x, coord.y, coord.z + 1), chunksList);
-                //shadowMap.CalcShadow(this, new Vector3Int(coord.x, coord.y, coord.z - 1), chunksList);
-            }
-        }
-
-        public float GetShadow(Vector3Int coord)
-        {
-            return shadowMap.GetShadow(this, coord);
         }
 
         public void UpdateNormals()

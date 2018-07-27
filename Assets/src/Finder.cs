@@ -9,11 +9,15 @@ namespace FarmVox
         }
 
         public static GameController FindGameController() {
-            return GameObject.FindWithTag("GameController").GetComponent<GameController>();
+            var go = GameObject.FindWithTag("GameController");
+            if (go == null) { return null; }
+            return go.GetComponent<GameController>();
         }
 
         public static Terrian FindTerrian() {
-            return GameObject.FindWithTag("GameController").GetComponent<GameController>().Terrian;
+            var gc = FindGameController();
+            if (gc == null) { return null; }
+            return gc.Terrian;
         }
     }
 }
