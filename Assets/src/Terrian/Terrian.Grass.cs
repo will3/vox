@@ -5,7 +5,23 @@ using LibNoise.Generator;
 namespace FarmVox
 {
     partial class Terrian {
-        private void GenerateGrass(TerrianChunk terrianChunk)
+
+        void GenerateGrass(TerrianColumn column)
+        {
+            if (column.generatedGrass)
+            {
+                return;
+            }
+
+            foreach (var terrianChunk in column.TerrianChunks)
+            {
+                GenerateGrass(terrianChunk);
+            }
+
+            column.generatedGrass = true;
+        }
+
+        void GenerateGrass(TerrianChunk terrianChunk)
         {
             if (!terrianChunk.grassNeedsUpdate)
             {

@@ -5,23 +5,26 @@ namespace FarmVox
 
     public partial class Terrian
     {
-        void GenerateColliders() {
-            foreach (var column in columns.Values) {
-                foreach (var terrianChunk in column.TerrianChunks) {
-                    foreach (var chunks in chunksReceivingShadows)
-                    {
-                        var origin = terrianChunk.Origin;
-                        var chunk = chunks.GetChunk(origin);
-                        if (chunk == null)
-                        {
-                            continue;
-                        }
-                        GenerateCollider(chunk, terrianChunk);
-                    }
-                }
-
-                column.generatedColliders = true;
+        void GenerateColliders(TerrianColumn column) {
+            if (column.generatedColliders) {
+                return;
             }
+
+            foreach (var terrianChunk in column.TerrianChunks)
+            {
+                foreach (var chunks in chunksReceivingShadows)
+                {
+                    var origin = terrianChunk.Origin;
+                    var chunk = chunks.GetChunk(origin);
+                    if (chunk == null)
+                    {
+                        continue;
+                    }
+                    GenerateCollider(chunk, terrianChunk);
+                }
+            }
+
+            column.generatedColliders = true;
         }
 
         void GenerateCollider(Chunk chunk, TerrianChunk terrianChunk) {

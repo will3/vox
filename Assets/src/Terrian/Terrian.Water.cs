@@ -3,6 +3,19 @@
 
     public partial class Terrian
     {
+        public void GenerateWaters(TerrianColumn column) 
+        {
+            if (column.generatedWater) {
+                return;
+            }
+
+            foreach (var terrianChunk in column.TerrianChunks) {
+                GenerateWaters(terrianChunk);
+            }
+
+            column.generatedWater = true;
+        }
+
         public void GenerateWaters(TerrianChunk terrianChunk)
         {
             if (!terrianChunk.waterNeedsUpdate)

@@ -5,21 +5,22 @@ namespace FarmVox
 
     public partial class Terrian
     {
-        void GenerateShadows() {
-            foreach (var column in columns.Values) {
-                if (column.generatedShadows) {
-                    continue;
-                }
-                if (!ShouldGenerateShadow(column)) {
-                    continue;
-                }
-
-                foreach (var terrianChunk in column.TerrianChunks) {
-                    GenerateShadow(terrianChunk);
-                }
-
-                column.generatedShadows = true;
+        void GenerateShadows(TerrianColumn column) {
+            if (column.generatedShadows)
+            {
+                return;
             }
+
+            if (!ShouldGenerateShadow(column)) {
+                return;
+            }
+
+            foreach (var terrianChunk in column.TerrianChunks)
+            {
+                GenerateShadow(terrianChunk);
+            }
+
+            column.generatedShadows = true;
         }
 
         void GenerateShadow(TerrianChunk terrianChunk)

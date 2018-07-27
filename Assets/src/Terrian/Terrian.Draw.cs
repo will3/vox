@@ -34,19 +34,19 @@ namespace FarmVox
             return true;
         }
 
-        public void GenerateMeshes(bool skipShadows = false) {
-            foreach (var column in columns.Values) {
-                if (!skipShadows && !column.generatedShadows) {
-                    continue;
-                }
-
-                foreach (var terrianChunk in column.TerrianChunks) {
-                    foreach (var chunks in chunksToDraw)
-                    {
-                        GenerateMesh(chunks, terrianChunk.Origin, material, terrianChunk);
-                    }
-                }
+        public void GenerateMeshes(TerrianColumn column, bool skipShadows = false) {
+            if (!skipShadows && !column.generatedShadows)
+            {
+                return;
             }
+
+            foreach (var terrianChunk in column.TerrianChunks)
+            {
+                foreach (var chunks in chunksToDraw)
+                {
+                    GenerateMesh(chunks, terrianChunk.Origin, material, terrianChunk);
+                }
+            }    
         }
 
         Mesh MeshGPU(Chunk chunk, TerrianChunk terrianChunk)

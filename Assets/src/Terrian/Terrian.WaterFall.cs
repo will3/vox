@@ -6,7 +6,22 @@ namespace FarmVox
 
     public partial class Terrian
     {
-        private bool ShouldGenerateWaterFalls(TerrianChunk terrianChunk) {
+        public void GenerateWaterfalls(TerrianColumn column)
+        {
+            if (column.generatedWaterfalls)
+            {
+                return;
+            }
+
+            foreach (var terrianChunk in column.TerrianChunks)
+            {
+                GenerateWaterfalls(terrianChunk);
+            }
+
+            column.generatedWaterfalls = true;
+        }
+
+        bool ShouldGenerateWaterFalls(TerrianChunk terrianChunk) {
             var key = terrianChunk.key;
 
             for (var i = -1; i <= 1; i ++) {
@@ -48,7 +63,7 @@ namespace FarmVox
                 var height = absY / config.maxHeight;
                 var heightValue = config.waterfallHeightFilter.GetValue(height);
                 var v = r / heightValue; // / waterFallNoiseData[index];
-                if (v < 0 || v > 0.05f)
+                if (v < 0 || v > 0.01f)
                 {
                     continue;
                 }
@@ -136,7 +151,7 @@ namespace FarmVox
                     var coord = coords[i];
                     var cost = costs[i];
                     chunks.SetColor(coord.x, coord.y, coord.z, Colors.water);
-                    chunks.SetWaterfall(coord, cost);    
+                    chunks.SetWaterfall(coord, cost);
                 }
                 foreach(var coord in emptyCoords) {
                     chunks.Set(coord, 1);
@@ -172,9 +187,9 @@ namespace FarmVox
                 }
             }
 
-            if (waterTracker.DidReachedWater) {
+            //if (waterTracker.DidReachedWater) {
                 waterTracker.Apply(defaultLayer);    
-            }
+            //}
         }
 
         private Vector3Int? ProcessNextWater(Vector3Int coord, WaterTracker waterTracker) {

@@ -4,7 +4,7 @@ namespace FarmVox
 {
     public partial class Terrian
     {
-        private float GetValue(int i, int j, int k, int dataSize, Vector3Int origin, float[] heightNoiseData, float[] canyonNoiseData)
+        float GetValue(int i, int j, int k, int dataSize, Vector3Int origin, float[] heightNoiseData, float[] canyonNoiseData)
         {
             var plainHeight = config.plainHeight;
             var hillHeight = config.hillHeight;
@@ -34,6 +34,18 @@ namespace FarmVox
             var n1 = heightNoiseData[index];
             // var n2 = (float)heightNoise2.GetValue(new Vector3(i, j * 0.4f, k) * ) * 0.5f;
             return value + n1;
+        }
+
+        void GenerateGround(TerrianColumn column) {
+            if (column.generatedGround) {
+                return;
+            }
+
+            foreach (var terrianChunk in column.TerrianChunks) {
+                GenerateGround(terrianChunk);
+            }
+
+            column.generatedGround = true;
         }
 
         void GenerateGround(TerrianChunk terrianChunk)

@@ -2,10 +2,25 @@
 
 namespace FarmVox
 {
-
     public partial class Terrian
     {
-        private void GenerateTrees(TerrianChunk terrianChunk)
+        void GenerateTrees(TerrianColumn column)
+        {
+            if (column.generatedTrees)
+            {
+                return;
+            }
+
+            foreach (var terrianChunk in column.TerrianChunks)
+            {
+                GenerateTrees(terrianChunk);
+            }
+
+            column.generatedTrees = true;
+        }
+
+
+        void GenerateTrees(TerrianChunk terrianChunk)
         {
             var minTreeJ = config.minTreeJ;
             var treeNoise = config.treeNoise;
@@ -19,6 +34,7 @@ namespace FarmVox
 
             var origin = terrianChunk.Origin;
             var chunk = defaultLayer.GetChunk(origin);
+            chunk.UpdateNormals();
 
             foreach (var kv in chunk.Normals)
             {

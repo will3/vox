@@ -118,12 +118,7 @@ namespace FarmVox
 
         public void Update()
         {
-            //if (Input.GetKeyDown(KeyCode.P)) {
-            //    foreach(var kv in map) {
-            //        kv.Value.shadowsNeedsUpdate = true;
-            //    }
-            //}
-            var start = System.DateTime.Now;
+            var start = DateTime.Now;
 
             int x = Mathf.FloorToInt(Target.x / sizeF);
             int z = Mathf.FloorToInt(Target.z / sizeF);
@@ -145,41 +140,47 @@ namespace FarmVox
                     var columnOrigin = new Vector3Int(i, 0, k) * size;
                     if (!columns.ContainsKey(columnOrigin))
                     {
-                        columns[columnOrigin] = new TerrianColumn(columnOrigin, list);
+                        var terrianColumn = new TerrianColumn(columnOrigin, list);
+                        columns[columnOrigin] = terrianColumn;
                     }
                 }
             }
 
             // Update distance
-            foreach(var kv in map) {
+            foreach (var kv in map) {
                 var terrianChunk = kv.Value;
                 terrianChunk.UpdateDistance(x, z);
             }
 
-            foreach (var column in columns.Values) {
-                foreach (var terrianChunk in column.TerrianChunks) {
-                    var origin = terrianChunk.Origin;
-
-                    GenerateGround(terrianChunk);
-
-                    GenerateWaters(terrianChunk);
-
-                    //GenerateWaterfalls(terrianChunk);
-
-                    //GenerateGrass(terrianChunk);
-
-                    //GenerateTrees(terrianChunk);
-
-                    column.generatedTerrian = true;
+            foreach (var column in columns.Values)
+            {
+                if (column.generatedTerrian)
+                {
+                    continue;
                 }
+
+                GenerateGround(column);
+                //GenerateWaters(column);
+                //GenerateTrees(column);
+                //GenerateGrass(column);
+                GenerateColliders(column);
+
+                column.generatedTerrian = true;
             }
 
-            GenerateColliders();
+            foreach (var column in columns.Values)
+            {
+                //GenerateWaterfalls(column);
+            }
 
-            //GenerateShadows();
+            bool skipShadows = false;
+            foreach (var column in columns.Values)
+            {
+                GenerateShadows(column);
+                GenerateMeshes(column, skipShadows);
+            }
 
-            GenerateMeshes(true);
-
+            // TODO
             //UpdateVision();
 
             var end = System.DateTime.Now;
