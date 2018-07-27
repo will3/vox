@@ -30,8 +30,8 @@ namespace FarmVox
                     c.UpdateSurfaceCoords();
                     c.UpdateShadows(chunksCastingShadows);
 
-                    var meshWorker = new MeshWorker(c, terrianChunk, terrian.Transform, terrian.Material);
-                    WorkerQueues.meshQueue.Add(meshWorker);
+                    //var meshWorker = new MeshWorker(c, terrianChunk, terrian.Transform, terrian.Material);
+                    //WorkerQueues.meshQueue.Add(meshWorker);
                 }
             }
         }
