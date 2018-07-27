@@ -7,18 +7,17 @@ namespace FarmVox
     public class Chunks
     {
         float sizeF;
-        int size;
+        readonly int size;
         public bool useNormals = true;
         public bool isWater = false;
         public string groupName = "chunks";
-        GameObject gameObject = new GameObject();
+        GameObject gameObject;
 
-        public GameObject GameObject
-        {
-            get
-            {
-                return gameObject;
+        public GameObject GetGameObject() {
+            if (gameObject == null) {
+                gameObject = new GameObject(groupName);
             }
+            return gameObject;
         }
 
         public int Size
@@ -29,7 +28,7 @@ namespace FarmVox
             }
         }
 
-        private Dictionary<Vector3Int, Chunk> map = new Dictionary<Vector3Int, Chunk>();
+        Dictionary<Vector3Int, Chunk> map = new Dictionary<Vector3Int, Chunk>();
 
         public Dictionary<Vector3Int, Chunk> Map
         {
@@ -42,7 +41,7 @@ namespace FarmVox
         public Chunks(int size)
         {
             this.size = size;
-            this.sizeF = size;
+            sizeF = size;
         }
 
         private Vector3Int getKey(int i, int j, int k) {

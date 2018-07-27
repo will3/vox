@@ -61,7 +61,6 @@ namespace FarmVox
                 return material;
             }
         }
-        public Transform Transform;
         public Vector3 Target;
 
         private Dictionary<Vector3Int, TerrianChunk> map = new Dictionary<Vector3Int, TerrianChunk>();
@@ -80,14 +79,34 @@ namespace FarmVox
         private Chunks[] chunksCastingShadows;
         private Chunks[] chunksReceivingShadows;
 
+        private Dictionary<Vector3Int, TerrianColumn> columns = new Dictionary<Vector3Int, TerrianColumn>();
+
+        GameObject terrianObject;
+
+        TerrianColumn GetColumn(Vector3Int origin) {
+            if (columns.ContainsKey(origin)) {
+                return columns[origin];
+            }
+            return null;
+        }
+
         public Terrian(int size = 32)
         {
             this.size = size;
             sizeF = size;
 
+            terrianObject = new GameObject("terrian");
             defaultLayer = new Chunks(size);
             treeLayer = new Chunks(size);
             waterLayer = new Chunks(size);
+
+            defaultLayer.GetGameObject().name = "default";
+            treeLayer.GetGameObject().name = "trees";
+            waterLayer.GetGameObject().name = "water";
+
+            defaultLayer.GetGameObject().transform.parent = terrianObject.transform;
+            treeLayer.GetGameObject().transform.parent = terrianObject.transform;
+            waterLayer.GetGameObject().transform.parent = terrianObject.transform;
 
             waterLayer.useNormals = false;
             waterLayer.isWater = true;
@@ -99,25 +118,34 @@ namespace FarmVox
 
         public void Update()
         {
-            if (Input.GetKeyDown(KeyCode.P)) {
-                foreach(var kv in map) {
-                    kv.Value.shadowsNeedsUpdate = true;
-                }
-            }
+            //if (Input.GetKeyDown(KeyCode.P)) {
+            //    foreach(var kv in map) {
+            //        kv.Value.shadowsNeedsUpdate = true;
+            //    }
+            //}
+            var start = System.DateTime.Now;
 
             int x = Mathf.FloorToInt(Target.x / sizeF);
             int z = Mathf.FloorToInt(Target.z / sizeF);
             var maxChunksY = config.maxChunksY;
             var generateDis = config.generateDis;
 
-            for (int j = 0; j < maxChunksY; j++)
+            for (int i = x - generateDis; i <= x + generateDis; i++)
             {
-                for (int i = x - generateDis; i <= x + generateDis; i++)
+                for (int k = z - generateDis; k <= z + generateDis; k++)
                 {
-                    for (int k = z - generateDis; k <= z + generateDis; k++)
+                    var list = new List<TerrianChunk>();
+                    for (int j = 0; j < maxChunksY; j++)
                     {
                         var origin = new Vector3Int(i, j, k) * size;
                         var terrianChunk = GetOrCreateTerrianChunk(origin);
+                        list.Add(terrianChunk);
+                    }
+
+                    var columnOrigin = new Vector3Int(i, 0, k) * size;
+                    if (!columns.ContainsKey(columnOrigin))
+                    {
+                        columns[columnOrigin] = new TerrianColumn(columnOrigin, list);
                     }
                 }
             }
@@ -128,12 +156,8 @@ namespace FarmVox
                 terrianChunk.UpdateDistance(x, z);
             }
 
-            foreach (var kv in map)
-            {
-                var terrianChunk = kv.Value;
-
-                if (terrianChunk.Distance < config.drawDis)
-                {
+            foreach (var column in columns.Values) {
+                foreach (var terrianChunk in column.TerrianChunks) {
                     var origin = terrianChunk.Origin;
 
                     GenerateGround(terrianChunk);
@@ -145,16 +169,23 @@ namespace FarmVox
                     //GenerateGrass(terrianChunk);
 
                     //GenerateTrees(terrianChunk);
+
+                    column.generatedTerrian = true;
                 }
             }
 
             GenerateColliders();
 
-            GenerateShadows();
+            //GenerateShadows();
 
-            UpdateMeshes();
+            GenerateMeshes(true);
 
-            UpdateVision();
+            //UpdateVision();
+
+            var end = System.DateTime.Now;
+            if ((end - start).Milliseconds > 16) {
+                Debug.Log("Terrian Update took: " + (end - start).Milliseconds);    
+            }
         }
 
         public TerrianChunk GetTerrianChunk(Vector3Int origin) {

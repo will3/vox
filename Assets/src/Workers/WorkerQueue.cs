@@ -25,7 +25,7 @@ namespace FarmVox
             if (workers.Count > 0) {
                 var worker = workers[0];
                 worker.Start();
-                workers.Remove(worker);    
+                workers.Remove(worker);
             }
         }
     }

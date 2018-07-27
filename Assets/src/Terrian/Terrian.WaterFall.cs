@@ -57,7 +57,6 @@ namespace FarmVox
             }
 
             terrianChunk.waterfallsNeedsUpdate = false;
-            terrianChunk.shadowsNeedsUpdate = true;
 
             waterFallNoise.Dispose();
         }

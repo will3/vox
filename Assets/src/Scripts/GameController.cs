@@ -26,20 +26,14 @@ public class GameController : MonoBehaviour {
     }
 
     bool spawned = false;
-    public bool hideTerrian = false;
-    public bool hideTrees = false;
 
     HighlightHoveredSurface highlight;
     List<Actor> actors = new List<Actor>();
-    GameObject terrianObject;
 
     // Use this for initialization
     void Start () {
-        terrianObject = new GameObject("terrian");
-        terrianObject.transform.parent = transform.parent;
 
         terrian = new Terrian();
-        terrian.Transform = terrianObject.transform;
 
         var go = new GameObject("Highlight");
         highlight = go.AddComponent<HighlightHoveredSurface>();
@@ -93,14 +87,6 @@ public class GameController : MonoBehaviour {
                 }
             }
         }
-
-        if (hideTerrian) {
-            terrianObject.SetActive(false);
-        } else {
-            terrianObject.SetActive(true);
-        }
-
-        terrian.TreeLayer.SetActive(!this.hideTrees);
 
         Vision.Instance.UpdateMap(visionMap);
 	}

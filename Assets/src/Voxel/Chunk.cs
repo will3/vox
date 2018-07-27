@@ -86,7 +86,10 @@ namespace FarmVox
 
         public GameObject GetGameObject() {
             if (gameObject == null) {
-                gameObject = new GameObject();
+                var name = "Chunk" + origin.ToString();
+                gameObject = new GameObject(name);
+                gameObject.transform.localPosition = origin;
+                gameObject.transform.parent = Chunks.GetGameObject().transform;
             }
             return gameObject;
         }

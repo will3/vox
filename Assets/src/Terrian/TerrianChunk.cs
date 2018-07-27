@@ -14,7 +14,6 @@ namespace FarmVox
         public bool waterNeedsUpdate = true;
         public bool grassNeedsUpdate = true;
         public bool treesNeedsUpdate = true;
-        public bool shadowsNeedsUpdate = true;
         public bool housesNeedsUpdate = true;
         public bool routesNeedsUpdate = true;
         public bool townPointsNeedsUpdate = true;
@@ -22,6 +21,7 @@ namespace FarmVox
         public bool enemiesNeedsUpdate = true;
         public bool floatingNeedsUpdate = true;
         public bool waterfallsNeedsUpdate = true;
+        public TerrianColumn column;
 
         Terrian terrian;
 

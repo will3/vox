@@ -7,6 +7,8 @@ namespace FarmVox
     {
         List<Vector3> vertices = new List<Vector3>();
 
+        public bool colliderMesh = false;
+
         public List<Vector3> Vertices
         {
             get
@@ -45,8 +47,6 @@ namespace FarmVox
             }
         }
 
-        Dictionary<Vector3, int> verticeMap = new Dictionary<Vector3, int>();
-
         public void AddTriangle(MesherGPU.Triangle triangle)
         {
             int i = vertices.Count / 3;
@@ -59,29 +59,15 @@ namespace FarmVox
             indices.Add(i * 3 + 1);
             indices.Add(i * 3 + 2);
 
-            colors.Add(triangle.colorA);
-            colors.Add(triangle.colorB);
-            colors.Add(triangle.colorC);
+            if (!colliderMesh) {
+                colors.Add(triangle.colorA);
+                colors.Add(triangle.colorB);
+                colors.Add(triangle.colorC);
 
-            uvs.Add(new Vector2(triangle.waterfall, 0));
-            uvs.Add(new Vector2(triangle.waterfall, 0));
-            uvs.Add(new Vector2(triangle.waterfall, 0));
-        }
-
-        int AddVertice(Vector3 vector, Color color, float waterfall)
-        {
-            if (verticeMap.ContainsKey(vector))
-            {
-                return verticeMap[vector];
+                uvs.Add(new Vector2(triangle.waterfall, 0));
+                uvs.Add(new Vector2(triangle.waterfall, 0));
+                uvs.Add(new Vector2(triangle.waterfall, 0));    
             }
-
-            vertices.Add(vector);
-            colors.Add(color);
-            uvs.Add(new Vector2(waterfall, 0));
-
-            int index = vertices.Count - 1;
-            verticeMap[vector] = index;
-            return index;
         }
     }
 }

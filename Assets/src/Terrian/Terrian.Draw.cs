@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Profiling;
 
 namespace FarmVox
@@ -7,7 +6,7 @@ namespace FarmVox
 
     public partial class Terrian
     {
-        public bool UpdateMesh(Chunks chunks, Vector3Int origin, Transform transform, Material material, TerrianChunk terrianChunk)
+        public bool GenerateMesh(Chunks chunks, Vector3Int origin, Material material, TerrianChunk terrianChunk)
         {
             if (!chunks.HasChunk(origin))
             {
@@ -27,34 +26,24 @@ namespace FarmVox
             }
 
             chunk.Mesh = MeshGPU(chunk, terrianChunk);
-
-            var group = chunk.Chunks.GameObject;
-            group.name = chunk.Chunks.groupName;
-            group.transform.parent = transform;
-
-            var go = chunk.GetGameObject();
-            go.name = "Mesh" + origin.ToString();
-            go.transform.parent = group.transform;
-
             chunk.GetMeshRenderer().material = material;
             chunk.GetMeshFilter().sharedMesh = chunk.Mesh;
-
-            go.transform.localPosition = chunk.Origin;
 
             chunk.Dirty = false;
 
             return true;
         }
 
-        public void UpdateMeshes() {
-            foreach (var kv in map)
-            {
-                var terrianChunk = kv.Value;
-                if (terrianChunk.Distance < config.drawDis)
-                {
+        public void GenerateMeshes(bool skipShadows = false) {
+            foreach (var column in columns.Values) {
+                if (!skipShadows && !column.generatedShadows) {
+                    continue;
+                }
+
+                foreach (var terrianChunk in column.TerrianChunks) {
                     foreach (var chunks in chunksToDraw)
                     {
-                        UpdateMesh(chunks, terrianChunk.Origin, Transform, material, terrianChunk);
+                        GenerateMesh(chunks, terrianChunk.Origin, material, terrianChunk);
                     }
                 }
             }

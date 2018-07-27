@@ -5,42 +5,25 @@ namespace FarmVox
 
     public partial class Terrian
     {
-        //public void UpdateShadowNeedsUpdate(Vector3Int from) {
-        //    var key = new Vector3Int(from.x / size, from.y / size, from.z / size);
-        //    for (var offset = 0; offset <= key.y; offset++) {
-        //        SetShadowNeedsUpdate((key + new Vector3Int(-offset, -offset, -offset)) * size);
-        //        SetShadowNeedsUpdate((key + new Vector3Int(-offset - 1, -offset, -offset)) * size);
-        //        SetShadowNeedsUpdate((key + new Vector3Int(-offset - 1, -offset, -offset - 1)) * size);
-        //        SetShadowNeedsUpdate((key + new Vector3Int(-offset, -offset, -offset - 1)) * size);
-        //    }
-        //}
-
-        //void SetShadowNeedsUpdate(Vector3Int origin) {
-        //    var terrianChunk = GetTerrianChunk(origin);
-        //    if (terrianChunk != null)
-        //    {
-        //        terrianChunk.shadowsNeedsUpdate = true;
-        //    }
-        //}
-
         void GenerateShadows() {
-            foreach (var kv in map)
-            {
-                var terrianChunk = kv.Value;
-                if (terrianChunk.Distance < config.drawDis)
-                {
+            foreach (var column in columns.Values) {
+                if (column.generatedShadows) {
+                    continue;
+                }
+                if (!ShouldGenerateShadow(column)) {
+                    continue;
+                }
+
+                foreach (var terrianChunk in column.TerrianChunks) {
                     GenerateShadow(terrianChunk);
                 }
+
+                column.generatedShadows = true;
             }
         }
 
         void GenerateShadow(TerrianChunk terrianChunk)
         {
-            if (!terrianChunk.shadowsNeedsUpdate)
-            {
-                return;
-            }
-
             var origin = terrianChunk.Origin;
 
             foreach (var chunks in chunksReceivingShadows)
@@ -51,8 +34,20 @@ namespace FarmVox
                     c.UpdateShadows(chunksCastingShadows);
                 }
             }
+        }
 
-            terrianChunk.shadowsNeedsUpdate = false;
+        bool ShouldGenerateShadow(TerrianColumn column) {
+            var shadowLength = 3;
+            for (var i = 0; i < shadowLength; i++) {
+                for (var k = 0; k < shadowLength; k++) {
+                    var origin = column.Origin + new Vector3Int(i, 0, k) * size;
+                    var c = GetColumn(origin);
+                    if (c == null || !c.generatedColliders) {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
     }
 }

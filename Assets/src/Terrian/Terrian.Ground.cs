@@ -36,11 +36,11 @@ namespace FarmVox
             return value + n1;
         }
 
-        bool GenerateGround(TerrianChunk terrianChunk)
+        void GenerateGround(TerrianChunk terrianChunk)
         {
             if (!terrianChunk.rockNeedsUpdate)
             {
-                return false;
+                return;
             }
 
             var origin = terrianChunk.Origin;
@@ -76,8 +76,6 @@ namespace FarmVox
 
             voxelBuffer.Dispose();
             colorBuffer.Dispose();
-
-            return true;
         }
     }
 }

@@ -57,7 +57,15 @@ namespace FarmVox
             shader.SetInt("_DataSize", dataSize);
             shader.SetBuffer(0, "_VoxelBuffer", voxelBuffer);
             shader.SetBuffer(0, "_TrianglesBuffer", trianglesBuffer);
-            shader.SetBuffer(0, "_ColorsBuffer", colorsBuffer);
+
+            ComputeBuffer fakeColorBuffer = null;
+            if (colorsBuffer != null) {
+                shader.SetBuffer(0, "_ColorsBuffer", colorsBuffer);    
+            } else {
+                fakeColorBuffer = new ComputeBuffer(1, sizeof(float));
+                shader.SetBuffer(0, "_ColorsBuffer", fakeColorBuffer);    
+            }
+
             shader.SetInt("_NormalBranding", normalBranding);
             shader.SetInt("_UseNormals", useNormals ? 1 : 0);
             shader.SetInt("_IsWater", isWater ? 1 : 0);
@@ -100,6 +108,9 @@ namespace FarmVox
 
             shadowBuffer.Dispose();
             waterfallBuffer.Dispose();
+            if (fakeColorBuffer != null) {
+                fakeColorBuffer.Dispose();
+            }
         }
 
         public int Count(ComputeBuffer from) {
