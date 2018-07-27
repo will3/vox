@@ -160,10 +160,7 @@ namespace FarmVox
                 }
 
                 GenerateGround(column);
-                //GenerateWaters(column);
-                //GenerateTrees(column);
-                //GenerateGrass(column);
-
+                GenerateWaters(column);
                 GenerateColliders(column);
 
                 column.generatedTerrian = true;
@@ -189,9 +186,6 @@ namespace FarmVox
                 GenerateShadows(column);
                 GenerateMeshes(column, skipShadows);
             }
-
-            // TODO
-            //UpdateVision();
 
             var end = System.DateTime.Now;
             if ((end - start).Milliseconds > 16) {

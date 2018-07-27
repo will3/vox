@@ -174,7 +174,7 @@ float getGrass(int3 coord, float heightRatio) {
 
     float grassValue = sampleNoise(_GrassBuffer, coord);
 
-    float value = normalValue * heightValue + grassValue - 0.1;
+    float value = normalValue * heightValue * 1.2 + grassValue;
 
     if (value <= 0) {
         return 0;

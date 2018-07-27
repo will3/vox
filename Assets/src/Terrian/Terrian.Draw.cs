@@ -46,7 +46,7 @@ namespace FarmVox
                 {
                     GenerateMesh(chunks, terrianChunk.Origin, material, terrianChunk);
                 }
-            }    
+            }
         }
 
         Mesh MeshGPU(Chunk chunk, TerrianChunk terrianChunk)

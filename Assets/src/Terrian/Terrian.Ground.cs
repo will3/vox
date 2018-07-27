@@ -32,7 +32,6 @@ namespace FarmVox
             var height = (1f - absY / (float)terrainHeight) - 0.5f;
             var value = height;
             var n1 = heightNoiseData[index];
-            // var n2 = (float)heightNoise2.GetValue(new Vector3(i, j * 0.4f, k) * ) * 0.5f;
             return value + n1;
         }
 
@@ -66,20 +65,31 @@ namespace FarmVox
             var voxelBufferData = new float[voxelBuffer.count];
             voxelBuffer.GetData(voxelBufferData);
 
-            var colors = new Color[colorBuffer.count];
-            colorBuffer.GetData(colors);
-            chunk.SetColors(colors);
+            var empty = true;
+            for (var i = 0; i < voxelBufferData.Length; i++) {
+                if (voxelBufferData[i] > 0) {
+                    empty = false;
+                    break;
+                }
+            }
 
-            var dataSize = chunk.dataSize;
-            for (var i = 0; i < chunk.dataSize; i++)
-            {
-                for (var j = 0; j < chunk.dataSize; j++)
+            if (!empty) {
+                var colors = new Color[colorBuffer.count];
+                colorBuffer.GetData(colors);
+                chunk.SetColors(colors);
+
+                var dataSize = chunk.dataSize;
+                for (var i = 0; i < chunk.dataSize; i++)
                 {
-                    for (var k = 0; k < chunk.dataSize; k++)
+                    for (var j = 0; j < chunk.dataSize; j++)
                     {
-                        var index = i * dataSize * dataSize + j * dataSize + k;
-                        chunk.Set(i, j, k, voxelBufferData[index]);
-                        chunk.SetColor(i, j, k, colors[index]);
+                        for (var k = 0; k < chunk.dataSize; k++)
+                        {
+                            var index = i * dataSize * dataSize + j * dataSize + k;
+                            var v = voxelBufferData[index];
+                            chunk.Set(i, j, k, v);
+                            chunk.SetColor(i, j, k, colors[index]);
+                        }
                     }
                 }
             }

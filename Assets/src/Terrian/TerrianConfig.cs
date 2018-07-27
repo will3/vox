@@ -6,7 +6,7 @@ namespace FarmVox
 {
     public class TerrianConfig
     {
-        public int maxChunksY = 4;
+        public int maxChunksY = 2;
         public int generateDis = 2;
         public int drawDis = 2;
         public int minTreeJ = 1;
@@ -19,7 +19,6 @@ namespace FarmVox
         public Noise heightNoise;
         public Noise canyonNoise;
         public Noise rockNoise;
-        public Noise scultNoise;
         public ColorGradient rockColorGradient;
 
         public Noise rockColorNoise;
@@ -54,22 +53,22 @@ namespace FarmVox
         public Random roadRandom;
         public Random monsterRandom;
 
-        private Random r;
+        Random r;
 
-        private Perlin NextPerlin()
+        Perlin NextPerlin()
         {
             var noise = new Perlin();
             noise.Seed = r.Next();
             return noise;
         }
 
-        private Noise NextNoise() {
+        Noise NextNoise() {
             var noise = new Noise();
             noise.seed = r.Next();
             return noise;
         }
 
-        private Random NextRandom() {
+        Random NextRandom() {
             var seed = r.Next();
             var random = new Random(seed);
             return random;
@@ -82,7 +81,6 @@ namespace FarmVox
             canyonNoise = NextNoise();
             rockNoise = NextNoise();
             monsterNoise = NextNoise();
-            scultNoise = NextNoise();
 
             rockColorNoise = NextNoise();
             rockColorNoise.frequency = 0.05f;
@@ -114,9 +112,6 @@ namespace FarmVox
 
             rockNoise.frequency = 0.02f;
             rockNoise.amplitude = 1.5f;
-            scultNoise.frequency = 0.01f;
-            scultNoise.yScale = 5f;
-            scultNoise.octaves = 1;
 
             heightNoise.frequency = 0.015f;
             heightNoise.yScale = 0.4f;
@@ -140,15 +135,6 @@ namespace FarmVox
                 { 0.49f, 0},
                 { 0.5f, 1 },
                 { 1, 1 } });
-            
-            //rockColorGradient = new ColorGradient(GetColor("#ce8643"), GetColor("#cec479"));
         }
-
-        //public static Color GetColor(string hex)
-        //{
-        //    Color color = Color.white;
-        //    ColorUtility.TryParseHtmlString(hex, out color);
-        //    return color;
-        //}
     }
 }
