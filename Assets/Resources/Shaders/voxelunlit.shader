@@ -117,6 +117,15 @@ Shader "Unlit/voxelunlit"
                 return amount;
             }
 
+            int3 getCoord(int index) {
+                int x = floor(index / 35.0 / 35.0);
+                index -= x * 35 * 35;
+                int y = floor(index / 35);
+                int z = index % 35;
+
+                return int3(x, y, z);
+            }
+
 			v2f vert (appdata v)
 			{
 				v2f o;
@@ -124,6 +133,9 @@ Shader "Unlit/voxelunlit"
 				UNITY_TRANSFER_FOG(o,o.vertex);
                 o.normal = v.normal;
                 o.uv = v.uv;
+
+                int index = floor(v.uv.y);
+                int3 coord = getCoord(index);
 
                 if (_UseVision > 0) {
                     float3 worldPos = mul (unity_ObjectToWorld, v.vertex).xyz;
