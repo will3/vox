@@ -7,6 +7,3 @@
 [submodule "Assets/NavMeshComponents"]
 	path = Assets/NavMeshComponents
 	url = https://github.com/Unity-Technologies/NavMeshComponents.git
-[submodule "Assets/Unity-Formation-Movement"]
-	path = Assets/Unity-Formation-Movement
-	url = https://github.com/Goodgulf281/Unity-Formation-Movement.git
