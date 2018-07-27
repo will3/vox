@@ -19,12 +19,12 @@ namespace FarmVox
 
         public bool generatedGround = false;
         public bool generatedTerrian = false;
-        public bool generatedColliders = false;
         public bool generatedShadows = false;
         public bool generatedWater = false;
         public bool generatedWaterfalls = false;
         public bool generatedTrees = false;
         public bool generatedGrass = false;
+        public bool drawn = false;
 
         public List<TerrianChunk> TerrianChunks
         {

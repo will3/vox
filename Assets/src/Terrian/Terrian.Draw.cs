@@ -28,18 +28,16 @@ namespace FarmVox
             chunk.Mesh = MeshGPU(chunk, terrianChunk);
             chunk.GetMeshRenderer().material = material;
             chunk.GetMeshFilter().sharedMesh = chunk.Mesh;
+            chunk.GetMeshCollider().sharedMesh = chunk.Mesh;
 
             chunk.Dirty = false;
+
+            TerrianNavMeshBuilder.TriggerBuild();
 
             return true;
         }
 
-        public void GenerateMeshes(TerrianColumn column, bool skipShadows = false) {
-            if (!skipShadows && !column.generatedShadows)
-            {
-                return;
-            }
-
+        public void GenerateMeshes(TerrianColumn column) {
             foreach (var terrianChunk in column.TerrianChunks)
             {
                 foreach (var chunks in chunksToDraw)
