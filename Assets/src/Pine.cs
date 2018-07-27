@@ -17,7 +17,6 @@ namespace FarmVox
             this.trunkHeight = trunkHeight;
 
             int radius = Mathf.CeilToInt(r);
-            int mid = radius + 1;
             offset = new Vector3Int(-radius, 1, -radius);
         }
 

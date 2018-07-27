@@ -61,8 +61,6 @@ public class GameController : MonoBehaviour {
             }    
         }
 
-        var result = highlight.Trace();
-
         if (Input.GetKeyDown(KeyCode.Mouse0)) {
             RaycastHit hit;
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);

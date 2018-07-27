@@ -52,17 +52,18 @@ namespace FarmVox
             var chunk = defaultLayer.GetChunk(origin);
             var dataSize = chunk.dataSize;
             chunk.UpdateSurfaceCoords();
-            var waterFallNoise = new Perlin3DGPU(config.waterfallNoise, chunk.dataSize, origin);
-            waterFallNoise.Dispatch();
-            var waterFallNoiseData = waterFallNoise.Read();
-
+            // var waterFallNoise = new Perlin3DGPU(config.waterfallNoise, chunk.dataSize, origin);
+            // waterFallNoise.Dispatch();
+            // var waterFallNoiseData = waterFallNoise.Read();
+            //  // / waterFallNoiseData[index];
+            
             foreach(var coord in chunk.surfaceCoords) {
                 var r = config.waterfallRandom.NextDouble();
                 var index = coord.x * dataSize * dataSize + coord.y * dataSize + coord.z;
                 var absY = coord.y + origin.y;
                 var height = absY / config.maxHeight;
                 var heightValue = config.waterfallHeightFilter.GetValue(height);
-                var v = r / heightValue; // / waterFallNoiseData[index];
+                var v = r / heightValue;
                 if (v < 0 || v > 0.01f)
                 {
                     continue;
@@ -73,7 +74,7 @@ namespace FarmVox
 
             terrianChunk.waterfallsNeedsUpdate = false;
 
-            waterFallNoise.Dispose();
+            // waterFallNoise.Dispose();
         }
 
         class WaterTracker {
