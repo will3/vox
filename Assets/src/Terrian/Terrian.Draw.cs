@@ -29,6 +29,7 @@ namespace FarmVox
             chunk.GetMeshRenderer().material = material;
             chunk.GetMeshFilter().sharedMesh = chunk.Mesh;
             chunk.GetMeshCollider().sharedMesh = chunk.Mesh;
+            chunk.GetGameObject().layer = (int)chunks.userLayer;
 
             chunk.Dirty = false;
 

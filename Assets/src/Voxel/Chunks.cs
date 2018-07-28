@@ -12,6 +12,7 @@ namespace FarmVox
         public bool isWater = false;
         public string groupName = "chunks";
         GameObject gameObject;
+        public UserLayer userLayer;
 
         public GameObject GetGameObject() {
             if (gameObject == null) {

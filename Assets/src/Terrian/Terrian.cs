@@ -106,6 +106,10 @@ namespace FarmVox
             treeLayer.GetGameObject().name = "trees";
             waterLayer.GetGameObject().name = "water";
 
+            defaultLayer.userLayer = UserLayer.Default;
+            treeLayer.userLayer = UserLayer.Trees;
+            waterLayer.userLayer = UserLayer.Water;
+
             defaultLayer.GetGameObject().transform.parent = terrianObject.transform;
             treeLayer.GetGameObject().transform.parent = terrianObject.transform;
             waterLayer.GetGameObject().transform.parent = terrianObject.transform;
@@ -167,14 +171,14 @@ namespace FarmVox
 
                 GenerateGround(column);
                 GenerateWaters(column);
-                //GenerateTrees(column);
+                GenerateTrees(column);
 
                 column.generatedTerrian = true;
             }
 
             foreach (var column in columns.Values)
             {
-                //GenerateWaterfalls(column);
+                GenerateWaterfalls(column);
             }
 
             UpdateMaterial();
