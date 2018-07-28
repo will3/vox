@@ -231,7 +231,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
     _VoxelBuffer[index] = value;
 
-    float heightRatio = (relY - _GroundHeight) / _MaxHeight;
+    float heightRatio = relY / _MaxHeight;
     float colorRatio = heightRatio + sampleNoise(_RockColorNoise, coord);
     float4 rockColor = sampleColor(_RockGradient, _RockGradientIntervals, _RockGradientSize, _RockGradientBanding, colorRatio);
 
