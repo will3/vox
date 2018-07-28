@@ -187,7 +187,7 @@ namespace FarmVox
 
             foreach (var column in columns.Values)
             {
-                //GenerateWaterfalls(column);
+                GenerateWaterfalls(column);
             }
 
             UpdateMaterial();
