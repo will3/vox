@@ -17,7 +17,6 @@ namespace FarmVox
         public static Color special;
 
         public static ColorGradient grassGradient;
-        public static ColorGradient rockColorGradient;
 
         static Colors()
         {
@@ -41,12 +40,6 @@ namespace FarmVox
             });
 
             grassGradient.banding = 8;
-
-            rockColorGradient = new ColorGradient(new Dictionary<float, Color> {
-                {0, GetColor("#cec479")},
-                {1, GetColor("#a77757")}
-            });
-            rockColorGradient.banding = 8;
         }
 
         public static Color GetColor(string hex)

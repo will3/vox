@@ -21,7 +21,6 @@ namespace FarmVox
         public Noise canyonNoise;
         public Noise rockNoise;
         public ColorGradient rockColorGradient;
-
         public Noise rockColorNoise;
 #endregion
 
@@ -136,6 +135,19 @@ namespace FarmVox
                 { 0.49f, 0},
                 { 0.5f, 1 },
                 { 1, 1 } });
+
+            rockColorGradient = new ColorGradient(new Dictionary<float, UnityEngine.Color> {
+                {0, GetColor("#cec479")},
+                {1, GetColor("#a77757")}
+            });
+            rockColorGradient.banding = 8;
+        }
+
+        public static UnityEngine.Color GetColor(string hex)
+        {
+            UnityEngine.Color color = UnityEngine.Color.white;
+            UnityEngine.ColorUtility.TryParseHtmlString(hex, out color);
+            return color;
         }
     }
 }

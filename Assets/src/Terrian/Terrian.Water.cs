@@ -26,9 +26,9 @@
             var origin = terrianChunk.Origin;
             var chunk = defaultLayer.GetChunk(origin);
             var waterChunk = waterLayer.GetOrCreateChunk(terrianChunk.Origin);
-            if (chunk.Origin.y < config.waterLevel)
+            if (chunk.Origin.y < config.waterLevel + config.groundHeight)
             {
-                float maxJ = config.waterLevel - chunk.Origin.y;
+                float maxJ = config.waterLevel + config.groundHeight - chunk.Origin.y;
                 if (maxJ > chunk.Size)
                 {
                     maxJ = chunk.Size;

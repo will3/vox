@@ -69,7 +69,7 @@ namespace FarmVox
 
             ComputeBuffer rockGradientBuffer;
             ComputeBuffer rockGradientIntervalsBuffer;
-            LoadColorGradient(Colors.rockColorGradient, "_Rock", 
+            LoadColorGradient(config.rockColorGradient, "_Rock", 
                               out rockGradientIntervalsBuffer, out rockGradientBuffer);
 
             shader.SetBuffer(0, "_RockColorNoise", rockColorNoise.Results);
@@ -80,7 +80,6 @@ namespace FarmVox
 
             LoadColorGradient(Colors.grassGradient, "_Grass",
                               out grassGradientIntervalsBuffer, out grassGradientBuffer);
-
 
             var grassNormalKeysBuffer = new ComputeBuffer(config.grassNormalFilter.Keys.Count, sizeof(float));
             grassNormalKeysBuffer.SetData(config.grassNormalFilter.Keys);
