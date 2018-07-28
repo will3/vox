@@ -30,8 +30,7 @@ namespace FarmVox
         public Random grassRandom;
         public ValueGradient grassHeightFilter;
         public ValueGradient grassNormalFilter;
-        public float grassOffset = 0f;
-        public float grassMultiplier = 1.2f;
+        public float grassOffset;
 #endregion
 
 #region tree
@@ -109,7 +108,9 @@ namespace FarmVox
                 {1.0f, 1}
             });
 
-            grassNoise.frequency = 0.02f;
+            grassNoise.frequency = 0.01f;
+            grassNoise.amplitude = 1.0f;
+            grassOffset = 0.2f;
 
             rockNoise.frequency = 0.02f;
             rockNoise.amplitude = 1.5f;
@@ -125,7 +126,7 @@ namespace FarmVox
 
             treeHeightGradient = new ValueGradient(1, 0);
             grassHeightFilter = new ValueGradient(new Dictionary<float, float>{
-                { 0, 1 },
+                { 0, 1.0f },
                 { 0.5f, 0},
                 { 1, 0 } });
 
