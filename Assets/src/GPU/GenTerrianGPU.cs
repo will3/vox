@@ -97,7 +97,6 @@ namespace FarmVox
             shader.SetBuffer(0, "_GrassHeightKeys", grassHeightKeysBuffer);
             shader.SetBuffer(0, "_GrassHeightValues", grassHeightValuesBuffer);
             shader.SetInt("_GrassHeightSize", config.grassHeightFilter.Keys.Count);
-            shader.SetFloat("_GrassOffset", config.grassOffset);
 
             shader.SetInt("_DataSize", heightNoise.DataSize);
             shader.SetInt("_Resolution", heightNoise.Resolution);

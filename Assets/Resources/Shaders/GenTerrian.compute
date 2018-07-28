@@ -35,7 +35,6 @@ int _GrassHeightSize;
 
 // Grass color
 float4 _GrassColor;
-float _GrassOffset;
 
 // Noise
 StructuredBuffer<float> _CanyonBuffer;
@@ -149,14 +148,13 @@ float getVoxel(int3 coord) {
 }
 
 float getDot(int i, int j, int k) {
-    float3 v =  
-    float3(0, 0, 0) *    getVoxel(int3(i, j, k)) +
-    float3(1, 0, 0) *     getVoxel(int3(i + 1, j, k)) +
-    float3(0, 1, 0) *     getVoxel(int3(i, j + 1, k)) +
-    float3(1, 1, 0) *      getVoxel(int3(i + 1, j + 1, k)) +
-    float3(0, 0, 1) *     getVoxel(int3(i, j, k + 1)) +
-    float3(1, 0, 1) *      getVoxel(int3(i + 1, j, k + 1)) +
-    float3(0, 1, 1) *      getVoxel(int3(i, j + 1, k + 1)) +
+    float3 v =  float3(-1, -1, -1) *    getVoxel(int3(i, j, k)) +
+    float3(1, -1, -1) *     getVoxel(int3(i + 1, j, k)) +
+    float3(-1, 1, -1) *     getVoxel(int3(i, j + 1, k)) +
+    float3(1, 1, -1) *      getVoxel(int3(i + 1, j + 1, k)) +
+    float3(-1, -1, 1) *     getVoxel(int3(i, j, k + 1)) +
+    float3(1, -1, 1) *      getVoxel(int3(i + 1, j, k + 1)) +
+    float3(-1, 1, 1) *      getVoxel(int3(i, j + 1, k + 1)) +
     float3(1, 1, 1) *       getVoxel(int3(i + 1, j + 1, k + 1));
     float3 lightDir = normalize(float3(0, 1, 0));
     return dot(-normalize(v), lightDir);
