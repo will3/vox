@@ -1,10 +1,6 @@
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using System;
-using UnityEngine.Profiling;
-using System.Linq;
-using UnityEngine.AI;
 
 namespace FarmVox
 {
@@ -237,11 +233,6 @@ namespace FarmVox
                 Mathf.FloorToInt(j / this.sizeF) * this.size,
                 Mathf.FloorToInt(k / this.sizeF) * this.size
             );
-        }
-
-        public RaycastResult Trace(Vector3 pos, Vector3 dir, int maxD) {
-            var list = new Chunks[] { defaultLayer, defaultLayer };
-            return Raycast.Trace(list, pos, dir, maxD);
         }
 
         public bool GetWater(Vector3Int coord) {

@@ -33,17 +33,12 @@ public class HighlightHoveredSurface : MonoBehaviour
 
         if (terrian == null) { return; }
 
-        var result = terrian.Trace(ray.origin, ray.direction, 400);
+        var result = VoxelRaycast.TraceMouse();
         if (result != null) {
             var mesh = result.GetQuad();
             var pos = result.GetCoord();
             go.GetComponent<MeshFilter>().mesh = mesh;
-            go.transform.position = pos + result.HitNormal * 0.1f;
+            go.transform.position = pos + result.hit.normal * 0.1f;
         }
 	}
-
-    public RaycastResult Trace() {
-        var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        return terrian.Trace(ray.origin, ray.direction, 400);
-    }
 }

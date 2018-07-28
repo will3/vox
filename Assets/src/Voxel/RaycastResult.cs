@@ -4,12 +4,15 @@ namespace FarmVox
 {
     public class RaycastResult
     {
-        public Vector3 HitPos;
-        public Vector3 HitNormal;
+        public readonly RaycastHit hit;
+
+        public RaycastResult(RaycastHit hit) {
+            this.hit = hit;
+        }
 
         public Vector3Int GetCoord()
         {
-            var point = HitPos - HitNormal * 0.5f;
+            var point = hit.point - hit.normal * 0.1f;
             return new Vector3Int(Mathf.FloorToInt(point.x),
                                   Mathf.FloorToInt(point.y),
                                   Mathf.FloorToInt(point.z));
@@ -19,20 +22,20 @@ namespace FarmVox
         {
             int d = 0;
             var front = false;
-            if (Mathf.Abs(HitNormal.x) > Mathf.Epsilon)
+            if (Mathf.Abs(hit.normal.x) > Mathf.Epsilon)
             {
                 d = 0;
-                front = HitNormal.x > 0;
+                front = hit.normal.x > 0;
             }
-            else if (Mathf.Abs(HitNormal.y) > Mathf.Epsilon)
+            else if (Mathf.Abs(hit.normal.y) > Mathf.Epsilon)
             {
                 d = 1;
-                front = HitNormal.y > 0;
+                front = hit.normal.y > 0;
             }
-            else if (Mathf.Abs(HitNormal.z) > Mathf.Epsilon)
+            else if (Mathf.Abs(hit.normal.z) > Mathf.Epsilon)
             {
                 d = 2;
-                front = HitNormal.z > 0;
+                front = hit.normal.z > 0;
             }
 
             return Cube.GetQuad(d, front);
