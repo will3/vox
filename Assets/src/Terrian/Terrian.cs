@@ -122,6 +122,8 @@ namespace FarmVox
 
         public void Update()
         {
+            PerformanceLogger.Start("Terrian update");
+
             var start = DateTime.Now;
 
             int x = Mathf.FloorToInt(Target.x / sizeF);
@@ -165,20 +167,10 @@ namespace FarmVox
 
                 GenerateGround(column);
                 GenerateWaters(column);
-
                 //GenerateTrees(column);
 
                 column.generatedTerrian = true;
             }
-
-            //var grassStart = System.DateTime.Now;
-            //foreach (var column in columns.Values) {
-            //    GenerateGrass(column);
-            //}
-            //var grassEnd = System.DateTime.Now;
-            //if ((grassEnd - grassStart).Milliseconds > 16) {
-            //    Debug.Log("Grass took: " + (grassEnd - grassStart).Milliseconds);        
-            //}
 
             foreach (var column in columns.Values)
             {
@@ -192,16 +184,9 @@ namespace FarmVox
                 GenerateMeshes(column);
             }
 
-            //foreach(var column in columns.Values) {
-            //    GenerateShadows(column);
-            //}
-
             shadowMap.Update();
 
-            var end = System.DateTime.Now;
-            if ((end - start).Milliseconds > 16) {
-                Debug.Log("Terrian Update took: " + (end - start).Milliseconds);    
-            }
+            PerformanceLogger.End();
         }
 
         public TerrianChunk GetTerrianChunk(Vector3Int origin) {

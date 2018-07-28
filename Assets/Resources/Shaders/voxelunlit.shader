@@ -134,14 +134,14 @@ Shader "Unlit/voxelunlit"
                 return c.z + c.y * (rgb - 0.5) * (1.0 - abs(2.0 * c.z - 1.0));
             }
 
-            float getVision(float3 worldPos) {
+            float getVision(float3 worldCoord) {
                 float amount = 0;
                 float visionBlur = 33;
 
                 // pos banding
-                worldPos /= 2.0;
-                worldPos = floor(worldPos);
-                worldPos *= 2.0;
+                worldCoord /= 2.0;
+                worldCoord = floor(worldCoord);
+                worldCoord *= 2.0;
 
                 for (int i = 0; i < _MaxVisionNumber; i++) {
                     Vision vision = _VisionBuffer[i];
@@ -150,8 +150,8 @@ Shader "Unlit/voxelunlit"
                         break;
                     }
 
-                    float dx = vision.x - worldPos.x;
-                    float dz = vision.z - worldPos.z;
+                    float dx = vision.x - worldCoord.x;
+                    float dz = vision.z - worldCoord.z;
 
                     float dis = sqrt(dx * dx + dz * dz);
 
@@ -198,17 +198,16 @@ Shader "Unlit/voxelunlit"
                     // return o;
                 }
 
-                float3 worldPos = mul (unity_ObjectToWorld, v.vertex).xyz;
+                int3 worldCoord = coord + floor(_Origin);
 
                 if (_UseVision > 0) {
-                    float vision = getVision(worldPos);
+                    float vision = getVision(worldCoord);
                     float4 color = v.color * vision;
                     o.color = color;
                 } else {
                     o.color = v.color;
                 }
 
-                int3 worldCoord = coord + floor(_Origin);
                 float shadowHeight = getShadow(coord);
                 float shadow = shadowHeight > worldCoord.y ? 1.0 : 0;
                 o.color *= 1 - shadow * _ShadowStrength;
