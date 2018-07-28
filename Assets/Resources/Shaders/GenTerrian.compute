@@ -3,6 +3,7 @@
 
 float _HillHeight;
 float _PlainHeight;
+
 float4 _SoilColor;
 float4 _WaterColor;
 float _MaxHeight;

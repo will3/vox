@@ -6,7 +6,7 @@ namespace FarmVox
 {
     public class TerrianConfig
     {
-        public int maxChunksY = 2;
+        public int maxChunksY = 3;
         public int generateDis = 3;
         public int drawDis = 3;
         public int minTreeJ = 1;
@@ -14,6 +14,7 @@ namespace FarmVox
         public float hillHeight = 64;
         public float plainHeight = 12;
         public int waterLevel = 2;
+        public int groundHeight = 32;
 
 #region ground
         public Noise heightNoise;

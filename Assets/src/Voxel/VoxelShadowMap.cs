@@ -57,8 +57,8 @@ namespace FarmVox
         }
 
         public void ChunkDrawn(Vector3Int origin) {
-            var num = config.maxChunksY + 1;
-            var from = new Vector2Int(origin.x, origin.z);
+            var num = 2;
+            var from = new Vector2Int(origin.x - origin.y, origin.z - origin.y);
 
             for (var i = 0; i < num; i++) {
                 for (var j = 0; j < num; j++) {
