@@ -13,7 +13,7 @@ namespace FarmVox
                 var material = tc.Material;
                 material.SetBuffer("_VisionBuffer", visionMap.VisionBuffer);
                 material.SetInt("_MaxVisionNumber", VisionMap.MaxVisionNumber);
-                material.SetInt("_UseVision", 1);
+                material.SetInt("_UseVision", 0);
                 var origin = tc.Origin;
                 material.SetVector("_Origin", (Vector3)origin);
                 material.SetInt("_Size", size);

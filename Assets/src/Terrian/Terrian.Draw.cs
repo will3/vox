@@ -67,7 +67,6 @@ namespace FarmVox
             var triangles = mesherGPU.ReadTriangles(trianglesBuffer);
 
             var builder = new VoxelMeshBuilder();
-
             foreach (var triangle in triangles)
             {
                 builder.AddTriangle(triangle);

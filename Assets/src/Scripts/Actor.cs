@@ -35,7 +35,7 @@ namespace FarmVox
             agent = gameObject.AddComponent<NavMeshAgent>();
             agent.radius = 0.2f;
             agent.height = 0.4f;
-            agent.speed = 40;
+            agent.speed = 20;
             agent.angularSpeed = 120;
             agent.acceleration = 1000;
             agent.obstacleAvoidanceType = ObstacleAvoidanceType.LowQualityObstacleAvoidance;

@@ -194,13 +194,27 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     int3 coord = int3(id.x, id.y, id.z);
     int index = getIndex(coord);
 
-    float biome = sampleNoise(_CanyonBuffer, coord);
+    float hillOrPlain = sampleNoise(_CanyonBuffer, coord);
     float terrainHeight;
 
-    if (biome < -0.1) {
+    int3 absPos = coord + floor(_Origin);
+    float dis = sqrt(absPos.x * absPos.x + absPos.z * absPos.z);
+    float spawnArea = 80;
+    if (dis < spawnArea) {
+        float ratio = dis / spawnArea;
+        if (ratio < 0) {
+            ratio = 0;
+        }
+
+        hillOrPlain += 1;
+        hillOrPlain *= ratio;
+        hillOrPlain -=1;
+    }
+
+    if (hillOrPlain < -0.1) {
         terrainHeight = _PlainHeight;
-    } else if (biome >= -0.1 && biome < 0.1) {
-        float ratio = (biome + 0.1) / 0.2;
+    } else if (hillOrPlain >= -0.1 && hillOrPlain < 0.1) {
+        float ratio = (hillOrPlain + 0.1) / 0.2;
         terrainHeight = _PlainHeight + (_HillHeight - _PlainHeight) * ratio;
     } else {
         terrainHeight = _HillHeight;

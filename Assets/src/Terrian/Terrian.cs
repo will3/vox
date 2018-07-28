@@ -124,6 +124,23 @@ namespace FarmVox
             shadowMap = new VoxelShadowMap(size, config);
         }
 
+        void GenerateColumn(Vector3Int columnOrigin) {
+            var maxChunksY = config.maxChunksY;
+            var list = new List<TerrianChunk>();
+            for (int j = 0; j < maxChunksY; j++)
+            {
+                var origin = new Vector3Int(columnOrigin.x, j * size, columnOrigin.z);
+                var terrianChunk = GetOrCreateTerrianChunk(origin);
+                list.Add(terrianChunk);
+            }
+
+            if (!columns.ContainsKey(columnOrigin))
+            {
+                var terrianColumn = new TerrianColumn(columnOrigin, list);
+                columns[columnOrigin] = terrianColumn;
+            }
+        }
+
         public void Update()
         {
             PerformanceLogger.Start("Terrian update");
@@ -132,27 +149,15 @@ namespace FarmVox
 
             int x = Mathf.FloorToInt(Target.x / sizeF);
             int z = Mathf.FloorToInt(Target.z / sizeF);
-            var maxChunksY = config.maxChunksY;
+
             var generateDis = config.generateDis;
 
             for (int i = x - generateDis; i <= x + generateDis; i++)
             {
                 for (int k = z - generateDis; k <= z + generateDis; k++)
                 {
-                    var list = new List<TerrianChunk>();
-                    for (int j = 0; j < maxChunksY; j++)
-                    {
-                        var origin = new Vector3Int(i, j, k) * size;
-                        var terrianChunk = GetOrCreateTerrianChunk(origin);
-                        list.Add(terrianChunk);
-                    }
-
                     var columnOrigin = new Vector3Int(i, 0, k) * size;
-                    if (!columns.ContainsKey(columnOrigin))
-                    {
-                        var terrianColumn = new TerrianColumn(columnOrigin, list);
-                        columns[columnOrigin] = terrianColumn;
-                    }
+                    GenerateColumn(columnOrigin);
                 }
             }
 
@@ -161,6 +166,8 @@ namespace FarmVox
                 var terrianChunk = kv.Value;
                 terrianChunk.UpdateDistance(x, z);
             }
+
+            PerformanceLogger.Start("Generate terrian");
 
             foreach (var column in columns.Values)
             {
@@ -176,9 +183,11 @@ namespace FarmVox
                 column.generatedTerrian = true;
             }
 
+            PerformanceLogger.End();
+
             foreach (var column in columns.Values)
             {
-                GenerateWaterfalls(column);
+                //GenerateWaterfalls(column);
             }
 
             UpdateMaterial();
@@ -210,33 +219,6 @@ namespace FarmVox
             map[origin] = new TerrianChunk(key, size, this);
             map[origin].Config = config;
             return map[origin];
-        }
-
-        private void print(Array3<Voxel> shape, Vector3Int pos, Chunks layer, Vector3Int offset)
-        {
-            for (var i = 0; i < shape.Width; i++)
-            {
-                for (var j = 0; j < shape.Height; j++)
-                {
-                    for (var k = 0; k < shape.Depth; k++)
-                    {
-                        var voxel = shape.Get(i, j, k);
-                        if (voxel == null)
-                        {
-                            continue;
-                        }
-                        if (voxel.value <= 0)
-                        {
-                            continue;
-                        }
-                        var x = pos.x + i + offset.x;
-                        var y = pos.y + j + offset.y;
-                        var z = pos.z + k + offset.z;
-                        layer.Set(x, y, z, voxel.value);
-                        layer.SetColor(x, y, z, voxel.color);
-                    }
-                }
-            }
         }
 
         public Vector3Int GetOrigin(float i, float j, float k)

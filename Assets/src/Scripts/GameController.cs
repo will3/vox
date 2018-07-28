@@ -27,14 +27,27 @@ public class GameController : MonoBehaviour
 
     // Use this for initialization
     void Start () {
-
         terrian = new Terrian();
-
         var go = new GameObject("Highlight");
         highlight = go.AddComponent<HighlightHoveredSurface>();
-        gameObject.AddComponent<VisionSource>();
+        var source = gameObject.AddComponent<VisionSource>();
+        source.radius = 100.0f;
 	}
 	
+    void Spawn() {
+        RaycastHit hit;
+        var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        if (Physics.Raycast(ray, out hit))
+        {
+            var go = new GameObject("guy");
+            var actor = go.AddComponent<Actor>();
+            actor.radius = 2.0f;
+            actors.Add(actor);
+            go.transform.position = hit.point;
+        }
+    }
+
 	// Update is called once per frame
 	void Update () {
         if (terrian == null) {
@@ -48,24 +61,18 @@ public class GameController : MonoBehaviour
         if (cameraController != null) {
             terrian.Target = cameraController.Target;
             terrian.Update();
-            if (!spawned)
-            {
-                // TODO
-                spawned = true;
-            }    
         }
 
-        if (Input.GetKeyDown(KeyCode.Mouse0)) {
-            RaycastHit hit;
-            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-            if (Physics.Raycast(ray, out hit)) {
-                var go = new GameObject("guy");
-                var actor = go.AddComponent<Actor>();
-                actor.radius = 2.0f;
-                actors.Add(actor);
-                go.transform.position = hit.point;
-            }
+        if (!spawned && Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            Spawn();
+            Spawn();
+            Spawn();
+            Spawn();
+            Spawn();
+            Spawn();
+            Spawn();
+            spawned = true;
         }
 
         if (Input.GetKeyDown(KeyCode.Mouse1)) {

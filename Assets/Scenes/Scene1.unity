@@ -208,8 +208,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   drawRoutes: 0
-  hideTerrian: 0
-  hideTrees: 0
 --- !u!4 &362043728
 Transform:
   m_ObjectHideFlags: 0

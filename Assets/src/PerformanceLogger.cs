@@ -8,19 +8,22 @@ namespace FarmVox
     {
         static Stack<string> names = new Stack<string>();
         static Stack<DateTime> startTimes = new Stack<DateTime>();
+        static Stack<int> thresholds = new Stack<int>();
 
-        public static void Start(string name) {
+        public static void Start(string name, int threshold = 16) {
             names.Push(name);
-            startTimes.Push(System.DateTime.Now);
+            startTimes.Push(DateTime.Now);
+            thresholds.Push(threshold);
         }
 
         public static void End() {
             var end = DateTime.Now;
             var start = startTimes.Pop();
             var name = names.Pop();
+            var threshold = thresholds.Pop();
 
             var diff = (end - start).Milliseconds;
-            if (diff > 16) {
+            if (diff > threshold) {
                 Debug.Log(name + " took " + diff);
             }
         } 

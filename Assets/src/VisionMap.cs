@@ -6,6 +6,7 @@ namespace FarmVox
     public class VisionMap
     {
         Vector2Int origin;
+        public bool dynamic = true;
 
         public Vector2Int Origin
         {
@@ -84,7 +85,17 @@ namespace FarmVox
                 visionBuffer = new ComputeBuffer(MaxVisionNumber, Vision.Stride);    
             }
 
-            if (bufferDirty) {
+            bool needsUpdate = false;
+            if (dynamic) {
+                foreach (var source in sources) {
+                    if (source.moved) {
+                        needsUpdate = true;
+                        break;
+                    }
+                }
+            }
+
+            if (bufferDirty || needsUpdate) {
                 var index = 0;
                 foreach (var source in sources) {
                     visionList[index] = new Vision(source.transform.position.x, source.transform.position.z, source.radius);
