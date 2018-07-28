@@ -93,7 +93,6 @@ Shader "Unlit/voxelunlit"
                 int index = u * _Size + v;
 
                 if (i == 0) {
-                    return 99;
                     if (j == 0) {
                         return _ShadowMap00[index];
                     } else if (j == 1) {
@@ -102,7 +101,6 @@ Shader "Unlit/voxelunlit"
                         return _ShadowMap02[index];
                     }
                 } else if (i == 1) {
-                    return 99;
                     if (j == 0) {
                         return _ShadowMap10[index];
                     } else if (j == 1) {
@@ -112,10 +110,8 @@ Shader "Unlit/voxelunlit"
                     }
                 } else if (i == 2) {
                     if (j == 0) {
-                        return 99;
                         return _ShadowMap20[index];
                     } else if (j == 1) {
-                        return 99;
                         return _ShadowMap21[index];
                     } else if (j == 2) {
                         return _ShadowMap22[index];
@@ -244,14 +240,9 @@ Shader "Unlit/voxelunlit"
 
                 int3 worldCoord = coord + floor(_Origin);
                 float shadowHeight = getShadow(worldCoord);
-                float shadow = shadowHeight > worldCoord.y ? 0 : 1.0;
-                float shadowStrength = 0.5;
+                float shadow = shadowHeight > worldCoord.y ? 1.0 : 0;
+                float shadowStrength = 0.9;
                 o.color *= 1 - shadow * shadowStrength;
-
-                if (shadowHeight == worldCoord.y) {
-                    o.color = float4(0, 0, 0.1, 1.0);
-                    return o;
-                }
 
                 if (shadowHeight == 99) {
                     o.color = float4(0.1, 0, 0, 1.0);

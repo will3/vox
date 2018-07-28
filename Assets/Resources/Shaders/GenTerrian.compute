@@ -227,10 +227,5 @@ void CSMain (uint3 id : SV_DispatchThreadID)
         _ColorBuffer[index] = rockColor;
     }
 
-    // Test
-    _VoxelBuffer[index] = 0;
 
-    if (id.x == 16 && id.z == 16 && id.y < 5) {
-        //_VoxelBuffer[index] = 1;
-    }
 }

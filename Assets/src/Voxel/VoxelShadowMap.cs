@@ -57,9 +57,7 @@ namespace FarmVox
         }
 
         public void ChunkDrawn(Vector3Int origin) {
-            // TODO
-            int num = config.maxChunksY + 1;
-            num = 0;
+            var num = config.maxChunksY + 1;
             var from = new Vector2Int(origin.x, origin.z);
 
             for (var i = 0; i < num; i++) {
@@ -92,20 +90,16 @@ namespace FarmVox
 
         int CalcShadow(Vector3Int coord)
         {
-            var start = liftVector(coord, lightY) + new Vector3(0.5f, 0, 0.5f);
+            var start = liftVector(coord, lightY);
             var dir = new Vector3(-1, -1, -1).normalized;
             var ray = new Ray(start, dir);
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
             {
-                if (!Mathf.Approximately(hit.normal.y, 0)) {
-                    var a = GetCoord(hit, dir);    
-                }
                 return GetCoord(hit, dir).y;
             }
             else
             {
-                throw new System.Exception("not supposed to happen");
                 return minY;
             }
         }
