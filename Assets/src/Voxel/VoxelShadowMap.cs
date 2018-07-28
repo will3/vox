@@ -136,7 +136,12 @@ namespace FarmVox
         }
 
         public ComputeBuffer GetBuffer(Vector3Int origin, Vector2Int offset) {
-            var o = new Vector2Int(origin.x, origin.z) + ((offset - new Vector2Int(2, 2)) * size);
+            if (offset.x >= 2 || offset.y >= 2 || offset.x < 0 || offset.y < 0) {
+                throw new System.ArgumentException("offset must be within 0 - 2");
+            }
+            var y = origin.y;
+            var o = new Vector2Int(origin.x - y, origin.z - y) - offset * size;
+
             if (buffers.ContainsKey(o)) {
                 return buffers[o];
             }
