@@ -13,8 +13,21 @@ namespace FarmVox
                 material.SetBuffer("_VisionBuffer", visionMap.VisionBuffer);
                 material.SetInt("_MaxVisionNumber", VisionMap.MaxVisionNumber);
                 material.SetInt("_UseVision", 0);
-                var origin = new Vector3(tc.Origin.x, tc.Origin.y, tc.Origin.z);
-                material.SetVector("_Origin", origin);
+                var origin = tc.Origin;
+                material.SetVector("_Origin", (Vector3)origin);
+                material.SetInt("_Size", size);
+
+                material.SetBuffer("_ShadowMap00", shadowMap.GetBuffer(origin, new Vector2Int(0, 0)));
+                material.SetBuffer("_ShadowMap01", shadowMap.GetBuffer(origin, new Vector2Int(1, 0)));
+                material.SetBuffer("_ShadowMap02", shadowMap.GetBuffer(origin, new Vector2Int(2, 0)));
+
+                material.SetBuffer("_ShadowMap10", shadowMap.GetBuffer(origin, new Vector2Int(0, 1)));
+                material.SetBuffer("_ShadowMap11", shadowMap.GetBuffer(origin, new Vector2Int(1, 1)));
+                material.SetBuffer("_ShadowMap12", shadowMap.GetBuffer(origin, new Vector2Int(2, 1)));
+
+                material.SetBuffer("_ShadowMap20", shadowMap.GetBuffer(origin, new Vector2Int(0, 2)));
+                material.SetBuffer("_ShadowMap21", shadowMap.GetBuffer(origin, new Vector2Int(1, 2)));
+                material.SetBuffer("_ShadowMap22", shadowMap.GetBuffer(origin, new Vector2Int(2, 2)));
             }
         }
     }

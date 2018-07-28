@@ -34,6 +34,8 @@ namespace FarmVox
 
             TerrianNavMeshBuilder.TriggerBuild();
 
+            shadowMap.ChunkDrawn(origin);
+
             return true;
         }
 
@@ -44,8 +46,6 @@ namespace FarmVox
                 {
                     GenerateMesh(chunks, terrianChunk.Origin, terrianChunk.Material, terrianChunk);
                 }
-
-                shadowMap.ChunkDrawn(terrianChunk.Origin);
             }
         }
 

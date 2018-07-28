@@ -34,6 +34,95 @@ Shader "Unlit/voxelunlit"
             int _MaxVisionNumber;
             int _UseVision;
             float3 _Origin;
+            int _Size;
+
+            // 00 01 02
+            // 10 11 12
+            // 20 21 22 <- chunk
+            StructuredBuffer<int> _ShadowMap00;
+            StructuredBuffer<int> _ShadowMap01;
+            StructuredBuffer<int> _ShadowMap02;
+
+            StructuredBuffer<int> _ShadowMap10;
+            StructuredBuffer<int> _ShadowMap11;
+            StructuredBuffer<int> _ShadowMap12;
+
+            StructuredBuffer<int> _ShadowMap20;
+            StructuredBuffer<int> _ShadowMap21;
+            StructuredBuffer<int> _ShadowMap22;
+
+            int getShadow(int3 coord) {
+                int3 origin = floor(_Origin);
+                coord.x -= origin.x;
+                coord.z -= origin.z;
+
+                int y = coord.y;
+                int x = coord.x - y;
+                int z = coord.z - y;
+
+                int i = -1;
+                if (x < -_Size) {
+                    i = 0;
+                } else if (x < 0) {
+                    i = 1;
+                } else if (x < _Size) {
+                    i = 2;
+                }
+
+                StructuredBuffer<int> shadowMap;
+                int j = -1;
+                if (z < -_Size) {
+                    j = 0;
+                } else if (z < 0) {
+                    j = 1;
+                } else if (z < _Size){
+                    j = 2;
+                }
+
+                int u = x - ((i - 2) * _Size);
+                int v = z - ((j - 2) * _Size);
+
+                if (u < 0 || u >= _Size || v < 0 || v >= _Size) {
+                    return 99;
+                }
+
+                if (i == -1 || j == -1) {
+                    return 99;
+                }
+
+                int index = u * _Size + v;
+
+                if (i == 0) {
+                    return 99;
+                    if (j == 0) {
+                        return _ShadowMap00[index];
+                    } else if (j == 1) {
+                        return _ShadowMap01[index];
+                    } else if (j == 2) {
+                        return _ShadowMap02[index];
+                    }
+                } else if (i == 1) {
+                    return 99;
+                    if (j == 0) {
+                        return _ShadowMap10[index];
+                    } else if (j == 1) {
+                        return _ShadowMap11[index];
+                    } else if (j == 2) {
+                        return _ShadowMap12[index];
+                    }
+                } else if (i == 2) {
+                    if (j == 0) {
+                        return 99;
+                        return _ShadowMap20[index];
+                    } else if (j == 1) {
+                        return 99;
+                        return _ShadowMap21[index];
+                    } else if (j == 2) {
+                        return _ShadowMap22[index];
+                    }
+                }
+                return 99;
+            }
 
 			struct appdata
 			{
@@ -143,13 +232,30 @@ Shader "Unlit/voxelunlit"
                     // return o;
                 }
 
+                float3 worldPos = mul (unity_ObjectToWorld, v.vertex).xyz;
+
                 if (_UseVision > 0) {
-                    float3 worldPos = mul (unity_ObjectToWorld, v.vertex).xyz;
                     float vision = getVision(worldPos);
                     float4 color = v.color * vision;
                     o.color = color;
                 } else {
                     o.color = v.color;
+                }
+
+                int3 worldCoord = coord + floor(_Origin);
+                float shadowHeight = getShadow(worldCoord);
+                float shadow = shadowHeight > worldCoord.y ? 0 : 1.0;
+                float shadowStrength = 0.5;
+                o.color *= 1 - shadow * shadowStrength;
+
+                if (shadowHeight == worldCoord.y) {
+                    o.color = float4(0, 0, 0.1, 1.0);
+                    return o;
+                }
+
+                if (shadowHeight == 99) {
+                    o.color = float4(0.1, 0, 0, 1.0);
+                    return o;
                 }
 
 				return o;

@@ -28,9 +28,9 @@ namespace FarmVox
         public readonly static int MaxVisionNumber = 512;
 
         public struct Vision {
-            float x;
-            float z;
-            float radius;
+            public float x;
+            public float z;
+            public float radius;
 
             public Vision(float x, float z, float radius) {
                 this.x = x;

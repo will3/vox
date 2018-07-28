@@ -109,7 +109,7 @@ namespace FarmVox
             chunksCastingShadows = new Chunks[] { defaultLayer, treeLayer };
             chunksReceivingShadows = new Chunks[] { waterLayer, defaultLayer, treeLayer };
 
-            shadowMap = new VoxelShadowMap(size);
+            shadowMap = new VoxelShadowMap(size, config);
         }
 
         public void Update()
