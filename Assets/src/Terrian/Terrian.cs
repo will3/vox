@@ -77,6 +77,14 @@ namespace FarmVox
 
         VoxelShadowMap shadowMap;
 
+        public VoxelShadowMap ShadowMap
+        {
+            get
+            {
+                return shadowMap;
+            }
+        }
+
         TerrianColumn GetColumn(Vector3Int origin) {
             if (columns.ContainsKey(origin)) {
                 return columns[origin];

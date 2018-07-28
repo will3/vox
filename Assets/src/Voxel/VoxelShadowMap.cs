@@ -154,5 +154,16 @@ namespace FarmVox
             buffer.GetData(data);
             return data;
         }
+
+        public void Rebuild() {
+            var keys = new Vector2Int[states.Keys.Count];
+            states.Keys.CopyTo(keys, 0);
+
+            foreach (var key in keys) {
+                states[key] = ShadowMapState.Pending;
+            }
+
+            Update();
+        }
     }
 }

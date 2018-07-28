@@ -79,6 +79,10 @@ public class GameController : MonoBehaviour
                 }
             }
         }
+
+        if (Input.GetKeyDown(KeyCode.S)) {
+            terrian.ShadowMap.Rebuild();
+        }
     }
 
 	void OnDestroy()

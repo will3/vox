@@ -7,13 +7,13 @@ namespace FarmVox
         void UpdateMaterial() {
             var visionMap = Finder.FindGameController().VisionMap;
             visionMap.UpdateBuffer();
-            float shadowStrength = 1.0f;
+            float shadowStrength = 0.5f;
 
             foreach (var tc in map.Values) {
                 var material = tc.Material;
                 material.SetBuffer("_VisionBuffer", visionMap.VisionBuffer);
                 material.SetInt("_MaxVisionNumber", VisionMap.MaxVisionNumber);
-                material.SetInt("_UseVision", 0);
+                material.SetInt("_UseVision", 1);
                 var origin = tc.Origin;
                 material.SetVector("_Origin", (Vector3)origin);
                 material.SetInt("_Size", size);
