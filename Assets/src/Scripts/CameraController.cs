@@ -4,12 +4,13 @@ using FarmVox;
 
 public class CameraController : MonoBehaviour
 {
-    private Vector3 target = new Vector3(0, 0, 0);
-    private float speed = 20f;
-    private float rotateSpeed = 80f;
-    private Vector3 velocity;
-    private float friction = 0.001f;
-    private float zoomRate = 1.1f;
+    Vector3 target = new Vector3(0, 0, 0);
+    float speed = 20f;
+    float rotateSpeed = 80f;
+    Vector3 velocity;
+    float friction = 0.001f;
+    float zoomRate = 1.1f;
+    float mouseRotateSpeed = 0.2f;
 
     public Vector3 GetVector() {
         return (Target - transform.position).normalized;
@@ -24,8 +25,11 @@ public class CameraController : MonoBehaviour
     }
 
     public float rotateX = 45;
-    private Vector3 rotation = new Vector3(45, 45, 0);
-    private float distance = 200;
+    Vector3 rotation = new Vector3(45, 45, 0);
+    float distance = 200;
+    Vector3 lastDragPosition;
+
+    bool dragging;
 
 	// Use this for initialization
 	void Start()
@@ -58,6 +62,22 @@ public class CameraController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Minus)) {
             distance *= zoomRate;
+        }
+
+        if (!dragging && Input.GetKey(KeyCode.Mouse1)) {
+            dragging = true;
+            lastDragPosition = Input.mousePosition;
+        }
+
+        if (dragging && !Input.GetKey(KeyCode.Mouse1)) {
+            dragging = false;
+        }
+
+        if (dragging)
+        {
+            var diff = Input.mousePosition - lastDragPosition;
+            rotation.y -= diff.x * mouseRotateSpeed;
+            lastDragPosition = Input.mousePosition;
         }
     
         var forwardVector = (target - transform.position).normalized;
