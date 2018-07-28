@@ -78,7 +78,7 @@ namespace FarmVox
             ComputeBuffer grassGradientBuffer;
             ComputeBuffer grassGradientIntervalsBuffer;
 
-            LoadColorGradient(Colors.grassGradient, "_Grass",
+            LoadColorGradient(config.grassGradient, "_Grass",
                               out grassGradientIntervalsBuffer, out grassGradientBuffer);
 
             var grassNormalKeysBuffer = new ComputeBuffer(config.grassNormalFilter.Keys.Count, sizeof(float));

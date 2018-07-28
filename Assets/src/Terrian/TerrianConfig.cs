@@ -31,6 +31,7 @@ namespace FarmVox
         public ValueGradient grassNormalFilter;
         public float grassOffset = 0f;
         public float grassMultiplier = 1.2f;
+        public ColorGradient grassGradient;
 #endregion
 
 #region tree
@@ -109,6 +110,7 @@ namespace FarmVox
             });
 
             grassNoise.frequency = 0.02f;
+            grassNoise.amplitude = 0.0f;
 
             rockNoise.frequency = 0.02f;
             rockNoise.amplitude = 1.5f;
@@ -138,9 +140,21 @@ namespace FarmVox
 
             rockColorGradient = new ColorGradient(new Dictionary<float, UnityEngine.Color> {
                 {0, GetColor("#cec479")},
-                {1, GetColor("#a77757")}
+                {1, GetColor("#cec479")}
             });
             rockColorGradient.banding = 8;
+
+            //var grass1 = GetColor("#cec479");
+            var grass2 = GetColor("#447c3e");
+            var grass3 = GetColor("#285224");
+
+            grassGradient = new ColorGradient(new Dictionary<float, UnityEngine.Color> {
+                {0, grass2},
+                {1.0f, grass2},
+                //{1, grass3}
+            });
+
+            grassGradient.banding = 8;
         }
 
         public static UnityEngine.Color GetColor(string hex)
