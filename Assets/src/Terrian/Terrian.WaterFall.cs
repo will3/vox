@@ -61,7 +61,7 @@ namespace FarmVox
                 var r = config.waterfallRandom.NextDouble();
                 var index = coord.x * dataSize * dataSize + coord.y * dataSize + coord.z;
                 var absY = coord.y + origin.y;
-                var height = absY / config.maxHeight;
+                var height = (absY - config.groundHeight) / config.maxHeight;
                 var heightValue = config.waterfallHeightFilter.GetValue(height);
                 var v = r / heightValue;
                 if (v < 0 || v > 0.01f)

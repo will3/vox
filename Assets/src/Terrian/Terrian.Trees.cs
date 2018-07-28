@@ -71,7 +71,7 @@ namespace FarmVox
                 var noise = (float)treeNoise.GetValue(globalCoord);
                 var otherTrees = terrianChunk.GetOtherTrees(coord);
 
-                var height = absY / config.maxHeight;
+                var height = (absY - config.groundHeight) / config.maxHeight;
                 var treeHeightValue = config.treeHeightGradient.GetValue(height);
 
                 var value = noise * treeHeightValue * config.treeAmount - otherTrees * config.treeSparse;

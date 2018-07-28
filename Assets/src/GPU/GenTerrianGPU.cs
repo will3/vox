@@ -55,7 +55,7 @@ namespace FarmVox
             shader.SetVector("_Origin", (Vector3)origin);
             shader.SetFloat("_HillHeight", config.hillHeight);
             shader.SetFloat("_PlainHeight", config.plainHeight);
-             shader.SetFloat("_GroundHeight", config.groundHeight);
+            shader.SetFloat("_GroundHeight", config.groundHeight);
 
 
             //var rockGradientIntervalsBuffer = new ComputeBuffer(Colors.rockColorGradient.Count, sizeof(float));
