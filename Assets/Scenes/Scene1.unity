@@ -188,7 +188,7 @@ GameObject:
   m_Component:
   - component: {fileID: 362043728}
   - component: {fileID: 362043727}
-  - component: {fileID: 362043729}
+  - component: {fileID: 362043730}
   m_Layer: 0
   m_Name: Game
   m_TagString: GameController
@@ -208,6 +208,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   drawRoutes: 0
+  commander: {fileID: 0}
 --- !u!4 &362043728
 Transform:
   m_ObjectHideFlags: 0
@@ -221,7 +222,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &362043729
+--- !u!114 &362043730
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -229,26 +230,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 362043726}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
+  m_Script: {fileID: 11500000, guid: 8a91aaf1307bd4e778e824e730dc0bc8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_AgentTypeID: 0
-  m_CollectObjects: 0
-  m_Size: {x: 10, y: 10, z: 10}
-  m_Center: {x: 0, y: 2, z: 0}
-  m_LayerMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_UseGeometry: 0
-  m_DefaultArea: 0
-  m_IgnoreNavMeshAgent: 1
-  m_IgnoreNavMeshObstacle: 1
-  m_OverrideTileSize: 0
-  m_TileSize: 256
-  m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.33333334
-  m_BuildHeightMesh: 0
-  m_NavMeshData: {fileID: 0}
+  designationMaterial: {fileID: 2100000, guid: 635f00ce5f8db4d27901875feb13cc72, type: 2}
+  wireframeMaterial: {fileID: 2100000, guid: 87a7dc20692044d25923b483bb8eabb0, type: 2}
 --- !u!1 &534669902
 GameObject:
   m_ObjectHideFlags: 0

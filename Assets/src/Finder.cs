@@ -14,6 +14,12 @@ namespace FarmVox
             return go.GetComponent<GameController>();
         }
 
+        public static Commander FindCommander() {
+            var gc = FindGameController();
+            if (gc == null) { return null; }
+            return gc.commander;
+        }
+
         public static Terrian FindTerrian() {
             var gc = FindGameController();
             if (gc == null) { return null; }

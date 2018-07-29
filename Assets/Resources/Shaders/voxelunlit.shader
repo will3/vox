@@ -44,7 +44,6 @@ Shader "Unlit/voxelunlit"
             StructuredBuffer<int> _ShadowMap10;
             StructuredBuffer<int> _ShadowMap11;
 
-
             int getShadow(int3 coord) {
                 if (coord.x >= 35 || coord.z >= 35 || coord.x < 0 || coord.z < 0) {
                     return 99;

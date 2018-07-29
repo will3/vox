@@ -25,13 +25,15 @@ public class GameController : MonoBehaviour
     HighlightHoveredSurface highlight;
     List<Actor> actors = new List<Actor>();
 
+    public Commander commander;
+
     // Use this for initialization
     void Start () {
         terrian = new Terrian();
-        var go = new GameObject("Highlight");
-        highlight = go.AddComponent<HighlightHoveredSurface>();
+        highlight = gameObject.AddComponent<HighlightHoveredSurface>();
         var source = gameObject.AddComponent<VisionSource>();
         source.radius = 100.0f;
+        commander = gameObject.GetComponent<Commander>();
 	}
 	
     void Spawn() {
