@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 using System.Collections.Generic;
 using System;
 
@@ -98,13 +99,17 @@ namespace FarmVox
             treeLayer = new Chunks(size);
             waterLayer = new Chunks(size);
 
+            defaultLayer.GetGameObject().layer = LayerMask.NameToLayer("terrian");
+            treeLayer.GetGameObject().layer = LayerMask.NameToLayer("trees");
+            waterLayer.GetGameObject().layer = LayerMask.NameToLayer("water");
+
+            var modifier = treeLayer.GetGameObject().AddComponent<NavMeshModifier>();
+            modifier.overrideArea = true;
+            modifier.area = NavMeshAreas.NotWalkable;
+             
             defaultLayer.GetGameObject().name = "default";
             treeLayer.GetGameObject().name = "trees";
             waterLayer.GetGameObject().name = "water";
-
-            defaultLayer.userLayer = UserLayer.Default;
-            treeLayer.userLayer = UserLayer.Trees;
-            waterLayer.userLayer = UserLayer.Water;
 
             defaultLayer.GetGameObject().transform.parent = terrianObject.transform;
             treeLayer.GetGameObject().transform.parent = terrianObject.transform;
@@ -174,7 +179,7 @@ namespace FarmVox
 
                 GenerateGround(column);
                 GenerateWaters(column);
-                GenerateTrees(column);
+                //GenerateTrees(column);
 
                 column.generatedTerrian = true;
             }

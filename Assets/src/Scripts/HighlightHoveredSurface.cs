@@ -29,11 +29,8 @@ public class HighlightHoveredSurface : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-        var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        if (terrian == null) { return; }
-
-        var result = VoxelRaycast.TraceMouse();
+        
+        var result = VoxelRaycast.TraceMouse(1 << UserLayers.terrian);
         if (result != null) {
             var mesh = result.GetQuad();
             var pos = result.GetCoord();

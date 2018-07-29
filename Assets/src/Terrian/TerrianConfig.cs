@@ -146,7 +146,7 @@ namespace FarmVox
 
             //var grass1 = GetColor("#cec479");
             var grass2 = GetColor("#447c3e");
-            var grass3 = GetColor("#285224");
+            // var grass3 = GetColor("#285224");
 
             grassGradient = new ColorGradient(new Dictionary<float, UnityEngine.Color> {
                 {0, grass2},
@@ -154,7 +154,7 @@ namespace FarmVox
                 //{1, grass3}
             });
 
-            grassGradient.banding = 8;
+            // grassGradient.banding = 8;
         }
 
         public static UnityEngine.Color GetColor(string hex)

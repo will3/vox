@@ -17,7 +17,6 @@ StructuredBuffer<float> _VoxelBuffer;
 StructuredBuffer<float4> _ColorsBuffer;
 StructuredBuffer<float> _WaterfallBuffer;
 AppendStructuredBuffer<Triangle> _TrianglesBuffer;
-StructuredBuffer<float> _ShadowBuffer;
 int _NormalBranding;
 int _UseNormals;
 int _IsWater;
@@ -119,11 +118,6 @@ float4 getColor(int3 coord) {
     return _ColorsBuffer[index];
 }
 
-float getShadow(int3 coord) {
-    int index = getIndex(coord);
-    return _ShadowBuffer[index];
-}
-
 float getWaterfall(int3 coord) {
     int index = getIndex(coord);
     return _WaterfallBuffer[index];
@@ -204,7 +198,6 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     }
 
     float normal = 1 - (1 - _normal) * _NormalStrength;
-    float shadow = getShadow(c);
 
     float waterfall;
     if (_HasWaterfalls) {
@@ -214,11 +207,10 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     }
 
     if (waterfall > 0.0) {
-        shadow *= 0.8;
         normal = 1.0;
     }
 
-    float4 color = getColor(c) * normal * (1 - shadow);
+    float4 color = getColor(c) * normal;
 
     int aoI = front ? i + 1 : i;
     int3 c00 = getVectorInt(aoI, j - 1, k - 1, d);

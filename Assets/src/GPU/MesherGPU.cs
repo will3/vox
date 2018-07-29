@@ -30,7 +30,6 @@ namespace FarmVox
         readonly int workGroups = 8;
         public int normalBranding = 6;
         public float normalStrength = 0.4f;
-        float shadowStrength = 0.5f;
         public bool useNormals = true;
         public bool isWater = false;
 
@@ -72,19 +71,7 @@ namespace FarmVox
             shader.SetInt("_IsWater", isWater ? 1 : 0);
             shader.SetFloat("_NormalStrength", normalStrength);
 
-            var shadowBuffer = new ComputeBuffer(dataSize * dataSize * dataSize, sizeof(float));
             ComputeBuffer waterfallBuffer;
-
-            var shadowBufferData = new float[dataSize * dataSize * dataSize];
-            foreach(var coord in chunk.surfaceCoords) {
-                var index = coord.x * dataSize * dataSize + coord.y * dataSize + coord.z;
-                var v = 0.5f; // TODO
-                //var v = chunk.GetShadow(coord);
-                shadowBufferData[index] = v * shadowStrength;
-            }
-            shadowBuffer.SetData(shadowBufferData);
-            shader.SetBuffer(0, "_ShadowBuffer", shadowBuffer);
-
             if (chunk.Waterfalls.Count > 0) {
                 waterfallBuffer = new ComputeBuffer(dataSize * dataSize * dataSize, sizeof(float));
 
@@ -108,7 +95,6 @@ namespace FarmVox
             var disptachNumber = Mathf.CeilToInt(dataSize / (float)workGroups);
             shader.Dispatch(0, 3 * disptachNumber, disptachNumber, disptachNumber);
 
-            shadowBuffer.Dispose();
             waterfallBuffer.Dispose();
             if (fakeColorBuffer != null) {
                 fakeColorBuffer.Dispose();

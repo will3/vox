@@ -427,5 +427,9 @@ namespace FarmVox
             var coord = new Vector3Int(i, j, k);
             return waterfalls.ContainsKey(coord);
         }
+
+        public bool IsSurfaceCoord(Vector3Int coord) {
+            return surfaceCoords.Contains(coord);
+        }
     }
 }

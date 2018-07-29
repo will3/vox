@@ -26,6 +26,6 @@ namespace FarmVox
             if (diff > threshold) {
                 Debug.Log(name + " took " + diff);
             }
-        } 
+        }
     }
 }

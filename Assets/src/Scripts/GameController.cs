@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FarmVox;
 using UnityEngine;
-using UnityEngine.Assertions;
+using UnityEngine.AI;
 
 public class GameController : MonoBehaviour
 {
@@ -20,7 +19,7 @@ public class GameController : MonoBehaviour
         }
     }
 
-    bool spawned = false;
+    int spawned = 1;
 
     HighlightHoveredSurface highlight;
     List<Actor> actors = new List<Actor>();
@@ -36,18 +35,26 @@ public class GameController : MonoBehaviour
         commander = gameObject.GetComponent<Commander>();
 	}
 	
-    void Spawn() {
+    bool Spawn() {
         RaycastHit hit;
-        var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        var radius = 10.0f;
+        var position = new Vector3(Random.Range(-1.0f, 1.0f) * radius, 100, Random.Range(-1.0f, 1.0f) * radius);
+        var ray = new Ray(position, Vector3.down);
 
         if (Physics.Raycast(ray, out hit))
         {
-            var go = new GameObject("guy");
-            var actor = go.AddComponent<Actor>();
-            actor.radius = 2.0f;
-            actors.Add(actor);
-            go.transform.position = hit.point;
+            NavMeshHit navMeshHit;
+            if (NavMesh.SamplePosition(hit.point, out navMeshHit, 10.0f, 1 << NavMeshAreas.Walkable)) {
+                var go = new GameObject("guy");
+                var actor = go.AddComponent<Actor>();
+                actor.radius = 2.0f;
+                actors.Add(actor);
+                go.transform.position = navMeshHit.position;
+                return true;
+            }
         }
+
+        return false;
     }
 
 	// Update is called once per frame
@@ -65,16 +72,11 @@ public class GameController : MonoBehaviour
             terrian.Update();
         }
 
-        if (!spawned && Input.GetKeyDown(KeyCode.Mouse0))
+        if (spawned > 0)
         {
-            Spawn();
-            Spawn();
-            Spawn();
-            Spawn();
-            Spawn();
-            Spawn();
-            Spawn();
-            spawned = true;
+            if (Spawn()) {
+                spawned -= 1;
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.Mouse1)) {
@@ -84,7 +86,7 @@ public class GameController : MonoBehaviour
             if (Physics.Raycast(ray, out hit))
             {
                 foreach (var actor in actors) {
-                    actor.SetDestination(hit.point);
+                    actor.SetFormationDestination(hit.point);
                 }
             }
         }
@@ -98,5 +100,10 @@ public class GameController : MonoBehaviour
 	{
         if (visionMap != null) visionMap.Dispose();
         if (terrian != null) terrian.Dispose();
+	}
+
+	void OnDrawGizmosSelected()
+	{
+        TaskMap.Instance.OnDrawGizmosSelected();	
 	}
 }

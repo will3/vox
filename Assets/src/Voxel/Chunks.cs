@@ -12,7 +12,6 @@ namespace FarmVox
         public bool isWater = false;
         public string groupName = "chunks";
         GameObject gameObject;
-        public UserLayer userLayer;
 
         public GameObject GetGameObject() {
             if (gameObject == null) {
@@ -53,7 +52,11 @@ namespace FarmVox
             );
         }
 
-        private Vector3Int getOrigin(int i, int j, int k)
+        Vector3Int GetOrigin(Vector3Int coord) {
+            return GetOrigin(coord.x, coord.y, coord.z);
+        }
+
+        Vector3Int GetOrigin(int i, int j, int k)
         {
             return new Vector3Int(
                 Mathf.FloorToInt(i / this.sizeF) * this.size,
@@ -72,7 +75,7 @@ namespace FarmVox
 
         public float Get(int i, int j, int k)
         {
-            var origin = getOrigin(i, j, k);
+            var origin = GetOrigin(i, j, k);
             if (!map.ContainsKey(origin))
             {
                 return 0;
@@ -83,7 +86,7 @@ namespace FarmVox
 
         public Color GetColor(int i, int j, int k)
         {
-            var origin = getOrigin(i, j, k);
+            var origin = GetOrigin(i, j, k);
             if (!map.ContainsKey(origin))
             {
                 return default(Color);
@@ -205,7 +208,7 @@ namespace FarmVox
 
         public bool GetWaterfall(Vector3Int coord)
         {
-            var origin = getOrigin(coord.x, coord.y, coord.z);
+            var origin = GetOrigin(coord.x, coord.y, coord.z);
             var terrianChunk = GetChunk(origin);
             if (terrianChunk == null)
             {
@@ -227,6 +230,18 @@ namespace FarmVox
                 var chunk = GetOrCreateChunk(origin);
                 chunk.SetWaterfall(i - origin.x, j - origin.y, k - origin.z, value);
             }
+        }
+
+        public bool IsSurfaceCoord(Vector3Int coord) {
+            var origin = GetOrigin(coord);
+
+            var chunk = GetChunk(origin);
+            if (chunk == null) {
+                return false;
+            }
+
+            chunk.UpdateSurfaceCoords();
+            return chunk.IsSurfaceCoord(coord - origin);
         }
     }
 }

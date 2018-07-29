@@ -1,30 +1,80 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace FarmVox
 {
-    class Designation
+    public enum DesignationType
     {
-        readonly Vector3Int coord;
-
-        public Designation(Vector3Int coord)
-        {
-            this.coord = coord;
-        }
-        GameObject gameObject;
-
-        public void AddObject(Transform transform, Material material)
-        {
-            if (gameObject != null)
-            {
-                return;
-            }
-            gameObject = new GameObject("des," + coord.ToString());
-            gameObject.transform.parent = transform;
-            gameObject.AddComponent<MeshRenderer>().material = material;
-            gameObject.AddComponent<MeshFilter>().mesh = Cube.CubeMesh;
-            var padding = 0.01f;
-            gameObject.transform.localScale += new Vector3(padding * 2, padding * 2, padding * 2);
-            gameObject.transform.position = coord - new Vector3(padding, padding, padding);
-        }
+        Dig
     }
+
+    public class Designation : MonoBehaviour
+    {
+        public DesignationType type;
+        public Vector3Int start;
+        public Vector3Int end;
+
+        Dictionary<Vector3Int, Task> tasks = new Dictionary<Vector3Int, Task>();
+
+		void Start()
+		{
+            var chunks = Finder.FindTerrian().DefaultLayer;
+
+            var y = end.y;
+
+            for (var x = start.x; x <= end.x; x++)
+            {
+                for (var z = start.z; z <= end.z; z++)
+                {
+                    var coord = FindSurfaceCoord(x, y, z);
+                    if (coord != null) {
+                        AddTask(new DigTask(coord.Value));
+                    }
+                }
+            }
+		}
+
+        void AddTask(Task task) {
+            tasks[task.coord] = task;
+            TaskMap.Instance.AddTask(task);
+        }
+
+        Vector3Int? FindSurfaceCoord(int x, int y, int z) {
+            var yOffset = 2;
+            var maxTries = 5;
+
+            for (var i = 0; i < maxTries; i++) {
+                var coord = FindSurfaceCoord(x, y, z, yOffset);
+                if (coord != null) {
+                    return coord;
+                }
+                yOffset *= 2;
+            }
+
+            return null;
+        }
+
+        Vector3Int? FindSurfaceCoord(int x, int y, int z, int yOffset) {
+            var coord = new Vector3Int(x, y + yOffset, z);
+            var ray = new Ray(coord + new Vector3(0.5f, 0.5f, 0.5f), Vector3.down);
+            var result = VoxelRaycast.TraceRay(ray, 1 << UserLayers.terrian);
+
+            if (result != null)
+            {
+                return result.GetCoord();
+            }
+            return null;
+        }
+
+        void OnDrawGizmosSelected()
+		{
+            Gizmos.color = Color.red;
+
+            foreach (var kv in tasks) {
+                var coord = kv.Key;
+                var pos = coord + new Vector3(0.5f, 0.5f, 0.5f);
+                Gizmos.DrawCube(pos, new Vector3(1.02f, 1.02f, 1.02f));
+            }
+		}
+	}
 }
