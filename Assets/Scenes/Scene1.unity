@@ -188,7 +188,7 @@ GameObject:
   m_Component:
   - component: {fileID: 362043728}
   - component: {fileID: 362043727}
-  - component: {fileID: 362043730}
+  - component: {fileID: 362043729}
   m_Layer: 0
   m_Name: Game
   m_TagString: GameController
@@ -222,7 +222,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &362043730
+--- !u!114 &362043729
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -230,7 +230,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 362043726}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a91aaf1307bd4e778e824e730dc0bc8, type: 3}
+  m_Script: {fileID: 11500000, guid: dd7b01fd11e014f549df0577c1fdb701, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   designationMaterial: {fileID: 2100000, guid: 635f00ce5f8db4d27901875feb13cc72, type: 2}
