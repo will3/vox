@@ -10,13 +10,13 @@ namespace FarmVox
         static Stack<DateTime> startTimes = new Stack<DateTime>();
         static Stack<int> thresholds = new Stack<int>();
 
-        public static void Start(string name, int threshold = 16) {
+        public static void Push(string name, int threshold = 16) {
             names.Push(name);
             startTimes.Push(DateTime.Now);
             thresholds.Push(threshold);
         }
 
-        public static void End() {
+        public static void Pop() {
             var end = DateTime.Now;
             var start = startTimes.Pop();
             var name = names.Pop();

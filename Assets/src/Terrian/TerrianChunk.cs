@@ -22,6 +22,7 @@ namespace FarmVox
         public bool floatingNeedsUpdate = true;
         public bool waterfallsNeedsUpdate = true;
         public TerrianColumn column;
+        public ComputeBuffer colorBuffer;
 
         Terrian terrian;
 
@@ -191,6 +192,9 @@ namespace FarmVox
 
         public void Dispose() {
             Object.Destroy(material);
+            if (colorBuffer != null) {
+                colorBuffer.Dispose();
+            }
         }
     }
 }

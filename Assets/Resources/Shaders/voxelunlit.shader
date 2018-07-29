@@ -89,7 +89,7 @@ Shader "Unlit/voxelunlit"
                 return 99;
             }
 
-			struct appdata
+            struct appdata
 			{
 				float4 vertex : POSITION;
 				float2 uv : TEXCOORD0;
@@ -192,6 +192,8 @@ Shader "Unlit/voxelunlit"
                 int index = floor(v.uv.y);
                 int3 coord = getCoord(index);
 
+                float4 c = v.color;
+
                 if (coord.y < 16) {
                     // o.color = float4(0.4, 0, 0, 1.0);
                     // return o;
@@ -201,10 +203,10 @@ Shader "Unlit/voxelunlit"
 
                 if (_UseVision > 0) {
                     float vision = getVision(worldCoord);
-                    float4 color = v.color * vision;
+                    float4 color = c * vision;
                     o.color = color;
                 } else {
-                    o.color = v.color;
+                    o.color = c;
                 }
 
                 float shadowHeight = getShadow(coord);

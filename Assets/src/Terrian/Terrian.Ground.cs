@@ -59,7 +59,12 @@ namespace FarmVox
 
             var genTerrianGPU = new GenTerrianGPU(size, origin, config);
             var voxelBuffer = genTerrianGPU.CreateVoxelBuffer();
-            var colorBuffer = genTerrianGPU.CreateColorBuffer();
+
+            if (terrianChunk.colorBuffer == null) {
+                terrianChunk.colorBuffer = genTerrianGPU.CreateColorBuffer();
+            }
+            var colorBuffer = terrianChunk.colorBuffer;
+
             genTerrianGPU.Dispatch(voxelBuffer, colorBuffer);
 
             var voxelBufferData = new float[voxelBuffer.count];
@@ -97,7 +102,6 @@ namespace FarmVox
             terrianChunk.rockNeedsUpdate = false;
 
             voxelBuffer.Dispose();
-            colorBuffer.Dispose();
         }
     }
 }

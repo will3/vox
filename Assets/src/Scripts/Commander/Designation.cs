@@ -65,16 +65,5 @@ namespace FarmVox
             }
             return null;
         }
-
-        void OnDrawGizmosSelected()
-		{
-            Gizmos.color = Color.red;
-
-            foreach (var kv in tasks) {
-                var coord = kv.Key;
-                var pos = coord + new Vector3(0.5f, 0.5f, 0.5f);
-                Gizmos.DrawCube(pos, new Vector3(1.02f, 1.02f, 1.02f));
-            }
-		}
 	}
 }

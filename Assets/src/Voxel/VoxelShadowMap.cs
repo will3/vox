@@ -69,7 +69,7 @@ namespace FarmVox
         }
 
         void Update(Vector2Int origin) {
-            PerformanceLogger.Start("Shadowmap");
+            PerformanceLogger.Push("Shadowmap");
             // Clear
             var texture = new int[size * size];
             for (var i = 0; i < size; i ++) {
@@ -85,7 +85,7 @@ namespace FarmVox
             }
 
             buffers[origin].SetData(texture);
-            PerformanceLogger.End();
+            PerformanceLogger.Pop();
         }
 
         int CalcShadow(Vector3Int coord)

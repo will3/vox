@@ -144,7 +144,7 @@ namespace FarmVox
 
         public void Update()
         {
-            PerformanceLogger.Start("Terrian update");
+            PerformanceLogger.Push("Terrian update");
 
             var start = DateTime.Now;
 
@@ -168,7 +168,7 @@ namespace FarmVox
                 terrianChunk.UpdateDistance(x, z);
             }
 
-            PerformanceLogger.Start("Generate terrian");
+            PerformanceLogger.Push("Generate terrian");
 
             foreach (var column in columns.Values)
             {
@@ -178,13 +178,15 @@ namespace FarmVox
                 }
 
                 GenerateGround(column);
-                GenerateWaters(column);
+                //GenerateWaters(column);
                 //GenerateTrees(column);
 
                 column.generatedTerrian = true;
             }
 
-            PerformanceLogger.End();
+            PerformanceLogger.Pop();
+
+            PerformanceLogger.Push("Meshing terrian");
 
             foreach (var column in columns.Values)
             {
@@ -200,7 +202,9 @@ namespace FarmVox
 
             shadowMap.Update();
 
-            PerformanceLogger.End();
+            PerformanceLogger.Pop();
+
+            PerformanceLogger.Pop();
         }
 
         public TerrianChunk GetTerrianChunk(Vector3Int origin) {
@@ -277,6 +281,9 @@ namespace FarmVox
 
         public void Dispose() {
             shadowMap.Dispose();
+            foreach (var tc in map.Values) {
+                tc.Dispose();
+            }
         }
     }
 }

@@ -54,15 +54,13 @@ namespace FarmVox
             var chunks = chunk.Chunks;
             var mesherGPU = new MesherGPU(size);
             var voxelBuffer = mesherGPU.CreateVoxelBuffer();
-            var colorsBuffer = mesherGPU.CreateColorBuffer();
             var trianglesBuffer = mesherGPU.CreateTrianglesBuffer();
             mesherGPU.useNormals = chunks.useNormals;
             mesherGPU.isWater = chunks.isWater;
 
             voxelBuffer.SetData(chunk.Data);
-            colorsBuffer.SetData(chunk.Colors);
 
-            mesherGPU.Dispatch(voxelBuffer, colorsBuffer, trianglesBuffer, terrianChunk, chunk);
+            mesherGPU.Dispatch(voxelBuffer, terrianChunk.colorBuffer, trianglesBuffer, terrianChunk, chunk);
             var triangles = mesherGPU.ReadTriangles(trianglesBuffer);
 
             var builder = new VoxelMeshBuilder();
@@ -79,7 +77,6 @@ namespace FarmVox
             mesh.uv = builder.Uvs.ToArray();
 
             voxelBuffer.Dispose();
-            colorsBuffer.Dispose();
             trianglesBuffer.Dispose();
 
             return mesh;
