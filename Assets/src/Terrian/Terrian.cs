@@ -52,7 +52,7 @@ namespace FarmVox
 
         public Vector3 Target;
 
-        private Dictionary<Vector3Int, TerrianChunk> map = new Dictionary<Vector3Int, TerrianChunk>();
+        Dictionary<Vector3Int, TerrianChunk> map = new Dictionary<Vector3Int, TerrianChunk>();
 
         public Dictionary<Vector3Int, TerrianChunk> Map
         {

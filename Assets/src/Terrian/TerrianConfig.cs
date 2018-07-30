@@ -40,6 +40,7 @@ namespace FarmVox
         public ValueGradient treeHeightGradient;
         public float treeSparse = 5.0f;
         public float treeAmount = 2.0f;
+        public ValueGradient treeCanyonFilter;
 #endregion
 
 #region waterfall
@@ -125,6 +126,15 @@ namespace FarmVox
             treeNoise.OctaveCount = 5;
 
             treeHeightGradient = new ValueGradient(1, 0);
+
+            treeCanyonFilter = new ValueGradient(new Dictionary<float, float>
+            {
+                {-1, 0},
+                {-0.1f, 1},
+                {0.1f, 1},
+                {1, 0}
+            });
+
             grassHeightFilter = new ValueGradient(new Dictionary<float, float>{
                 { 0, 1 },
                 { 0.5f, 0},

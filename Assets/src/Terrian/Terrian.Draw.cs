@@ -59,6 +59,8 @@ namespace FarmVox
             mesherGPU.isWater = chunks.isWater;
 
             voxelBuffer.SetData(chunk.Data);
+            var colorBuffer = terrianChunk.colorBuffer;
+            colorBuffer.SetData(chunk.Colors);
 
             mesherGPU.Dispatch(voxelBuffer, terrianChunk.colorBuffer, trianglesBuffer, terrianChunk, chunk);
             var triangles = mesherGPU.ReadTriangles(trianglesBuffer);

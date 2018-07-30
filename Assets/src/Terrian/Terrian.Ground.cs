@@ -65,7 +65,7 @@ namespace FarmVox
             }
             var colorBuffer = terrianChunk.colorBuffer;
 
-            genTerrianGPU.Dispatch(voxelBuffer, colorBuffer);
+            genTerrianGPU.Dispatch(voxelBuffer, colorBuffer, terrianChunk);
 
             var voxelBufferData = new float[voxelBuffer.count];
             voxelBuffer.GetData(voxelBufferData);

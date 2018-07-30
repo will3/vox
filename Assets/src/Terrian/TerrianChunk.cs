@@ -23,6 +23,7 @@ namespace FarmVox
         public bool waterfallsNeedsUpdate = true;
         public TerrianColumn column;
         public ComputeBuffer colorBuffer;
+        public ComputeBuffer canyonBuffer;
 
         Terrian terrian;
 
@@ -190,10 +191,25 @@ namespace FarmVox
             }
         }
 
+        public ComputeBuffer LoadCanyonBuffer()
+        {
+            if (canyonBuffer == null)
+            {
+                var canyonNoise = new Perlin3DGPU(config.canyonNoise, dataSize, origin);
+                canyonNoise.Dispatch();
+                canyonBuffer = canyonNoise.Results;
+            }
+
+            return canyonBuffer;
+        }
+
         public void Dispose() {
             Object.Destroy(material);
             if (colorBuffer != null) {
                 colorBuffer.Dispose();
+            }
+            if (canyonBuffer != null) {
+                canyonBuffer.Dispose();
             }
         }
     }

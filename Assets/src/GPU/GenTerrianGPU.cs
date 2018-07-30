@@ -4,13 +4,49 @@ namespace FarmVox
 {
     public class GenTerrianGPU
     {
-        private int size;
-        private int dataSize;
-        private int workGroups = 8;
-        private ComputeShader shader;
-        private TerrianConfig config;
-        private Vector3Int origin;
-        private ComputeBuffer voxelBuffer;
+        class ValueGradientBuffers : System.IDisposable
+        {
+            public readonly ComputeBuffer keysBuffer;
+            public readonly ComputeBuffer valuesBuffer;
+
+            public ValueGradientBuffers(ComputeBuffer keysBuffer, ComputeBuffer valuesBuffer)
+            {
+                this.keysBuffer = keysBuffer;
+                this.valuesBuffer = valuesBuffer;
+            }
+
+            public void Dispose()
+            {
+                keysBuffer.Dispose();
+                valuesBuffer.Dispose();
+            }
+        }
+
+        class ColorGradientBuffers : System.IDisposable
+        {
+            public readonly ComputeBuffer intervalsBuffer;
+            public readonly ComputeBuffer colorsBuffer;
+
+            public ColorGradientBuffers(ComputeBuffer intervalsBuffer, ComputeBuffer colorsBuffer)
+            {
+                this.intervalsBuffer = intervalsBuffer;
+                this.colorsBuffer = colorsBuffer;
+            }
+
+            public void Dispose()
+            {
+                intervalsBuffer.Dispose();
+                colorsBuffer.Dispose();
+            }
+        }
+
+        int size;
+        int dataSize;
+        int workGroups = 8;
+        ComputeShader shader;
+        TerrianConfig config;
+        Vector3Int origin;
+        ComputeBuffer voxelBuffer;
 
         public GenTerrianGPU(int size, Vector3Int origin, TerrianConfig config) {
             this.size = size;
@@ -29,23 +65,23 @@ namespace FarmVox
             return new ComputeBuffer(dataSize * dataSize * dataSize, sizeof(float) * 4);
         }
 
-        public void Dispatch(ComputeBuffer voxelBuffer, ComputeBuffer colorBuffer) {
+        public void Dispatch(ComputeBuffer voxelBuffer, ComputeBuffer colorBuffer, TerrianChunk terrianChunk) {
             var heightNoise = new Perlin3DGPU(config.heightNoise, dataSize, origin);
-            var canyonNoise = new Perlin3DGPU(config.canyonNoise, dataSize, origin);
             var rockColorNoise = new Perlin3DGPU(config.rockColorNoise, dataSize, origin);
             var grassNoise = new Perlin3DGPU(config.grassNoise, dataSize, origin);
+            var canyonBuffer = terrianChunk.LoadCanyonBuffer();
 
             heightNoise.Dispatch();
-            canyonNoise.Dispatch();
             rockColorNoise.Dispatch();
             grassNoise.Dispatch();
 
             shader.SetBuffer(0, "_HeightBuffer", heightNoise.Results);
-            shader.SetBuffer(0, "_CanyonBuffer", canyonNoise.Results);
+            shader.SetBuffer(0, "_CanyonBuffer", canyonBuffer);
             shader.SetBuffer(0, "_GrassBuffer", grassNoise.Results);
 
             shader.SetBuffer(0, "_VoxelBuffer", voxelBuffer);
             shader.SetBuffer(0, "_ColorBuffer", colorBuffer);
+
             shader.SetFloat("_MaxHeight", config.maxHeight);
 
             shader.SetVector("_SoilColor", Colors.soil);
@@ -67,35 +103,13 @@ namespace FarmVox
             //shader.SetInt("_RockGradientSize", Colors.rockColorGradient.Count);
             //shader.SetFloat("_RockGradientBanding", Colors.rockColorGradient.banding);
 
-            ComputeBuffer rockGradientBuffer;
-            ComputeBuffer rockGradientIntervalsBuffer;
-            LoadColorGradient(config.rockColorGradient, "_Rock", 
-                              out rockGradientIntervalsBuffer, out rockGradientBuffer);
-
             shader.SetBuffer(0, "_RockColorNoise", rockColorNoise.Results);
 
-
-            ComputeBuffer grassGradientBuffer;
-            ComputeBuffer grassGradientIntervalsBuffer;
-
-            LoadColorGradient(config.grassGradient, "_Grass",
-                              out grassGradientIntervalsBuffer, out grassGradientBuffer);
-
-            var grassNormalKeysBuffer = new ComputeBuffer(config.grassNormalFilter.Keys.Count, sizeof(float));
-            grassNormalKeysBuffer.SetData(config.grassNormalFilter.Keys);
-            var grassNormalValuesBuffer = new ComputeBuffer(config.grassNormalFilter.Keys.Count, sizeof(float));
-            grassNormalValuesBuffer.SetData(config.grassNormalFilter.Values);
-            shader.SetBuffer(0, "_GrassNormalKeys", grassNormalKeysBuffer);
-            shader.SetBuffer(0, "_GrassNormalValues", grassNormalValuesBuffer);
-            shader.SetInt("_GrassNormalSize", config.grassNormalFilter.Keys.Count);
-
-            var grassHeightKeysBuffer = new ComputeBuffer(config.grassHeightFilter.Keys.Count, sizeof(float));
-            grassHeightKeysBuffer.SetData(config.grassHeightFilter.Keys);
-            var grassHeightValuesBuffer = new ComputeBuffer(config.grassHeightFilter.Keys.Count, sizeof(float));
-            grassHeightValuesBuffer.SetData(config.grassHeightFilter.Values);
-            shader.SetBuffer(0, "_GrassHeightKeys", grassHeightKeysBuffer);
-            shader.SetBuffer(0, "_GrassHeightValues", grassHeightValuesBuffer);
-            shader.SetInt("_GrassHeightSize", config.grassHeightFilter.Keys.Count);
+            var rockGradientBuffers = SetColorGradient(config.rockColorGradient, "_Rock");
+            var grassGradientBuffers = SetColorGradient(config.grassGradient, "_Grass");
+            var grassNormalBuffers = SetValueGradient(config.grassNormalFilter, "_GrassNormal");
+            var grassHeightBuffers = SetValueGradient(config.grassHeightFilter, "_GrassHeight");
+            // var treeCanyonFilterBuffers = SetValueGradient(config.treeCanyonFilter, "_TreeCanyonFilter");
 
             shader.SetInt("_DataSize", heightNoise.DataSize);
             shader.SetInt("_Resolution", heightNoise.Resolution);
@@ -104,32 +118,42 @@ namespace FarmVox
             shader.Dispatch(0, dispatchNum, dispatchNum, dispatchNum);
 
             heightNoise.Dispose();
-            canyonNoise.Dispose();
-            rockGradientBuffer.Dispose();
-            rockGradientIntervalsBuffer.Dispose();
             rockColorNoise.Dispose();
             grassNoise.Dispose();
-            grassNormalKeysBuffer.Dispose();
-            grassNormalValuesBuffer.Dispose();
-            grassHeightKeysBuffer.Dispose();
-            grassHeightValuesBuffer.Dispose();
-            grassGradientBuffer.Dispose();
-            grassGradientIntervalsBuffer.Dispose();
+            rockGradientBuffers.Dispose();
+            grassGradientBuffers.Dispose();
+            grassNormalBuffers.Dispose();
+            grassHeightBuffers.Dispose();
+            // treeCanyonFilterBuffers.Dispose();
         }
 
-        void LoadColorGradient(ColorGradient colorGradient, string prefix, 
-                               out ComputeBuffer intervalsBuffer, 
-                               out ComputeBuffer gradientBuffer) {
-            intervalsBuffer = new ComputeBuffer(colorGradient.Count, sizeof(float));
+        ValueGradientBuffers SetValueGradient(ValueGradient valueGradient, string prefix) {
+            var keysBuffer = new ComputeBuffer(valueGradient.Keys.Count, sizeof(float));
+            keysBuffer.SetData(valueGradient.Keys);
+
+            var valuesBuffer = new ComputeBuffer(valueGradient.Keys.Count, sizeof(float));
+            valuesBuffer.SetData(valueGradient.Values);
+
+            shader.SetBuffer(0, prefix + "Keys", keysBuffer);
+            shader.SetBuffer(0, prefix + "Values", valuesBuffer);
+            shader.SetInt(prefix + "Size", valueGradient.Keys.Count);
+
+            return new ValueGradientBuffers(keysBuffer, valuesBuffer);
+        }
+
+        ColorGradientBuffers SetColorGradient(ColorGradient colorGradient, string prefix) {
+            var intervalsBuffer = new ComputeBuffer(colorGradient.Count, sizeof(float));
             intervalsBuffer.SetData(colorGradient.GetKeys());
 
-            gradientBuffer = new ComputeBuffer(colorGradient.Count, sizeof(float) * 4);
+            var gradientBuffer = new ComputeBuffer(colorGradient.Count, sizeof(float) * 4);
             gradientBuffer.SetData(colorGradient.GetValues());
 
             shader.SetBuffer(0, prefix + "Gradient", gradientBuffer);
             shader.SetBuffer(0, prefix + "GradientIntervals", intervalsBuffer);
             shader.SetInt(prefix + "GradientSize", colorGradient.Count);
             shader.SetFloat(prefix + "GradientBanding", colorGradient.banding);
+
+            return new ColorGradientBuffers(intervalsBuffer, gradientBuffer);
         }
     }
 }

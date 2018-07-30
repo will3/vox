@@ -214,7 +214,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     int3 coord = int3(id.x, id.y, id.z);
     int index = getIndex(coord);
 
-    float hillOrPlain = sampleNoise(_CanyonBuffer, coord);
+    float canyon = sampleNoise(_CanyonBuffer, coord);
     float terrainHeight;
 
     int3 absPos = coord + floor(_Origin);
@@ -226,15 +226,15 @@ void CSMain (uint3 id : SV_DispatchThreadID)
             ratio = 0;
         }
 
-        hillOrPlain += 1;
-        hillOrPlain *= ratio;
-        hillOrPlain -=1;
+        canyon += 1;
+        canyon *= ratio;
+        canyon -=1;
     }
 
-    if (hillOrPlain < -0.1) {
+    if (canyon < -0.1) {
         terrainHeight = _PlainHeight;
-    } else if (hillOrPlain >= -0.1 && hillOrPlain < 0.1) {
-        float ratio = (hillOrPlain + 0.1) / 0.2;
+    } else if (canyon >= -0.1 && canyon < 0.1) {
+        float ratio = (canyon + 0.1) / 0.2;
         terrainHeight = _PlainHeight + (_HillHeight - _PlainHeight) * ratio;
     } else {
         terrainHeight = _HillHeight;
@@ -262,6 +262,4 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     } else {
         _ColorBuffer[index] = rockColor;
     }
-
-
 }
