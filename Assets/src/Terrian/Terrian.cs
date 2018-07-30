@@ -61,7 +61,7 @@ namespace FarmVox
             }
         }
 
-        TerrianConfig config = new TerrianConfig();
+        TerrianConfig config = TerrianConfig.Instance;
 
         Chunks[] chunksToDraw;
         Chunks[] chunksCastingShadows;
@@ -92,6 +92,8 @@ namespace FarmVox
             }
         }
 
+        VoxelMap voxelMap;
+
         Bounds bounds;
 
         public Terrian(int size = 32)
@@ -103,14 +105,14 @@ namespace FarmVox
             bounds.min = new Vector3(-config.maxChunksX, 0, -config.maxChunksX) * size;
             bounds.max = new Vector3(config.maxChunksX, config.maxChunksY, config.maxChunksX) * size;
 
-            var boundingCubeSize = new Vector3Int(config.maxChunksX, config.maxChunksX, config.maxChunksX) * size;
-            var boundsInt = new BoundsInt(boundingCubeSize * -1, boundingCubeSize * 2);
+            var boundsInt = config.BoundsInt;
 
             terrianObject = new GameObject("terrian");
             defaultLayer = new Chunks(size);
             treeLayer = new Chunks(size);
             waterLayer = new Chunks(size);
             treeMap = new TreeMap(boundsInt);
+            voxelMap = new VoxelMap(boundsInt);
 
             defaultLayer.GetGameObject().layer = LayerMask.NameToLayer("terrian");
             treeLayer.GetGameObject().layer = LayerMask.NameToLayer("trees");

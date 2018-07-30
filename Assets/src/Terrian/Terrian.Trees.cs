@@ -78,8 +78,9 @@ namespace FarmVox
 
                 if (value < 0.5f) { continue; }
 
-                var treeBoundsSize = 5;
-                var treeBounds = new BoundsInt(globalCoord, new Vector3Int(treeBoundsSize, treeBoundsSize, treeBoundsSize));
+                var radius = 4;
+                var treeBoundsSize = new Vector3Int(radius, radius, radius);
+                var treeBounds = new BoundsInt(globalCoord - treeBoundsSize, treeBoundsSize * 2);
                 if (treeMap.HasTrees(treeBounds))
                 {
                     continue;

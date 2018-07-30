@@ -3,23 +3,17 @@ using UnityEngine;
 
 namespace FarmVox
 {
-    public enum DesignationType
-    {
-        Dig
-    }
-
     public class DigDesignation : Designation
     {
-        public DesignationType type = DesignationType.Dig; // ?
-
         public DigDesignation(BoundsInt bounds) {
             this.bounds = bounds;
+            type = DesignationType.Dig;
         }
 
         Dictionary<Vector3Int, Task> tasks = new Dictionary<Vector3Int, Task>();
 
         public override void Start() {
-            AdjustBounds();
+            bounds = Boxes.AdjustBounds(bounds);
             CreateBox();
             CreateSurfaceTasks();
         }

@@ -139,6 +139,17 @@ namespace FarmVox
             return results;
         }
 
+        public List<T> Find(Vector3Int from, int radius) {
+            var s = new Vector3Int(radius, radius, radius);
+            var b = new BoundsInt(from - s, s * 2);
+            var results = Search(b);
+            if (results.Count > 0) {
+                return results;
+            }
+
+            return new List<T>();
+        }
+
         bool IntersectsBounds(BoundsInt a, BoundsInt b) {
             return (a.min.x >= b.min.x || a.min.x < b.max.x) &&
                 (a.min.y >= b.min.y || a.min.y < b.max.y) &&

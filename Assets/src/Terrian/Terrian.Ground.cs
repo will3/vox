@@ -97,6 +97,8 @@ namespace FarmVox
                         }
                     }
                 }
+
+                voxelMap.LoadChunkAsync(chunk);
             }
 
             terrianChunk.rockNeedsUpdate = false;

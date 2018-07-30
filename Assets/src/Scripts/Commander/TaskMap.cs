@@ -11,23 +11,16 @@ namespace FarmVox
         public static TaskMap Instance {
             get {
                 if (instance == null) {
-                    instance = new TaskMap(1024);
+                    instance = new TaskMap(TerrianConfig.Instance.BoundsInt);
                 }
                 return instance;
             }
         }
 
         Octree<Task> taskTree;
-        Octree<Task> assignedTasksTree;
 
-        public TaskMap(int size) {
-            taskTree = new Octree<Task>(
-                new Vector3Int(-size / 2, -size / 2, -size / 2), 
-                new Vector3Int(size, size, size));
-
-            assignedTasksTree = new Octree<Task>(
-                new Vector3Int(-size / 2, -size / 2, -size / 2), 
-                new Vector3Int(size, size, size));
+        public TaskMap(BoundsInt bounds) {
+            taskTree = new Octree<Task>(bounds);
         }
 
         public void AddTask(Task task)
@@ -39,13 +32,9 @@ namespace FarmVox
             }
         }
 
-        public void AssignedTask(Task task) {
+        public void RemoveTask(Task task) {
             var coord = task.GetCoord();
-            if (!taskTree.Remove(coord)) {
-                throw new System.Exception("unexpected");
-            }
-
-            assignedTasksTree.Add(coord, task);
+            taskTree.Remove(coord);
         }
 
         public Task FindTask(Vector3Int from)
@@ -66,12 +55,6 @@ namespace FarmVox
             }
 
             return null;
-        }
-
-        public void FinishedTask(Task task) {
-            if (!assignedTasksTree.Remove(task.GetCoord())) {
-                throw new System.Exception("Failed to remove assigned task?");
-            }
         }
 
         Task GetBest(Vector3 from, List<Task> tasks) {
@@ -132,12 +115,6 @@ namespace FarmVox
             });
 
             Gizmos.color = Color.blue;
-
-            assignedTasksTree.Visit((coord, value) =>
-            {
-                var pos = coord + new Vector3(0.5f, 0.5f, 0.5f);
-                Gizmos.DrawCube(pos, new Vector3(1.02f, 1.02f, 1.02f));
-            });
         }
     }
 }

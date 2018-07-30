@@ -2,18 +2,6 @@
 
 namespace FarmVox
 {
-    public interface IInventory {
-        float GetWeight();
-    }
-
-    public class Block : IInventory
-    {
-        public float GetWeight()
-        {
-            return 1;
-        }
-    }
-
     public class DigCommand : Command
     {
         GameObject designationObject;

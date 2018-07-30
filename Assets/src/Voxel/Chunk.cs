@@ -417,5 +417,9 @@ namespace FarmVox
         public bool IsSurfaceCoord(Vector3Int coord) {
             return surfaceCoords.Contains(coord);
         }
+
+        public bool IsSurfaceCoordUp(Vector3Int coord) {
+            return surfaceCoordsUp.Contains(coord);
+        }
     }
 }

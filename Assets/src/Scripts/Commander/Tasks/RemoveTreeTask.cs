@@ -9,6 +9,7 @@ namespace FarmVox
         public RemoveTreeTask(Tree tree)
         {
             this.tree = tree;
+            type = TaskType.RemoveTree;
         }
 
         public override void Perform(Actor actor)

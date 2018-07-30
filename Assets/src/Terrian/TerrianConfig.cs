@@ -1,11 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using LibNoise.Generator;
+using UnityEngine;
+using Random = System.Random;
 
 namespace FarmVox
 {
     public class TerrianConfig
     {
+        static TerrianConfig instance;
+
+        public static TerrianConfig Instance {
+            get {
+                if (instance == null) {
+                    instance = new TerrianConfig();
+                }
+                return instance;
+            }
+        }
+
+        public int size = 32;
         public int maxChunksY = 3;
         public int generateDis = 2;
         public int minTreeJ = 1;
@@ -77,7 +91,14 @@ namespace FarmVox
             return random;
         }
 
-        public TerrianConfig(int seed = 1337)
+        public BoundsInt BoundsInt {
+            get {
+                var boundingCubeSize = new Vector3Int(maxChunksX, maxChunksX, maxChunksX) * size;
+                return  new BoundsInt(boundingCubeSize * -1, boundingCubeSize * 2);
+            }
+        }
+
+        TerrianConfig(int seed = 1337)
         {
             r = new Random(seed);
             heightNoise = NextNoise();

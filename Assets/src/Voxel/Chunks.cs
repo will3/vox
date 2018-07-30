@@ -84,6 +84,10 @@ namespace FarmVox
             return map[origin].Get(i - origin.x, j - origin.y, k - origin.z);
         }
 
+        public Color GetColor(Vector3Int coord) {
+            return GetColor(coord.x, coord.y, coord.z);
+        }
+
         public Color GetColor(int i, int j, int k)
         {
             var origin = GetOrigin(i, j, k);
@@ -242,6 +246,19 @@ namespace FarmVox
 
             chunk.UpdateSurfaceCoords();
             return chunk.IsSurfaceCoord(coord - origin);
+        }
+
+        public bool IsSurfaceCoordUp(Vector3Int coord) {
+            var origin = GetOrigin(coord);
+
+            var chunk = GetChunk(origin);
+            if (chunk == null)
+            {
+                return false;
+            }
+
+            chunk.UpdateSurfaceCoords();
+            return chunk.IsSurfaceCoordUp(coord - origin);
         }
     }
 }

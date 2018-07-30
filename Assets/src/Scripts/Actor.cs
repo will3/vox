@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Linq;
 using UnityEngine.AI;
+using System.Collections.Generic;
 
 namespace FarmVox
 {
@@ -73,11 +74,17 @@ namespace FarmVox
             UpdateTask();
         }
 
+
         void UpdateTask() {
+            if (itemWeight >= capacity && currentTask.type != TaskType.StoreInventory) {
+                var task = new StoreInventoryTask();
+                currentTask = task;
+            }
+
             if (currentTask == null) {
                 currentTask = TaskMap.Instance.FindTask(Vectors.FloorToInt(transform.position));
                 if (currentTask != null) {
-                    TaskMap.Instance.AssignedTask(currentTask);
+                    TaskMap.Instance.RemoveTask(currentTask);
                 }
             }
 
@@ -86,7 +93,6 @@ namespace FarmVox
 
                 if (currentTask.done)
                 {
-                    TaskMap.Instance.FinishedTask(currentTask);
                     currentTask = null;
                 }
             }
@@ -159,6 +165,29 @@ namespace FarmVox
                 return true;
             }
             return false;
+        }
+
+        List<Item> items = new List<Item>();
+
+        public List<Item> Items
+        {
+            get
+            {
+                return items;
+            }
+        }
+
+        float capacity = 4.0f;
+        float itemWeight = 0.0f;
+
+        public void AddItem(Item item) {
+            items.Add(item);
+            itemWeight += item.weight;
+        }
+
+        public void RemoveItem(Item item) {
+            items.Remove(item);
+            itemWeight -= item.weight;
         }
     }
 }

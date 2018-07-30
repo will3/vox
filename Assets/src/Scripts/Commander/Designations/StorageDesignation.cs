@@ -9,17 +9,18 @@ namespace FarmVox
 
         public StorageDesignation(BoundsInt bounds) {
             this.bounds = bounds;
+            type = DesignationType.Storage;
         }
 
 		public override void Start()
 		{
-            AdjustBounds();
+            bounds = Boxes.AdjustBounds(bounds);
             CreateBox();
-
-            CreateSurfaceTasks();
+            RemoveAnyTrees();
+            MarkStorageBlocks();
         }
 
-        void CreateSurfaceTasks() {
+        void RemoveAnyTrees() {
             var terrian = Finder.FindTerrian();
             var chunks = terrian.DefaultLayer;
 
@@ -35,6 +36,18 @@ namespace FarmVox
                     var yDiff = task.GetCoord().y - bounds.max.y;
                     task.priority = yDiff * 2.0f + 20.0f;
                     AddTask(task);
+                }
+            }
+        }
+
+        void MarkStorageBlocks() {
+            var enumerator = BoundCoords.LoopCoords(bounds);
+            var chunks = Finder.FindTerrian().DefaultLayer;
+            while (enumerator.MoveNext()) {
+                var coord = enumerator.Current;
+                if (chunks.IsSurfaceCoord(coord)) {
+                    var storageBlock = new StorageBlock(coord);
+                    StorageMap.Instance.Add(storageBlock);
                 }
             }
         }
