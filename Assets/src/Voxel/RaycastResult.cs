@@ -40,5 +40,28 @@ namespace FarmVox
 
             return Cube.GetQuad(d, front);
         }
+
+        public int FindNoneDefaultLayer()
+        {
+            if (hit.collider == null) {
+                return 0;
+            }
+            return FindNoneDefaultLayer(hit.collider.gameObject);
+        }
+
+        int FindNoneDefaultLayer(GameObject gameObject) {
+            if (gameObject.layer != 0)
+            {
+                return gameObject.layer;
+            }
+
+            var parentTransform = gameObject.transform.parent;
+            if (parentTransform != null)
+            {
+                return FindNoneDefaultLayer(parentTransform.gameObject);
+            }
+
+            return 0;
+        }
     }
 }

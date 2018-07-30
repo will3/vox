@@ -5,7 +5,6 @@ using System;
 
 namespace FarmVox
 {
-
     public partial class Terrian
     {
         private int size;
@@ -74,6 +73,16 @@ namespace FarmVox
 
         VoxelShadowMap shadowMap;
 
+        TreeMap treeMap;
+
+        public TreeMap TreeMap
+        {
+            get
+            {
+                return treeMap;
+            }
+        }
+
         public VoxelShadowMap ShadowMap
         {
             get
@@ -89,15 +98,26 @@ namespace FarmVox
             return null;
         }
 
+        Bounds bounds;
+
         public Terrian(int size = 32)
         {
             this.size = size;
             sizeF = size;
 
+            bounds = new Bounds();
+            bounds.min = new Vector3(-config.maxChunksX, 0, -config.maxChunksX) * size;
+            bounds.max = new Vector3(config.maxChunksX, config.maxChunksY, config.maxChunksX) * size;
+
+            var boundingCube = new Bounds(
+                new Vector3(),
+                new Vector3(config.maxChunksX, config.maxChunksY, config.maxChunksX) * size * 2);
+
             terrianObject = new GameObject("terrian");
             defaultLayer = new Chunks(size);
             treeLayer = new Chunks(size);
             waterLayer = new Chunks(size);
+            treeMap = new TreeMap(boundingCube);
 
             defaultLayer.GetGameObject().layer = LayerMask.NameToLayer("terrian");
             treeLayer.GetGameObject().layer = LayerMask.NameToLayer("trees");
@@ -261,22 +281,6 @@ namespace FarmVox
                 return;
             }
             terrianChunk.SetWater(coord, true);
-        }
-
-        public bool GetTree(Vector3Int coord) {
-            var origin = GetOrigin(coord.x, coord.y, coord.z);
-            var terrianChunk = GetTerrianChunk(origin);
-            if (terrianChunk == null)
-            {
-                return false;
-            }
-            return terrianChunk.GetTree(coord);
-        }
-
-        public void SetTree(Vector3Int coord) {
-            var origin = GetOrigin(coord.x, coord.y, coord.z);
-            var terrianChunk = GetOrCreateTerrianChunk(origin);
-            terrianChunk.SetTree(coord, true);
         }
 
         public void Dispose() {

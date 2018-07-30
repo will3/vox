@@ -19,7 +19,7 @@ public class GameController : MonoBehaviour
         }
     }
 
-    int spawned = 7;
+    int spawned = 1;
 
     HighlightHoveredSurface highlight;
     List<Actor> actors = new List<Actor>();

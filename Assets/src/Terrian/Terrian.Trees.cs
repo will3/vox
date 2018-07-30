@@ -44,7 +44,11 @@ namespace FarmVox
                 var j = coord.y;
                 var k = coord.z;
 
-                if (config.treeRandom.NextDouble() > 0.1)
+                Vector3 globalCoord = coord + chunk.Origin;
+                var noise = (float)treeNoise.GetValue(globalCoord);
+                var treeDensity = config.treeDensityFilter.GetValue(noise);
+
+                if (config.treeRandom.NextDouble() * treeDensity > 0.1)
                 {
                     continue;
                 }
@@ -67,20 +71,18 @@ namespace FarmVox
                     continue;
                 }
 
-                Vector3 globalCoord = coord + chunk.Origin;
-                var noise = (float)treeNoise.GetValue(globalCoord);
-                var otherTrees = terrianChunk.GetOtherTrees(coord);
+                if (treeMap.HasOtherTrees(coord, 5.0f)) {
+                    continue;
+                }
 
                 var height = (absY - config.groundHeight) / config.maxHeight;
                 var treeHeightValue = config.treeHeightGradient.GetValue(height);
 
-                var value = noise * treeHeightValue * config.treeAmount - otherTrees * config.treeSparse;
+                var value = noise * treeHeightValue * config.treeAmount;
 
                 if (value < 0.5f) { continue; }
 
                 pine.Place(this, treeLayer, coord + chunk.Origin, config);
-
-                terrianChunk.SetTree(coord, true);
             }
 
             var treeChunk = treeLayer.GetChunk(terrianChunk.Origin);

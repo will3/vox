@@ -32,18 +32,20 @@ namespace FarmVox
 
         public void AddTask(Task task)
         {
-            if (!taskTree.Add(task.coord, task)) {
-                taskTree.Add(task.coord, task);
+            var coord = task.GetCoord();
+            if (!taskTree.Add(coord, task)) {
+                taskTree.Add(coord, task);
                 throw new System.Exception("failed to add task to map");
             }
         }
 
         public void AssignedTask(Task task) {
-            if (!taskTree.Remove(task.coord)) {
+            var coord = task.GetCoord();
+            if (!taskTree.Remove(coord)) {
                 throw new System.Exception("unexpected");
             }
 
-            assignedTasksTree.Add(task.coord, task);
+            assignedTasksTree.Add(coord, task);
         }
 
         public Task FindTask(Vector3 from)
@@ -67,7 +69,7 @@ namespace FarmVox
         }
 
         public void FinishedTask(Task task) {
-            if (!assignedTasksTree.Remove(task.coord)) {
+            if (!assignedTasksTree.Remove(task.GetCoord())) {
                 throw new System.Exception("Failed to remove assigned task?");
             }
         }
@@ -81,7 +83,7 @@ namespace FarmVox
             var minDis = Mathf.Infinity;
             Task closestTask = null;
             foreach (var task in tasks) {
-                var diff = task.coord + new Vector3(0.5f, 0.5f, 0.5f) - from;
+                var diff = task.GetCoord() + new Vector3(0.5f, 0.5f, 0.5f) - from;
                 var dis = diff.magnitude;
                 if (dis < minDis) {
                     minDis = dis;

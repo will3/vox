@@ -16,5 +16,12 @@ namespace FarmVox
             }
             return new Vector3Int(j, k, i);
         }
+
+        public static Vector3Int FloorToInt(Vector3 vector) {
+            return new Vector3Int(
+                Mathf.FloorToInt(vector.x),
+                Mathf.FloorToInt(vector.y),
+                Mathf.FloorToInt(vector.z));
+        }
     }
 }

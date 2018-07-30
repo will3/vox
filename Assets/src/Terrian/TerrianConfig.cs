@@ -15,6 +15,7 @@ namespace FarmVox
         public float plainHeight = 12;
         public int waterLevel = 2;
         public int groundHeight = 32;
+        public int maxChunksX = 8;
 
 #region ground
         public Noise heightNoise;
@@ -41,6 +42,7 @@ namespace FarmVox
         public float treeSparse = 5.0f;
         public float treeAmount = 2.0f;
         public ValueGradient treeCanyonFilter;
+        public ValueGradient treeDensityFilter;
 #endregion
 
 #region waterfall
@@ -133,6 +135,12 @@ namespace FarmVox
                 {-0.1f, 1},
                 {0.1f, 1},
                 {1, 0}
+            });
+
+            treeDensityFilter = new ValueGradient(new Dictionary<float, float>
+            {
+                {-1, 0},
+                {1, 1}
             });
 
             grassHeightFilter = new ValueGradient(new Dictionary<float, float>{

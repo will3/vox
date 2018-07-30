@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace FarmVox
 {
@@ -27,7 +28,8 @@ namespace FarmVox
             var width = radius * 2 + 1;
             var height = Mathf.CeilToInt(h) + trunkHeight;
 
-            terrian.SetTree(position);
+            var treeCoords = new HashSet<Vector3Int>();
+            var stumpCoords = new HashSet<Vector3Int>();
 
             for (var j = 0; j < height; j++)
             {
@@ -42,6 +44,12 @@ namespace FarmVox
                         {
                             layer.Set(coord, 1);
                             layer.SetColor(coord, Colors.trunk);
+
+                            if (j == 0) {
+                                stumpCoords.Add(coord);    
+                            } else {
+                                treeCoords.Add(coord);    
+                            }
                         } else if (j >= trunkHeight) {
                             float diffI = Mathf.Abs(mid - i);
                             float diffK = Mathf.Abs(mid - k);
@@ -58,11 +66,15 @@ namespace FarmVox
                                 var value = density - (float)config.treeRandom.NextDouble() * 1.0f;
                                 layer.Set(coord, value);
                                 layer.SetColor(coord, Colors.leaf);
+                                treeCoords.Add(coord);
                             }
                         }
                     }
                 }
             }
+
+            var tree = new Tree(stumpCoords, treeCoords, position);
+            terrian.TreeMap.AddTree(tree);
         }
     }
 }

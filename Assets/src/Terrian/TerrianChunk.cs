@@ -38,8 +38,6 @@ namespace FarmVox
             }
         }
 
-        private readonly HashSet<Vector3Int> trees = new HashSet<Vector3Int>();
-
         private int size;
 
         public int Distance
@@ -77,23 +75,6 @@ namespace FarmVox
             distance = Mathf.Max(xDis, zDis);
         }
 
-        public void SetTree(Vector3Int coord, bool flag)
-        {
-            if (flag)
-            {
-                trees.Add(coord);
-            }
-            else
-            {
-                trees.Remove(coord);
-            }
-        }
-
-        public bool GetTree(Vector3Int coord)
-        {
-            return trees.Contains(coord);
-        }
-
         public void SetWater(Vector3Int coord, bool flag)
         {
             SetWater(coord.x, coord.y, coord.z, flag);
@@ -127,23 +108,6 @@ namespace FarmVox
         {
             int index = i * dataSize * dataSize + j * dataSize + k;
             return index;
-        }
-
-        public float GetOtherTrees(Vector3Int from)
-        {
-            float min = 5.0f;
-            float sqrMin = min * min;
-            var amount = 0f;
-            foreach (var coord in trees)
-            {
-                var sqrDis = (coord - from).sqrMagnitude;
-                if (sqrDis < sqrMin)
-                {
-                    amount += 1.0f / sqrDis;
-                }
-            }
-
-            return amount;
         }
 
         readonly HashSet<Vector3Int> townPoints = new HashSet<Vector3Int>();
