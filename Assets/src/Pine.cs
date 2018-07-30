@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 namespace FarmVox
 {
-
     public class Pine
     {
         readonly float r;

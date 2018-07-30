@@ -11,8 +11,25 @@ namespace FarmVox
 
     public class Chunk
     {
+        readonly int size;
+        readonly Vector3Int origin;
+        public Chunks Chunks;
+
         float[] data;
         Color[] colors;
+
+        bool dirty;
+        public bool surfaceCoordsDirty = true;
+        bool normalsNeedsUpdate = true;
+
+        GameObject gameObject;
+        Mesh mesh;
+
+        public HashSet<Vector3Int> surfaceCoords = new HashSet<Vector3Int>();
+        public HashSet<Vector3Int> surfaceCoordsUp = new HashSet<Vector3Int>();
+        readonly Dictionary<Vector3Int, float> lightNormals = new Dictionary<Vector3Int, float>();
+
+        public readonly int dataSize;
 
         public Color[] Colors
         {
@@ -29,6 +46,7 @@ namespace FarmVox
                 throw new System.ArgumentException("invalid length");
             }
             this.colors = colors;
+            dirty = true;
         }
 
         public void SetData(float[] data)
@@ -38,6 +56,9 @@ namespace FarmVox
                 throw new System.ArgumentException("invalid length");
             }
             this.data = data;
+            dirty = true;
+            surfaceCoordsDirty = true;
+            normalsNeedsUpdate = true;
         }
 
         private readonly Dictionary<Vector3Int, float> waterfalls = new Dictionary<Vector3Int, float>();
@@ -49,39 +70,6 @@ namespace FarmVox
                 return waterfalls;
             }
         }
-
-        Mesh mesh;
-        Mesh colliderMesh;
-
-        public Mesh ColliderMesh
-        {
-            get
-            {
-                return colliderMesh;
-            }
-            set 
-            {
-                colliderMesh = value;
-            }
-        }
-
-        bool dirty;
-        public bool colliderDirty;
-        public bool surfaceCoordsDirty = true;
-
-        GameObject gameObject;
-        readonly int size;
-        Vector3Int origin;
-        public bool Hidden;
-        public Chunks Chunks;
-        public HashSet<Vector3Int> surfaceCoords = new HashSet<Vector3Int>();
-        public HashSet<Vector3Int> surfaceCoordsUp = new HashSet<Vector3Int>();
-        readonly Dictionary<Vector3Int, float> lightNormals = new Dictionary<Vector3Int, float>();
-
-        bool normalsNeedsUpdate = true;
-        public bool empty = true;
-
-        public readonly int dataSize;
 
         public GameObject GetGameObject() {
             if (gameObject == null) {
@@ -248,8 +236,6 @@ namespace FarmVox
             dirty = true;
             surfaceCoordsDirty = true;
             normalsNeedsUpdate = true;
-            colliderDirty = true;
-            empty = false;
         }
 
         public void SetColor(int i, int j, int k, Color v)
