@@ -7,7 +7,7 @@ namespace FarmVox
     {
         public bool allocated;
         public readonly Vector3Int coord;
-        float storage = 1.0f;
+        float storage = 4.0f;
 
         public float Storage
         {
@@ -27,6 +27,14 @@ namespace FarmVox
         public void AddItem(Item item) {
             items.Add(item);
             storage -= item.weight;
+
+            var yOffset = items.Count;
+            var coordAbove = coord + new Vector3Int(0, yOffset, 0);
+
+            var buildingLayer = Finder.FindTerrian().BuildingLayer;
+
+            buildingLayer.Set(coordAbove, 1);
+            buildingLayer.SetColor(coordAbove, item.color);
         }
 
         public void RemoveItem(Item item) {

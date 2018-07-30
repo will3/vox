@@ -76,7 +76,8 @@ namespace FarmVox
 
 
         void UpdateTask() {
-            if (itemWeight >= capacity && currentTask.type != TaskType.StoreInventory) {
+            if (itemWeight >= capacity && 
+                (currentTask == null || currentTask.type != TaskType.StoreInventory)) {
                 var task = new StoreInventoryTask();
                 currentTask = task;
             }

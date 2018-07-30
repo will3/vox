@@ -51,6 +51,16 @@ namespace FarmVox
             }
         }
 
+        Chunks buildingLayer;
+
+        public Chunks BuildingLayer
+        {
+            get
+            {
+                return buildingLayer;
+            }
+        }
+
         Dictionary<Vector3Int, TerrianChunk> map = new Dictionary<Vector3Int, TerrianChunk>();
 
         public Dictionary<Vector3Int, TerrianChunk> Map
@@ -64,8 +74,6 @@ namespace FarmVox
         TerrianConfig config = TerrianConfig.Instance;
 
         Chunks[] chunksToDraw;
-        Chunks[] chunksCastingShadows;
-        Chunks[] chunksReceivingShadows;
 
         Dictionary<Vector3Int, TerrianColumn> columns = new Dictionary<Vector3Int, TerrianColumn>();
         List<TerrianColumn> columnsList = new List<TerrianColumn>();
@@ -108,9 +116,12 @@ namespace FarmVox
             var boundsInt = config.BoundsInt;
 
             terrianObject = new GameObject("terrian");
+
             defaultLayer = new Chunks(size);
             treeLayer = new Chunks(size);
             waterLayer = new Chunks(size);
+            buildingLayer = new Chunks(size);
+
             treeMap = new TreeMap(boundsInt);
             voxelMap = new VoxelMap(boundsInt);
 
@@ -133,9 +144,7 @@ namespace FarmVox
             waterLayer.useNormals = false;
             waterLayer.isWater = true;
 
-            chunksToDraw = new Chunks[] { defaultLayer, treeLayer, waterLayer };
-            chunksCastingShadows = new Chunks[] { defaultLayer, treeLayer };
-            chunksReceivingShadows = new Chunks[] { waterLayer, defaultLayer, treeLayer };
+            chunksToDraw = new Chunks[] { defaultLayer, treeLayer, waterLayer, buildingLayer };
 
             shadowMap = new VoxelShadowMap(size, config);
         }

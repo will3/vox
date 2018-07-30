@@ -4,9 +4,11 @@ namespace FarmVox
 {
     public class BlockItem : Item
     {
-        Color color;
+        public bool isWood = false;
+
         public BlockItem(Color color) {
-            this.color = color;           
+            // TODO
+            this.color = Colors.stone;
         }
     }
 }

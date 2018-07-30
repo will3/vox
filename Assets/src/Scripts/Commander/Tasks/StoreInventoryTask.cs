@@ -21,7 +21,9 @@ namespace FarmVox
             if (storageBlock == null) {
                 var coord = Vectors.FloorToInt(actor.transform.position);
                 storageBlock = StorageMap.Instance.Find(coord, 1.0f);
-                storageBlock.allocated = true;
+                if (storageBlock != null) {
+                    storageBlock.allocated = true;    
+                }
             }
 
             // Cant find storage, done
