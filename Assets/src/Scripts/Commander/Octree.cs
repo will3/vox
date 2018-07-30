@@ -11,7 +11,7 @@ namespace FarmVox
         Bounds bounds;
 
         int minSize = 4;
-        int maxValues = 10;
+        int maxValues = 32;
 
         int count;
 
@@ -23,7 +23,7 @@ namespace FarmVox
             }
         }
 
-        HashSet<Octree<T>> children = new HashSet<Octree<T>>();
+        List<Octree<T>> children = new List<Octree<T>>();
         Dictionary<Vector3Int, T> values = new Dictionary<Vector3Int, T>();
 
         public delegate void VisitDelegate(Vector3Int coord, T value);
@@ -41,14 +41,25 @@ namespace FarmVox
             }
         }
 
-        public Octree(Vector3Int start, Vector3Int size)
-        {
+        public Octree(Vector3Int start, Vector3Int size) {
             this.start = start;
             this.size = size;
-            end = start + size;
-            bounds = new Bounds();
-            bounds.min = start;
-            bounds.max = end;
+            bounds = new Bounds
+            {
+                min = start,
+                max = start + size
+            };
+        }
+
+        public Octree(Bounds bounds)
+        {
+            this.bounds = bounds;
+            start = Vectors.FloorToInt(bounds.min);
+            size = Vectors.FloorToInt(bounds.size);
+        }
+
+        public bool Contains(Vector3Int pos) {
+            return bounds.Contains(pos);    
         }
 
         public bool Add(Vector3Int pos, T value)
@@ -66,15 +77,14 @@ namespace FarmVox
                 values[pos] = value;
                 return true;
             }
-            else
+
+            Divide();
+
+            foreach (var child in children)
             {
-                Divide();
-                foreach (var child in children)
+                if (child.Add(pos, value))
                 {
-                    if (child.Add(pos, value))
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace FarmVox
 {
+
     public class Pine
     {
         readonly float r;
@@ -64,7 +65,7 @@ namespace FarmVox
                             //    layer.SetColor(stump4, Colors.trunk);
                             //}
 
-                            if (j == 0 || j == 1) {
+                            if (j == 0) {
                                 stumpCoords.Add(coord);
                             } else {
                                 treeCoords.Add(coord);    

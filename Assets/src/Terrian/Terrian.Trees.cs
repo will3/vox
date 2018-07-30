@@ -88,10 +88,6 @@ namespace FarmVox
                 var tree = pine.Place(this, treeLayer, globalCoord, config);
 
                 treeMap.AddTree(tree);
-
-                if (!treeMap.HasTrees(treeBounds)) {
-                    throw new System.Exception("Cant find tree just added");
-                }
             }
 
             var treeChunk = treeLayer.GetChunk(terrianChunk.Origin);

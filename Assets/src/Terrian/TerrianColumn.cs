@@ -6,12 +6,21 @@ namespace FarmVox
     public class TerrianColumn
     {
         Vector3Int origin;
+        int size;
 
         public Vector3Int Origin
         {
             get
             {
                 return origin;
+            }
+        }
+
+        public float distance {
+            get {
+                var xDiff = Mathf.Abs(origin.x + size / 2);
+                var yDiff = Mathf.Abs(origin.y + size / 2);
+                return xDiff + yDiff;
             }
         }
 
@@ -34,8 +43,9 @@ namespace FarmVox
             }
         }
 
-        public TerrianColumn(Vector3Int origin, List<TerrianChunk> terrianChunks)
+        public TerrianColumn(int size, Vector3Int origin, List<TerrianChunk> terrianChunks)
         {
+            this.size = size;
             if (origin.y != 0) {
                 throw new System.ArgumentException("origin y has to be 0");
             }

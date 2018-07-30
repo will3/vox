@@ -27,7 +27,6 @@ namespace FarmVox
 
         Terrian terrian;
 
-        int distance;
         Vector3Int origin;
 
         public Vector3Int Origin
@@ -38,17 +37,9 @@ namespace FarmVox
             }
         }
 
-        private int size;
+        int size;
 
-        public int Distance
-        {
-            get
-            {
-                return distance;
-            }
-        }
-
-        private Material material = new Material(Shader.Find("Unlit/voxelunlit"));
+        Material material = new Material(Shader.Find("Unlit/voxelunlit"));
         public Material Material
         {
             get
@@ -60,20 +51,13 @@ namespace FarmVox
         public TerrianChunk(Vector3Int key, int size, Terrian terrian)
         {
             this.key = key;
-            this.origin = key * size;
+            origin = key * size;
             this.size = size;
-            this.dataSize = size + 3;
+            dataSize = size + 3;
             this.terrian = terrian;
         }
 
         public readonly int dataSize;
-
-        public void UpdateDistance(int x, int z)
-        {
-            var xDis = Mathf.Abs(x - this.key.x);
-            var zDis = Mathf.Abs(z - this.key.z);
-            distance = Mathf.Max(xDis, zDis);
-        }
 
         public void SetWater(Vector3Int coord, bool flag)
         {

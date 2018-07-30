@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using FarmVox;
 using UnityEngine;
 using UnityEngine.AI;
@@ -33,44 +34,18 @@ public class GameController : MonoBehaviour
         var source = gameObject.AddComponent<VisionSource>();
         source.radius = 100.0f;
         commander = gameObject.GetComponent<Commander>();
+
+        terrian.InitColumns();
+
+        StartCoroutine(terrian.UpdateTerrianLoop());
+        StartCoroutine(terrian.UpdateMeshesLoop());
+        StartCoroutine(terrian.UpdateWaterfallsLoop());
 	}
 	
-    bool Spawn() {
-        RaycastHit hit;
-        var radius = 10.0f;
-        var position = new Vector3(Random.Range(-1.0f, 1.0f) * radius, 100, Random.Range(-1.0f, 1.0f) * radius);
-        var ray = new Ray(position, Vector3.down);
-
-        if (Physics.Raycast(ray, out hit))
-        {
-            NavMeshHit navMeshHit;
-            if (NavMesh.SamplePosition(hit.point, out navMeshHit, 10.0f, 1 << NavMeshAreas.Walkable)) {
-                var go = new GameObject("guy");
-                var actor = go.AddComponent<Actor>();
-                actor.radius = 2.0f;
-                actors.Add(actor);
-                go.transform.position = navMeshHit.position;
-                return true;
-            }
-        }
-
-        return false;
-    }
-
 	// Update is called once per frame
 	void Update () {
-        if (terrian == null) {
-            return;
-        }
-
         WorkerQueues.meshQueue.Update();
         WorkerQueues.routingQueue.Update();
-
-        var cameraController = Finder.FindCameraController();
-        if (cameraController != null) {
-            terrian.Target = cameraController.Target;
-            terrian.Update();
-        }
 
         if (spawned > 0)
         {
@@ -106,4 +81,28 @@ public class GameController : MonoBehaviour
 	{
         TaskMap.Instance.OnDrawGizmosSelected();	
 	}
+
+    bool Spawn()
+    {
+        RaycastHit hit;
+        var radius = 10.0f;
+        var position = new Vector3(Random.Range(-1.0f, 1.0f) * radius, 100, Random.Range(-1.0f, 1.0f) * radius);
+        var ray = new Ray(position, Vector3.down);
+
+        if (Physics.Raycast(ray, out hit))
+        {
+            NavMeshHit navMeshHit;
+            if (NavMesh.SamplePosition(hit.point, out navMeshHit, 10.0f, 1 << NavMeshAreas.Walkable))
+            {
+                var go = new GameObject("guy");
+                var actor = go.AddComponent<Actor>();
+                actor.radius = 2.0f;
+                actors.Add(actor);
+                go.transform.position = navMeshHit.position;
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

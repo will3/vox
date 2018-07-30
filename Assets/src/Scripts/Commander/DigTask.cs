@@ -51,13 +51,13 @@ namespace FarmVox
                 return;
             }
 
-            actor.SetDestination(positionUp, 2.0f);
+            //actor.SetDestination(positionUp, 2.0f);
 
-            if (!actor.ArrivedDestination()) {
-                // Moving
+            //if (!actor.ArrivedDestination()) {
+            //    // Moving
 
-                return;
-            }
+            //    return;
+            //}
 
             digAmount -= actor.digSpeed;
 

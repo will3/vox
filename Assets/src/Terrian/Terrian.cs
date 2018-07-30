@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEngine.AI;
 using System.Collections.Generic;
 using System;
+using System.Collections;
+using Priority_Queue;
 
 namespace FarmVox
 {
@@ -49,8 +51,6 @@ namespace FarmVox
             }
         }
 
-        public Vector3 Target;
-
         Dictionary<Vector3Int, TerrianChunk> map = new Dictionary<Vector3Int, TerrianChunk>();
 
         public Dictionary<Vector3Int, TerrianChunk> Map
@@ -91,13 +91,6 @@ namespace FarmVox
             }
         }
 
-        TerrianColumn GetColumn(Vector3Int origin) {
-            if (columns.ContainsKey(origin)) {
-                return columns[origin];
-            }
-            return null;
-        }
-
         Bounds bounds;
 
         public Terrian(int size = 32)
@@ -111,7 +104,7 @@ namespace FarmVox
 
             var boundingCube = new Bounds(
                 new Vector3(),
-                new Vector3(config.maxChunksX, config.maxChunksY, config.maxChunksX) * size * 2);
+                new Vector3(config.maxChunksX, config.maxChunksX, config.maxChunksX) * size * 2);
 
             terrianObject = new GameObject("terrian");
             defaultLayer = new Chunks(size);
@@ -157,39 +150,23 @@ namespace FarmVox
 
             if (!columns.ContainsKey(columnOrigin))
             {
-                var terrianColumn = new TerrianColumn(columnOrigin, list);
+                var terrianColumn = new TerrianColumn(size, columnOrigin, list);
                 columns[columnOrigin] = terrianColumn;
             }
         }
 
-        public void Update()
-        {
-            PerformanceLogger.Push("Terrian update");
-
-            var start = DateTime.Now;
-
-            int x = Mathf.FloorToInt(Target.x / sizeF);
-            int z = Mathf.FloorToInt(Target.z / sizeF);
-
-            var generateDis = config.generateDis;
-
-            for (int i = x - generateDis; i <= x + generateDis; i++)
+        public void InitColumns() {
+            for (var i = -config.maxChunksX; i < config.maxChunksX; i++)
             {
-                for (int k = z - generateDis; k <= z + generateDis; k++)
+                for (var k = -config.maxChunksX; k < config.maxChunksX; k++)
                 {
                     var columnOrigin = new Vector3Int(i, 0, k) * size;
                     GenerateColumn(columnOrigin);
                 }
             }
+        }
 
-            // Update distance
-            foreach (var kv in map) {
-                var terrianChunk = kv.Value;
-                terrianChunk.UpdateDistance(x, z);
-            }
-
-            PerformanceLogger.Push("Generate terrian");
-
+        public IEnumerator UpdateTerrianLoop() {
             foreach (var column in columns.Values)
             {
                 if (column.generatedTerrian)
@@ -202,29 +179,28 @@ namespace FarmVox
                 GenerateTrees(column);
 
                 column.generatedTerrian = true;
+
+                yield return null;
             }
+        }
 
-            PerformanceLogger.Pop();
-
-            PerformanceLogger.Push("Meshing terrian");
-
-            foreach (var column in columns.Values)
-            {
+        public IEnumerator UpdateWaterfallsLoop() {
+            foreach (var column in columns.Values) {
                 GenerateWaterfalls(column);
+                yield return null;
             }
+        }
 
-            UpdateMaterial();
-
-            foreach (var column in columns.Values)
-            {
-                GenerateMeshes(column);
+        public IEnumerator UpdateMeshesLoop() {
+            while (true) {
+                foreach (var column in columns.Values)
+                {
+                    UpdateMaterial();
+                    shadowMap.Update();
+                    GenerateMeshes(column);
+                    yield return null;
+                }
             }
-
-            shadowMap.Update();
-
-            PerformanceLogger.Pop();
-
-            PerformanceLogger.Pop();
         }
 
         public TerrianChunk GetTerrianChunk(Vector3Int origin) {

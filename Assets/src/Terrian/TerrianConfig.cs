@@ -15,7 +15,7 @@ namespace FarmVox
         public float plainHeight = 12;
         public int waterLevel = 2;
         public int groundHeight = 32;
-        public int maxChunksX = 8;
+        public int maxChunksX = 4;
 
 #region ground
         public Noise heightNoise;
