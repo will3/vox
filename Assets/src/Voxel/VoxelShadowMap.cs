@@ -90,7 +90,7 @@ namespace FarmVox
 
         int CalcShadow(Vector3Int coord)
         {
-            var start = liftVector(coord, lightY);
+            var start = liftVector(coord, lightY) + new Vector3(-0.51f, 0.0f, -0.51f);
             var dir = new Vector3(-1, -1, -1).normalized;
             var ray = new Ray(start, dir);
             RaycastHit hit;

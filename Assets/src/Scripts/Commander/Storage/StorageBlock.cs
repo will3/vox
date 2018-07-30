@@ -7,7 +7,7 @@ namespace FarmVox
     {
         public bool allocated;
         public readonly Vector3Int coord;
-        float storage = 4.0f;
+        float storage = 8.0f;
 
         public float Storage
         {
