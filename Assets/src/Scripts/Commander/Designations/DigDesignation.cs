@@ -8,7 +8,11 @@ namespace FarmVox
         Dig
     }
 
-    public class DigDesignation : MonoBehaviour
+    public interface IDesignation {
+        void UpdateTasks();
+    }
+
+    public class DigDesignation : IDesignation
     {
         public DesignationType type;
         public Vector3Int start;
@@ -16,7 +20,7 @@ namespace FarmVox
 
         Dictionary<Vector3Int, Task> tasks = new Dictionary<Vector3Int, Task>();
 
-		void Start()
+		void UpdateTasks()
 		{
             var terrian = Finder.FindTerrian();
             var chunks = terrian.DefaultLayer;
@@ -59,14 +63,24 @@ namespace FarmVox
             foreach (var tree in trees) {
                 if (!tree.markedForRemoval) {
                     tree.markedForRemoval = true;
-                    AddTask(new RemoveTreeTask(tree));
+                    var task = new RemoveTreeTask(tree);
+                    var yDiff = task.GetCoord().y - bounds.max.y;
+                    task.priority = yDiff * 2.0f + 20.0f;
+                    AddTask(task);
                 }
             }
 
-            //var voxels = terrian.VoxelMap.Search(bounds);
-            //foreach (var voxel in voxels) {
-            //    AddTask(new DigTask(voxel));
-            //}
+            var coordsEnumerator = BoundCoords.LoopCoords(bounds);
+            while(coordsEnumerator.MoveNext()) {
+                var coord = coordsEnumerator.Current;
+
+                if (chunks.Get(coord) > 0) {
+                    var task = new DigTask(coord);
+                    var yDiff = task.GetCoord().y - bounds.max.y;
+                    task.priority = yDiff * 2.0f;
+                    AddTask(task);
+                }
+            }
 		}
 
         void AddTask(Task task) {

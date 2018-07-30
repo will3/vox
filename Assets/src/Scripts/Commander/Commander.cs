@@ -27,6 +27,10 @@ namespace FarmVox
                 currentCommand = new DigCommand();
             }
 
+            if (Input.GetKeyDown(KeyCode.R)) {
+                currentCommand = new StorageCommand();
+            }
+
             if (Input.GetKeyDown(KeyCode.Escape)) {
                 currentCommand = null;
             }

@@ -11,6 +11,7 @@ namespace FarmVox
 
         public bool markedForRemoval;
         public bool removedTrunk;
+        public bool removedStump;
 
         public Tree(HashSet<Vector3Int> stumpCoords, HashSet<Vector3Int> trunkCoords, Vector3Int pivot)
         {

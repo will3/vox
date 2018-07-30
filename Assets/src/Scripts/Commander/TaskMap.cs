@@ -59,7 +59,7 @@ namespace FarmVox
 
                 if (results.Count > 0)
                 {
-                    return GetClosest(from, results);
+                    return GetBest(from, results);
                 }
 
                 radius *= 2;
@@ -72,6 +72,23 @@ namespace FarmVox
             if (!assignedTasksTree.Remove(task.GetCoord())) {
                 throw new System.Exception("Failed to remove assigned task?");
             }
+        }
+
+        Task GetBest(Vector3 from, List<Task> tasks) {
+            var minValue = Mathf.Infinity;
+            Task closestTask = null;
+            foreach (var task in tasks)
+            {
+                var diff = task.GetCoord() + new Vector3(0.5f, 0.5f, 0.5f) - from;
+                var dis = diff.magnitude;
+                var value = dis - task.priority * 10;
+                if (value < minValue)
+                {
+                    minValue = value;
+                    closestTask = task;
+                }
+            }
+            return closestTask;
         }
 
         Task GetRandom(List<Task> tasks) {

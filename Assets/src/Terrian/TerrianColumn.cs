@@ -8,6 +8,14 @@ namespace FarmVox
         Vector3Int origin;
         int size;
 
+        public int Size
+        {
+            get
+            {
+                return size;
+            }
+        }
+
         public Vector3Int Origin
         {
             get

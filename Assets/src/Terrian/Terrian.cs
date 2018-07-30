@@ -68,6 +68,7 @@ namespace FarmVox
         Chunks[] chunksReceivingShadows;
 
         Dictionary<Vector3Int, TerrianColumn> columns = new Dictionary<Vector3Int, TerrianColumn>();
+        List<TerrianColumn> columnsList = new List<TerrianColumn>();
 
         GameObject terrianObject;
 
@@ -152,6 +153,27 @@ namespace FarmVox
             {
                 var terrianColumn = new TerrianColumn(size, columnOrigin, list);
                 columns[columnOrigin] = terrianColumn;
+
+                columnsList.Add(terrianColumn);
+            }
+
+            columnsList.Sort(new TerrianColumnDistanceComparer());
+        }
+
+        class TerrianColumnDistanceComparer : IComparer<TerrianColumn>
+        {
+            public int Compare(TerrianColumn x, TerrianColumn y)
+            {
+                return GetDistance(x).CompareTo(GetDistance(y));
+            }
+
+            float GetDistance(TerrianColumn column) {
+                var xDis = column.Origin.x + column.Size / 2.0f;
+                var zDis = column.Origin.z + column.Size / 2.0f;
+
+                var distance = (Mathf.Abs(xDis) + Mathf.Abs(zDis)) * 1024;
+
+                return distance;
             }
         }
 
@@ -167,7 +189,7 @@ namespace FarmVox
         }
 
         public IEnumerator UpdateTerrianLoop() {
-            foreach (var column in columns.Values)
+            foreach (var column in columnsList)
             {
                 if (column.generatedTerrian)
                 {
@@ -185,7 +207,7 @@ namespace FarmVox
         }
 
         public IEnumerator UpdateWaterfallsLoop() {
-            foreach (var column in columns.Values) {
+            foreach (var column in columnsList) {
                 GenerateWaterfalls(column);
                 yield return null;
             }
@@ -193,7 +215,7 @@ namespace FarmVox
 
         public IEnumerator UpdateMeshesLoop() {
             while (true) {
-                foreach (var column in columns.Values)
+                foreach (var column in columnsList)
                 {
                     UpdateMaterial();
                     shadowMap.Update();
