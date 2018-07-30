@@ -8,21 +8,21 @@ namespace FarmVox
         public Material boxMaterial;
 
         GameObject boxObject;
-        Box box;
 
         Command currentCommand;
 
-        void Start()
-		{
-            boxObject = new GameObject("box");
-            boxObject.transform.parent = transform;
-            box = boxObject.AddComponent<Box>();
-            box.material = boxMaterial;
-            box.lassoMaterial = lassoMaterial;
-		}
+        static Commander instance;
+
+        public static Commander Instance {
+            get {
+                return instance;
+            }
+        }
 
 		void Update()
         {
+            instance = this;
+
             if (Input.GetKeyDown(KeyCode.G)) {
                 currentCommand = new DigCommand();
             }
@@ -43,12 +43,9 @@ namespace FarmVox
                 return;
             }
 
-            currentCommand.box = box;
-            currentCommand.transform = transform;
+            currentCommand.commander = this;
 
-            currentCommand.Update();
-
-            if (currentCommand.done) {
+            if (currentCommand.Update()) {
                 currentCommand = null;
             }
         }

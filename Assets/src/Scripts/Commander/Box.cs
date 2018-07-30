@@ -5,76 +5,40 @@ namespace FarmVox
 {
     public class Box : MonoBehaviour
     {
-        public Vector3Int? startCoord;
-        public Vector3Int? endCoord;
+        public bool hasStartCoord;
+        public BoundsInt bounds = new BoundsInt();
         public Material material;
-        public bool showBox;
-        public Material lassoMaterial;
 
         public void Copy(Box box) {
-            startCoord = box.startCoord;
-            endCoord = box.endCoord;
-            material = box.material;
-            showBox = box.showBox;
-            lassoMaterial = box.lassoMaterial;
-        }
-
-        public Vector3Int Min
-        {
-            get
-            {
-                var minx = startCoord.Value.x < endCoord.Value.x ? startCoord.Value.x : endCoord.Value.x;
-                var miny = startCoord.Value.y < endCoord.Value.y ? startCoord.Value.y : endCoord.Value.y;
-                var minz = startCoord.Value.z < endCoord.Value.z ? startCoord.Value.z : endCoord.Value.z;
-
-                return new Vector3Int(minx, miny, minz);
-            }
-        }
-
-        public Vector3Int Max
-        {
-            get
-            {
-                var maxx = startCoord.Value.x > endCoord.Value.x ? startCoord.Value.x : endCoord.Value.x;
-                var maxy = startCoord.Value.y > endCoord.Value.y ? startCoord.Value.y : endCoord.Value.y;
-                var maxz = startCoord.Value.z > endCoord.Value.z ? startCoord.Value.z : endCoord.Value.z;
-
-                return new Vector3Int(maxx, maxy, maxz);
-            }
-        }
-
-        public Vector3Int Size
-        {
-            get
-            {
-                return Max - Min;
-            }
-        }
-
-        public Bounds Bounds {
-            get {
-                return new Bounds(Min, Size);
-            }
+            hasStartCoord = box.hasStartCoord;
+            bounds = box.bounds;
         }
 
         public void AddCoord(Vector3Int coord)
         {
-            if (startCoord == null)
-            {
-                startCoord = coord;
-            }
-            else
-            {
-                endCoord = coord;
+            if (!hasStartCoord) {
+                bounds.min = coord;
+                hasStartCoord = true;
+            } else {
+                bounds.max = coord;
             }
         }
 
+        public void SetBounds(BoundsInt bounds) {
+            this.bounds = bounds;
+            this.hasStartCoord = true;
+        }
+
         LineRenderer lineRenderer;
-        MeshRenderer meshRenderer;
+
+        static Material lassoMaterial;
 
         void Start() {
+            if (lassoMaterial == null) {
+                lassoMaterial = Resources.Load<Material>("commander/lasso");
+            }
+
             gameObject.AddComponent<MeshFilter>().sharedMesh = Cube.CubeMesh;
-            meshRenderer = gameObject.AddComponent<MeshRenderer>();
 
             lineRenderer = gameObject.AddComponent<LineRenderer>();
             lineRenderer.sharedMaterial = lassoMaterial;
@@ -86,20 +50,9 @@ namespace FarmVox
 
         void Update()
         {
-            if (startCoord == null || endCoord == null) {
-                meshRenderer.enabled = false;
+            if (!hasStartCoord) {
                 lineRenderer.enabled = false;
                 return;
-            }
-
-            if (showBox) {
-                meshRenderer.enabled = true;
-                meshRenderer.sharedMaterial = material;
-                float paddingAmount = 0.1f;
-                var padding = new Vector3(paddingAmount, paddingAmount, paddingAmount);
-                gameObject.transform.position = Min;
-                gameObject.transform.position -= padding;
-                gameObject.transform.localScale = Size + padding * 2;    
             }
 
             lineRenderer.enabled = true;
@@ -109,16 +62,17 @@ namespace FarmVox
             });
 
             var mask = 1 << UserLayers.terrian;
-            var positions = GetLassoCoordsForBox(startCoord.Value, endCoord.Value, mask).ToArray();
+            var positions = GetLassoCoordsForBox(mask).ToArray();
             lineRenderer.SetPositions(positions);
             lineRenderer.positionCount = positions.Length;
         }
 
-        List<Vector3> GetLassoCoordsForBox(Vector3Int start, Vector3Int end, int mask) {
+        List<Vector3> GetLassoCoordsForBox(int mask) {
+            var start = bounds.min;
+            var end = bounds.max;
             var maxY = start.y > end.y ? start.y : end.y;
 
             var set = new List<Vector3>();
-
 
             GetLassoCoordsForLine(new Vector3Int(start.x, start.y, start.z), new Vector3Int(end.x, start.y, start.z), set, mask);
             GetLassoCoordsForLine(new Vector3Int(end.x, start.y, start.z), new Vector3Int(end.x, start.y, end.z), set, mask);
@@ -159,8 +113,8 @@ namespace FarmVox
         }
 
         public void Clear() {
-            startCoord = null;
-            endCoord = null;
+            hasStartCoord = false;
+            bounds = new BoundsInt();
         }
 
 		public void OnDestroy()

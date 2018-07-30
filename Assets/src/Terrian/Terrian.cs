@@ -103,15 +103,14 @@ namespace FarmVox
             bounds.min = new Vector3(-config.maxChunksX, 0, -config.maxChunksX) * size;
             bounds.max = new Vector3(config.maxChunksX, config.maxChunksY, config.maxChunksX) * size;
 
-            var boundingCube = new Bounds(
-                new Vector3(),
-                new Vector3(config.maxChunksX, config.maxChunksX, config.maxChunksX) * size * 2);
+            var boundingCubeSize = new Vector3Int(config.maxChunksX, config.maxChunksX, config.maxChunksX) * size;
+            var boundsInt = new BoundsInt(boundingCubeSize * -1, boundingCubeSize * 2);
 
             terrianObject = new GameObject("terrian");
             defaultLayer = new Chunks(size);
             treeLayer = new Chunks(size);
             waterLayer = new Chunks(size);
-            treeMap = new TreeMap(boundingCube);
+            treeMap = new TreeMap(boundsInt);
 
             defaultLayer.GetGameObject().layer = LayerMask.NameToLayer("terrian");
             treeLayer.GetGameObject().layer = LayerMask.NameToLayer("trees");

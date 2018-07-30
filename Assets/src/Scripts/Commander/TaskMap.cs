@@ -48,7 +48,7 @@ namespace FarmVox
             assignedTasksTree.Add(coord, task);
         }
 
-        public Task FindTask(Vector3 from)
+        public Task FindTask(Vector3Int from)
         {
             var maxTry = 5;
             var radius = 16;
@@ -110,10 +110,12 @@ namespace FarmVox
             return closestTask;
         }
 
-        List<Task> Find(Vector3 from, float radius) {
-            var bounds = new Bounds();
-            bounds.center = from;
-            bounds.extents = new Vector3(radius, radius, radius);
+        List<Task> Find(Vector3Int from, int radius) {
+            var extent = new Vector3Int(radius, radius, radius);
+
+            var bounds = new BoundsInt();
+            bounds.min = from - extent;
+            bounds.max = from + extent;
 
             var results = taskTree.Search(bounds);
             return results;

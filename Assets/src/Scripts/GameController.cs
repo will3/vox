@@ -55,15 +55,15 @@ public class GameController : MonoBehaviour
         }
 
         if (Input.GetKeyDown(KeyCode.Mouse1)) {
-            RaycastHit hit;
-            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            //RaycastHit hit;
+            //var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-            if (Physics.Raycast(ray, out hit))
-            {
-                foreach (var actor in actors) {
-                    actor.SetFormationDestination(hit.point);
-                }
-            }
+            //if (Physics.Raycast(ray, out hit))
+            //{
+            //    foreach (var actor in actors) {
+            //        actor.SetFormationDestination(hit.point);
+            //    }
+            //}
         }
 
         if (Input.GetKeyDown(KeyCode.S)) {

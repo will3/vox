@@ -24,10 +24,10 @@ namespace FarmVox
     public class TreeMap
     {
         readonly HashSet<Vector3Int> trees = new HashSet<Vector3Int>();
-        Bounds bounds;
+        BoundsInt bounds;
         Octree<Tree> map;
 
-        public TreeMap(Bounds bounds)
+        public TreeMap(BoundsInt bounds)
         {
             this.bounds = bounds;
             map = new Octree<Tree>(bounds);
@@ -39,6 +39,7 @@ namespace FarmVox
         {
             if (!map.Add(tree.pivot, tree))
             {
+                map.Add(tree.pivot, tree);
                 Debug.LogWarning("Failed to add tree at " + tree.pivot.ToString());
             }
 
@@ -72,12 +73,12 @@ namespace FarmVox
             return null;
         }
 
-        public bool HasTrees(Bounds b)
+        public bool HasTrees(BoundsInt b)
         {
             return map.Any(b);
         }
 
-        public List<Tree> Search(Bounds bounds)
+        public List<Tree> Search(BoundsInt bounds)
         {
             return map.Search(bounds);
         }

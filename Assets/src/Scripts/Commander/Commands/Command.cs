@@ -4,12 +4,21 @@ namespace FarmVox
 {
     public abstract class Command
     {
-        public abstract void Update();
-        public Box box;
-        public Transform transform;
-        public bool done;
+        public Commander commander;
 
-        protected void DragBox() {
+        public abstract bool Update();
+
+        protected Box box;
+        protected GameObject boxObject;
+
+        protected bool DragBox()
+        {
+            if (boxObject == null) {
+                boxObject = new GameObject("box");
+                boxObject.transform.parent = commander.transform;
+                box = boxObject.AddComponent<Box>();
+            }
+
             if (Input.GetKey(KeyCode.Mouse0))
             {
                 var result = VoxelRaycast.TraceMouse(1 << UserLayers.terrian);
@@ -21,20 +30,14 @@ namespace FarmVox
 
             if (Input.GetKeyUp(KeyCode.Mouse0))
             {
-                var designationObject = new GameObject("designation");
-                designationObject.transform.parent = transform;
-                var designation = designationObject.AddComponent<DigDesignation>();
-                designation.start = box.Min;
-                designation.end = box.Max;
-                designation.type = DesignationType.Dig;
-
-                var designationBox = designationObject.AddComponent<Box>();
-                designationBox.Copy(box);
-
-                box.Clear();
-
-                done = true;
+                return true;
             }
+
+            return false;
+        }
+
+        public void RemoveBox() {
+            Object.Destroy(boxObject);
         }
     }
 }

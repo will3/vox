@@ -203,6 +203,24 @@ float getGrass(int3 coord, float heightRatio) {
     return value;
 }
 
+float filterSpawnArea(float canyon, int3 coord) {
+    int3 absPos = coord + floor(_Origin);
+    float dis = sqrt(absPos.x * absPos.x + absPos.z * absPos.z);
+
+    float spawnArea = 80;
+    if (dis < spawnArea) {
+        float ratio = dis / spawnArea;
+        if (ratio < 0) {
+            ratio = 0;
+        }
+
+        canyon += 1;
+        canyon *= ratio;
+        canyon -=1;
+    }
+    return canyon;
+}
+
 [numthreads(8, 8, 8)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
@@ -217,19 +235,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     float canyon = sampleNoise(_CanyonBuffer, coord);
     float terrainHeight;
 
-    int3 absPos = coord + floor(_Origin);
-    float dis = sqrt(absPos.x * absPos.x + absPos.z * absPos.z);
-    float spawnArea = 80;
-    if (dis < spawnArea) {
-        float ratio = dis / spawnArea;
-        if (ratio < 0) {
-            ratio = 0;
-        }
-
-        canyon += 1;
-        canyon *= ratio;
-        canyon -=1;
-    }
+    canyon = filterSpawnArea(canyon, coord);
 
     if (canyon < -0.1) {
         terrainHeight = _PlainHeight;

@@ -75,7 +75,7 @@ namespace FarmVox
 
         void UpdateTask() {
             if (currentTask == null) {
-                currentTask = TaskMap.Instance.FindTask(transform.position);
+                currentTask = TaskMap.Instance.FindTask(Vectors.FloorToInt(transform.position));
                 if (currentTask != null) {
                     TaskMap.Instance.AssignedTask(currentTask);
                 }

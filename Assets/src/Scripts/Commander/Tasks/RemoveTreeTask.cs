@@ -1,4 +1,6 @@
-﻿namespace FarmVox
+﻿using UnityEngine;
+
+namespace FarmVox
 {
     public class RemoveTreeTask : Task
     {

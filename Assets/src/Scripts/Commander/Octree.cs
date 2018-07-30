@@ -8,7 +8,7 @@ namespace FarmVox
         Vector3Int start;
         Vector3Int size;
         Vector3Int end;
-        Bounds bounds;
+        BoundsInt bounds;
 
         int minSize = 4;
         int maxValues = 32;
@@ -44,14 +44,12 @@ namespace FarmVox
         public Octree(Vector3Int start, Vector3Int size) {
             this.start = start;
             this.size = size;
-            bounds = new Bounds
-            {
-                min = start,
-                max = start + size
-            };
+            bounds = new BoundsInt();
+            bounds.min = start;
+            bounds.max = start + size;
         }
 
-        public Octree(Bounds bounds)
+        public Octree(BoundsInt bounds)
         {
             this.bounds = bounds;
             start = Vectors.FloorToInt(bounds.min);
@@ -114,9 +112,8 @@ namespace FarmVox
             children.Add(new Octree<T>(new Vector3Int(start.x + halfX,  start.y + halfY,    start.z + halfZ), halfSize));
         }
 
-        public bool Any(Bounds bounds) {
-            if (!this.bounds.Intersects(bounds))
-            {
+        public bool Any(BoundsInt bounds) {
+            if (!IntersectsBounds(this.bounds, bounds)) {
                 return false;
             }
 
@@ -135,17 +132,22 @@ namespace FarmVox
             return false;
         }
 
-        public List<T> Search(Bounds bounds)
+        public List<T> Search(BoundsInt bounds)
         {
             var results = new List<T>();
             Search(bounds, results);
             return results;
         }
 
-        public void Search(Bounds bounds, List<T> results)
+        bool IntersectsBounds(BoundsInt a, BoundsInt b) {
+            return (a.min.x >= b.min.x || a.min.x < b.max.x) &&
+                (a.min.y >= b.min.y || a.min.y < b.max.y) &&
+                (a.min.z >= b.min.z || a.min.z < b.max.z);
+        }
+
+        public void Search(BoundsInt bounds, List<T> results)
         {
-            if (!this.bounds.Intersects(bounds))
-            {
+            if (!IntersectsBounds(this.bounds, bounds)) {
                 return;
             }
 
