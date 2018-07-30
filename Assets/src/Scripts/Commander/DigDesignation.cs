@@ -8,7 +8,7 @@ namespace FarmVox
         Dig
     }
 
-    public class Designation : MonoBehaviour
+    public class DigDesignation : MonoBehaviour
     {
         public DesignationType type;
         public Vector3Int start;

@@ -19,7 +19,7 @@ namespace FarmVox
             {
                 var designationObject = new GameObject("designation");
                 designationObject.transform.parent = transform;
-                var designation = designationObject.AddComponent<Designation>();
+                var designation = designationObject.AddComponent<DigDesignation>();
                 designation.start = box.Min;
                 designation.end = box.Max;
                 designation.type = DesignationType.Dig;
