@@ -13,6 +13,16 @@ namespace FarmVox
         int minSize = 4;
         int maxValues = 10;
 
+        int count;
+
+        public int Count
+        {
+            get
+            {
+                return count;
+            }
+        }
+
         HashSet<Octree<T>> children = new HashSet<Octree<T>>();
         Dictionary<Vector3Int, T> values = new Dictionary<Vector3Int, T>();
 
@@ -48,6 +58,8 @@ namespace FarmVox
             }
 
             bool leaf = values.Count < maxValues || size.x <= minSize;
+
+            count++;
 
             if (leaf)
             {
@@ -92,14 +104,35 @@ namespace FarmVox
             children.Add(new Octree<T>(new Vector3Int(start.x + halfX,  start.y + halfY,    start.z + halfZ), halfSize));
         }
 
-        public HashSet<T> Search(Bounds bounds)
+        public bool Any(Bounds bounds) {
+            if (!this.bounds.Intersects(bounds))
+            {
+                return false;
+            }
+
+            foreach (var kv in values) {
+                if (bounds.Contains(kv.Key)) {
+                    return true;
+                }
+            }
+
+            foreach (var child in children) {
+                if (child.Any(bounds)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public List<T> Search(Bounds bounds)
         {
-            var results = new HashSet<T>();
+            var results = new List<T>();
             Search(bounds, results);
             return results;
         }
 
-        public void Search(Bounds bounds, HashSet<T> results)
+        public void Search(Bounds bounds, List<T> results)
         {
             if (!this.bounds.Intersects(bounds))
             {
@@ -129,6 +162,8 @@ namespace FarmVox
             {
                 return false;
             }
+
+            count--;
 
             if (values.ContainsKey(coord))
             {

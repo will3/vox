@@ -20,7 +20,7 @@ namespace FarmVox
 
     public class TreeMap
     {
-        private readonly HashSet<Vector3Int> trees = new HashSet<Vector3Int>();
+        readonly HashSet<Vector3Int> trees = new HashSet<Vector3Int>();
         Bounds bounds;
         Octree<Tree> map;
         public TreeMap(Bounds bounds) {
@@ -40,6 +40,10 @@ namespace FarmVox
             foreach (var coord in tree.trunkCoords) {
                 treeLookup[coord] = tree;
             }
+
+            foreach (var coord in tree.stumpCoords) {
+                treeLookup[coord] = tree;
+            }
         }
 
         public void RemoveTree(Tree tree) {
@@ -57,18 +61,9 @@ namespace FarmVox
             return null;
         }
 
-        public bool HasOtherTrees(Vector3Int from, float radius)
+        public bool HasTrees(Bounds b)
         {
-            float size = radius * 2.0f;
-            var b = new Bounds(from, new Vector3(size, size, size));;
-
-            var ts = map.Search(b);
-
-            if (ts.Count > 0) {
-                return true;
-            }
-
-            return false;
+            return map.Any(b);
         }
     }
 }

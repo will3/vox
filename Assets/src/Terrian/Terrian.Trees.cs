@@ -38,13 +38,13 @@ namespace FarmVox
 
             foreach (var kv in chunk.Normals)
             {
-                var coord = kv.Key;
+                var localCoord = kv.Key;
                 var normal = kv.Value;
-                var i = coord.x;
-                var j = coord.y;
-                var k = coord.z;
+                var i = localCoord.x;
+                var j = localCoord.y;
+                var k = localCoord.z;
 
-                Vector3 globalCoord = coord + chunk.Origin;
+                Vector3Int globalCoord = localCoord + chunk.Origin;
                 var noise = (float)treeNoise.GetValue(globalCoord);
                 var treeDensity = config.treeDensityFilter.GetValue(noise);
 
@@ -71,10 +71,6 @@ namespace FarmVox
                     continue;
                 }
 
-                if (treeMap.HasOtherTrees(coord, 5.0f)) {
-                    continue;
-                }
-
                 var height = (absY - config.groundHeight) / config.maxHeight;
                 var treeHeightValue = config.treeHeightGradient.GetValue(height);
 
@@ -82,7 +78,20 @@ namespace FarmVox
 
                 if (value < 0.5f) { continue; }
 
-                pine.Place(this, treeLayer, coord + chunk.Origin, config);
+                var treeBoundsSize = 5.0f;
+                var treeBounds = new Bounds(globalCoord, new Vector3(treeBoundsSize, treeBoundsSize, treeBoundsSize));
+                if (treeMap.HasTrees(treeBounds))
+                {
+                    continue;
+                }
+
+                var tree = pine.Place(this, treeLayer, globalCoord, config);
+
+                treeMap.AddTree(tree);
+
+                if (!treeMap.HasTrees(treeBounds)) {
+                    throw new System.Exception("Cant find tree just added");
+                }
             }
 
             var treeChunk = treeLayer.GetChunk(terrianChunk.Origin);

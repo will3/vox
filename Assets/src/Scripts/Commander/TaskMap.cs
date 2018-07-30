@@ -74,12 +74,12 @@ namespace FarmVox
             }
         }
 
-        Task GetRandom(Vector3 from, HashSet<Task> tasks) {
+        Task GetRandom(List<Task> tasks) {
             var index = Mathf.FloorToInt(Random.Range(0.0f, 1.0f) * tasks.Count);
             return tasks.ElementAt(index);
         }
 
-        Task GetClosest(Vector3 from, HashSet<Task> tasks) {
+        Task GetClosest(Vector3 from, List<Task> tasks) {
             var minDis = Mathf.Infinity;
             Task closestTask = null;
             foreach (var task in tasks) {
@@ -93,7 +93,7 @@ namespace FarmVox
             return closestTask;
         }
 
-        HashSet<Task> Find(Vector3 from, float radius) {
+        List<Task> Find(Vector3 from, float radius) {
             var bounds = new Bounds();
             bounds.center = from;
             bounds.extents = new Vector3(radius, radius, radius);

@@ -18,10 +18,10 @@ namespace FarmVox
             this.trunkHeight = trunkHeight;
 
             int radius = Mathf.CeilToInt(r);
-            offset = new Vector3Int(-radius, 1, -radius);
+            offset = new Vector3Int(-radius, 0, -radius);
         }
 
-        public void Place(Terrian terrian, Chunks layer, Vector3Int position, TerrianConfig config)
+        public Tree Place(Terrian terrian, Chunks layer, Vector3Int position, TerrianConfig config)
         {
             int radius = Mathf.CeilToInt(r);
             int mid = radius + 1;
@@ -45,8 +45,27 @@ namespace FarmVox
                             layer.Set(coord, 1);
                             layer.SetColor(coord, Colors.trunk);
 
-                            if (j == 0) {
-                                stumpCoords.Add(coord);    
+                            //if (j == 1) {
+                            //    var stump1 = coord + new Vector3Int(0, 0, 1);
+                            //    var stump2 = coord + new Vector3Int(0, 0, -1);
+                            //    var stump3 = coord + new Vector3Int(1, 0, 0);
+                            //    var stump4 = coord + new Vector3Int(-1, 0, 0);
+
+                            //    layer.Set(stump1, 1);
+                            //    layer.SetColor(stump1, Colors.trunk);
+
+                            //    layer.Set(stump2, 1);
+                            //    layer.SetColor(stump2, Colors.trunk);
+
+                            //    layer.Set(stump3, 1);
+                            //    layer.SetColor(stump3, Colors.trunk);
+
+                            //    layer.Set(stump4, 1);
+                            //    layer.SetColor(stump4, Colors.trunk);
+                            //}
+
+                            if (j == 0 || j == 1) {
+                                stumpCoords.Add(coord);
                             } else {
                                 treeCoords.Add(coord);    
                             }
@@ -74,7 +93,7 @@ namespace FarmVox
             }
 
             var tree = new Tree(stumpCoords, treeCoords, position);
-            terrian.TreeMap.AddTree(tree);
+            return tree;
         }
     }
 }
