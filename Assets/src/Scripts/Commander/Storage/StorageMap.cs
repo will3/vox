@@ -29,7 +29,7 @@ namespace FarmVox
 
         public void Add(StorageBlock block)
         {
-            map.Add(block.coord, block);
+            map.Set(block.coord, block);
         }
 
         public void Remove(Vector3Int coord)

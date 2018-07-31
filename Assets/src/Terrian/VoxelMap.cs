@@ -1,53 +1,31 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace FarmVox
 {
-    // WIP
-    public class Voxel {
-        Vector3Int coord;
-        public Voxel(Vector3Int coord) {
-            this.coord = coord;
-        }
+    public struct Voxel {
+        float value;
+        Color color;
+        int type;
     }
 
     public class VoxelMap
     {
-        Octree<Voxel> map;
-        BoundsInt bounds;
+        Octree<Voxel> tree;
 
-        private Mutex mutex;
+        BoundsInt bounds;
 
         public VoxelMap(BoundsInt bounds) {
             this.bounds = bounds;
-            map = new Octree<Voxel>(bounds);
-            mutex = new Mutex();
+            tree = new Octree<Voxel>(bounds);
         }
 
-        public void LoadChunk(Chunk chunk) {
-            mutex.WaitOne();
-            for (var i = 0; i < chunk.dataSize; i++)
-            {
-                for (var j = 0; j < chunk.dataSize; j++)
-                {
-                    for (var k = 0; k < chunk.dataSize; k++)
-                    {
-                        var index = chunk.GetIndex(i, j, k);
-                        var v = chunk.Data[index];
-                        if (v > 0) {
-                            //var color = chunk.Colors[index];
-                            var coord = new Vector3Int(i, j, k);
-                            map.Add(coord, new Voxel(coord));
-                        }
-                    }
-                }
-            }
-            mutex.ReleaseMutex();
+        public void Set(Vector3Int coord, Voxel voxel) {
+            tree.Set(coord, voxel);
         }
 
-        public void LoadChunkAsync(Chunk chunk) {
-            Thread thread = new Thread(() => LoadChunk(chunk));
-            thread.Start();
+        public void Remove(Vector3Int coord) {
+            tree.Remove(coord);
         }
     }
 }

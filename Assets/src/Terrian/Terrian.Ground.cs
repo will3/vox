@@ -63,12 +63,18 @@ namespace FarmVox
             if (terrianChunk.colorBuffer == null) {
                 terrianChunk.colorBuffer = genTerrianGPU.CreateColorBuffer();
             }
+            if (terrianChunk.typeBuffer == null) {
+                terrianChunk.typeBuffer = genTerrianGPU.CreateTypeBuffer();
+            }
             var colorBuffer = terrianChunk.colorBuffer;
 
-            genTerrianGPU.Dispatch(voxelBuffer, colorBuffer, terrianChunk);
+            genTerrianGPU.Dispatch(voxelBuffer, colorBuffer, terrianChunk.typeBuffer, terrianChunk);
 
             var voxelBufferData = new float[voxelBuffer.count];
             voxelBuffer.GetData(voxelBufferData);
+
+            var typeBufferData = new int[terrianChunk.typeBuffer.count];
+            terrianChunk.typeBuffer.GetData(typeBufferData);
 
             var empty = true;
             for (var i = 0; i < voxelBufferData.Length; i++) {
@@ -97,8 +103,6 @@ namespace FarmVox
                         }
                     }
                 }
-
-                voxelMap.LoadChunkAsync(chunk);
             }
 
             terrianChunk.rockNeedsUpdate = false;

@@ -24,6 +24,7 @@ namespace FarmVox
         public TerrianColumn column;
         public ComputeBuffer colorBuffer;
         public ComputeBuffer canyonBuffer;
+        public ComputeBuffer typeBuffer;
 
         Terrian terrian;
 

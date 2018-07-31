@@ -26,8 +26,8 @@ namespace FarmVox
         public void AddTask(Task task)
         {
             var coord = task.GetCoord();
-            if (!taskTree.Add(coord, task)) {
-                taskTree.Add(coord, task);
+            if (!taskTree.Set(coord, task)) {
+                taskTree.Set(coord, task);
                 throw new System.Exception("failed to add task to map");
             }
         }

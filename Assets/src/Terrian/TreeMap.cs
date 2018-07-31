@@ -37,9 +37,9 @@ namespace FarmVox
 
         public void AddTree(Tree tree)
         {
-            if (!map.Add(tree.pivot, tree))
+            if (!map.Set(tree.pivot, tree))
             {
-                map.Add(tree.pivot, tree);
+                map.Set(tree.pivot, tree);
                 Debug.LogWarning("Failed to add tree at " + tree.pivot.ToString());
             }
 

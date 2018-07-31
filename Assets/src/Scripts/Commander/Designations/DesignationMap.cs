@@ -28,7 +28,7 @@ namespace FarmVox
 
         public void AddDesignation(Designation designation)
         {
-            map.Add(designation.center, designation);
+            map.Set(designation.center, designation);
         }
 
         public IEnumerable<Designation> Find(Vector3Int from, DesignationType type) {

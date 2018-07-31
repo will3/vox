@@ -13,16 +13,6 @@ namespace FarmVox
         int minSize = 4;
         int maxValues = 32;
 
-        int count;
-
-        public int Count
-        {
-            get
-            {
-                return count;
-            }
-        }
-
         List<Octree<T>> children = new List<Octree<T>>();
         Dictionary<Vector3Int, T> values = new Dictionary<Vector3Int, T>();
 
@@ -60,15 +50,13 @@ namespace FarmVox
             return bounds.Contains(pos);    
         }
 
-        public bool Add(Vector3Int pos, T value)
+        public bool Set(Vector3Int pos, T value)
         {
             if (!bounds.Contains(pos)) {
                 return false;
             }
 
             bool leaf = values.Count < maxValues || size.x <= minSize;
-
-            count++;
 
             if (leaf)
             {
@@ -80,7 +68,7 @@ namespace FarmVox
 
             foreach (var child in children)
             {
-                if (child.Add(pos, value))
+                if (child.Set(pos, value))
                 {
                     return true;
                 }
@@ -185,8 +173,6 @@ namespace FarmVox
             {
                 return false;
             }
-
-            count--;
 
             if (values.ContainsKey(coord))
             {

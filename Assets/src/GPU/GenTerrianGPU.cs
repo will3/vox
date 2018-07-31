@@ -65,7 +65,11 @@ namespace FarmVox
             return new ComputeBuffer(dataSize * dataSize * dataSize, sizeof(float) * 4);
         }
 
-        public void Dispatch(ComputeBuffer voxelBuffer, ComputeBuffer colorBuffer, TerrianChunk terrianChunk) {
+        public ComputeBuffer CreateTypeBuffer() {
+            return new ComputeBuffer(dataSize * dataSize * dataSize, sizeof(int));
+        }
+
+        public void Dispatch(ComputeBuffer voxelBuffer, ComputeBuffer colorBuffer, ComputeBuffer typeBuffer, TerrianChunk terrianChunk) {
             var heightNoise = new Perlin3DGPU(config.heightNoise, dataSize, origin);
             var rockColorNoise = new Perlin3DGPU(config.rockColorNoise, dataSize, origin);
             var grassNoise = new Perlin3DGPU(config.grassNoise, dataSize, origin);
@@ -81,6 +85,7 @@ namespace FarmVox
 
             shader.SetBuffer(0, "_VoxelBuffer", voxelBuffer);
             shader.SetBuffer(0, "_ColorBuffer", colorBuffer);
+            shader.SetBuffer(0, "_TypeBuffer", typeBuffer);
 
             shader.SetFloat("_MaxHeight", config.maxHeight);
 

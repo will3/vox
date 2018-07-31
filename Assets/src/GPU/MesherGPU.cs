@@ -92,21 +92,8 @@ namespace FarmVox
             waterfallBuffer.Dispose();
         }
 
-        public int Count(ComputeBuffer from) {
-            var countBuffer = new ComputeBuffer(1, 16, ComputeBufferType.IndirectArguments);
-
-            ComputeBuffer.CopyCount(from, countBuffer, 0);
-            int[] counter = new int[] { 0, 0, 0, 0 };
-            countBuffer.GetData(counter);
-            int count = counter[0];
-
-            countBuffer.Dispose();
-
-            return count;
-        }
-
         public Triangle[] ReadTriangles(ComputeBuffer trianglesBuffer) {
-            var count = Count(trianglesBuffer);
+            var count = AppendBufferCounter.Count(trianglesBuffer);
             var triangles = new Triangle[count];
 
             trianglesBuffer.GetData(triangles);

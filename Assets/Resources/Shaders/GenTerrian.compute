@@ -44,6 +44,7 @@ StructuredBuffer<float> _GrassBuffer;
 // Output
 RWStructuredBuffer<float> _VoxelBuffer;
 RWStructuredBuffer<float4> _ColorBuffer;
+RWStructuredBuffer<int> _TypeBuffer;
 
 int _Size;
 float3 _Origin;
