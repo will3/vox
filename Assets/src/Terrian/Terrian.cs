@@ -31,6 +31,26 @@ namespace FarmVox
             }
         }
 
+        Chunks treeLayer;
+
+        public Chunks TreeLayer
+        {
+            get
+            {
+                return treeLayer;
+            }
+        }
+
+        Chunks treeLayer;
+
+        public Chunks TreeLayer
+        {
+            get
+            {
+                return treeLayer;
+            }
+        }
+
         Chunks waterLayer;
 
         public Chunks WaterLayer
@@ -116,6 +136,7 @@ namespace FarmVox
 
             defaultLayer.GetGameObject().layer = LayerMask.NameToLayer("terrian");
             waterLayer.GetGameObject().layer = LayerMask.NameToLayer("water");
+
              
             defaultLayer.GetGameObject().name = "default";
             waterLayer.GetGameObject().name = "water";

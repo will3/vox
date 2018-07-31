@@ -19,10 +19,10 @@ namespace FarmVox
                 SaveChunk(chunk, "water");
             }
 
-            foreach (var chunk in terrian.TreeLayer.Map.Values)
-            {
-                SaveChunk(chunk, "tree");
-            }
+            //foreach (var chunk in terrian.TreeLayer.Map.Values)
+            //{
+            //    SaveChunk(chunk, "tree");
+            //}
         }
 
         public void SaveChunk(Chunk chunk, string prefix) {

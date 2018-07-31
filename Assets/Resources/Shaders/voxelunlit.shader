@@ -238,6 +238,14 @@ Shader "Unlit/voxelunlit"
 
 			fixed4 frag (v2f i) : SV_Target
 			{         
+                int index = floor(i.uv.y);
+                int3 coord = getCoord(index);
+                int3 worldCoord = coord + floor(_Origin);
+
+                if (worldCoord.y > 64) {
+                    discard;
+                }
+
                 float4 color = i.color;
                 float4 lightColor = float4(255 / 255.0, 244 / 255.0, 214 / 255.0, 1.0);
                 float4 diffuse;

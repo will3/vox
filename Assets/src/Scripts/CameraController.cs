@@ -1,10 +1,8 @@
 using UnityEngine;
-using System.Collections;
-using FarmVox;
 
 public class CameraController : MonoBehaviour
 {
-    Vector3 target = new Vector3(0, 0, 0);
+    Vector3 target = new Vector3(0, 32, 0);
     float speed = 20f;
     float rotateSpeed = 80f;
     Vector3 velocity;
