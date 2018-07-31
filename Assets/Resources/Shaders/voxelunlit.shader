@@ -243,7 +243,7 @@ Shader "Unlit/voxelunlit"
                 int3 worldCoord = coord + floor(_Origin);
 
                 if (worldCoord.y > 64) {
-                    discard;
+                    // discard;
                 }
 
                 float4 color = i.color;

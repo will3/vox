@@ -86,12 +86,12 @@ namespace FarmVox
                     continue;
                 }
 
-                var tree = pine.Place(this, defaultLayer, globalCoord, config);
+                var tree = pine.Place(this, treeLayer, globalCoord, config);
 
                 treeMap.AddTree(tree);
             }
 
-            var treeChunk = defaultLayer.GetChunk(terrianChunk.Origin);
+            var treeChunk = treeLayer.GetChunk(terrianChunk.Origin);
             if (treeChunk != null)
             {
                 treeChunk.UpdateSurfaceCoords();
