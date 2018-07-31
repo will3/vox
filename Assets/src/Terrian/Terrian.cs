@@ -31,16 +31,6 @@ namespace FarmVox
             }
         }
 
-        Chunks treeLayer;
-
-        public Chunks TreeLayer
-        {
-            get
-            {
-                return treeLayer;
-            }
-        }
-
         Chunks waterLayer;
 
         public Chunks WaterLayer
@@ -118,7 +108,6 @@ namespace FarmVox
             terrianObject = new GameObject("terrian");
 
             defaultLayer = new Chunks(size);
-            treeLayer = new Chunks(size);
             waterLayer = new Chunks(size);
             buildingLayer = new Chunks(size);
 
@@ -126,25 +115,18 @@ namespace FarmVox
             voxelMap = new VoxelMap(boundsInt);
 
             defaultLayer.GetGameObject().layer = LayerMask.NameToLayer("terrian");
-            treeLayer.GetGameObject().layer = LayerMask.NameToLayer("trees");
             waterLayer.GetGameObject().layer = LayerMask.NameToLayer("water");
-
-            var modifier = treeLayer.GetGameObject().AddComponent<NavMeshModifier>();
-            modifier.overrideArea = true;
-            modifier.area = NavMeshAreas.NotWalkable;
              
             defaultLayer.GetGameObject().name = "default";
-            treeLayer.GetGameObject().name = "trees";
             waterLayer.GetGameObject().name = "water";
 
             defaultLayer.GetGameObject().transform.parent = terrianObject.transform;
-            treeLayer.GetGameObject().transform.parent = terrianObject.transform;
             waterLayer.GetGameObject().transform.parent = terrianObject.transform;
 
             waterLayer.useNormals = false;
             waterLayer.isWater = true;
 
-            chunksToDraw = new Chunks[] { defaultLayer, treeLayer, waterLayer, buildingLayer };
+            chunksToDraw = new Chunks[] { defaultLayer, waterLayer, buildingLayer };
 
             shadowMap = new VoxelShadowMap(size, config);
         }

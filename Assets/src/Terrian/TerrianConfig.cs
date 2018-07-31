@@ -108,7 +108,7 @@ namespace FarmVox
 
             rockColorNoise = NextNoise();
             rockColorNoise.frequency = 0.05f;
-            rockColorNoise.yScale = 6.0f;
+            // rockColorNoise.yScale = 6.0f;
             rockColorNoise.amplitude = 1.0f;
 
             grassNoise = NextNoise();
@@ -177,7 +177,7 @@ namespace FarmVox
                 { 1, 1 } });
 
             rockColorGradient = new ColorGradient(new Dictionary<float, UnityEngine.Color> {
-                {0, GetColor("#9B9B9B")},
+                {0, GetColor("#70746f")},
                 {1, GetColor("#9B9B9B")}
             });
             rockColorGradient.banding = 8;

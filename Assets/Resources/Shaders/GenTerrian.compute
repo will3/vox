@@ -207,7 +207,7 @@ float filterSpawnArea(float canyon, int3 coord) {
     int3 absPos = coord + floor(_Origin);
     float dis = sqrt(absPos.x * absPos.x + absPos.z * absPos.z);
 
-    float spawnArea = 80;
+    float spawnArea = 60;
     if (dis < spawnArea) {
         float ratio = dis / spawnArea;
         if (ratio < 0) {
@@ -235,7 +235,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     float canyon = sampleNoise(_CanyonBuffer, coord);
     float terrainHeight;
 
-    // canyon = filterSpawnArea(canyon, coord);
+    canyon = filterSpawnArea(canyon, coord);
 
     if (canyon < -0.1) {
         terrainHeight = _PlainHeight;
