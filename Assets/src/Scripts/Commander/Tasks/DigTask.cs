@@ -39,6 +39,7 @@ namespace FarmVox
                 chunks.GetColor(coord);
                 var color = chunks.GetColor(coord);
                 actor.AddItem(new BlockItem(color));
+                actor.AddItem(new BlockItem(color));
                 done = true;
             }
         }

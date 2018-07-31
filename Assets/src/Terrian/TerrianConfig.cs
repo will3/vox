@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using LibNoise.Generator;
 using UnityEngine;
 using Random = System.Random;
