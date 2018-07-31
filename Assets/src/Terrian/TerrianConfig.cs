@@ -23,11 +23,11 @@ namespace FarmVox
         public int generateDis = 2;
         public int minTreeJ = 1;
         public float maxHeight = 64;
-        public float hillHeight = 64;
+        public float hillHeight = 48;
         public float plainHeight = 12;
         public int waterLevel = 2;
         public int groundHeight = 32;
-        public int maxChunksX = 2;
+        public int maxChunksX = 8;
 
 #region ground
         public Noise heightNoise;

@@ -58,56 +58,30 @@ namespace FarmVox
             var chunk = defaultLayer.GetOrCreateChunk(origin);
 
             var genTerrianGPU = new GenTerrianGPU(size, origin, config);
+
             var voxelBuffer = genTerrianGPU.CreateVoxelBuffer();
+            var colorBuffer = genTerrianGPU.CreateColorBuffer();
+            var typeBuffer = genTerrianGPU.CreateTypeBuffer();
 
-            if (terrianChunk.colorBuffer == null) {
-                terrianChunk.colorBuffer = genTerrianGPU.CreateColorBuffer();
-            }
-            if (terrianChunk.typeBuffer == null) {
-                terrianChunk.typeBuffer = genTerrianGPU.CreateTypeBuffer();
-            }
-            var colorBuffer = terrianChunk.colorBuffer;
-
-            genTerrianGPU.Dispatch(voxelBuffer, colorBuffer, terrianChunk.typeBuffer, terrianChunk);
+            genTerrianGPU.Dispatch(voxelBuffer, colorBuffer, typeBuffer, terrianChunk);
 
             var voxelBufferData = new float[voxelBuffer.count];
             voxelBuffer.GetData(voxelBufferData);
 
-            var typeBufferData = new int[terrianChunk.typeBuffer.count];
-            terrianChunk.typeBuffer.GetData(typeBufferData);
+            var typeBufferData = new int[typeBuffer.count];
+            typeBuffer.GetData(typeBufferData);
 
-            var empty = true;
-            for (var i = 0; i < voxelBufferData.Length; i++) {
-                if (voxelBufferData[i] > 0) {
-                    empty = false;
-                    break;
-                }
-            }
+            var colorBufferData = new Color[colorBuffer.count];
+            colorBuffer.GetData(colorBufferData);
 
-            if (!empty) {
-                var colors = new Color[colorBuffer.count];
-                colorBuffer.GetData(colors);
-                chunk.SetColors(colors);
-
-                var dataSize = chunk.dataSize;
-                for (var i = 0; i < chunk.dataSize; i++)
-                {
-                    for (var j = 0; j < chunk.dataSize; j++)
-                    {
-                        for (var k = 0; k < chunk.dataSize; k++)
-                        {
-                            var index = i * dataSize * dataSize + j * dataSize + k;
-                            var v = voxelBufferData[index];
-                            chunk.Set(i, j, k, v);
-                            chunk.SetColor(i, j, k, colors[index]);
-                        }
-                    }
-                }
-            }
+            chunk.SetColors(colorBufferData);
+            chunk.SetData(voxelBufferData);
 
             terrianChunk.rockNeedsUpdate = false;
 
             voxelBuffer.Dispose();
+            typeBuffer.Dispose();
+            colorBuffer.Dispose();
         }
     }
 }

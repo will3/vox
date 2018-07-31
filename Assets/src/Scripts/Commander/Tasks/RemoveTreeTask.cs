@@ -18,13 +18,13 @@ namespace FarmVox
 
             foreach (var coord in tree.trunkCoords)
             {
-                terrian.DefaultLayer.Set(coord, 0);
+                terrian.TreeLayer.Set(coord, 0);
                 tree.removedTrunk = true;
             }
 
             foreach (var coord in tree.stumpCoords)
             {
-                terrian.DefaultLayer.Set(coord, 0);
+                terrian.TreeLayer.Set(coord, 0);
                 tree.removedStump = true;
             }
 

@@ -260,13 +260,25 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     float colorRatio = heightRatio + sampleNoise(_RockColorNoise, coord);
     float4 rockColor = sampleColor(_RockGradient, _RockGradientIntervals, _RockGradientSize, _RockGradientBanding, colorRatio);
 
-    // Grass
+    int typeAir = 0;
+    int typeRock = 1;
+    int typeGrass = 2;
+    int type = typeAir;
+
+    // Color
     float grass = getGrass(coord, heightRatio);
     if (grass > 0) {
+        type = typeGrass;
+    } else {
+        type = typeRock;
+    }
+    _TypeBuffer[index] = type;
+
+    if (type == typeGrass) {
         float4 grassColor = sampleColor(_GrassGradient, _GrassGradientIntervals, 
             _GrassGradientSize, _GrassGradientBanding, grass);
         _ColorBuffer[index] = grassColor;
-    } else {
+    } else if (type == typeRock) {
         _ColorBuffer[index] = rockColor;
     }
 }

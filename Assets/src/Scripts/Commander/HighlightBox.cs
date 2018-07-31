@@ -3,13 +3,14 @@ using UnityEngine;
 
 namespace FarmVox
 {
-    public class Box : MonoBehaviour
+
+    public class HighlightBox : MonoBehaviour
     {
         public bool hasStartCoord;
         public BoundsInt bounds = new BoundsInt();
         public Material material;
 
-        public void Copy(Box box) {
+        public void Copy(HighlightBox box) {
             hasStartCoord = box.hasStartCoord;
             bounds = box.bounds;
         }
@@ -56,10 +57,6 @@ namespace FarmVox
             }
 
             lineRenderer.enabled = true;
-            lineRenderer.SetPositions(new Vector3[] {
-                new Vector3(0, 0, 0),
-                new Vector3(100, 100, 100)
-            });
 
             var mask = 1 << UserLayers.terrian;
             var positions = GetLassoCoordsForBox(mask).ToArray();

@@ -2,6 +2,7 @@
 
 namespace FarmVox
 {
+
     public class DigCommand : Command
     {
         GameObject designationObject;

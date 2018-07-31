@@ -207,12 +207,12 @@ namespace FarmVox
                 }
 
                 GenerateGround(column);
-                GenerateWaters(column);
-                GenerateTrees(column);
+                //GenerateWaters(column);
+                //GenerateTrees(column);
 
                 column.generatedTerrian = true;
 
-                yield return null;
+                yield return new WaitForSeconds(0.1f);
             }
         }
 

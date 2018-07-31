@@ -73,14 +73,15 @@ namespace FarmVox
             var heightNoise = new Perlin3DGPU(config.heightNoise, dataSize, origin);
             var rockColorNoise = new Perlin3DGPU(config.rockColorNoise, dataSize, origin);
             var grassNoise = new Perlin3DGPU(config.grassNoise, dataSize, origin);
-            var canyonBuffer = terrianChunk.LoadCanyonBuffer();
+            var canyonNoise = new Perlin3DGPU(config.canyonNoise, dataSize, origin);
 
             heightNoise.Dispatch();
             rockColorNoise.Dispatch();
             grassNoise.Dispatch();
+            canyonNoise.Dispatch();
 
             shader.SetBuffer(0, "_HeightBuffer", heightNoise.Results);
-            shader.SetBuffer(0, "_CanyonBuffer", canyonBuffer);
+            shader.SetBuffer(0, "_CanyonBuffer", canyonNoise.Results);
             shader.SetBuffer(0, "_GrassBuffer", grassNoise.Results);
 
             shader.SetBuffer(0, "_VoxelBuffer", voxelBuffer);
@@ -114,7 +115,6 @@ namespace FarmVox
             var grassGradientBuffers = SetColorGradient(config.grassGradient, "_Grass");
             var grassNormalBuffers = SetValueGradient(config.grassNormalFilter, "_GrassNormal");
             var grassHeightBuffers = SetValueGradient(config.grassHeightFilter, "_GrassHeight");
-            // var treeCanyonFilterBuffers = SetValueGradient(config.treeCanyonFilter, "_TreeCanyonFilter");
 
             shader.SetInt("_DataSize", heightNoise.DataSize);
             shader.SetInt("_Resolution", heightNoise.Resolution);
@@ -129,7 +129,7 @@ namespace FarmVox
             grassGradientBuffers.Dispose();
             grassNormalBuffers.Dispose();
             grassHeightBuffers.Dispose();
-            // treeCanyonFilterBuffers.Dispose();
+            canyonNoise.Dispose();
         }
 
         ValueGradientBuffers SetValueGradient(ValueGradient valueGradient, string prefix) {

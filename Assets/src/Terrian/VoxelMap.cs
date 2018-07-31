@@ -4,13 +4,23 @@ using UnityEngine;
 namespace FarmVox
 {
     public struct Voxel {
-        float value;
-        Color color;
-        int type;
+        public float value;
+        public Color color;
+        public int type;
     }
 
     public class VoxelMap
     {
+        static VoxelMap instance;
+        public static VoxelMap Instance {
+            get {
+                if (instance == null) {
+                    instance = new VoxelMap(TerrianConfig.Instance.BoundsInt);
+                }
+                return instance;
+            }
+        }
+
         Octree<Voxel> tree;
 
         BoundsInt bounds;

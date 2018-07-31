@@ -31,6 +31,11 @@ namespace FarmVox
                 currentCommand = new StorageCommand();
             }
 
+            if (Input.GetKeyDown(KeyCode.L))
+            {
+                currentCommand = new BuildWallCommand();
+            }
+            
             if (Input.GetKeyDown(KeyCode.Escape)) {
                 currentCommand = null;
             }

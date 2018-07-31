@@ -242,10 +242,6 @@ Shader "Unlit/voxelunlit"
                 int3 coord = getCoord(index);
                 int3 worldCoord = coord + floor(_Origin);
 
-                if (worldCoord.y > 64) {
-                    // discard;
-                }
-
                 float4 color = i.color;
                 float4 lightColor = float4(255 / 255.0, 244 / 255.0, 214 / 255.0, 1.0);
                 float4 diffuse;
@@ -280,6 +276,15 @@ Shader "Unlit/voxelunlit"
 
 				// apply fog
 				UNITY_APPLY_FOG(i.fogCoord, col);
+
+                if (worldCoord.x % 3 == 0 || worldCoord.z % 3 == 0) {
+                    // col *= float4(1.0,0.5,0.5, 1.0);
+                    // col *= float4(1.2, 1.2, 1.2, 1.0);
+                    // col *= float4(0.5, 0.5, 0.5, 1.0);
+                } else {
+                    // col = float4(103 / 255.0, 234 / 255.0, 19 / 255.0, 1.0) * 0.5 + col * 0.5;
+                    // col *= float4(1.0, 1.0, 1.0, 1.0);
+                }
                 
 				return col;
 			}

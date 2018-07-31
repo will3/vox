@@ -8,15 +8,16 @@ namespace FarmVox
 
         public abstract bool Update();
 
-        protected Box box;
+        protected HighlightBox box;
         protected GameObject boxObject;
+
 
         protected bool DragBox()
         {
             if (boxObject == null) {
                 boxObject = new GameObject("box");
                 boxObject.transform.parent = commander.transform;
-                box = boxObject.AddComponent<Box>();
+                box = boxObject.AddComponent<HighlightBox>();
             }
 
             if (Input.GetKey(KeyCode.Mouse0))
@@ -34,6 +35,10 @@ namespace FarmVox
             }
 
             return false;
+        }
+
+        protected void DragLine() {
+            
         }
 
         public void RemoveBox() {
