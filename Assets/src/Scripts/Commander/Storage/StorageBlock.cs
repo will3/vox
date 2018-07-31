@@ -7,13 +7,22 @@ namespace FarmVox
     {
         public bool allocated;
         public readonly Vector3Int coord;
-        float storage = 8.0f;
+        float capacity = 8.0f;
+        float storage = 0.0f;
 
         public float Storage
         {
             get
             {
                 return storage;
+            }
+        }
+
+        public bool Full
+        {
+            get
+            {
+                return storage >= capacity;
             }
         }
 
@@ -26,7 +35,7 @@ namespace FarmVox
 
         public void AddItem(Item item) {
             items.Add(item);
-            storage -= item.weight;
+            storage += item.weight;
 
             var yOffset = items.Count;
             var coordAbove = coord + new Vector3Int(0, yOffset, 0);
@@ -39,7 +48,7 @@ namespace FarmVox
 
         public void RemoveItem(Item item) {
             items.Remove(item);
-            storage += item.weight;
+            storage -= item.weight;
         }
     }
 }

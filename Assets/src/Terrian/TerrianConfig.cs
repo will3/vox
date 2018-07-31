@@ -177,8 +177,8 @@ namespace FarmVox
                 { 1, 1 } });
 
             rockColorGradient = new ColorGradient(new Dictionary<float, UnityEngine.Color> {
-                {0, GetColor("#cec479")},
-                {1, GetColor("#cec479")}
+                {0, GetColor("#9B9B9B")},
+                {1, GetColor("#9B9B9B")}
             });
             rockColorGradient.banding = 8;
 

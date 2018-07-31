@@ -44,7 +44,7 @@ namespace FarmVox
 
             for (var i = 0; i < maxTry; i++)
             {
-                var results = map.Find(from, radius).Where((x) => x.Storage >= minStorage && !x.allocated);
+                var results = map.Find(from, radius).Where((x) => !x.Full && !x.allocated);
 
                 if (results.Any())
                 {

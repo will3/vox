@@ -235,7 +235,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     float canyon = sampleNoise(_CanyonBuffer, coord);
     float terrainHeight;
 
-    canyon = filterSpawnArea(canyon, coord);
+    // canyon = filterSpawnArea(canyon, coord);
 
     if (canyon < -0.1) {
         terrainHeight = _PlainHeight;
