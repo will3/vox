@@ -54,22 +54,26 @@ float getVoxel(int3 coord) {
 }
 
 float getDot(int i, int j, int k) {
-    float3 v =  float3(-1, -1, -1) *    getVoxel(int3(i, j, k)) +
-    float3(1, -1, -1) *     getVoxel(int3(i + 1, j, k)) +
-    float3(-1, 1, -1) *     getVoxel(int3(i, j + 1, k)) +
-    float3(1, 1, -1) *      getVoxel(int3(i + 1, j + 1, k)) +
-    float3(-1, -1, 1) *     getVoxel(int3(i, j, k + 1)) +
-    float3(1, -1, 1) *      getVoxel(int3(i + 1, j, k + 1)) +
-    float3(-1, 1, 1) *      getVoxel(int3(i, j + 1, k + 1)) +
-    float3(1, 1, 1) *       getVoxel(int3(i + 1, j + 1, k + 1));
-
-    // Assume up
-    if (v.x == 0 && v.y == 0 && v.z == 0) {
-      v = float3(0, 1, 0);
+    float3 v;
+    for(int di = -1; di <= 1; di++) {
+    for(int dj = -1; dj <= 1; dj++) {
+    for(int dk = -1; dk <= 1; dk++) {
+        v += normalize(float3(di,dj,dk)) * getVoxel(int3(i + di, j + dj, k + dk));
+    }
+    }
     }
 
+    // Assume up
+    //if (v.x == 0 && v.y == 0 && v.z == 0) {
+      //v = float3(0, 1, 0);
+    //}
+
     float3 lightDir = normalize(float3(1, 1, 1));
-    return dot(-normalize(v), lightDir);
+    float dt = dot(-normalize(v), lightDir);
+    if (dt < 0) {
+        dt = 0;
+    }
+    return dt;
 }
 
 void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, float ab, float ac, float ad, bool order, bool flipped, float waterfall, int index) {

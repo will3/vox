@@ -24,7 +24,7 @@ namespace FarmVox
         public float maxHeight = 64;
         public float hillHeight = 48;
         public float plainHeight = 4;
-        public int waterLevel = 2;
+        public int waterLevel = 0;
         public int groundHeight = 12;
         public int maxChunksX = 3;
 
