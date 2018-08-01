@@ -28,8 +28,8 @@ namespace FarmVox
         public int groundHeight = 12;
         public int maxChunksX = 3;
 
-        public float normalStrength = 0.5f;
-        public float shadowStrength = 0.6f;
+        public float normalStrength = 0.4f;
+        public float shadowStrength = 0.4f;
 
 #region ground
         public Noise heightNoise;
