@@ -7,7 +7,6 @@ namespace FarmVox
         void UpdateMaterial() {
             var visionMap = Finder.FindGameController().VisionMap;
             visionMap.UpdateBuffer();
-            float shadowStrength = 0.5f;
 
             foreach (var tc in map.Values) {
                 var material = tc.Material;
@@ -23,7 +22,7 @@ namespace FarmVox
                 material.SetBuffer("_ShadowMap10", shadowMap.GetBuffer(origin, new Vector2Int(1, 0)));
                 material.SetBuffer("_ShadowMap11", shadowMap.GetBuffer(origin, new Vector2Int(1, 1)));
 
-                material.SetFloat("_ShadowStrength", shadowStrength);
+                material.SetFloat("_ShadowStrength", TerrianConfig.Instance.shadowStrength);
             }
         }
     }

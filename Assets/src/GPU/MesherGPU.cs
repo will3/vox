@@ -29,7 +29,6 @@ namespace FarmVox
         readonly int dataSize;
         readonly int workGroups = 8;
         public int normalBranding = 6;
-        public float normalStrength = 0.4f;
         public bool useNormals = true;
         public bool isWater = false;
 
@@ -63,7 +62,7 @@ namespace FarmVox
             shader.SetInt("_NormalBranding", normalBranding);
             shader.SetInt("_UseNormals", useNormals ? 1 : 0);
             shader.SetInt("_IsWater", isWater ? 1 : 0);
-            shader.SetFloat("_NormalStrength", normalStrength);
+            shader.SetFloat("_NormalStrength", TerrianConfig.Instance.normalStrength);
 
             ComputeBuffer waterfallBuffer;
             if (chunk.Waterfalls.Count > 0) {
