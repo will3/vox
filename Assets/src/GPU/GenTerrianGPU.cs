@@ -117,7 +117,6 @@ namespace FarmVox
             var grassHeightBuffers = SetValueGradient(config.grassHeightFilter, "_GrassHeight");
 
             shader.SetInt("_DataSize", heightNoise.DataSize);
-            shader.SetInt("_Resolution", heightNoise.Resolution);
 
             var dispatchNum = Mathf.CeilToInt(dataSize / (float)workGroups);
             shader.Dispatch(0, dispatchNum, dispatchNum, dispatchNum);

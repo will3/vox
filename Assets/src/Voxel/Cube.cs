@@ -69,7 +69,7 @@ namespace FarmVox
             return mesh;
         }
 
-        static void GenQuad(int d, bool front, List<Vector3> vertices, List<int> indices, List<Vector2> uvs) {
+        public static void GenQuad(int d, bool front, List<Vector3> vertices, List<int> indices, List<Vector2> uvs) {
             var u = (d + 1) % 3;
             var v = (d + 2) % 3;
 

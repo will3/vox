@@ -19,14 +19,14 @@ namespace FarmVox
         }
 
         public int size = 32;
-        public int maxChunksY = 3;
+        public int maxChunksY = 2;
         public int generateDis = 2;
         public int minTreeJ = 1;
         public float maxHeight = 64;
         public float hillHeight = 48;
-        public float plainHeight = 12;
+        public float plainHeight = 4;
         public int waterLevel = 2;
-        public int groundHeight = 32;
+        public int groundHeight = 0;
         public int maxChunksX = 8;
 
 #region ground
