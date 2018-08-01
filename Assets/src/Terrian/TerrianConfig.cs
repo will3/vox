@@ -21,7 +21,6 @@ namespace FarmVox
         public int size = 32;
         public int maxChunksY = 2;
         public int generateDis = 2;
-        public int minTreeJ = 1;
         public float maxHeight = 64;
         public float hillHeight = 48;
         public float plainHeight = 4;

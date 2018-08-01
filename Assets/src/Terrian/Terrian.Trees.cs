@@ -22,7 +22,6 @@ namespace FarmVox
 
         void GenerateTrees(TerrianChunk terrianChunk)
         {
-            var minTreeJ = config.minTreeJ;
             var treeNoise = config.treeNoise;
 
             if (!terrianChunk.treesNeedsUpdate)
@@ -53,14 +52,9 @@ namespace FarmVox
                     continue;
                 }
 
-                var absY = j + chunk.Origin.y;
-                if (absY < minTreeJ)
-                {
-                    continue;
-                }
+                var relY = j + chunk.Origin.y - config.groundHeight;
 
-                if (terrianChunk.GetWater(i, j, k))
-                {
+                if (relY <= config.waterLevel) {
                     continue;
                 }
 
@@ -71,7 +65,7 @@ namespace FarmVox
                     continue;
                 }
 
-                var height = (absY - config.groundHeight) / config.maxHeight;
+                var height = relY / config.maxHeight;
                 var treeHeightValue = config.treeHeightGradient.GetValue(height);
 
                 var value = noise * treeHeightValue * config.treeAmount;
