@@ -80,9 +80,9 @@ void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, flo
         t1.a = a;
         t1.b = b;
         t1.c = c;
-        t1.colorA = color;// * aa;
-        t1.colorB = color;// * ab;
-        t1.colorC = color;// * ac;
+        t1.colorA = color * aa;
+        t1.colorB = color * ab;
+        t1.colorC = color * ac;
         t1.waterfall = waterfall;
         t1.index = index;
         _TrianglesBuffer.Append(t1);
@@ -90,9 +90,9 @@ void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, flo
         t2.a = a;
         t2.b = c;
         t2.c = d;
-        t2.colorA = color;// * aa;
-        t2.colorB = color;// * ac;
-        t2.colorC = color;// * ad;
+        t2.colorA = color * aa;
+        t2.colorB = color * ac;
+        t2.colorC = color * ad;
         t2.waterfall = waterfall;
         t2.index = index;
         _TrianglesBuffer.Append(t2);
@@ -100,9 +100,9 @@ void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, flo
         t1.a = c;
         t1.b = b;
         t1.c = a;
-        t1.colorA = color;// * ac;
-        t1.colorB = color;// * ab;
-        t1.colorC = color;// * aa;
+        t1.colorA = color * ac;
+        t1.colorB = color * ab;
+        t1.colorC = color * aa;
         t1.waterfall = waterfall;
         t1.index = index;
         _TrianglesBuffer.Append(t1);
@@ -149,7 +149,8 @@ float _getAO(float s1f, float s2f, float cf) {
 }
 
 float getAO(float s1f, float s2f, float cf) {
-    return 1.0 - (_getAO(s1f, s2f, cf) * 0.1);
+    float aoStrength = 0.2f;
+    return 1.0 - (_getAO(s1f, s2f, cf) * aoStrength);
 }
        
 [numthreads(8, 8, 8)]

@@ -26,8 +26,8 @@ namespace FarmVox
         public float hillHeight = 48;
         public float plainHeight = 4;
         public int waterLevel = 2;
-        public int groundHeight = 0;
-        public int maxChunksX = 8;
+        public int groundHeight = 12;
+        public int maxChunksX = 3;
 
 #region ground
         public Noise heightNoise;
@@ -176,13 +176,13 @@ namespace FarmVox
                 { 1, 1 } });
 
             rockColorGradient = new ColorGradient(new Dictionary<float, UnityEngine.Color> {
-                {0, GetColor("#495447")},
-                {1, GetColor("#9B9B9B")}
+                {0, GetColor("#A7714C")},
+                {1, GetColor("#A7714C")}
             });
             rockColorGradient.banding = 8;
 
             //var grass1 = GetColor("#cec479");
-            var grass2 = GetColor("#447c3e");
+            var grass2 = GetColor("#2A9151");
             // var grass3 = GetColor("#285224");
 
             grassGradient = new ColorGradient(new Dictionary<float, UnityEngine.Color> {

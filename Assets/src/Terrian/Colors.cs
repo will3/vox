@@ -22,7 +22,7 @@ namespace FarmVox
              //var grass2 = GetColor("#285224");
 
             soil = GetColor("#413535");
-            water = GetColor("#5A81AD");
+            water = GetColor("#31A8A8");
             trunk = GetColor("#4f402a");
             leaf = GetColor("#295e21");
             road = GetColor("#bbaf4d");

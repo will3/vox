@@ -207,8 +207,8 @@ namespace FarmVox
                 }
 
                 GenerateGround(column);
-                //GenerateWaters(column);
-                //GenerateTrees(column);
+                GenerateWaters(column);
+                GenerateTrees(column);
 
                 column.generatedTerrian = true;
 
