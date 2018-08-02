@@ -73,17 +73,14 @@ namespace FarmVox
             var heightNoise = new Perlin3DGPU(config.heightNoise, dataSize, origin);
             var rockColorNoise = new Perlin3DGPU(config.rockColorNoise, dataSize, origin);
             var grassNoise = new Perlin3DGPU(config.grassNoise, dataSize, origin);
-            var canyonNoise = new Perlin3DGPU(config.canyonNoise, dataSize, origin);
             var riverNoise = new Perlin3DGPU(config.riverNoise, dataSize, origin);
 
             heightNoise.Dispatch();
             rockColorNoise.Dispatch();
             grassNoise.Dispatch();
-            canyonNoise.Dispatch();
             riverNoise.Dispatch();
 
             shader.SetBuffer(0, "_HeightBuffer", heightNoise.Results);
-            shader.SetBuffer(0, "_CanyonBuffer", canyonNoise.Results);
             shader.SetBuffer(0, "_GrassBuffer", grassNoise.Results);
 
             shader.SetBuffer(0, "_RiverBuffer", riverNoise.Results);
@@ -123,7 +120,6 @@ namespace FarmVox
             grassGradientBuffers.Dispose();
             grassNormalBuffers.Dispose();
             grassHeightBuffers.Dispose();
-            canyonNoise.Dispose();
             riverNoise.Dispose();
             riverNoises.Dispose();
         }

@@ -35,7 +35,6 @@ namespace FarmVox
 
 #region ground
         public Noise heightNoise;
-        public Noise canyonNoise;
         public Noise rockNoise;
         public ColorGradient rockColorGradient;
         public Noise rockColorNoise;
@@ -57,7 +56,6 @@ namespace FarmVox
         public ValueGradient treeHeightGradient;
         public float treeSparse = 5.0f;
         public float treeAmount = 2.0f;
-        public ValueGradient treeCanyonFilter;
         public ValueGradient treeDensityFilter;
 #endregion
 
@@ -110,7 +108,6 @@ namespace FarmVox
         {
             r = new Random(seed);
             heightNoise = NextNoise();
-            canyonNoise = NextNoise();
             rockNoise = NextNoise();
             monsterNoise = NextNoise();
 
@@ -163,21 +160,10 @@ namespace FarmVox
             heightNoise.frequency = 0.015f;
             heightNoise.yScale = 0.4f;
 
-            canyonNoise.frequency = 0.01f;
-            canyonNoise.yScale = 0.5f;
-
             treeNoise.Frequency = 0.05f;
             treeNoise.OctaveCount = 5;
 
             treeHeightGradient = new ValueGradient(1, 0);
-
-            treeCanyonFilter = new ValueGradient(new Dictionary<float, float>
-            {
-                {-1, 0},
-                {-0.1f, 1},
-                {0.1f, 1},
-                {1, 0}
-            });
 
             treeDensityFilter = new ValueGradient(new Dictionary<float, float>
             {
