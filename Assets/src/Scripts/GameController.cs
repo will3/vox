@@ -24,15 +24,12 @@ public class GameController : MonoBehaviour
 
     HighlightHoveredSurface highlight;
 
-    public Commander commander;
-
     // Use this for initialization
     void Start () {
         terrian = new Terrian();
         highlight = gameObject.AddComponent<HighlightHoveredSurface>();
         var source = gameObject.AddComponent<VisionSource>();
         source.radius = 100.0f;
-        commander = gameObject.GetComponent<Commander>();
 
         terrian.InitColumns();
 
@@ -74,7 +71,7 @@ public class GameController : MonoBehaviour
 
 	void OnDrawGizmosSelected()
 	{
-        TaskMap.Instance.OnDrawGizmosSelected();	
+        //TaskMap.Instance.OnDrawGizmosSelected();	
 	}
 
     bool Spawn()
