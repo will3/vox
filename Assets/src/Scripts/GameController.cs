@@ -20,10 +20,9 @@ public class GameController : MonoBehaviour
         }
     }
 
-    int spawned = 1;
+    int spawned = 0;
 
     HighlightHoveredSurface highlight;
-    List<Actor> actors = new List<Actor>();
 
     public Commander commander;
 
@@ -93,7 +92,6 @@ public class GameController : MonoBehaviour
                 var go = new GameObject("guy");
                 var actor = go.AddComponent<Actor>();
                 actor.radius = 2.0f;
-                actors.Add(actor);
                 go.transform.position = navMeshHit.position;
                 return true;
             }

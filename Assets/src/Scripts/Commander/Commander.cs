@@ -14,11 +14,18 @@ namespace FarmVox
 
         static Commander instance;
 
+        Texture2D blankTexture;
+
         public static Commander Instance {
             get {
                 return instance;
             }
         }
+
+		private void Awake()
+		{
+            blankTexture = Resources.Load<Texture2D>("blank");
+		}
 
 		void Update()
         {
@@ -42,6 +49,11 @@ namespace FarmVox
             }
 
             ProcessCommand();
+
+            if (Input.GetKeyUp(KeyCode.Escape)) {
+                showDebugWindow = true;
+                focusNextInput = true;
+            }
         }
 
         void ProcessCommand() {
@@ -57,35 +69,71 @@ namespace FarmVox
         }
 
         string currentText = "";
+        bool showDebugWindow = false;
+        bool focusNextInput = false;
 
 		void OnGUI()
 		{
-            var screenWidth = Screen.width;
-            var screenHeight = Screen.height;
-            var height = 30;
+            if (showDebugWindow) {
+                var screenWidth = Screen.width;
+                var screenHeight = Screen.height;
+                var height = 20;
 
-            currentText = GUI.TextField(new Rect(0, screenHeight - height, screenWidth, height), currentText);
+                var style = new GUIStyle();
+                style.normal.textColor = Color.white;
+                style.normal.background = blankTexture;
+                style.focused = style.normal;
+                // style.normal.background = null;
 
-            for (var i = 0; i < lines.Count; i++) {
-                GUI.Label(new Rect(0, screenHeight - height - height * i, screenWidth, height), currentText, lines[i]);
-            }
+                var maxLines = 4;
 
-            if (GUI.changed) {
+                var leftPadding = 4;
+                var topPadding = 8;
+
+                GUI.BeginGroup(new Rect(leftPadding, 0, screenWidth, height * maxLines + topPadding));
+
+
+
+                //GUI.backgroundColor = new Color(0.0f, 0.0f, 0.0f, 0.8f);
+                //GUI.Box(new Rect(0, 0, screenWidth, height * maxLines), "", style);
+
+                //GUI.backgroundColor = Color.clear;
+                GUI.SetNextControlName("input");
+                currentText = GUI.TextField(new Rect(leftPadding, topPadding, screenWidth - leftPadding - leftPadding, height), currentText, style);
+                if (focusNextInput) {
+                    GUI.FocusControl("input");
+                    focusNextInput = false;
+                }
+
+                for (var i = 0; i < lines.Count; i++)
+                {
+                    var content = lines[i];
+                    GUI.Label(new Rect(leftPadding, height * (lines.Count - i) + topPadding, screenWidth - leftPadding - leftPadding, height), content, style);
+                }
+
                 if (Event.current.keyCode == KeyCode.Return)
                 {
-                    ProcessCommand(currentText);
-                    AddLine(currentText);
-                    currentText = "";
+                    if (currentText != null && currentText.Length > 0)
+                    {
+                        ProcessCommand(currentText);
+                        AddLine(currentText);
+                        currentText = "";
+                    }
                 }
+
+                GUI.EndGroup();
             }
 		}
 
         void ProcessCommand(string text) {
+     
             var args = text.Split(new [] { " " }, System.StringSplitOptions.RemoveEmptyEntries);
             var command = args[0];
 
             if (command == "b") {
                 BuildCommand(args);
+            } else if (command == "exit") {
+                showDebugWindow = false;
             }
         }
 
