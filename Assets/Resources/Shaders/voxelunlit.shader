@@ -43,12 +43,9 @@ Shader "Unlit/voxelunlit"
             StructuredBuffer<int> _ShadowMap01;
             StructuredBuffer<int> _ShadowMap10;
             StructuredBuffer<int> _ShadowMap11;
+            int _ShadowMapSize;
 
             int getShadow(int3 coord) {
-                if (coord.x >= 35 || coord.z >= 35 || coord.x < 0 || coord.z < 0) {
-                    return 99;
-                }
-
                 int x = coord.x - coord.y;
                 int z = coord.z - coord.y;
 
@@ -56,22 +53,23 @@ Shader "Unlit/voxelunlit"
                 int j = 0;
                 int u = x;
                 int v = z;
+                int size = _ShadowMapSize;
 
                 if (x < 0) {
                     i = 1;
-                    u += _Size;
+                    u += size;
                 } 
 
                 if (z < 0) {
                     j = 1;
-                    v += _Size;
+                    v += size;
                 }
 
-                if (u < 0 || u >= _Size || v < 0 || v >= _Size) {
+                if (u < 0 || u >= size || v < 0 || v >= size) {
                     return 99;
                 }
 
-                int index = u * _Size + v;
+                int index = u * size + v;
 
                 if (i == 0) {
                     if (j == 0) {
@@ -86,6 +84,7 @@ Shader "Unlit/voxelunlit"
                         return _ShadowMap11[index];
                     }
                 }
+
                 return 99;
             }
 
@@ -214,27 +213,12 @@ Shader "Unlit/voxelunlit"
                 o.color *= 1 - shadow * _ShadowStrength;
 
                 if (shadowHeight == 99) {
-                    o.color = float4(0.1, 0, 0, 1.0);
+                    o.color = float4(1.0, 0, 0, 1.0);
                     return o;
                 }
 
 				return o;
 			}
-
-            float getWaterfall(float waterfall, float total, float mid, float speed, float offset, float bubbleWidth, float intensity) {
-                float waterfallV = ((waterfall - _Time[0] * speed + offset) % total);
-                if (waterfallV < 0) {
-                    waterfallV += total;
-                }
-                float v = mid - waterfallV;
-                if (v < 0) {
-                    return 1.0;
-                }
-                if (v < bubbleWidth) {
-                    return (1 + ((bubbleWidth - v) / bubbleWidth) * intensity);
-                }
-                return 1.0;
-            }
 
 			fixed4 frag (v2f i) : SV_Target
 			{         
@@ -253,26 +237,6 @@ Shader "Unlit/voxelunlit"
 
                 // sample the texture
                 fixed4 col = diffuse + ambient;
-
-                float waterfall = i.uv.x;
-
-                if (waterfall > 0) {
-                    // float random = sin(waterfall * 1000);
-                    // random -= 0.5;
-                    // random *= 0.2;
-
-                    float factor = 
-                    getWaterfall(waterfall, 13.0, 5.0, 50, 0, 1.0, 1.5) + 
-                    getWaterfall(waterfall, 37.0, 6.0, 75, 3.0, 1.5, 1.0);
-
-                    factor /= 2.0;
-
-                    if (factor > 2) {
-                        factor = 2;
-                    }
-
-                    col *= factor;
-                }
 
 				// apply fog
 				UNITY_APPLY_FOG(i.fogCoord, col);

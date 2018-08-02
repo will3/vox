@@ -8,20 +8,17 @@ struct Triangle {
     float4 colorA;
     float4 colorB;
     float4 colorC;
-    float waterfall;
     int index;
 };
 
 int _DataSize;
 StructuredBuffer<float> _VoxelBuffer;
 StructuredBuffer<float4> _ColorsBuffer;
-StructuredBuffer<float> _WaterfallBuffer;
 AppendStructuredBuffer<Triangle> _TrianglesBuffer;
 int _NormalBranding;
 int _UseNormals;
 int _IsWater;
 float _NormalStrength;
-int _HasWaterfalls;
 
 int3 getVectorInt(int i, int j, int k, int d) {
     if (d == 0) {
@@ -70,13 +67,11 @@ float getDot(int i, int j, int k) {
 
     float3 lightDir = normalize(float3(1, 1, 1));
     float dt = dot(-normalize(v), lightDir);
-    if (dt < 0) {
-        dt = 0;
-    }
+    dt = clamp(dt, 0.0, 1.0);
     return dt;
 }
 
-void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, float ab, float ac, float ad, bool order, bool flipped, float waterfall, int index) {
+void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, float ab, float ac, float ad, bool order, bool flipped, int index) {
     Triangle t1;
     Triangle t2;
 
@@ -87,7 +82,6 @@ void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, flo
         t1.colorA = color * aa;
         t1.colorB = color * ab;
         t1.colorC = color * ac;
-        t1.waterfall = waterfall;
         t1.index = index;
         _TrianglesBuffer.Append(t1);
 
@@ -97,7 +91,6 @@ void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, flo
         t2.colorA = color * aa;
         t2.colorB = color * ac;
         t2.colorC = color * ad;
-        t2.waterfall = waterfall;
         t2.index = index;
         _TrianglesBuffer.Append(t2);
     } else {
@@ -107,7 +100,6 @@ void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, flo
         t1.colorA = color * ac;
         t1.colorB = color * ab;
         t1.colorC = color * aa;
-        t1.waterfall = waterfall;
         t1.index = index;
         _TrianglesBuffer.Append(t1);
 
@@ -117,7 +109,6 @@ void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, flo
         t2.colorA = color * ad;
         t2.colorB = color * ac;
         t2.colorC = color * aa;
-        t2.waterfall = waterfall;
         t2.index = index;
         _TrianglesBuffer.Append(t2);
     }
@@ -126,11 +117,6 @@ void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, flo
 float4 getColor(int3 coord) {
     int index = getIndex(coord);
     return _ColorsBuffer[index];
-}
-
-float getWaterfall(int3 coord) {
-    int index = getIndex(coord);
-    return _WaterfallBuffer[index];
 }
 
 float _getAO(float s1f, float s2f, float cf) {
@@ -195,31 +181,9 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     int3 c = front ? int3(i, j, k) : int3(i + 1, j, k);
     c = getVector(c.x, c.y, c.z, d);
 
-    float _normal;
-
-    if (_UseNormals > 0) {
-        _normal = getDot(c.x, c.y, c.z);
-
-        float normalBranding = _NormalBranding;
-        if (_NormalBranding > 0) {
-            _normal = floor(_normal * normalBranding) / normalBranding;
-        }
-    } else {
-        _normal = 1.0;
-    }
-
-    float normal = 1 - (1 - _normal) * _NormalStrength;
-
-    float waterfall;
-    if (_HasWaterfalls) {
-        waterfall = getWaterfall(c);
-    } else {
-        waterfall = 0.0;
-    }
-
-    if (waterfall > 0.0) {
-        normal = 1.0;
-    }
+    float _normal = getDot(c.x, c.y, c.z);
+   
+    float normal = 1 - (1 - _normal) * 0.5;
 
     float4 color = getColor(c) * normal;
 
@@ -263,7 +227,6 @@ void CSMain (uint3 id : SV_DispatchThreadID)
         ao10,
         front,
         flipped,
-        waterfall,
         index
     );
 }

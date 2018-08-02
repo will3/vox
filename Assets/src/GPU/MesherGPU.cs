@@ -12,14 +12,20 @@ namespace FarmVox
             public Color colorA;
             public Color colorB;
             public Color colorC;
-            public float waterfall;
             public int index;
 
             public static int Size
             {
                 get
                 {
-                    return sizeof(float) * 3 * 3 + sizeof(float) * 4 * 3 + sizeof(float) + sizeof(int);
+                    return
+                        sizeof(float) * 3 +
+                        sizeof(float) * 3 +
+                        sizeof(float) * 3 +
+                        sizeof(float) * 4 +
+                        sizeof(float) * 4 +
+                        sizeof(float) * 4 +
+                        sizeof(int);
                 }
             }
         }
@@ -35,7 +41,7 @@ namespace FarmVox
         public MesherGPU(int size)
         {
             this.size = size;
-            this.dataSize = size + 3;
+            dataSize = size + 3;
             shader = Resources.Load<ComputeShader>("Shaders/Mesher");
         }
 
@@ -64,31 +70,8 @@ namespace FarmVox
             shader.SetInt("_IsWater", isWater ? 1 : 0);
             shader.SetFloat("_NormalStrength", TerrianConfig.Instance.normalStrength);
 
-            ComputeBuffer waterfallBuffer;
-            if (chunk.Waterfalls.Count > 0) {
-                waterfallBuffer = new ComputeBuffer(dataSize * dataSize * dataSize, sizeof(float));
-
-                shader.SetInt("_HasWaterfalls", 1);
-                var waterfallData = new float[dataSize * dataSize * dataSize];
-                foreach(var kv in chunk.Waterfalls) {
-                    var coord = kv.Key;
-                    var index = coord.x * dataSize * dataSize + coord.y * dataSize + coord.z;
-                    var value = kv.Value;
-                    waterfallData[index] = value;
-                }
-                waterfallBuffer.SetData(waterfallData);
-                shader.SetBuffer(0, "_WaterfallBuffer", waterfallBuffer);
-            } else {
-                waterfallBuffer = new ComputeBuffer(1, sizeof(float));
-
-                shader.SetInt("_HasWaterfalls", 0);
-                shader.SetBuffer(0, "_WaterfallBuffer", waterfallBuffer);
-            }
-
             var disptachNumber = Mathf.CeilToInt(dataSize / (float)workGroups);
             shader.Dispatch(0, 3 * disptachNumber, disptachNumber, disptachNumber);
-
-            waterfallBuffer.Dispose();
         }
 
         public Triangle[] ReadTriangles(ComputeBuffer trianglesBuffer) {

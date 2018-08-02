@@ -21,6 +21,7 @@ namespace FarmVox
                 material.SetBuffer("_ShadowMap01", shadowMap.GetBuffer(origin, new Vector2Int(0, 1)));
                 material.SetBuffer("_ShadowMap10", shadowMap.GetBuffer(origin, new Vector2Int(1, 0)));
                 material.SetBuffer("_ShadowMap11", shadowMap.GetBuffer(origin, new Vector2Int(1, 1)));
+                material.SetInt("_ShadowMapSize", shadowMap.DataSize);
 
                 material.SetFloat("_ShadowStrength", TerrianConfig.Instance.shadowStrength);
             }
