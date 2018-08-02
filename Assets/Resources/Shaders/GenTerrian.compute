@@ -14,8 +14,10 @@ StructuredBuffer<float4> _RockGradient;
 StructuredBuffer<float> _RockGradientIntervals;
 float _RockGradientBanding;
 int _RockGradientSize;
-
 StructuredBuffer<float> _RockColorNoise;
+StructuredBuffer<float> _HeightValues;
+StructuredBuffer<float> _HeightKeys;
+int _HeightSize;
 
 // Grass color
 StructuredBuffer<float4> _GrassGradient;
@@ -230,6 +232,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
     float gradient = (1.0 - relY / terrainHeight) - 0.5;
     float height = sampleNoise(_HeightBuffer, coord);
+    height = sampleValue(_HeightValues, _HeightKeys, _HeightSize, height);
 
     float riverValue = _RiverBuffer[index];
     riverValue = sampleValue(_RiverValues, _RiverKeys, _RiverSize, riverValue);

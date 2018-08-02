@@ -27,7 +27,7 @@ namespace FarmVox
         public int waterLevel = 0;
         public int groundHeight = 12;
         public int maxChunksX = 3;
-        public bool generateWater = false;
+        public bool generateWater = true;
         public bool generateTrees = false;
 
         public float normalStrength = 0.4f;
@@ -38,6 +38,12 @@ namespace FarmVox
         public Noise rockNoise;
         public ColorGradient rockColorGradient;
         public Noise rockColorNoise;
+        public ValueGradient heightFilter = new ValueGradient(new Dictionary<float, float>
+        {
+            {-1, -1},
+            {0, 0},
+            {1, 1}
+        });
 #endregion
 
 #region grass

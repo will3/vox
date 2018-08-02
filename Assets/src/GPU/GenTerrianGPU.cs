@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
+using IDisposable = System.IDisposable;
 
 namespace FarmVox
 {
@@ -75,10 +77,14 @@ namespace FarmVox
             var grassNoise = new Perlin3DGPU(config.grassNoise, dataSize, origin);
             var riverNoise = new Perlin3DGPU(config.riverNoise, dataSize, origin);
 
+            var disposables = new List<IDisposable>();
+
             heightNoise.Dispatch();
             rockColorNoise.Dispatch();
             grassNoise.Dispatch();
             riverNoise.Dispatch();
+
+            disposables.Add(SetValueGradient(config.heightFilter, "_Height"));
 
             shader.SetBuffer(0, "_HeightBuffer", heightNoise.Results);
             shader.SetBuffer(0, "_GrassBuffer", grassNoise.Results);
@@ -122,6 +128,10 @@ namespace FarmVox
             grassHeightBuffers.Dispose();
             riverNoise.Dispose();
             riverNoises.Dispose();
+
+            foreach (var disposable in disposables) {
+                disposable.Dispose();
+            }
         }
 
         ValueGradientBuffers SetValueGradient(ValueGradient valueGradient, string prefix) {
