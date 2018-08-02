@@ -207,7 +207,10 @@ namespace FarmVox
                 }
 
                 GenerateGround(column);
-                GenerateWaters(column);
+                if (config.generateWater) {
+                    GenerateWaters(column);    
+                }
+
                 GenerateTrees(column);
 
                 column.generatedTerrian = true;

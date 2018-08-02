@@ -6,7 +6,15 @@ namespace FarmVox
     public struct Voxel {
         public float value;
         public Color color;
-        public int type;
+        public VoxelType type;
+    }
+
+    public enum VoxelType {
+        Air,
+        Rock,
+        Grass,
+        Roof,
+        Wall
     }
 
     public class VoxelMap

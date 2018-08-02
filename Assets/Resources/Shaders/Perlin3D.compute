@@ -259,7 +259,16 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
     c.z += _Seed % 1000000;
 
-    float value = fBm(c, _Octaves);
+    float offset = 1.0f;
+    float value;
+    if (_Type == 0) {
+        value = fBm(c, _Octaves);
+    } else if (_Type == 1) {
+        value = ridgedmf(c, _Octaves, offset);
+    } else if (_Type == 2) {
+        value = turbulence(c, _Octaves);
+    }
+
     int index = getIndex(id.x, id.y, id.z);
     _Results[index] = value * _Amplitude;
 }

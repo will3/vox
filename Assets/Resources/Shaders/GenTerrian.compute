@@ -41,6 +41,12 @@ StructuredBuffer<float> _CanyonBuffer;
 StructuredBuffer<float> _HeightBuffer;
 StructuredBuffer<float> _GrassBuffer;
 
+// River
+StructuredBuffer<float> _RiverBuffer;
+StructuredBuffer<float> _RiverValues;
+StructuredBuffer<float> _RiverKeys;
+int _RiverSize;
+
 // Output
 RWStructuredBuffer<float> _VoxelBuffer;
 RWStructuredBuffer<float4> _ColorBuffer;
@@ -80,10 +86,11 @@ float4 sampleColor(StructuredBuffer<float4> gradient, StructuredBuffer<float> in
 
 float sampleValue(StructuredBuffer<float> values, StructuredBuffer<float> keys, int size, float ratio) {
     if (ratio < 0) {
+        return values[0];
         ratio = 0;
     }
     if (ratio > 1.0) {
-        ratio = 1.0;
+        return values[size - 1];
     }
 
     for (int i = 0; i < size - 1; i++) {
@@ -236,7 +243,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     float canyon = sampleNoise(_CanyonBuffer, coord);
     float terrainHeight;
 
-    canyon = filterSpawnArea(canyon, coord);
+    // canyon = filterSpawnArea(canyon, coord);
 
     if (canyon < -0.1) {
         terrainHeight = _PlainHeight;
@@ -252,7 +259,12 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
     float gradient = (1.0 - relY / terrainHeight) - 0.5;
     float height = sampleNoise(_HeightBuffer, coord);
+
+    float riverValue = _RiverBuffer[index];
+    riverValue = sampleValue(_RiverValues, _RiverKeys, _RiverSize, riverValue);
+
     float value = height + gradient;
+    value -= riverValue;
 
     _VoxelBuffer[index] = value;
 

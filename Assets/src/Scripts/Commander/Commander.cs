@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace FarmVox
 {
@@ -54,5 +55,53 @@ namespace FarmVox
                 currentCommand = null;
             }
         }
-    }
+
+        string currentText = "";
+
+		void OnGUI()
+		{
+            var screenWidth = Screen.width;
+            var screenHeight = Screen.height;
+            var height = 30;
+
+            currentText = GUI.TextField(new Rect(0, screenHeight - height, screenWidth, height), currentText);
+
+            for (var i = 0; i < lines.Count; i++) {
+                GUI.Label(new Rect(0, screenHeight - height - height * i, screenWidth, height), currentText, lines[i]);
+            }
+
+            if (GUI.changed) {
+                if (Event.current.keyCode == KeyCode.Return)
+                {
+                    ProcessCommand(currentText);
+                    AddLine(currentText);
+                    currentText = "";
+                }
+            }
+		}
+
+        void ProcessCommand(string text) {
+            var args = text.Split(new [] { " " }, System.StringSplitOptions.RemoveEmptyEntries);
+            var command = args[0];
+
+            if (command == "b") {
+                BuildCommand(args);
+            }
+        }
+
+        void BuildCommand(string[] args) {
+            if (args.Length > 2) {
+                AddLine("usage: b [object]");
+            }
+            if (args[1] == "house") {
+                
+            }
+        }
+
+        readonly List<string> lines = new List<string>();
+
+        void AddLine(string line) {
+            lines.Add(line);    
+        }
+	}
 }

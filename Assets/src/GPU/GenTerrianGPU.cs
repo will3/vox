@@ -74,15 +74,20 @@ namespace FarmVox
             var rockColorNoise = new Perlin3DGPU(config.rockColorNoise, dataSize, origin);
             var grassNoise = new Perlin3DGPU(config.grassNoise, dataSize, origin);
             var canyonNoise = new Perlin3DGPU(config.canyonNoise, dataSize, origin);
+            var riverNoise = new Perlin3DGPU(config.riverNoise, dataSize, origin);
 
             heightNoise.Dispatch();
             rockColorNoise.Dispatch();
             grassNoise.Dispatch();
             canyonNoise.Dispatch();
+            riverNoise.Dispatch();
 
             shader.SetBuffer(0, "_HeightBuffer", heightNoise.Results);
             shader.SetBuffer(0, "_CanyonBuffer", canyonNoise.Results);
             shader.SetBuffer(0, "_GrassBuffer", grassNoise.Results);
+
+            shader.SetBuffer(0, "_RiverBuffer", riverNoise.Results);
+            var riverNoises = SetValueGradient(config.riverNoiseFilter, "_River");
 
             shader.SetBuffer(0, "_VoxelBuffer", voxelBuffer);
             shader.SetBuffer(0, "_ColorBuffer", colorBuffer);
@@ -98,16 +103,6 @@ namespace FarmVox
             shader.SetFloat("_HillHeight", config.hillHeight);
             shader.SetFloat("_PlainHeight", config.plainHeight);
             shader.SetFloat("_GroundHeight", config.groundHeight);
-
-
-            //var rockGradientIntervalsBuffer = new ComputeBuffer(Colors.rockColorGradient.Count, sizeof(float));
-            //rockGradientIntervalsBuffer.SetData(Colors.rockColorGradient.GetKeys());
-            //var rockGradientBuffer = new ComputeBuffer(Colors.rockColorGradient.Count, sizeof(float) * 4);
-            //rockGradientBuffer.SetData(Colors.rockColorGradient.GetValues());
-            //shader.SetBuffer(0, "_RockGradient", rockGradientBuffer);
-            //shader.SetBuffer(0, "_RockGradientIntervals", rockGradientIntervalsBuffer);
-            //shader.SetInt("_RockGradientSize", Colors.rockColorGradient.Count);
-            //shader.SetFloat("_RockGradientBanding", Colors.rockColorGradient.banding);
 
             shader.SetBuffer(0, "_RockColorNoise", rockColorNoise.Results);
 
@@ -129,6 +124,8 @@ namespace FarmVox
             grassNormalBuffers.Dispose();
             grassHeightBuffers.Dispose();
             canyonNoise.Dispose();
+            riverNoise.Dispose();
+            riverNoises.Dispose();
         }
 
         ValueGradientBuffers SetValueGradient(ValueGradient valueGradient, string prefix) {

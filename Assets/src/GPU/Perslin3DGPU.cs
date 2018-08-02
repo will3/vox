@@ -65,6 +65,7 @@ namespace FarmVox
             shader.SetFloat("_XZScale", xzScale);
             shader.SetFloat("_Amplitude", amplitude);
             shader.SetInt("_DataSize", dataSize);
+            shader.SetInt("_Type", (int)noise.type);
 
             var dispatchNum = Mathf.CeilToInt(size / (float)workGroups);
             shader.Dispatch(0, dispatchNum, dispatchNum, dispatchNum);
