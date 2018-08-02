@@ -66,7 +66,7 @@ Shader "Unlit/voxelunlit"
                 }
 
                 if (u < 0 || u >= size || v < 0 || v >= size) {
-                    return 99;
+                    //return 99;
                 }
 
                 int index = u * size + v;

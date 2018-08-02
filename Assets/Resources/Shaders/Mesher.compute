@@ -181,9 +181,15 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     int3 c = front ? int3(i, j, k) : int3(i + 1, j, k);
     c = getVector(c.x, c.y, c.z, d);
 
-    float _normal = getDot(c.x, c.y, c.z);
-   
-    float normal = 1 - (1 - _normal) * 0.5;
+    float normal;
+
+    if (_IsWater) {
+        normal = 1;
+    } else {
+        float _normal = getDot(c.x, c.y, c.z);
+        normal = 1 - (1 - _normal) * 0.5;
+    }
+
 
     float4 color = getColor(c) * normal;
 
