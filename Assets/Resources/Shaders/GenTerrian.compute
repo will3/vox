@@ -8,6 +8,7 @@ float _GroundHeight;
 float4 _SoilColor;
 float4 _WaterColor;
 float _MaxHeight;
+int _WaterLevel;
 
 // Rock color
 StructuredBuffer<float4> _RockGradient;
@@ -185,7 +186,10 @@ float getGrassDot(int i, int j, int k) {
     return dot(-normalize(d), up);
 }
 
-float getGrass(int3 coord, float heightRatio) {
+float getGrass(int3 coord, float heightRatio, int absY) {
+    if (absY < _WaterLevel + _GroundHeight) {
+        return 0;
+    }
     float normal = getGrassDot(coord.x, coord.y, coord.z);
     if (normal == 99) {
         return 0;
@@ -252,7 +256,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     int type = typeAir;
 
     // Color
-    float grass = getGrass(coord, heightRatio);
+    float grass = getGrass(coord, heightRatio, absY);
     if (grass > 0) {
         type = typeGrass;
     } else {

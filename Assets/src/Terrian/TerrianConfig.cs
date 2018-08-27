@@ -28,7 +28,7 @@ namespace FarmVox
         public int groundHeight = 12;
         public int maxChunksX = 3;
         public bool generateWater = true;
-        public bool generateTrees = false;
+        public bool generateTrees = true;
 
         public float normalStrength = 0.4f;
         public float shadowStrength = 0.4f;

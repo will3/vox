@@ -106,6 +106,7 @@ namespace FarmVox
             shader.SetFloat("_HillHeight", config.hillHeight);
             shader.SetFloat("_PlainHeight", config.plainHeight);
             shader.SetFloat("_GroundHeight", config.groundHeight);
+            shader.SetInt("_WaterLevel", config.waterLevel);
 
             shader.SetBuffer(0, "_RockColorNoise", rockColorNoise.Results);
 
