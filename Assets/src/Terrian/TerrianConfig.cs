@@ -41,7 +41,7 @@ namespace FarmVox
         public ValueGradient heightFilter = new ValueGradient(new Dictionary<float, float>
         {
             {-1, -1f},
-            {0, 0},
+            {0, 1},
             {1, 1}
         });
 #endregion

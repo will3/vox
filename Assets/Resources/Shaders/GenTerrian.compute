@@ -87,12 +87,11 @@ float4 sampleColor(StructuredBuffer<float4> gradient, StructuredBuffer<float> in
 }
 
 float sampleValue(StructuredBuffer<float> values, StructuredBuffer<float> keys, int size, float ratio) {
-    if (ratio < 0) {
-        return values[0];
-        ratio = 0;
+    if (ratio < keys[0]) {
+        ratio = keys[0];
     }
-    if (ratio > 1.0) {
-        return values[size - 1];
+    if (ratio > keys[size - 1]) {
+        ratio = keys[size - 1];
     }
 
     for (int i = 0; i < size - 1; i++) {
