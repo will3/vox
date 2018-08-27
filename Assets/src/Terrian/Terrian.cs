@@ -222,9 +222,11 @@ namespace FarmVox
         }
 
         public IEnumerator UpdateWaterfallsLoop() {
-            foreach (var column in columnsList) {
-                GenerateWaterfalls(column);
-                yield return null;
+            while (true) {
+                foreach (var chunk in map.Values) {
+                    GenerateWaterfalls(chunk);
+                    yield return null;
+                }
             }
         }
 
