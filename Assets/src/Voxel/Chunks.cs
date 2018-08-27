@@ -13,6 +13,8 @@ namespace FarmVox
         public string groupName = "chunks";
         GameObject gameObject;
 
+        public bool transparent;
+
         public GameObject GetGameObject() {
             if (gameObject == null) {
                 gameObject = new GameObject(groupName);

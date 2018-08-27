@@ -68,6 +68,12 @@ namespace FarmVox
             private List<Vector3Int> emptyCoords = new List<Vector3Int>();
             private List<float> costs = new List<float>();
 
+            TerrianConfig config;
+
+            public WaterTracker(TerrianConfig config) {
+                this.config = config;
+            }
+
             public bool DidReachedWater
             {
                 get
@@ -130,7 +136,7 @@ namespace FarmVox
                 for (var i = 0; i < coords.Count; i++) {
                     var coord = coords[i];
                     var cost = costs[i];
-                    chunks.SetColor(coord.x, coord.y, coord.z, Colors.water);
+                    chunks.SetColor(coord.x, coord.y, coord.z, config.waterColor);
                     chunks.SetWaterfall(coord, cost);
                 }
                 foreach(var coord in emptyCoords) {
@@ -145,7 +151,7 @@ namespace FarmVox
 
             var cost = (float)config.waterfallRandom.NextDouble() * 1000.0f;
 
-            var waterTracker = new WaterTracker();
+            var waterTracker = new WaterTracker(config);
             waterTracker.Start(coord);
 
             while (true) {

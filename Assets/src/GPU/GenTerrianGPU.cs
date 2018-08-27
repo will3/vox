@@ -99,7 +99,7 @@ namespace FarmVox
             shader.SetFloat("_MaxHeight", config.maxHeight);
 
             shader.SetVector("_SoilColor", Colors.soil);
-            shader.SetVector("_WaterColor", Colors.water);
+            shader.SetVector("_WaterColor", config.waterColor);
 
             shader.SetInt("_Size", size);
             shader.SetVector("_Origin", (Vector3)origin);

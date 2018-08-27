@@ -120,6 +120,7 @@ namespace FarmVox
             defaultLayer = new Chunks(size);
             treeLayer = new Chunks(size);
             waterLayer = new Chunks(size);
+            waterLayer.transparent = true;
             buildingLayer = new Chunks(size);
 
             treeMap = new TreeMap(boundsInt);

@@ -24,7 +24,7 @@ namespace FarmVox
         public float maxHeight = 64;
         public float hillHeight = 48;
         public float plainHeight = 4;
-        public int waterLevel = 0;
+        public int waterLevel = 10;
         public int groundHeight = 12;
         public int maxChunksX = 3;
         public bool generateWater = true;
@@ -40,7 +40,7 @@ namespace FarmVox
         public Noise rockColorNoise;
         public ValueGradient heightFilter = new ValueGradient(new Dictionary<float, float>
         {
-            {-1, -1},
+            {-1, -1f},
             {0, 0},
             {1, 1}
         });
@@ -74,6 +74,10 @@ namespace FarmVox
 #region river
         public Noise riverNoise;
         public ValueGradient riverNoiseFilter;
+#endregion
+
+#region water
+        public Color waterColor;
 #endregion
 
         public Noise monsterNoise;
@@ -135,6 +139,9 @@ namespace FarmVox
 
             waterfallNoise = NextNoise();
             waterfallNoise.frequency = 0.005f;
+
+            waterColor = GetColor("#31A8A8");
+            waterColor.a = 0.4f;
 
             riverNoise = NextNoise();
             riverNoise.type = NoiseType.FBM;

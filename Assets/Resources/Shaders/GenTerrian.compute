@@ -232,13 +232,13 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
     float gradient = (1.0 - relY / terrainHeight) - 0.5;
     float height = sampleNoise(_HeightBuffer, coord);
-    height = sampleValue(_HeightValues, _HeightKeys, _HeightSize, height);
+    // height = sampleValue(_HeightValues, _HeightKeys, _HeightSize, height);
 
-    float riverValue = _RiverBuffer[index];
-    riverValue = sampleValue(_RiverValues, _RiverKeys, _RiverSize, riverValue);
+    //float riverValue = _RiverBuffer[index];
+    //riverValue = sampleValue(_RiverValues, _RiverKeys, _RiverSize, riverValue);
 
     float value = height + gradient;
-    value -= riverValue;
+    //value -= riverValue;
 
     _VoxelBuffer[index] = value;
 

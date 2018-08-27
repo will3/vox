@@ -202,6 +202,21 @@ namespace FarmVox
             }
         }
 
+        private Material material;
+
+        public Material Material {
+            get {
+                if (material == null) {
+                    if (Chunks.transparent) {
+                        material = Materials.GetVoxelMaterialTrans();
+                    } else {
+                        material = Materials.GetVoxelMaterial();
+                    }
+                }
+                return material;
+            }
+        }
+
         public Chunk(int size, Vector3Int origin)
         {
             this.size = size;

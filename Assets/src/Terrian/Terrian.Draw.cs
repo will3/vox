@@ -6,7 +6,7 @@ namespace FarmVox
 
     public partial class Terrian
     {
-        public bool GenerateMesh(Chunks chunks, Vector3Int origin, Material material, TerrianChunk terrianChunk)
+        public bool GenerateMesh(Chunks chunks, Vector3Int origin, TerrianChunk terrianChunk)
         {
             if (!chunks.HasChunk(origin))
             {
@@ -26,7 +26,7 @@ namespace FarmVox
             }
 
             chunk.Mesh = MeshGPU(chunk, terrianChunk);
-            chunk.GetMeshRenderer().material = material;
+            chunk.GetMeshRenderer().material = chunk.Material;
             chunk.GetMeshFilter().sharedMesh = chunk.Mesh;
             chunk.GetMeshCollider().sharedMesh = chunk.Mesh;
 
@@ -44,7 +44,7 @@ namespace FarmVox
             {
                 foreach (var chunks in chunksToDraw)
                 {
-                    GenerateMesh(chunks, terrianChunk.Origin, terrianChunk.Material, terrianChunk);
+                    GenerateMesh(chunks, terrianChunk.Origin, terrianChunk);
                 }
             }
         }
