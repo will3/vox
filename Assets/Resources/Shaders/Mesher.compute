@@ -15,7 +15,7 @@ int _DataSize;
 StructuredBuffer<float> _VoxelBuffer;
 StructuredBuffer<float4> _ColorsBuffer;
 AppendStructuredBuffer<Triangle> _TrianglesBuffer;
-int _NormalBranding;
+float _NormalBanding;
 int _UseNormals;
 int _IsWater;
 float _NormalStrength;
@@ -187,10 +187,12 @@ void CSMain (uint3 id : SV_DispatchThreadID)
         normal = 1;
     } else {
         float _normal = getDot(c.x, c.y, c.z);
-        normal = 1 - (1 - _normal) * 0.5;
+        if (_NormalBanding != 0.0) {
+            _normal = floor(_normal * _NormalBanding) / _NormalBanding;
+        }
+        normal = 1 - (1 - _normal) * _NormalStrength;
     }
-
-
+  
     float4 color = getColor(c) * normal;
 
     int aoI = front ? i + 1 : i;

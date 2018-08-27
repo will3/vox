@@ -34,7 +34,7 @@ namespace FarmVox
         readonly int size;
         readonly int dataSize;
         readonly int workGroups = 8;
-        public int normalBranding = 6;
+        public int normalBanding = 6;
         public bool useNormals = true;
         public bool isWater = false;
 
@@ -65,7 +65,7 @@ namespace FarmVox
 
             shader.SetBuffer(0, "_ColorsBuffer", colorsBuffer);
 
-            shader.SetInt("_NormalBranding", normalBranding);
+            shader.SetFloat("_NormalBanding", normalBanding);
             shader.SetInt("_UseNormals", useNormals ? 1 : 0);
             shader.SetInt("_IsWater", isWater ? 1 : 0);
             shader.SetFloat("_NormalStrength", TerrianConfig.Instance.normalStrength);
