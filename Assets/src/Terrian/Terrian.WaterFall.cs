@@ -6,21 +6,6 @@ namespace FarmVox
 
     public partial class Terrian
     {
-        public void GenerateWaterfalls(TerrianColumn column)
-        {
-            if (column.generatedWaterfalls)
-            {
-                return;
-            }
-
-            foreach (var terrianChunk in column.TerrianChunks)
-            {
-                GenerateWaterfalls(terrianChunk);
-            }
-
-            column.generatedWaterfalls = true;
-        }
-
         bool ShouldGenerateWaterFalls(TerrianChunk terrianChunk) {
             var key = terrianChunk.key;
 
@@ -52,10 +37,6 @@ namespace FarmVox
             var chunk = defaultLayer.GetChunk(origin);
             var dataSize = chunk.dataSize;
             chunk.UpdateSurfaceCoords();
-            // var waterFallNoise = new Perlin3DGPU(config.waterfallNoise, chunk.dataSize, origin);
-            // waterFallNoise.Dispatch();
-            // var waterFallNoiseData = waterFallNoise.Read();
-            //  // / waterFallNoiseData[index];
             
             foreach(var coord in chunk.surfaceCoords) {
                 var r = config.waterfallRandom.NextDouble();
@@ -73,8 +54,6 @@ namespace FarmVox
             }
 
             terrianChunk.waterfallsNeedsUpdate = false;
-
-            // waterFallNoise.Dispose();
         }
 
         class WaterTracker {
