@@ -28,7 +28,7 @@ namespace FarmVox
         readonly int size;
         readonly int dataSize;
         readonly int workGroups = 8;
-        public int normalBranding = 6;
+        public int normalBranding = 4;
         public float normalStrength = 0.4f;
         public bool useNormals = true;
         public bool isWater = false;

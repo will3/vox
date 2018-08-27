@@ -24,10 +24,10 @@ namespace FarmVox
         public int minTreeJ = 1;
         public float maxHeight = 64;
         public float hillHeight = 48;
-        public float plainHeight = 12;
+        public float plainHeight = 6;
         public int waterLevel = 2;
         public int groundHeight = 32;
-        public int maxChunksX = 8;
+        public int maxChunksX = 4;
 
 #region ground
         public Noise heightNoise;
@@ -137,7 +137,7 @@ namespace FarmVox
             rockNoise.frequency = 0.02f;
             rockNoise.amplitude = 1.5f;
 
-            heightNoise.frequency = 0.015f;
+            heightNoise.frequency = 0.01f;
             heightNoise.yScale = 0.4f;
 
             canyonNoise.frequency = 0.01f;
@@ -176,8 +176,8 @@ namespace FarmVox
                 { 1, 1 } });
 
             rockColorGradient = new ColorGradient(new Dictionary<float, UnityEngine.Color> {
-                {0, GetColor("#495447")},
-                {1, GetColor("#9B9B9B")}
+                {0, GetColor("#C2834D")},
+                {1, GetColor("#C2834D")}
             });
             rockColorGradient.banding = 8;
 
