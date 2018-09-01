@@ -50,7 +50,7 @@ MonoBehaviour:
       ambientOnly: 0
       highPrecision: 0
   screenSpaceReflection:
-    m_Enabled: 0
+    m_Enabled: 1
     m_Settings:
       reflection:
         blendType: 0
@@ -100,9 +100,9 @@ MonoBehaviour:
     m_Enabled: 0
     m_Settings:
       bloom:
-        intensity: 0.4
+        intensity: 4
         threshold: 1.1
-        softKnee: 0.471
+        softKnee: 0.674
         radius: 1.5
         antiFlicker: 0
       lensDirt:

@@ -2,6 +2,12 @@
 
 namespace FarmVox
 {
+    public enum NoiseType {
+        FBM = 0,
+        Ridged = 1,
+        Turbulence = 2
+    }
+
     public class Noise
     {
         public float frequency = 0.01f;
@@ -12,5 +18,6 @@ namespace FarmVox
         public int octaves = 5;
         public float yScale = 1.0f;
         public float xzScale = 1.0f;
+        public NoiseType type;
     }
 }

@@ -12,31 +12,47 @@ namespace FarmVox
             Drawn
         }
 
+        int dataSize;
+
+        public int DataSize
+        {
+            get
+            {
+                return dataSize;
+            }
+        }
+
         int size;
+
         TerrianConfig config;
-        public VoxelShadowMap(int size, TerrianConfig config) {
+        public VoxelShadowMap(int size, TerrianConfig config)
+        {
             this.size = size;
+            this.dataSize = size + 1;
             this.config = config;
         }
 
         Dictionary<Vector2Int, ShadowMapState> states = new Dictionary<Vector2Int, ShadowMapState>();
         Dictionary<Vector2Int, ComputeBuffer> buffers = new Dictionary<Vector2Int, ComputeBuffer>();
-        
+
         static int lightY = 100;
         static int minY = -100;
 
-        private Vector2Int GetOrigin(Vector2Int coord) {
+        private Vector2Int GetOrigin(Vector2Int coord)
+        {
             return new Vector2Int(
                 Mathf.FloorToInt(coord.x / (float)size),
                 Mathf.FloorToInt(coord.y / (float)size)
             ) * size;
         }
 
-        public void Update() {
+        public void Update()
+        {
             var keys = new Vector2Int[states.Keys.Count];
             states.Keys.CopyTo(keys, 0);
 
-            foreach(var origin in keys) {
+            foreach (var origin in keys)
+            {
                 var state = states[origin];
                 if (state == ShadowMapState.Pending)
                 {
@@ -56,32 +72,39 @@ namespace FarmVox
             return state;
         }
 
-        public void ChunkDrawn(Vector3Int origin) {
+        public void ChunkDrawn(Vector3Int origin)
+        {
             var num = 2;
             var from = new Vector2Int(origin.x - origin.y, origin.z - origin.y);
 
-            for (var i = 0; i < num; i++) {
-                for (var j = 0; j < num; j++) {
+            for (var i = 0; i < num; i++)
+            {
+                for (var j = 0; j < num; j++)
+                {
                     var uv = new Vector2Int(from.x - i * size, from.y - j * size);
                     SetState(uv, ShadowMapState.Pending);
                 }
             }
         }
 
-        void Update(Vector2Int origin) {
+        void Update(Vector2Int origin)
+        {
             PerformanceLogger.Push("Shadowmap");
             // Clear
-            var texture = new int[size * size];
-            for (var i = 0; i < size; i ++) {
-                for (var j = 0; j < size; j++) {
-                    int index = i * size + j;
+            var texture = new int[dataSize * dataSize];
+            for (var i = 0; i < dataSize; i++)
+            {
+                for (var j = 0; j < dataSize; j++)
+                {
+                    int index = i * dataSize + j;
                     var v = CalcShadow(new Vector3Int(i + origin.x, 0, j + origin.y));
                     texture[index] = v;
                 }
             }
 
-            if (!buffers.ContainsKey(origin)) {
-                buffers[origin] = new ComputeBuffer(size * size, sizeof(int));
+            if (!buffers.ContainsKey(origin))
+            {
+                buffers[origin] = new ComputeBuffer(dataSize * dataSize, sizeof(int));
             }
 
             buffers[origin].SetData(texture);
@@ -119,39 +142,48 @@ namespace FarmVox
                                   Mathf.FloorToInt(point.z));
         }
 
-        public void Dispose() {
-            foreach(var buffer in buffers.Values) {
+        public void Dispose()
+        {
+            foreach (var buffer in buffers.Values)
+            {
                 buffer.Dispose();
             }
-            if (defaultBuffer != null) {
-                defaultBuffer.Dispose();    
+            if (defaultBuffer != null)
+            {
+                defaultBuffer.Dispose();
             }
         }
 
         ComputeBuffer defaultBuffer;
-        ComputeBuffer GetDefaultBuffer() {
-            if (defaultBuffer == null) {
-                defaultBuffer = new ComputeBuffer(size * size, sizeof(int));
+        ComputeBuffer GetDefaultBuffer()
+        {
+            if (defaultBuffer == null)
+            {
+                defaultBuffer = new ComputeBuffer(dataSize * dataSize, sizeof(int));
             }
             return defaultBuffer;
         }
 
-        public ComputeBuffer GetBuffer(Vector3Int origin, Vector2Int offset) {
-            if (offset.x >= 2 || offset.y >= 2 || offset.x < 0 || offset.y < 0) {
+        public ComputeBuffer GetBuffer(Vector3Int origin, Vector2Int offset)
+        {
+            if (offset.x >= 2 || offset.y >= 2 || offset.x < 0 || offset.y < 0)
+            {
                 throw new System.ArgumentException("offset must be within 0 - 2");
             }
             var y = origin.y;
             var o = new Vector2Int(origin.x - y, origin.z - y) - offset * size;
 
-            if (buffers.ContainsKey(o)) {
+            if (buffers.ContainsKey(o))
+            {
                 return buffers[o];
             }
 
             return GetDefaultBuffer();
         }
 
-        public int[] ReadShadowBuffer(ComputeBuffer buffer) {
-            var data = new int[size * size];
+        public int[] ReadShadowBuffer(ComputeBuffer buffer)
+        {
+            var data = new int[dataSize * dataSize];
             buffer.GetData(data);
             return data;
         }

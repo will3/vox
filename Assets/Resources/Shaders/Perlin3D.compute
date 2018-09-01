@@ -12,7 +12,6 @@ float3 _Origin;
 float _YScale;
 float _XZScale;
 float _Amplitude;
-int _Resolution;
 int _DataSize;
 int _Type;
 
@@ -254,13 +253,22 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     if (id.x >= _DataSize || id.y >= _DataSize || id.z >= _DataSize) {
         return;
     }
-    float3 c = _Origin + float3(id.x, id.y, id.z) * _Resolution;
+    float3 c = _Origin + float3(id.x, id.y, id.z);
     c.y *= _YScale;
     c.xz *= _XZScale;
 
     c.z += _Seed % 1000000;
 
-    float value = fBm(c, _Octaves);
+    float offset = 1.0f;
+    float value;
+    if (_Type == 0) {
+        value = fBm(c, _Octaves);
+    } else if (_Type == 1) {
+        value = ridgedmf(c, _Octaves, offset);
+    } else if (_Type == 2) {
+        value = turbulence(c, _Octaves);
+    }
+
     int index = getIndex(id.x, id.y, id.z);
     _Results[index] = value * _Amplitude;
 }

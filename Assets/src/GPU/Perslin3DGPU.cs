@@ -32,25 +32,14 @@ namespace FarmVox
             }
         }
 
-        int resolution;
-
-        public int Resolution
-        {
-            get
-            {
-                return resolution;
-            }
-        }
-
-        public Perlin3DGPU(Noise noise, int size, Vector3 origin, int resolution = 1)
+        public Perlin3DGPU(Noise noise, int size, Vector3 origin)
         {
             this.noise = noise;
             this.size = size;
             this.origin = origin;
             shader = Resources.Load<ComputeShader>("Shaders/Perlin3D");
-            dataSize = Mathf.CeilToInt(size / (float)resolution) + 1;
+            dataSize = size;
             results = new ComputeBuffer(dataSize * dataSize * dataSize, sizeof(float));
-            this.resolution = resolution;
         }
 
         public void Dispatch()
@@ -76,7 +65,7 @@ namespace FarmVox
             shader.SetFloat("_XZScale", xzScale);
             shader.SetFloat("_Amplitude", amplitude);
             shader.SetInt("_DataSize", dataSize);
-            shader.SetInt("_Resolution", resolution);
+            shader.SetInt("_Type", (int)noise.type);
 
             var dispatchNum = Mathf.CeilToInt(size / (float)workGroups);
             shader.Dispatch(0, dispatchNum, dispatchNum, dispatchNum);

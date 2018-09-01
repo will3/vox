@@ -64,9 +64,9 @@ namespace FarmVox
                 colors.Add(triangle.colorB);
                 colors.Add(triangle.colorC);
 
-                uvs.Add(new Vector2(triangle.waterfall, triangle.index));
-                uvs.Add(new Vector2(triangle.waterfall, triangle.index));
-                uvs.Add(new Vector2(triangle.waterfall, triangle.index));
+                uvs.Add(new Vector2(0, triangle.index));
+                uvs.Add(new Vector2(0, triangle.index));
+                uvs.Add(new Vector2(0, triangle.index));
             }
         }
     }

@@ -3,6 +3,7 @@ using UnityEngine.AI;
 using System.Collections.Generic;
 using System;
 using System.Collections;
+using Priority_Queue;
 
 namespace FarmVox
 {
@@ -119,6 +120,7 @@ namespace FarmVox
             defaultLayer = new Chunks(size);
             treeLayer = new Chunks(size);
             waterLayer = new Chunks(size);
+            waterLayer.transparent = true;
             buildingLayer = new Chunks(size);
 
             treeMap = new TreeMap(boundsInt);
@@ -206,8 +208,13 @@ namespace FarmVox
                 }
 
                 GenerateGround(column);
-                GenerateWaters(column);
-                GenerateTrees(column);
+                if (config.generateWater) {
+                    GenerateWaters(column);    
+                }
+
+                if (config.generateTrees) {
+                    GenerateTrees(column);    
+                }
 
                 column.generatedTerrian = true;
 

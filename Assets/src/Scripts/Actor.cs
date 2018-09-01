@@ -32,7 +32,7 @@ namespace FarmVox
         Vector3 smoothVelocity = new Vector3();
         float smoothRatio = 0.8f;
         bool started = false;
-        Task currentTask = null;
+        //Task currentTask = null;
 
         void Start()
         {
@@ -76,27 +76,27 @@ namespace FarmVox
 
 
         void UpdateTask() {
-            if (itemWeight >= capacity && 
-                (currentTask == null || currentTask.type != TaskType.StoreInventory)) {
-                var task = new StoreInventoryTask();
-                currentTask = task;
-            }
+            //if (itemWeight >= capacity && 
+            //    (currentTask == null || currentTask.type != TaskType.StoreInventory)) {
+            //    var task = new StoreInventoryTask();
+            //    currentTask = task;
+            //}
 
-            if (currentTask == null) {
-                currentTask = TaskMap.Instance.FindTask(Vectors.FloorToInt(transform.position));
-                if (currentTask != null) {
-                    TaskMap.Instance.RemoveTask(currentTask);
-                }
-            }
+            //if (currentTask == null) {
+            //    currentTask = TaskMap.Instance.FindTask(Vectors.FloorToInt(transform.position));
+            //    if (currentTask != null) {
+            //        TaskMap.Instance.RemoveTask(currentTask);
+            //    }
+            //}
 
-            if (currentTask != null) {
-                currentTask.Perform(this);
+            //if (currentTask != null) {
+            //    currentTask.Perform(this);
 
-                if (currentTask.done)
-                {
-                    currentTask = null;
-                }
-            }
+            //    if (currentTask.done)
+            //    {
+            //        currentTask = null;
+            //    }
+            //}
         }
 
         void UpdateWalkAnimation() {
@@ -166,29 +166,6 @@ namespace FarmVox
                 return true;
             }
             return false;
-        }
-
-        List<Item> items = new List<Item>();
-
-        public List<Item> Items
-        {
-            get
-            {
-                return items;
-            }
-        }
-
-        float capacity = 4.0f;
-        float itemWeight = 0.0f;
-
-        public void AddItem(Item item) {
-            items.Add(item);
-            itemWeight += item.weight;
-        }
-
-        public void RemoveItem(Item item) {
-            items.Remove(item);
-            itemWeight -= item.weight;
         }
     }
 }

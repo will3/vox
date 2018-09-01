@@ -19,22 +19,31 @@ namespace FarmVox
         }
 
         public int size = 32;
-        public int maxChunksY = 3;
+        public int maxChunksY = 2;
         public int generateDis = 2;
-        public int minTreeJ = 1;
         public float maxHeight = 64;
         public float hillHeight = 48;
-        public float plainHeight = 6;
-        public int waterLevel = 2;
-        public int groundHeight = 32;
-        public int maxChunksX = 4;
+        public float plainHeight = 4;
+        public int waterLevel = 10;
+        public int groundHeight = 12;
+        public int maxChunksX = 3;
+        public bool generateWater = true;
+        public bool generateTrees = true;
+
+        public float normalStrength = 0.4f;
+        public float shadowStrength = 0.4f;
 
 #region ground
         public Noise heightNoise;
-        public Noise canyonNoise;
         public Noise rockNoise;
         public ColorGradient rockColorGradient;
         public Noise rockColorNoise;
+        public ValueGradient heightFilter = new ValueGradient(new Dictionary<float, float>
+        {
+            {-1, -1f},
+            {0, 1},
+            {1, 1}
+        });
 #endregion
 
 #region grass
@@ -53,7 +62,6 @@ namespace FarmVox
         public ValueGradient treeHeightGradient;
         public float treeSparse = 5.0f;
         public float treeAmount = 2.0f;
-        public ValueGradient treeCanyonFilter;
         public ValueGradient treeDensityFilter;
 #endregion
 
@@ -61,6 +69,15 @@ namespace FarmVox
         public Random waterfallRandom;
         public Noise waterfallNoise;
         public ValueGradient waterfallHeightFilter;
+#endregion
+
+#region river
+        public Noise riverNoise;
+        public ValueGradient riverNoiseFilter;
+#endregion
+
+#region water
+        public Color waterColor;
 #endregion
 
         public Noise monsterNoise;
@@ -101,7 +118,6 @@ namespace FarmVox
         {
             r = new Random(seed);
             heightNoise = NextNoise();
-            canyonNoise = NextNoise();
             rockNoise = NextNoise();
             monsterNoise = NextNoise();
 
@@ -124,6 +140,23 @@ namespace FarmVox
             waterfallNoise = NextNoise();
             waterfallNoise.frequency = 0.005f;
 
+            waterColor = GetColor("#31A8A8");
+            waterColor.a = 0.4f;
+
+            riverNoise = NextNoise();
+            riverNoise.type = NoiseType.FBM;
+            riverNoise.yScale = 0.2f;
+            riverNoise.frequency = 0.05f;
+            riverNoise.persistence = 0.5f;
+            riverNoise.octaves = 7;
+            riverNoise.amplitude = 4f;
+
+            riverNoiseFilter = new ValueGradient(new Dictionary<float, float>() {
+                {0, 0},
+                //{0.9f, 1},
+                //{1.0f, 1}
+            });
+
             waterfallHeightFilter = new ValueGradient(new Dictionary<float, float>()
             {
                 {0, 0},
@@ -137,24 +170,13 @@ namespace FarmVox
             rockNoise.frequency = 0.02f;
             rockNoise.amplitude = 1.5f;
 
-            heightNoise.frequency = 0.01f;
+            heightNoise.frequency = 0.015f;
             heightNoise.yScale = 0.4f;
-
-            canyonNoise.frequency = 0.01f;
-            canyonNoise.yScale = 0.5f;
 
             treeNoise.Frequency = 0.05f;
             treeNoise.OctaveCount = 5;
 
             treeHeightGradient = new ValueGradient(1, 0);
-
-            treeCanyonFilter = new ValueGradient(new Dictionary<float, float>
-            {
-                {-1, 0},
-                {-0.1f, 1},
-                {0.1f, 1},
-                {1, 0}
-            });
 
             treeDensityFilter = new ValueGradient(new Dictionary<float, float>
             {
@@ -176,13 +198,13 @@ namespace FarmVox
                 { 1, 1 } });
 
             rockColorGradient = new ColorGradient(new Dictionary<float, UnityEngine.Color> {
-                {0, GetColor("#C2834D")},
-                {1, GetColor("#C2834D")}
+                {0, GetColor("#A7714C")},
+                {1, GetColor("#A7714C")}
             });
             rockColorGradient.banding = 8;
 
             //var grass1 = GetColor("#cec479");
-            var grass2 = GetColor("#447c3e");
+            var grass2 = GetColor("#2A9151");
             // var grass3 = GetColor("#285224");
 
             grassGradient = new ColorGradient(new Dictionary<float, UnityEngine.Color> {

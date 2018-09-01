@@ -37,15 +37,6 @@ namespace FarmVox
 
         int size;
 
-        Material material = new Material(Shader.Find("Unlit/voxelunlit"));
-        public Material Material
-        {
-            get
-            {
-                return material;
-            }
-        }
-
         public TerrianChunk(Vector3Int key, int size, Terrian terrian)
         {
             this.key = key;
@@ -138,7 +129,7 @@ namespace FarmVox
         }
 
         public void Dispose() {
-            Object.Destroy(material);
+            
         }
     }
 }

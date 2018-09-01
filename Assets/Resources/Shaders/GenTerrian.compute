@@ -8,14 +8,17 @@ float _GroundHeight;
 float4 _SoilColor;
 float4 _WaterColor;
 float _MaxHeight;
+int _WaterLevel;
 
 // Rock color
 StructuredBuffer<float4> _RockGradient;
 StructuredBuffer<float> _RockGradientIntervals;
 float _RockGradientBanding;
 int _RockGradientSize;
-
 StructuredBuffer<float> _RockColorNoise;
+StructuredBuffer<float> _HeightValues;
+StructuredBuffer<float> _HeightKeys;
+int _HeightSize;
 
 // Grass color
 StructuredBuffer<float4> _GrassGradient;
@@ -37,9 +40,14 @@ int _GrassHeightSize;
 float4 _GrassColor;
 
 // Noise
-StructuredBuffer<float> _CanyonBuffer;
 StructuredBuffer<float> _HeightBuffer;
 StructuredBuffer<float> _GrassBuffer;
+
+// River
+StructuredBuffer<float> _RiverBuffer;
+StructuredBuffer<float> _RiverValues;
+StructuredBuffer<float> _RiverKeys;
+int _RiverSize;
 
 // Output
 RWStructuredBuffer<float> _VoxelBuffer;
@@ -79,11 +87,11 @@ float4 sampleColor(StructuredBuffer<float4> gradient, StructuredBuffer<float> in
 }
 
 float sampleValue(StructuredBuffer<float> values, StructuredBuffer<float> keys, int size, float ratio) {
-    if (ratio < 0) {
-        ratio = 0;
+    if (ratio < keys[0]) {
+        ratio = keys[0];
     }
-    if (ratio > 1.0) {
-        ratio = 1.0;
+    if (ratio > keys[size - 1]) {
+        ratio = keys[size - 1];
     }
 
     for (int i = 0; i < size - 1; i++) {
@@ -177,7 +185,10 @@ float getGrassDot(int i, int j, int k) {
     return dot(-normalize(d), up);
 }
 
-float getGrass(int3 coord, float heightRatio) {
+float getGrass(int3 coord, float heightRatio, int absY) {
+    if (absY < _WaterLevel + _GroundHeight) {
+        return 0;
+    }
     float normal = getGrassDot(coord.x, coord.y, coord.z);
     if (normal == 99) {
         return 0;
@@ -204,24 +215,6 @@ float getGrass(int3 coord, float heightRatio) {
     return value;
 }
 
-float filterSpawnArea(float canyon, int3 coord) {
-    int3 absPos = coord + floor(_Origin);
-    float dis = sqrt(absPos.x * absPos.x + absPos.z * absPos.z);
-
-    float spawnArea = 60;
-    if (dis < spawnArea) {
-        float ratio = dis / spawnArea;
-        if (ratio < 0) {
-            ratio = 0;
-        }
-
-        canyon += 1;
-        canyon *= ratio;
-        canyon -=1;
-    }
-    return canyon;
-}
-
 [numthreads(8, 8, 8)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
@@ -233,26 +226,22 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     int3 coord = int3(id.x, id.y, id.z);
     int index = getIndex(coord);
 
-    float canyon = sampleNoise(_CanyonBuffer, coord);
     float terrainHeight;
 
-    canyon = filterSpawnArea(canyon, coord);
-
-    if (canyon < -0.1) {
-        terrainHeight = _PlainHeight;
-    } else if (canyon >= -0.1 && canyon < 0.1) {
-        float ratio = (canyon + 0.1) / 0.2;
-        terrainHeight = _PlainHeight + (_HillHeight - _PlainHeight) * ratio;
-    } else {
-        terrainHeight = _HillHeight;
-    }
+    terrainHeight = _HillHeight;
 
     float absY = coord.y + _Origin.y;
     float relY = absY - _GroundHeight;
 
     float gradient = (1.0 - relY / terrainHeight) - 0.5;
     float height = sampleNoise(_HeightBuffer, coord);
+    // height = sampleValue(_HeightValues, _HeightKeys, _HeightSize, height);
+
+    //float riverValue = _RiverBuffer[index];
+    //riverValue = sampleValue(_RiverValues, _RiverKeys, _RiverSize, riverValue);
+
     float value = height + gradient;
+    //value -= riverValue;
 
     _VoxelBuffer[index] = value;
 
@@ -266,7 +255,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     int type = typeAir;
 
     // Color
-    float grass = getGrass(coord, heightRatio);
+    float grass = getGrass(coord, heightRatio, absY);
     if (grass > 0) {
         type = typeGrass;
     } else {

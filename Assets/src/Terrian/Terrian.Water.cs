@@ -42,7 +42,7 @@
                             if (chunk.Get(i, j, k) <= 0)
                             {
                                 waterChunk.Set(i, j, k, 1);
-                                waterChunk.SetColor(i, j, k, Colors.water);
+                                waterChunk.SetColor(i, j, k, config.waterColor);
                                 terrianChunk.SetWater(i, j, k, true);
                             }
                         }

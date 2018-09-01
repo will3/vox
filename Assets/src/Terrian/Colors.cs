@@ -8,7 +8,6 @@ namespace FarmVox
     public static class Colors
     {
         public static Color soil;
-        public static Color water;
         public static Color trunk;
         public static Color leaf;
         public static Color road;
@@ -22,7 +21,6 @@ namespace FarmVox
              //var grass2 = GetColor("#285224");
 
             soil = GetColor("#413535");
-            water = GetColor("#5A81AD");
             trunk = GetColor("#4f402a");
             leaf = GetColor("#295e21");
             road = GetColor("#bbaf4d");
