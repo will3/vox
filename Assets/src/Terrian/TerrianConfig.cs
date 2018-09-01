@@ -41,9 +41,9 @@ namespace FarmVox
         public Noise rockColorNoise;
         public ValueGradient heightFilter = new ValueGradient(new Dictionary<float, float>
         {
-            {-1, -0.2f},
-            {0, 0},
-            {1, 1.2f}
+            {-1, -0.4f},
+            {0, -0.2f},
+            {1, 1f}
         });
 #endregion
 
