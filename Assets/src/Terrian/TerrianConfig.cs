@@ -24,7 +24,7 @@ namespace FarmVox
         public float maxHeight = 64;
         public float hillHeight = 48;
         public float plainHeight = 4;
-        public int waterLevel = 10;
+        public int waterLevel = 0;
         public int groundHeight = 12;
         public int maxChunksX = 3;
         public bool generateWater = true;
@@ -42,7 +42,7 @@ namespace FarmVox
         public ValueGradient heightFilter = new ValueGradient(new Dictionary<float, float>
         {
             {-1, -1f},
-            {0, 1},
+            {0, 0},
             {1, 1}
         });
 #endregion
@@ -205,7 +205,7 @@ namespace FarmVox
             rockColorGradient.banding = 8;
 
             //var grass1 = GetColor("#cec479");
-            var grass2 = GetColor("#2A9151");
+            var grass2 = GetColor("#1EA14E");
             // var grass3 = GetColor("#285224");
 
             grassGradient = new ColorGradient(new Dictionary<float, UnityEngine.Color> {

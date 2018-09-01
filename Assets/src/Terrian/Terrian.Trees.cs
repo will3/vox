@@ -47,7 +47,7 @@ namespace FarmVox
                 var noise = (float)treeNoise.GetValue(globalCoord);
                 var treeDensity = config.treeDensityFilter.GetValue(noise);
 
-                if (config.treeRandom.NextDouble() * treeDensity > 0.01)
+                if (config.treeRandom.NextDouble() * treeDensity > 0.02)
                 {
                     continue;
                 }
@@ -70,9 +70,9 @@ namespace FarmVox
 
                 var value = noise * treeHeightValue * config.treeAmount;
 
-                if (value < 0.5f) { continue; }
+                if (value < 0.0) { continue; }
 
-                var radius = 4;
+                var radius = 3;
                 var treeBoundsSize = new Vector3Int(radius, radius, radius);
                 var treeBounds = new BoundsInt(globalCoord - treeBoundsSize, treeBoundsSize * 2);
                 if (treeMap.HasTrees(treeBounds))
