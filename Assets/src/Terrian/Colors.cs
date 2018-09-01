@@ -22,7 +22,7 @@ namespace FarmVox
 
             soil = GetColor("#413535");
             trunk = GetColor("#4f402a");
-            leaf = GetColor("#295e21");
+            leaf = GetColor("#285224");
             road = GetColor("#bbaf4d");
             special = GetColor("#ff0000");
             stone = GetColor("#9B9B9B");

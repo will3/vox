@@ -186,7 +186,7 @@ namespace FarmVox
             });
 
             grassHeightFilter = new ValueGradient(new Dictionary<float, float>{
-                { 0, 1 },
+                { 0, 0.5f },
                 { 0.5f, 0},
                 { 1, 0 } });
 
@@ -199,8 +199,8 @@ namespace FarmVox
                 { 1, 1 } });
 
             rockColorGradient = new ColorGradient(new Dictionary<float, UnityEngine.Color> {
-                {0, GetColor("#A7714C")},
-                {1, GetColor("#A7714C")}
+                {0, GetColor("#663d2d")},
+                {1, GetColor("#663d2d")}
             });
             rockColorGradient.banding = 8;
 
@@ -209,8 +209,8 @@ namespace FarmVox
             // var grass3 = GetColor("#285224");
 
             grassGradient = new ColorGradient(new Dictionary<float, UnityEngine.Color> {
-                {0, grass2},
-                {1.0f, grass2},
+                {0, GetColor("#31602c")},
+                {1.0f, GetColor("#31602c")},
                 //{1, grass3}
             });
 
