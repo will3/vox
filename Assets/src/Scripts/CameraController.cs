@@ -24,7 +24,7 @@ public class CameraController : MonoBehaviour
 
     public float rotateX = 45;
     Vector3 rotation = new Vector3(45, 45, 0);
-    float distance = 200;
+    float distance = 300;
     Vector3 lastDragPosition;
 
     bool dragging;
