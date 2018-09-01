@@ -19,6 +19,7 @@ float _NormalBanding;
 int _UseNormals;
 int _IsWater;
 float _NormalStrength;
+float _AoStrength;
 
 int3 getVectorInt(int i, int j, int k, int d) {
     if (d == 0) {
@@ -139,8 +140,7 @@ float _getAO(float s1f, float s2f, float cf) {
 }
 
 float getAO(float s1f, float s2f, float cf) {
-    float aoStrength = 0.2f;
-    return 1.0 - (_getAO(s1f, s2f, cf) * aoStrength);
+    return 1.0 - (_getAO(s1f, s2f, cf) * _AoStrength);
 }
        
 [numthreads(8, 8, 8)]

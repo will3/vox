@@ -31,6 +31,7 @@ namespace FarmVox
         public bool generateTrees = true;
 
         public float normalStrength = 0.4f;
+        public float aoStrength = 0.1f;
         public float shadowStrength = 0.4f;
 
 #region ground
