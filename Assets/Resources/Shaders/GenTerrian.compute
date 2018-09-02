@@ -228,10 +228,10 @@ float getGrass(int3 coord, float heightRatio, int absY, float stone, GenTerrianN
     }
 
     float grassValue = noise.grass;
-
+    
     float value = normalValue * heightValue * 1.2 + grassValue;
 
-    if (value <= 0) {
+    if (value <= 0.2) {
         return 0;
     }
 

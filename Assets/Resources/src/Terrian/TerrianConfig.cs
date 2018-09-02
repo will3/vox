@@ -31,7 +31,7 @@ namespace FarmVox
         public bool generateTrees = true;
 
         public float aoStrength = 0.05f;
-        public float shadowStrength = 0.4f;
+        public float shadowStrength = 0.5f;
 
 #region ground
         public Noise heightNoise;
@@ -191,8 +191,8 @@ namespace FarmVox
                 {1.0f, 1}
             });
 
-            grassNoise.frequency = 0.02f;
-            grassNoise.amplitude = 0.0f;
+            grassNoise.frequency = 0.01f;
+            grassNoise.amplitude = 2.0f;
 
             rockNoise.frequency = 0.02f;
             rockNoise.amplitude = 1.5f;
