@@ -111,7 +111,7 @@ namespace FarmVox
             shader.SetBuffer(0, "_RockColorNoise", rockColorNoise.Results);
 
             var rockGradientBuffers = SetColorGradient(config.rockColorGradient, "_Rock");
-            var grassGradientBuffers = SetColorGradient(config.grassGradient, "_Grass");
+            var grassGradientBuffers = SetColorGradient(config.grassColor, "_Grass");
             var grassNormalBuffers = SetValueGradient(config.grassNormalFilter, "_GrassNormal");
             var grassHeightBuffers = SetValueGradient(config.grassHeightFilter, "_GrassHeight");
 

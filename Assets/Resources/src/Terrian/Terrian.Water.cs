@@ -37,7 +37,7 @@
                 {
                     for (var k = 0; k < chunk.dataSize; k++)
                     {
-                        for (var j = 0; j <= maxJ; j++)
+                        for (var j = 0; j < maxJ; j++)
                         {
                             if (chunk.Get(i, j, k) <= 0)
                             {

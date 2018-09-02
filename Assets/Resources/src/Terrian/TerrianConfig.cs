@@ -30,7 +30,6 @@ namespace FarmVox
         public bool generateWater = true;
         public bool generateTrees = true;
 
-        public float normalStrength = 0.4f;
         public float aoStrength = 0.05f;
         public float shadowStrength = 0.4f;
 
@@ -55,7 +54,7 @@ namespace FarmVox
         public ValueGradient grassNormalFilter;
         public float grassOffset = 0f;
         public float grassMultiplier = 1.2f;
-        public ColorGradient grassGradient;
+        public ColorGradient grassColor;
 #endregion
 
 #region tree
@@ -89,6 +88,9 @@ namespace FarmVox
         public Random monsterRandom;
 
         Random r;
+
+        public Color trunkColor = GetColor("#4f402a");
+        public Color leafColor = GetColor("#2f510c");
 
         Perlin NextPerlin()
         {
@@ -142,7 +144,7 @@ namespace FarmVox
             waterfallNoise = NextNoise();
             waterfallNoise.frequency = 0.005f;
 
-            waterColor = GetColor("#5a81ad");
+            waterColor = GetColor("#297eb6");
             waterColor.a = 0.4f;
 
             riverNoise = NextNoise();
@@ -201,18 +203,18 @@ namespace FarmVox
                 { 1, 1 } });
 
             rockColorGradient = new ColorGradient(new Dictionary<float, UnityEngine.Color> {
-                {0, GetColor("#4f402a")},
-                {1, GetColor("#4f402a")}
+                {0, GetColor("#654d1f")},
+                {1, GetColor("#654d1f")}
             });
             rockColorGradient.banding = 8;
 
             //var grass1 = GetColor("#cec479");
-            var grass2 = GetColor("#1EA14E");
+            //var grass2 = GetColor("#1EA14E");
             // var grass3 = GetColor("#285224");
 
-            grassGradient = new ColorGradient(new Dictionary<float, UnityEngine.Color> {
-                {0, GetColor("#2e6029")},
-                {1.0f, GetColor("#2e6029")},
+            grassColor = new ColorGradient(new Dictionary<float, UnityEngine.Color> {
+                {0, GetColor("#486b25")},
+                {1.0f, GetColor("#486b25")},
                 //{1, grass3}
             });
 

@@ -11,6 +11,7 @@ namespace FarmVox
         public bool useNormals = true;
         public bool isWater = false;
         public string groupName = "chunks";
+        public float normalStrength = 0.0f;
         GameObject gameObject;
 
         public bool transparent;

@@ -119,7 +119,9 @@ namespace FarmVox
             terrianObject = new GameObject("terrian");
 
             defaultLayer = new Chunks(size);
+            defaultLayer.normalStrength = 0.4f;
             treeLayer = new Chunks(size);
+            treeLayer.normalStrength = 0.1f;
             waterLayer = new Chunks(size);
             waterLayer.transparent = true;
             buildingLayer = new Chunks(size);
