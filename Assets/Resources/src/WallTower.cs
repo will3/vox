@@ -1,0 +1,7 @@
+﻿namespace FarmVox
+{
+    class WallTower
+    {
+
+    }
+}

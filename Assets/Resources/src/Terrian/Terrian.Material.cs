@@ -25,8 +25,6 @@ namespace FarmVox
                     material.SetInt("_ShadowMapSize", shadowMap.DataSize);
                     material.SetFloat("_ShadowStrength", TerrianConfig.Instance.shadowStrength);
 
-                    material.SetBuffer("_BuildGrid", buildGrid.GetBuffer(origin));
-
                     if (Commander.instance != null) {
                         material.SetInt("_ShowGrid", Commander.instance.isBuilding ? 1 : 0);
                     }

@@ -77,8 +77,6 @@ namespace FarmVox
         Dictionary<Vector3Int, TerrianColumn> columns = new Dictionary<Vector3Int, TerrianColumn>();
         List<TerrianColumn> columnsList = new List<TerrianColumn>();
 
-        BuildGrid buildGrid;
-
         GameObject terrianObject;
 
         VoxelShadowMap shadowMap;
@@ -104,6 +102,8 @@ namespace FarmVox
         VoxelMap voxelMap;
 
         Bounds bounds;
+
+        HeightMap heightMap;
 
         public Terrian(int size = 32)
         {
@@ -152,7 +152,7 @@ namespace FarmVox
 
             shadowMap = new VoxelShadowMap(size, config);
 
-            buildGrid = new BuildGrid(size);
+            heightMap = new HeightMap(size);
         }
 
         void GenerateColumn(Vector3Int columnOrigin) {
@@ -223,6 +223,8 @@ namespace FarmVox
                 }
 
                 column.generatedTerrian = true;
+
+                heightMap.LoadColumn(column);
 
                 yield return null; // new WaitForSeconds(0.1f);
             }
