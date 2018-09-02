@@ -263,5 +263,17 @@ namespace FarmVox
             chunk.UpdateSurfaceCoords();
             return chunk.IsSurfaceCoordUp(coord - origin);
         }
+
+        public VoxelType GetTypes(Vector3Int coord) {
+            var origin = GetOrigin(coord);
+
+            var chunk = GetChunk(origin);
+
+            if (chunk == null) {
+                return VoxelType.Air;
+            }
+
+            return chunk.GetType(coord - origin);
+        }
     }
 }

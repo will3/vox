@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,6 +18,25 @@ namespace FarmVox
 
         float[] data;
         Color[] colors;
+        int[] types;
+
+        public int[] Types
+        {
+            get
+            {
+                return types;
+            }
+        }
+
+        public void SetTypes(int[] types) {
+            this.types = types;
+        }
+
+        public VoxelType GetType(Vector3Int coord) {
+            var index = GetIndex(coord);
+            int value = types[index];
+            return (VoxelType)value;
+        }
 
         bool dirty;
         public bool surfaceCoordsDirty = true;

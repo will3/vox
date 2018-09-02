@@ -76,6 +76,7 @@ namespace FarmVox
 
             chunk.SetColors(colorBufferData);
             chunk.SetData(voxelBufferData);
+            chunk.SetTypes(typeBufferData);
 
             terrianChunk.rockNeedsUpdate = false;
 

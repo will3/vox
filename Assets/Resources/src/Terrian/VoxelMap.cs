@@ -13,8 +13,7 @@ namespace FarmVox
         Air,
         Rock,
         Grass,
-        Roof,
-        Wall
+        Stone
     }
 
     public class VoxelMap
