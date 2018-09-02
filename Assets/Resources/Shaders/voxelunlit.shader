@@ -37,8 +37,6 @@ Shader "Unlit/voxelunlit"
             int _Size;
             float _ShadowStrength;
             int _ShowGrid;
-            
-            StructuredBuffer<int> _BuildGrid;
 
             // 11 10 
             // 01 00 <- chunk
@@ -183,11 +181,6 @@ Shader "Unlit/voxelunlit"
                 return int3(x, y, z);
             }
             
-            int getBuildGrid(int3 coord) {
-                int index = coord.x * _Size + coord.z;
-                return _BuildGrid[index];
-            }
-            
 			v2f vert (appdata v)
 			{
 				v2f o;
@@ -221,13 +214,6 @@ Shader "Unlit/voxelunlit"
                     o.color = float4(1.0, 0, 0, 1.0);
                     return o;
                 }
-                
-                // Build brid
-                
-                //int buildGrid = getBuildGrid(coord);
-                //if (buildGrid < 4 && buildGrid > -4) {
-                     //c *= 1.4;
-                //}
                 
                 if (_ShowGrid > 0) {
                     int gridSize = 5;
