@@ -10,7 +10,6 @@ namespace FarmVox
         public static Color soil;
         public static Color road;
         public static Color special;
-        public static Color stone;
 
         static Colors()
         {
@@ -21,7 +20,6 @@ namespace FarmVox
             soil = GetColor("#413535");
             road = GetColor("#bbaf4d");
             special = GetColor("#ff0000");
-            stone = GetColor("#9B9B9B");
 
             //rock
             //{ 0, GetColor("#cec479")},

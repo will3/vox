@@ -39,6 +39,11 @@ int _GrassHeightSize;
 // Grass color
 float4 _GrassColor;
 
+// Stone
+StructuredBuffer<float> _StoneBuffer;
+StructuredBuffer<float> _StoneBuffer2;
+float4 _StoneColor;
+
 // Noise
 StructuredBuffer<float> _HeightBuffer;
 StructuredBuffer<float> _GrassBuffer;
@@ -118,6 +123,11 @@ float readBuffer(StructuredBuffer<float> buffer, int3 coord) {
     return buffer[index];
 }
 
+float getStone(int3 coord) {
+    int index = getIndex(coord);
+    return _StoneBuffer[index] + _StoneBuffer2[index];
+}
+
 float sampleNoise(StructuredBuffer<float> buffer, int3 coord) {
     float x = coord.x / _Resolution;
     float y = coord.y / _Resolution;
@@ -185,7 +195,10 @@ float getGrassDot(int i, int j, int k) {
     return dot(-normalize(d), up);
 }
 
-float getGrass(int3 coord, float heightRatio, int absY) {
+float getGrass(int3 coord, float heightRatio, int absY, float stone) {
+    if (stone > 0.4) {
+        return 0;
+    }
     if (absY < _WaterLevel + _GroundHeight) {
         return 0;
     }
@@ -249,18 +262,26 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     int typeAir = 0;
     int typeRock = 1;
     int typeGrass = 2;
+    int typeStone = 3;
     int type = typeAir;
-
+    
+    float stone = getStone(coord);
+    
     // Color
-    float grass = getGrass(coord, heightRatio, absY);
-    if (grass > 0) {
+    float grass = getGrass(coord, heightRatio, absY, stone);
+    
+    if (stone > 0.4) {
+        type = typeStone;
+    } else if (grass > 0) {
         type = typeGrass;
     } else {
         type = typeRock;
     }
     _TypeBuffer[index] = type;
-
-    if (type == typeGrass) {
+    
+    if (type == typeStone) {
+        _ColorBuffer[index] = _StoneColor;
+    } else if (type == typeGrass) {
         float4 grassColor = sampleColor(_GrassGradient, _GrassGradientIntervals, 
             _GrassGradientSize, _GrassGradientBanding, grass);
         _ColorBuffer[index] = grassColor;

@@ -72,66 +72,50 @@ namespace FarmVox
         }
 
         public void Dispatch(ComputeBuffer voxelBuffer, ComputeBuffer colorBuffer, ComputeBuffer typeBuffer, TerrianChunk terrianChunk) {
-            var heightNoise = new Perlin3DGPU(config.heightNoise, dataSize, origin);
-            var rockColorNoise = new Perlin3DGPU(config.rockColorNoise, dataSize, origin);
-            var grassNoise = new Perlin3DGPU(config.grassNoise, dataSize, origin);
-            var riverNoise = new Perlin3DGPU(config.riverNoise, dataSize, origin);
+            using(var heightNoise = new Perlin3DGPU(config.heightNoise, dataSize, origin)) 
+            using(var rockColorNoise = new Perlin3DGPU(config.rockColorNoise, dataSize, origin))
+            using(var grassNoise = new Perlin3DGPU(config.grassNoise, dataSize, origin))
+            using(var riverNoise = new Perlin3DGPU(config.riverNoise, dataSize, origin))
+            using(var stoneNoise = new Perlin3DGPU(config.stoneNoise, dataSize, origin))
+            using(var stoneNoise2 = new Perlin3DGPU(config.stoneNoise2, dataSize, origin))
+            using(var rockGradientBuffers = SetColorGradient(config.rockColorGradient, "_Rock"))
+            using(var grassGradientBuffers = SetColorGradient(config.grassColor, "_Grass"))
+            using(var grassNormalBuffers = SetValueGradient(config.grassNormalFilter, "_GrassNormal"))
+            using(var grassHeightBuffers = SetValueGradient(config.grassHeightFilter, "_GrassHeight"))
+            using(SetValueGradient(config.heightFilter, "_Height"))
+            using(SetValueGradient(config.riverNoiseFilter, "_River"))
+            {
+                shader.SetBuffer(0, "_HeightBuffer", heightNoise.Results);
+                shader.SetBuffer(0, "_GrassBuffer", grassNoise.Results);
 
-            var disposables = new List<IDisposable>();
+                shader.SetBuffer(0, "_RiverBuffer", riverNoise.Results);
 
-            heightNoise.Dispatch();
-            rockColorNoise.Dispatch();
-            grassNoise.Dispatch();
-            riverNoise.Dispatch();
+                shader.SetBuffer(0, "_VoxelBuffer", voxelBuffer);
+                shader.SetBuffer(0, "_ColorBuffer", colorBuffer);
+                shader.SetBuffer(0, "_TypeBuffer", typeBuffer);
 
-            disposables.Add(SetValueGradient(config.heightFilter, "_Height"));
+                shader.SetFloat("_MaxHeight", config.maxHeight);
 
-            shader.SetBuffer(0, "_HeightBuffer", heightNoise.Results);
-            shader.SetBuffer(0, "_GrassBuffer", grassNoise.Results);
+                shader.SetVector("_SoilColor", Colors.soil);
+                shader.SetVector("_WaterColor", config.waterColor);
 
-            shader.SetBuffer(0, "_RiverBuffer", riverNoise.Results);
-            var riverNoises = SetValueGradient(config.riverNoiseFilter, "_River");
+                shader.SetInt("_Size", size);
+                shader.SetVector("_Origin", (Vector3)origin);
+                shader.SetFloat("_HillHeight", config.hillHeight);
+                shader.SetFloat("_PlainHeight", config.plainHeight);
+                shader.SetFloat("_GroundHeight", config.groundHeight);
+                shader.SetInt("_WaterLevel", config.waterLevel);
 
-            shader.SetBuffer(0, "_VoxelBuffer", voxelBuffer);
-            shader.SetBuffer(0, "_ColorBuffer", colorBuffer);
-            shader.SetBuffer(0, "_TypeBuffer", typeBuffer);
+                shader.SetBuffer(0, "_RockColorNoise", rockColorNoise.Results);
 
-            shader.SetFloat("_MaxHeight", config.maxHeight);
+                shader.SetBuffer(0, "_StoneBuffer", stoneNoise.Results);
+                shader.SetBuffer(0, "_StoneBuffer2", stoneNoise2.Results);
+                shader.SetVector("_StoneColor", config.stoneColor);
 
-            shader.SetVector("_SoilColor", Colors.soil);
-            shader.SetVector("_WaterColor", config.waterColor);
+                shader.SetInt("_DataSize", heightNoise.DataSize);
 
-            shader.SetInt("_Size", size);
-            shader.SetVector("_Origin", (Vector3)origin);
-            shader.SetFloat("_HillHeight", config.hillHeight);
-            shader.SetFloat("_PlainHeight", config.plainHeight);
-            shader.SetFloat("_GroundHeight", config.groundHeight);
-            shader.SetInt("_WaterLevel", config.waterLevel);
-
-            shader.SetBuffer(0, "_RockColorNoise", rockColorNoise.Results);
-
-            var rockGradientBuffers = SetColorGradient(config.rockColorGradient, "_Rock");
-            var grassGradientBuffers = SetColorGradient(config.grassColor, "_Grass");
-            var grassNormalBuffers = SetValueGradient(config.grassNormalFilter, "_GrassNormal");
-            var grassHeightBuffers = SetValueGradient(config.grassHeightFilter, "_GrassHeight");
-
-            shader.SetInt("_DataSize", heightNoise.DataSize);
-
-            var dispatchNum = Mathf.CeilToInt(dataSize / (float)workGroups);
-            shader.Dispatch(0, dispatchNum, dispatchNum, dispatchNum);
-
-            heightNoise.Dispose();
-            rockColorNoise.Dispose();
-            grassNoise.Dispose();
-            rockGradientBuffers.Dispose();
-            grassGradientBuffers.Dispose();
-            grassNormalBuffers.Dispose();
-            grassHeightBuffers.Dispose();
-            riverNoise.Dispose();
-            riverNoises.Dispose();
-
-            foreach (var disposable in disposables) {
-                disposable.Dispose();
+                var dispatchNum = Mathf.CeilToInt(dataSize / (float)workGroups);
+                shader.Dispatch(0, dispatchNum, dispatchNum, dispatchNum);
             }
         }
 

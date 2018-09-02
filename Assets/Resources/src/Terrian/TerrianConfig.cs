@@ -80,7 +80,13 @@ namespace FarmVox
 
 #region water
         public Color waterColor;
-#endregion
+        #endregion
+
+        #region stone
+        public Noise stoneNoise;
+        public Noise stoneNoise2;
+        public Color stoneColor = GetColor("#676767");
+        #endregion
 
         public Noise monsterNoise;
 
@@ -144,6 +150,14 @@ namespace FarmVox
 
             waterfallNoise = NextNoise();
             waterfallNoise.frequency = 0.005f;
+
+            stoneNoise = NextNoise();
+            stoneNoise.frequency = 0.01f;
+            stoneNoise.amplitude = 0.5f;
+            stoneNoise2 = NextNoise();
+            stoneNoise2.frequency = 0.005f;
+            stoneNoise2.yScale = 4.0f;
+            stoneNoise2.amplitude = 1.2f;
 
             waterColor = GetColor("#297eb6");
             waterColor.a = 0.4f;
@@ -214,8 +228,8 @@ namespace FarmVox
             // var grass3 = GetColor("#285224");
 
             grassColor = new ColorGradient(new Dictionary<float, UnityEngine.Color> {
-                {0, GetColor("#486b25")},
-                {1.0f, GetColor("#486b25")},
+                {0, GetColor("#597420")},
+                {1.0f, GetColor("#597420")},
                 //{1, grass3}
             });
 

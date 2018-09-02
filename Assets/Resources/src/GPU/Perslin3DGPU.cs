@@ -40,9 +40,10 @@ namespace FarmVox
             shader = Resources.Load<ComputeShader>("Shaders/Perlin3D");
             dataSize = size;
             results = new ComputeBuffer(dataSize * dataSize * dataSize, sizeof(float));
+            Dispatch();
         }
 
-        public void Dispatch()
+        void Dispatch()
         {
             var frequency = noise.frequency;
             var amplitude = noise.amplitude;
