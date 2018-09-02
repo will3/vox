@@ -121,7 +121,7 @@ namespace FarmVox
             defaultLayer = new Chunks(size);
             defaultLayer.normalStrength = 0.4f;
             treeLayer = new Chunks(size);
-            treeLayer.normalStrength = 0.1f;
+            treeLayer.normalStrength = 0.2f;
             waterLayer = new Chunks(size);
             waterLayer.transparent = true;
             buildingLayer = new Chunks(size);
