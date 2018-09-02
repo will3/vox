@@ -30,6 +30,7 @@ namespace FarmVox
             }
 
             var pine = new Pine(3.0f, 10, 2);
+            //var pine = new Maple(7.0f, 2);
 
             var origin = terrianChunk.Origin;
             var chunk = defaultLayer.GetChunk(origin);
@@ -80,9 +81,9 @@ namespace FarmVox
                     continue;
                 }
 
-                var tree = pine.Place(this, treeLayer, globalCoord, config);
+                pine.Place(this, treeLayer, globalCoord, config);
 
-                treeMap.AddTree(tree);
+                //treeMap.AddTree(tree);
             }
 
             var treeChunk = treeLayer.GetChunk(terrianChunk.Origin);

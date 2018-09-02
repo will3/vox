@@ -31,7 +31,7 @@ namespace FarmVox
         public bool generateTrees = true;
 
         public float normalStrength = 0.4f;
-        public float aoStrength = 0.1f;
+        public float aoStrength = 0.05f;
         public float shadowStrength = 0.4f;
 
 #region ground
@@ -142,8 +142,8 @@ namespace FarmVox
             waterfallNoise = NextNoise();
             waterfallNoise.frequency = 0.005f;
 
-            waterColor = GetColor("#31A8A8");
-            waterColor.a = 0.2f;
+            waterColor = GetColor("#5a81ad");
+            waterColor.a = 0.4f;
 
             riverNoise = NextNoise();
             riverNoise.type = NoiseType.FBM;
@@ -162,7 +162,8 @@ namespace FarmVox
             waterfallHeightFilter = new ValueGradient(new Dictionary<float, float>()
             {
                 {0, 0},
-                {0.5f, 0},
+                {0.3f, 0},
+                {0.5f, 1},
                 {1.0f, 1}
             });
 
