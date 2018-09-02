@@ -269,7 +269,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   drawRoutes: 0
-  commander: {fileID: 659171850}
 --- !u!4 &362043728
 Transform:
   m_ObjectHideFlags: 0
@@ -410,11 +409,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 659171849}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dd7b01fd11e014f549df0577c1fdb701, type: 3}
+  m_Script: {fileID: 11500000, guid: d06c87839cc624aa59e70227fca9496d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lassoMaterial: {fileID: 2100000, guid: 30ab93547bdb54941b2751527be55ba5, type: 2}
-  boxMaterial: {fileID: 2100000, guid: 635f00ce5f8db4d27901875feb13cc72, type: 2}
+  isBuilding: 0
 --- !u!4 &659171851
 Transform:
   m_ObjectHideFlags: 0

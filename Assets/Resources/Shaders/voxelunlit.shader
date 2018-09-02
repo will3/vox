@@ -36,6 +36,9 @@ Shader "Unlit/voxelunlit"
             float3 _Origin;
             int _Size;
             float _ShadowStrength;
+            int _ShowGrid;
+            
+            StructuredBuffer<int> _BuildGrid;
 
             // 11 10 
             // 01 00 <- chunk
@@ -179,7 +182,12 @@ Shader "Unlit/voxelunlit"
 
                 return int3(x, y, z);
             }
-
+            
+            int getBuildGrid(int3 coord) {
+                int index = coord.x * _Size + coord.z;
+                return _BuildGrid[index];
+            }
+            
 			v2f vert (appdata v)
 			{
 				v2f o;
@@ -199,23 +207,38 @@ Shader "Unlit/voxelunlit"
                 }
 
                 int3 worldCoord = coord + floor(_Origin);
-
+                
                 if (_UseVision > 0) {
                     float vision = getVision(worldCoord);
-                    float4 color = c * vision;
-                    o.color = color;
-                } else {
-                    o.color = c;
+                    c *= vision;
                 }
 
                 float shadowHeight = getShadow(coord);
                 float shadow = shadowHeight > worldCoord.y ? 1.0 : 0;
-                o.color *= 1 - shadow * _ShadowStrength;
+                c *= 1 - shadow * _ShadowStrength;
 
                 if (shadowHeight == 99) {
                     o.color = float4(1.0, 0, 0, 1.0);
                     return o;
                 }
+                
+                // Build brid
+                
+                //int buildGrid = getBuildGrid(coord);
+                //if (buildGrid < 4 && buildGrid > -4) {
+                     //c *= 1.4;
+                //}
+                
+                if (_ShowGrid > 0) {
+                    int gridSize = 5;
+                    if (worldCoord.x % gridSize == 0 || worldCoord.z % gridSize == 0) {
+                        
+                    } else {
+                        c *= 1.4;
+                    }
+                }
+                
+                o.color = c;
 
 				return o;
 			}

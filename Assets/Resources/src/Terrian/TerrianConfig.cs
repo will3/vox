@@ -143,7 +143,7 @@ namespace FarmVox
             waterfallNoise.frequency = 0.005f;
 
             waterColor = GetColor("#31A8A8");
-            waterColor.a = 0.4f;
+            waterColor.a = 0.2f;
 
             riverNoise = NextNoise();
             riverNoise.type = NoiseType.FBM;
@@ -200,8 +200,8 @@ namespace FarmVox
                 { 1, 1 } });
 
             rockColorGradient = new ColorGradient(new Dictionary<float, UnityEngine.Color> {
-                {0, GetColor("#663d2d")},
-                {1, GetColor("#663d2d")}
+                {0, GetColor("#4f402a")},
+                {1, GetColor("#4f402a")}
             });
             rockColorGradient.banding = 8;
 
@@ -210,8 +210,8 @@ namespace FarmVox
             // var grass3 = GetColor("#285224");
 
             grassGradient = new ColorGradient(new Dictionary<float, UnityEngine.Color> {
-                {0, GetColor("#31602c")},
-                {1.0f, GetColor("#31602c")},
+                {0, GetColor("#2e6029")},
+                {1.0f, GetColor("#2e6029")},
                 //{1, grass3}
             });
 

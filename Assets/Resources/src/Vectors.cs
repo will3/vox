@@ -24,5 +24,9 @@ namespace FarmVox
                 Mathf.FloorToInt(vector.y),
                 Mathf.FloorToInt(vector.z));
         }
+
+        public static Vector2Int GetXZ(Vector3Int vector) {
+            return new Vector2Int(vector.x, vector.z);
+        }
     }
 }

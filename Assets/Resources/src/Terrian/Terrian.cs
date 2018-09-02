@@ -77,6 +77,8 @@ namespace FarmVox
         Dictionary<Vector3Int, TerrianColumn> columns = new Dictionary<Vector3Int, TerrianColumn>();
         List<TerrianColumn> columnsList = new List<TerrianColumn>();
 
+        BuildGrid buildGrid;
+
         GameObject terrianObject;
 
         VoxelShadowMap shadowMap;
@@ -147,6 +149,8 @@ namespace FarmVox
             chunksToDraw = new Chunks[] { defaultLayer, treeLayer, waterLayer, buildingLayer };
 
             shadowMap = new VoxelShadowMap(size, config);
+
+            buildGrid = new BuildGrid(size);
         }
 
         void GenerateColumn(Vector3Int columnOrigin) {
@@ -207,6 +211,7 @@ namespace FarmVox
                 }
 
                 GenerateGround(column);
+
                 if (config.generateWater) {
                     GenerateWaters(column);    
                 }
@@ -217,7 +222,7 @@ namespace FarmVox
 
                 column.generatedTerrian = true;
 
-                yield return new WaitForSeconds(0.1f);
+                yield return null; // new WaitForSeconds(0.1f);
             }
         }
 
