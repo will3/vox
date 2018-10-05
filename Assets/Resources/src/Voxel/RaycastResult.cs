@@ -18,6 +18,10 @@ namespace FarmVox
                                   Mathf.FloorToInt(point.z));
         }
 
+        public Color GetColor(Chunks chunks) {
+            return chunks.GetColor(GetCoord());
+        }
+
         public Mesh GetQuad()
         {
             int d = 0;
