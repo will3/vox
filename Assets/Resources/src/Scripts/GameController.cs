@@ -20,8 +20,6 @@ public class GameController : MonoBehaviour
         }
     }
 
-    int spawned = 0;
-
     HighlightHoveredSurface highlight;
 
     // Use this for initialization
@@ -42,13 +40,6 @@ public class GameController : MonoBehaviour
 	void Update () {
         WorkerQueues.meshQueue.Update();
         WorkerQueues.routingQueue.Update();
-
-        if (spawned > 0)
-        {
-            if (Spawn()) {
-                spawned -= 1;
-            }
-        }
 
         if (Input.GetKeyDown(KeyCode.Mouse1)) {
             //RaycastHit hit;
@@ -73,27 +64,4 @@ public class GameController : MonoBehaviour
 	{
         //TaskMap.Instance.OnDrawGizmosSelected();	
 	}
-
-    bool Spawn()
-    {
-        RaycastHit hit;
-        var radius = 10.0f;
-        var position = new Vector3(Random.Range(-1.0f, 1.0f) * radius, 100, Random.Range(-1.0f, 1.0f) * radius);
-        var ray = new Ray(position, Vector3.down);
-
-        if (Physics.Raycast(ray, out hit))
-        {
-            NavMeshHit navMeshHit;
-            if (NavMesh.SamplePosition(hit.point, out navMeshHit, 10.0f, 1 << NavMeshAreas.Walkable))
-            {
-                var go = new GameObject("guy");
-                var actor = go.AddComponent<Actor>();
-                actor.radius = 2.0f;
-                go.transform.position = navMeshHit.position;
-                return true;
-            }
-        }
-
-        return false;
-    }
 }

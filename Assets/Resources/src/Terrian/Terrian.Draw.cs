@@ -32,8 +32,6 @@ namespace FarmVox
 
             chunk.Dirty = false;
 
-            TerrianNavMeshBuilder.TriggerBuild();
-
             shadowMap.ChunkDrawn(origin);
 
             return true;

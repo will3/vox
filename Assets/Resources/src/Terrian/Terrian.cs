@@ -132,10 +132,6 @@ namespace FarmVox
             defaultLayer.GetGameObject().layer = LayerMask.NameToLayer("terrian");
             treeLayer.GetGameObject().layer = LayerMask.NameToLayer("trees");
             waterLayer.GetGameObject().layer = LayerMask.NameToLayer("water");
-
-            var modifier = treeLayer.GetGameObject().AddComponent<NavMeshModifier>();
-            modifier.overrideArea = true;
-            modifier.area = NavMeshAreas.NotWalkable;
              
             defaultLayer.GetGameObject().name = "default";
             treeLayer.GetGameObject().name = "trees";
