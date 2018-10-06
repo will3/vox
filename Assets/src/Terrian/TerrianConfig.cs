@@ -134,7 +134,7 @@ namespace FarmVox
             heightNoise = NextNoise();
             heightNoise.frequency = 0.007f;
             heightNoise.yScale = 0.4f;
-            heightNoise.octaves = 5;
+            heightNoise.octaves = 6;
             heightNoise.filter = new ValueGradient(new Dictionary<float, float>
             {
                 {-1.0f, -0.4f},
