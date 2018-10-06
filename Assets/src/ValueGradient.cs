@@ -71,7 +71,7 @@ public class ValueGradient
         return 0.0f;
     }
 
-    public ValueGradientBuffers SetValueGradient(ComputeShader shader, string prefix) {
+    public ValueGradientBuffers UpdateShader(ComputeShader shader, string prefix) {
         var keysBuffer = new ComputeBuffer(Keys.Count, sizeof(float));
         keysBuffer.SetData(Keys);
 
