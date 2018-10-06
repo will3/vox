@@ -29,10 +29,8 @@ Shader "Unlit/voxelunlit"
                 float z;
                 float radius;
             };
-
-            StructuredBuffer<Vision> _VisionBuffer;
+            
             int _MaxVisionNumber;
-            int _UseVision;
             float3 _Origin;
             int _Size;
             float _ShadowStrength;
@@ -133,45 +131,6 @@ Shader "Unlit/voxelunlit"
                 return c.z + c.y * (rgb - 0.5) * (1.0 - abs(2.0 * c.z - 1.0));
             }
 
-            float getVision(float3 worldCoord) {
-                float amount = 0;
-                float visionBlur = 33;
-
-                // pos banding
-                worldCoord /= 2.0;
-                worldCoord = floor(worldCoord);
-                worldCoord *= 2.0;
-
-                for (int i = 0; i < _MaxVisionNumber; i++) {
-                    Vision vision = _VisionBuffer[i];
-                    // Break signal
-                    if (vision.radius == 0) {
-                        break;
-                    }
-
-                    float dx = vision.x - worldCoord.x;
-                    float dz = vision.z - worldCoord.z;
-
-                    float dis = sqrt(dx * dx + dz * dz);
-
-                    if (dis < (vision.radius - visionBlur)) {
-                        amount += 1.0;
-                    } else if (dis < vision.radius) {
-                        amount += (vision.radius - dis) / visionBlur;
-                    }
-                }
-                if (amount > 1.0) {
-                    amount = 1.0;
-                }
-
-                // amount banding
-                // amount *= 4;
-                // amount = floor(amount);
-                // amount /= 4;
-
-                return amount;
-            }
-
             int3 getCoord(int index) {
                 int x = floor(index / 35.0 / 35.0);
                 index -= x * 35 * 35;
@@ -200,11 +159,6 @@ Shader "Unlit/voxelunlit"
                 }
 
                 int3 worldCoord = coord + floor(_Origin);
-                
-                if (_UseVision > 0) {
-                    float vision = getVision(worldCoord);
-                    c *= vision;
-                }
 
                 float shadowHeight = getShadow(coord);
                 float shadow = shadowHeight > worldCoord.y ? 1.0 : 0;

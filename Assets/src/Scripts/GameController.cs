@@ -7,33 +7,21 @@ using UnityEngine.AI;
 public class GameController : MonoBehaviour
 {
     public bool drawRoutes = false;
-    Terrian terrian;
-    readonly VisionMap visionMap = new VisionMap(512, new Vector2Int(-256, -256));
 
-    public VisionMap VisionMap { get { return visionMap; } }
-
-    public Terrian Terrian
-    {
-        get
-        {
-            return terrian;
-        }
-    }
+    public Terrian Terrian { get; private set; }
 
     HighlightHoveredSurface highlight;
 
     // Use this for initialization
     void Start () {
-        terrian = new Terrian();
+        Terrian = new Terrian();
         highlight = gameObject.AddComponent<HighlightHoveredSurface>();
-        var source = gameObject.AddComponent<VisionSource>();
-        source.radius = 100.0f;
 
-        terrian.InitColumns();
+        Terrian.InitColumns();
 
-        StartCoroutine(terrian.UpdateTerrianLoop());
-        StartCoroutine(terrian.UpdateMeshesLoop());
-        StartCoroutine(terrian.UpdateWaterfallsLoop());
+        StartCoroutine(Terrian.UpdateTerrianLoop());
+        StartCoroutine(Terrian.UpdateMeshesLoop());
+        StartCoroutine(Terrian.UpdateWaterfallsLoop());
 	}
 	
 	// Update is called once per frame
@@ -56,8 +44,7 @@ public class GameController : MonoBehaviour
 
 	void OnDestroy()
 	{
-        if (visionMap != null) visionMap.Dispose();
-        if (terrian != null) terrian.Dispose();
+        if (Terrian != null) Terrian.Dispose();
 	}
 
 	void OnDrawGizmosSelected()

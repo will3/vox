@@ -198,5 +198,15 @@ namespace FarmVox
 
             Update();
         }
+
+        public void UpdateMaterial(Material material, Vector3Int origin)
+        {
+            material.SetBuffer("_ShadowMap00", GetBuffer(origin, new Vector2Int(0, 0)));
+            material.SetBuffer("_ShadowMap01", GetBuffer(origin, new Vector2Int(0, 1)));
+            material.SetBuffer("_ShadowMap10", GetBuffer(origin, new Vector2Int(1, 0)));
+            material.SetBuffer("_ShadowMap11", GetBuffer(origin, new Vector2Int(1, 1)));
+            material.SetInt("_ShadowMapSize", dataSize);
+            material.SetFloat("_ShadowStrength", TerrianConfig.Instance.shadowStrength);
+        }
     }
 }
