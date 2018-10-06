@@ -33,43 +33,43 @@ namespace FarmVox
             map = new Octree<Tree>(bounds);
         }
 
-        Dictionary<Vector3Int, Tree> treeLookup = new Dictionary<Vector3Int, Tree>();
+        //Dictionary<Vector3Int, Tree> treeLookup = new Dictionary<Vector3Int, Tree>();
 
         public void AddTree(Tree tree)
         {
             if (!map.Set(tree.pivot, tree))
             {
                 map.Set(tree.pivot, tree);
-                Debug.LogWarning("Failed to add tree at " + tree.pivot.ToString());
+                //Debug.LogWarning("Failed to add tree at " + tree.pivot.ToString());
             }
 
-            foreach (var coord in tree.trunkCoords)
-            {
-                treeLookup[coord] = tree;
-            }
+            //foreach (var coord in tree.trunkCoords)
+            //{
+            //    treeLookup[coord] = tree;
+            //}
 
-            foreach (var coord in tree.stumpCoords)
-            {
-                treeLookup[coord] = tree;
-            }
+            //foreach (var coord in tree.stumpCoords)
+            //{
+            //    treeLookup[coord] = tree;
+            //}
         }
 
         public void RemoveTree(Tree tree)
         {
             map.Remove(tree.pivot);
 
-            foreach (var coord in tree.trunkCoords)
-            {
-                treeLookup.Remove(coord);
-            }
+            //foreach (var coord in tree.trunkCoords)
+            //{
+            //    treeLookup.Remove(coord);
+            //}
         }
 
         public Tree FindTree(Vector3Int coord)
         {
-            if (treeLookup.ContainsKey(coord))
-            {
-                return treeLookup[coord];
-            }
+            //if (treeLookup.ContainsKey(coord))
+            //{
+            //    return treeLookup[coord];
+            //}
             return null;
         }
 

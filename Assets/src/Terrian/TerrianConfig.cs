@@ -26,7 +26,7 @@ namespace FarmVox
         public float plainHeight = 4;
         public int waterLevel = 0;
         public int groundHeight = 12;
-        public int maxChunksX = 3;
+        public int maxChunksX = 6;
         public bool generateWater = true;
         public bool generateTrees = true;
 
@@ -64,6 +64,7 @@ namespace FarmVox
         public Random waterfallRandom;
         public Noise waterfallNoise;
         public ValueGradient waterfallHeightFilter;
+        public float waterfallChance = 0.001f;
 #endregion
 
 #region river
@@ -131,6 +132,9 @@ namespace FarmVox
         {
             r = new Random(seed);
             heightNoise = NextNoise();
+            heightNoise.frequency = 0.007f;
+            heightNoise.yScale = 0.4f;
+            heightNoise.octaves = 5;
             heightNoise.filter = new ValueGradient(new Dictionary<float, float>
             {
                 {-1.0f, -0.4f},
@@ -139,6 +143,7 @@ namespace FarmVox
                 {0.5f, 1.0f},
                 {1, 1.2f}
             });
+
             rockNoise = NextNoise();
             monsterNoise = NextNoise();
 
@@ -199,9 +204,6 @@ namespace FarmVox
 
             rockNoise.frequency = 0.02f;
             rockNoise.amplitude = 1.5f;
-
-            heightNoise.frequency = 0.015f;
-            heightNoise.yScale = 0.4f;
 
             treeNoise.Frequency = 0.05f;
             treeNoise.OctaveCount = 5;

@@ -78,7 +78,7 @@ namespace FarmVox
 
                 if (value < 0.5f) { continue; }
 
-                var radius = 4;
+                var radius = 3;
                 var treeBoundsSize = new Vector3Int(radius, radius, radius);
                 var treeBounds = new BoundsInt(globalCoord - treeBoundsSize, treeBoundsSize * 2);
                 if (treeMap.HasTrees(treeBounds))
@@ -86,9 +86,9 @@ namespace FarmVox
                     continue;
                 }
 
-                pine.Place(this, treeLayer, globalCoord, config);
+                var tree = pine.Place(this, treeLayer, globalCoord, config);
 
-                //treeMap.AddTree(tree);
+                treeMap.AddTree(tree);
             }
 
             var treeChunk = treeLayer.GetChunk(terrianChunk.Origin);

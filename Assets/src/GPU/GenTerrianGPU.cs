@@ -53,7 +53,8 @@ namespace FarmVox
             using (var grassNoise = new Perlin3DGPU(config.grassNoise, dataSize, origin))
             using (var riverNoise = new Perlin3DGPU(config.riverNoise, dataSize, origin))
             using (var stoneNoise = new Perlin3DGPU(config.stoneNoise, dataSize, origin))
-            using (var stoneNoise2 = new Perlin3DGPU(config.stoneNoise2, dataSize, origin)) {
+            using (var stoneNoise2 = new Perlin3DGPU(config.stoneNoise2, dataSize, origin))
+            {
                 shader.SetBuffer(0, "_HeightBuffer", heightNoise.Results);
                 shader.SetBuffer(0, "_GrassBuffer", grassNoise.Results);
                 shader.SetBuffer(0, "_RiverBuffer", riverNoise.Results);
@@ -134,13 +135,6 @@ namespace FarmVox
             using(config.riverNoiseFilter.CreateBuffers(shader, "_River"))
             using(config.stoneHeightFilter.CreateBuffers(shader, "_StoneHeight"))
             {
-                //shader.SetBuffer(0, "_HeightBuffer", heightNoise.Results);
-                //shader.SetBuffer(0, "_GrassBuffer", grassNoise.Results);
-                //shader.SetBuffer(0, "_RiverBuffer", riverNoise.Results);
-                //shader.SetBuffer(0, "_RockColorBuffer", rockColorNoise.Results);
-                //shader.SetBuffer(0, "_StoneBuffer", stoneNoise.Results);
-                //shader.SetBuffer(0, "_StoneBuffer2", stoneNoise2.Results);
-
                 shader.SetBuffer(0, "_NoiseBuffer", noises.Results);
 
                 shader.SetBuffer(0, "_VoxelBuffer", voxelBuffer);

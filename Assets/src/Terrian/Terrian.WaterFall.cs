@@ -51,7 +51,7 @@ namespace FarmVox
 
                 var v = r / heightValue;
 
-                if (v < 0 || v > 0.01f)
+                if (v < 0 || v > config.waterfallChance)
                 {
                     continue;
                 }
@@ -179,9 +179,9 @@ namespace FarmVox
                 }
             }
 
-            //if (waterTracker.DidReachedWater) {
+            if (waterTracker.DidReachedWater) {
                 waterTracker.Apply(defaultLayer);    
-            //}
+            }
         }
 
         private Vector3Int? ProcessNextWater(Vector3Int coord, WaterTracker waterTracker) {
