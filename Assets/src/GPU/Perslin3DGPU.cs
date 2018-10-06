@@ -14,6 +14,8 @@ namespace FarmVox
 
         public ComputeBuffer Results { get; private set; }
 
+        ValueGradient.ValueGradientBuffers buffers;
+
         Vector3 origin;
         int dataSize;
 
@@ -61,7 +63,7 @@ namespace FarmVox
             shader.SetInt("_DataSize", dataSize);
             shader.SetInt("_Type", (int)noise.type);
 
-            noise.filter.UpdateShader(shader, "_Filter");
+            buffers = noise.filter.CreateBuffers(shader, "_Filter");
 
             var dispatchNum = Mathf.CeilToInt(size / (float)workGroups);
             shader.Dispatch(0, dispatchNum, dispatchNum, dispatchNum);
@@ -69,6 +71,9 @@ namespace FarmVox
 
         public void Dispose()
         {
+            if (buffers != null) {
+                buffers.Dispose();
+            }
             Results.Release();
         }
 

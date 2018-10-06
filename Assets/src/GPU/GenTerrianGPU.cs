@@ -129,11 +129,10 @@ namespace FarmVox
             using (var noises = new GenTerrianNoiseGPU(dataSize, origin, config))
             using(var rockGradientBuffers = SetColorGradient(config.rockColorGradient, "_Rock"))
             using(var grassGradientBuffers = SetColorGradient(config.grassColor, "_Grass"))
-            using(var grassNormalBuffers = config.grassNormalFilter.UpdateShader(shader, "_GrassNormal"))
-            using(var grassHeightBuffers = config.grassHeightFilter.UpdateShader(shader, "_GrassHeight"))
-            using(config.heightFilter.UpdateShader(shader, "_Height"))
-            using(config.riverNoiseFilter.UpdateShader(shader, "_River"))
-            using(config.stoneHeightFilter.UpdateShader(shader, "_StoneHeight"))
+            using(var grassNormalBuffers = config.grassNormalFilter.CreateBuffers(shader, "_GrassNormal"))
+            using(var grassHeightBuffers = config.grassHeightFilter.CreateBuffers(shader, "_GrassHeight"))
+            using(config.riverNoiseFilter.CreateBuffers(shader, "_River"))
+            using(config.stoneHeightFilter.CreateBuffers(shader, "_StoneHeight"))
             {
                 //shader.SetBuffer(0, "_HeightBuffer", heightNoise.Results);
                 //shader.SetBuffer(0, "_GrassBuffer", grassNoise.Results);

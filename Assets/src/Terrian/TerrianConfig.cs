@@ -39,14 +39,6 @@ namespace FarmVox
         public Noise rockNoise;
         public ColorGradient rockColorGradient;
         public Noise rockColorNoise;
-        public ValueGradient heightFilter = new ValueGradient(new Dictionary<float, float>
-        {
-            {-1.0f, -0.4f},
-            {-0.2f, 0.05f},
-            {0.15f, 0.1f},
-            {0.5f, 1.0f},
-            {1, 1.2f}
-        });
 #endregion
 
 #region grass
@@ -139,6 +131,14 @@ namespace FarmVox
         {
             r = new Random(seed);
             heightNoise = NextNoise();
+            heightNoise.filter = new ValueGradient(new Dictionary<float, float>
+            {
+                {-1.0f, -0.4f},
+                {-0.2f, 0.05f},
+                {0.15f, 0.1f},
+                {0.5f, 1.0f},
+                {1, 1.2f}
+            });
             rockNoise = NextNoise();
             monsterNoise = NextNoise();
 
