@@ -227,9 +227,10 @@ float getGrass(int3 coord, float heightRatio, int absY, float stone, GenTerrianN
         return 0;
     }
 
-    float grassValue = noise.grass;
+    //float grassValue = noise.grass;
     
-    float value = normalValue * heightValue * 1.2 + grassValue;
+    //float value = normalValue * heightValue * 1.2 + grassValue;
+    float value = normalValue * heightValue * 1.2;
 
     if (value <= 0.2) {
         return 0;

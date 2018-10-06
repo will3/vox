@@ -86,7 +86,9 @@ namespace FarmVox
         public Noise stoneNoise;
         public Noise stoneNoise2;
         public Color stoneColor = GetColor("#676767");
-        public float stoneThreshold = 0.5f;
+        //public float stoneThreshold = 0.5f;
+        public float stoneThreshold = 2.0f;
+
         public ValueGradient stoneHeightFilter = new ValueGradient(new Dictionary<float, float>
         {
             {-1.0f, 1.0f},
