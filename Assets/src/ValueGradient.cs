@@ -70,4 +70,35 @@ public class ValueGradient
 
         return 0.0f;
     }
+
+    public ValueGradientBuffers SetValueGradient(ComputeShader shader, string prefix) {
+        var keysBuffer = new ComputeBuffer(Keys.Count, sizeof(float));
+        keysBuffer.SetData(Keys);
+
+        var valuesBuffer = new ComputeBuffer(Keys.Count, sizeof(float));
+        valuesBuffer.SetData(Values);
+
+        shader.SetBuffer(0, prefix + "Keys", keysBuffer);
+        shader.SetBuffer(0, prefix + "Values", valuesBuffer);
+        shader.SetInt(prefix + "Size", Keys.Count);
+
+        return new ValueGradientBuffers(keysBuffer, valuesBuffer);
+    }
+
+    public class ValueGradientBuffers : System.IDisposable {
+        public readonly ComputeBuffer keysBuffer;
+        public readonly ComputeBuffer valuesBuffer;
+
+        public ValueGradientBuffers(ComputeBuffer keysBuffer, ComputeBuffer valuesBuffer)
+        {
+            this.keysBuffer = keysBuffer;
+            this.valuesBuffer = valuesBuffer;
+        }
+
+        public void Dispose()
+        {
+            keysBuffer.Dispose();
+            valuesBuffer.Dispose();
+        }
+    }
 }

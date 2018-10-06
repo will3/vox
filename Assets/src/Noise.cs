@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 
 namespace FarmVox
 {
@@ -19,5 +20,12 @@ namespace FarmVox
         public float yScale = 1.0f;
         public float xzScale = 1.0f;
         public NoiseType type;
+
+        public ValueGradient filter = new ValueGradient(new Dictionary<float, float>
+        {
+            {-1.0f, -1.0f},
+            {0.0f, 0.0f},
+            {1.0f, 1.0f}
+        });
     }
 }

@@ -78,24 +78,6 @@ namespace FarmVox
 
     public class GenTerrianGPU
     {
-        class ValueGradientBuffers : System.IDisposable
-        {
-            public readonly ComputeBuffer keysBuffer;
-            public readonly ComputeBuffer valuesBuffer;
-
-            public ValueGradientBuffers(ComputeBuffer keysBuffer, ComputeBuffer valuesBuffer)
-            {
-                this.keysBuffer = keysBuffer;
-                this.valuesBuffer = valuesBuffer;
-            }
-
-            public void Dispose()
-            {
-                keysBuffer.Dispose();
-                valuesBuffer.Dispose();
-            }
-        }
-
         class ColorGradientBuffers : System.IDisposable
         {
             public readonly ComputeBuffer intervalsBuffer;
@@ -145,19 +127,13 @@ namespace FarmVox
 
         public void Dispatch(ComputeBuffer voxelBuffer, ComputeBuffer colorBuffer, ComputeBuffer typeBuffer, TerrianChunk terrianChunk) {
             using (var noises = new GenTerrianNoiseGPU(dataSize, origin, config))
-            //using (var heightNoise = new Perlin3DGPU(config.heightNoise, dataSize, origin)) 
-            //using(var rockColorNoise = new Perlin3DGPU(config.rockColorNoise, dataSize, origin))
-            //using(var grassNoise = new Perlin3DGPU(config.grassNoise, dataSize, origin))
-            //using(var riverNoise = new Perlin3DGPU(config.riverNoise, dataSize, origin))
-            //using(var stoneNoise = new Perlin3DGPU(config.stoneNoise, dataSize, origin))
-            //using(var stoneNoise2 = new Perlin3DGPU(config.stoneNoise2, dataSize, origin))
             using(var rockGradientBuffers = SetColorGradient(config.rockColorGradient, "_Rock"))
             using(var grassGradientBuffers = SetColorGradient(config.grassColor, "_Grass"))
-            using(var grassNormalBuffers = SetValueGradient(config.grassNormalFilter, "_GrassNormal"))
-            using(var grassHeightBuffers = SetValueGradient(config.grassHeightFilter, "_GrassHeight"))
-            using(SetValueGradient(config.heightFilter, "_Height"))
-            using(SetValueGradient(config.riverNoiseFilter, "_River"))
-            using(SetValueGradient(config.stoneHeightFilter, "_StoneHeight"))
+            using(var grassNormalBuffers = config.grassNormalFilter.SetValueGradient(shader, "_GrassNormal"))
+            using(var grassHeightBuffers = config.grassHeightFilter.SetValueGradient(shader, "_GrassHeight"))
+            using(config.heightFilter.SetValueGradient(shader, "_Height"))
+            using(config.riverNoiseFilter.SetValueGradient(shader, "_River"))
+            using(config.stoneHeightFilter.SetValueGradient(shader, "_StoneHeight"))
             {
                 //shader.SetBuffer(0, "_HeightBuffer", heightNoise.Results);
                 //shader.SetBuffer(0, "_GrassBuffer", grassNoise.Results);
@@ -192,20 +168,6 @@ namespace FarmVox
                 var dispatchNum = Mathf.CeilToInt(dataSize / (float)workGroups);
                 shader.Dispatch(0, dispatchNum, dispatchNum, dispatchNum);
             }
-        }
-
-        ValueGradientBuffers SetValueGradient(ValueGradient valueGradient, string prefix) {
-            var keysBuffer = new ComputeBuffer(valueGradient.Keys.Count, sizeof(float));
-            keysBuffer.SetData(valueGradient.Keys);
-
-            var valuesBuffer = new ComputeBuffer(valueGradient.Keys.Count, sizeof(float));
-            valuesBuffer.SetData(valueGradient.Values);
-
-            shader.SetBuffer(0, prefix + "Keys", keysBuffer);
-            shader.SetBuffer(0, prefix + "Values", valuesBuffer);
-            shader.SetInt(prefix + "Size", valueGradient.Keys.Count);
-
-            return new ValueGradientBuffers(keysBuffer, valuesBuffer);
         }
 
         ColorGradientBuffers SetColorGradient(ColorGradient colorGradient, string prefix) {

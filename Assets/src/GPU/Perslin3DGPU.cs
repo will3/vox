@@ -11,15 +11,8 @@ namespace FarmVox
         Noise noise;
 
         ComputeShader shader;
-        ComputeBuffer results;
 
-        public ComputeBuffer Results
-        {
-            get
-            {
-                return results;
-            }
-        }
+        public ComputeBuffer Results { get; private set; }
 
         Vector3 origin;
         int dataSize;
@@ -39,7 +32,7 @@ namespace FarmVox
             this.origin = origin;
             shader = Resources.Load<ComputeShader>("Shaders/Perlin3D");
             dataSize = size;
-            results = new ComputeBuffer(dataSize * dataSize * dataSize, sizeof(float));
+            Results = new ComputeBuffer(dataSize * dataSize * dataSize, sizeof(float));
             Dispatch();
         }
 
@@ -54,7 +47,7 @@ namespace FarmVox
             var yScale = noise.yScale;
             var xzScale = noise.xzScale;
 
-            shader.SetBuffer(0, "_Results", results);
+            shader.SetBuffer(0, "_Results", Results);
             shader.SetFloat("_Persistence", persistence);
             shader.SetVector("_Origin", origin);
             shader.SetInt("_Size", size);
@@ -74,13 +67,13 @@ namespace FarmVox
 
         public void Dispose()
         {
-            results.Release();
+            Results.Release();
         }
 
         public float[] Read()
         {
             var data = new float[size * size * size];
-            results.GetData(data);
+            Results.GetData(data);
             return data;
         }
     }

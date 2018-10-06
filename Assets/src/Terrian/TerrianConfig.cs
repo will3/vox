@@ -35,6 +35,7 @@ namespace FarmVox
 
 #region ground
         public Noise heightNoise;
+
         public Noise rockNoise;
         public ColorGradient rockColorGradient;
         public Noise rockColorNoise;
