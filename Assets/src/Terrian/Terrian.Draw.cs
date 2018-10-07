@@ -50,7 +50,7 @@ namespace FarmVox
         Mesh MeshGPU(Chunk chunk, TerrianChunk terrianChunk)
         {
             var chunks = chunk.Chunks;
-            var mesherGPU = new MesherGPU(size);
+            var mesherGPU = new MesherGPU(Size);
             var voxelBuffer = mesherGPU.CreateVoxelBuffer();
             var colorBuffer = mesherGPU.CreateColorBuffer();
 

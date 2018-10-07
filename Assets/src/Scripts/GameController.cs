@@ -10,12 +10,9 @@ public class GameController : MonoBehaviour
 
     public Terrian Terrian { get; private set; }
 
-    HighlightHoveredSurface highlight;
-
     // Use this for initialization
     void Start () {
         Terrian = new Terrian();
-        highlight = gameObject.AddComponent<HighlightHoveredSurface>();
 
         Terrian.InitColumns();
 

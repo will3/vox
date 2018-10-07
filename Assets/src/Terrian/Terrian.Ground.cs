@@ -55,9 +55,9 @@ namespace FarmVox
             }
 
             var origin = terrianChunk.Origin;
-            var chunk = defaultLayer.GetOrCreateChunk(origin);
+            var chunk = DefaultLayer.GetOrCreateChunk(origin);
 
-            var genTerrianGPU = new GenTerrianGPU(size, origin, config);
+            var genTerrianGPU = new GenTerrianGPU(Size, origin, config);
 
             var voxelBuffer = genTerrianGPU.CreateVoxelBuffer();
             var colorBuffer = genTerrianGPU.CreateColorBuffer();

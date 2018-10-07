@@ -2,11 +2,11 @@
 
 namespace FarmVox
 {
-    public class RaycastResult
+    public class VoxelRaycastResult
     {
         public readonly RaycastHit hit;
 
-        public RaycastResult(RaycastHit hit) {
+        public VoxelRaycastResult(RaycastHit hit) {
             this.hit = hit;
         }
 

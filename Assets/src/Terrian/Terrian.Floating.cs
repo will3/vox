@@ -9,19 +9,22 @@ namespace FarmVox
 
     public partial class Terrian
     {
-        public void UpdateFloating(TerrianChunk terrianChunk) {
-            if (!terrianChunk.floatingNeedsUpdate) {
+        public void UpdateFloating(TerrianChunk terrianChunk)
+        {
+            if (!terrianChunk.floatingNeedsUpdate)
+            {
                 return;
             }
 
-            if (terrianChunk.Origin.y == 0) {
-                Vector3Int startCoord = new Vector3Int(size / 2, config.waterLevel - 1, size / 2) + terrianChunk.Origin;
+            if (terrianChunk.Origin.y == 0)
+            {
+                Vector3Int startCoord = new Vector3Int(Size / 2, config.waterLevel - 1, Size / 2) + terrianChunk.Origin;
 
                 var leads = new HashSet<Vector3Int>() { startCoord };
                 var visited = new HashSet<Vector3Int>() { startCoord };
 
                 var start = terrianChunk.Origin;
-                var end = start + new Vector3Int(size, size, size);
+                var end = start + new Vector3Int(Size, Size, Size);
                 start.y = config.waterLevel - 1;
 
                 var startTime = System.DateTime.Now;
@@ -44,7 +47,9 @@ namespace FarmVox
                 var endTime = System.DateTime.Now;
 
                 Debug.Log((endTime - startTime).Milliseconds);
-            } else {
+            }
+            else
+            {
                 //var left = GetNeighbourTerrianChunk(terrianChunk, -1, 0, 0);
                 //var right = GetNeighbourTerrianChunk(terrianChunk, 1, 0, 0);
                 //var bot = GetNeighbourTerrianChunk(terrianChunk, 0, -1, 0);
@@ -64,12 +69,13 @@ namespace FarmVox
             terrianChunk.floatingNeedsUpdate = false;
         }
 
-        private TerrianChunk GetNeighbourTerrianChunk(TerrianChunk terrianChunk, int di, int dj, int dk) {
+        private TerrianChunk GetNeighbourTerrianChunk(TerrianChunk terrianChunk, int di, int dj, int dk)
+        {
             var key = terrianChunk.key;
             key.x += di;
             key.y += dj;
             key.z += dk;
-            var origin = key * size;
+            var origin = key * Size;
             return GetTerrianChunk(origin);
         }
 
@@ -114,22 +120,28 @@ namespace FarmVox
         //    floatingUpdated.Add(xz);
         //}
 
-        void  Visit(Vector3Int coord, int di, int dj, int dk,
-                    HashSet<Vector3Int> leads, HashSet<Vector3Int> visited, Vector3Int start, Vector3Int end) {
+        void Visit(Vector3Int coord, int di, int dj, int dk,
+                    HashSet<Vector3Int> leads, HashSet<Vector3Int> visited, Vector3Int start, Vector3Int end)
+        {
             var c = new Vector3Int(coord.x + di, coord.y + dj, coord.z + dk);
 
             if (c.x < start.x || c.x >= end.x ||
                 c.y < start.y || c.y >= end.y ||
-                c.z < start.z || c.z >= end.z) {
+                c.z < start.z || c.z >= end.z)
+            {
                 return;
             }
 
-            var any = coord.y < config.waterLevel || defaultLayer.Get(c.x, c.y, c.z) > 0;
-            if (any) {
-                if (!visited.Contains(c)) {
+            var any = coord.y < config.waterLevel || DefaultLayer.Get(c.x, c.y, c.z) > 0;
+            if (any)
+            {
+                if (!visited.Contains(c))
+                {
                     leads.Add(c);
                 }
-            } else {
+            }
+            else
+            {
                 visited.Add(c);
             }
         }

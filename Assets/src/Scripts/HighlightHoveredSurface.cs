@@ -6,7 +6,7 @@ public class HighlightHoveredSurface : MonoBehaviour
 {
     private Terrian _terrian;
 
-    private Terrian terrian {
+    private Terrian Terrian {
         get {
             if (_terrian == null)
             {
@@ -15,6 +15,8 @@ public class HighlightHoveredSurface : MonoBehaviour
             return _terrian;    
         }
     }
+
+    public VoxelRaycastResult result;
 
     private GameObject go;
 
@@ -30,7 +32,7 @@ public class HighlightHoveredSurface : MonoBehaviour
 	void Update()
 	{
         
-        var result = VoxelRaycast.TraceMouse(1 << UserLayers.terrian);
+        result = VoxelRaycast.TraceMouse(1 << UserLayers.terrian);
         if (result != null) {
             var mesh = result.GetQuad();
             var pos = result.GetCoord();

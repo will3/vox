@@ -8,57 +8,17 @@ namespace FarmVox
 {
     public partial class Terrian
     {
-        private int size;
-
-        public int Size
-        {
-            get
-            {
-                return size;
-            }
-        }
+        public int Size { get; private set; }
 
         float sizeF;
 
-        Chunks defaultLayer;
+        public Chunks DefaultLayer { get; private set; }
 
-        public Chunks DefaultLayer
-        {
-            get
-            {
-                return defaultLayer;
-            }
-        }
+        public Chunks TreeLayer { get; private set; }
 
-        Chunks treeLayer;
+        public Chunks WaterLayer { get; private set; }
 
-        public Chunks TreeLayer
-        {
-            get
-            {
-                return treeLayer;
-            }
-        }
-
-        Chunks waterLayer;
-
-        public Chunks WaterLayer
-        {
-            get
-            {
-                return waterLayer;
-            }
-        }
-
-        Chunks buildingLayer;
-
-        public Chunks BuildingLayer
-        {
-            get
-            {
-                return buildingLayer;
-            }
-        }
+        public Chunks BuildingLayer { get; private set; }
 
         Dictionary<Vector3Int, TerrianChunk> map = new Dictionary<Vector3Int, TerrianChunk>();
 
@@ -107,7 +67,7 @@ namespace FarmVox
 
         public Terrian(int size = 32)
         {
-            this.size = size;
+            this.Size = size;
             sizeF = size;
 
             bounds = new Bounds();
@@ -118,33 +78,33 @@ namespace FarmVox
 
             terrianObject = new GameObject("terrian");
 
-            defaultLayer = new Chunks(size);
-            defaultLayer.normalStrength = 0.4f;
-            treeLayer = new Chunks(size);
-            treeLayer.normalStrength = 0.2f;
-            waterLayer = new Chunks(size);
-            waterLayer.transparent = true;
-            buildingLayer = new Chunks(size);
+            DefaultLayer = new Chunks(size);
+            DefaultLayer.normalStrength = 0.4f;
+            TreeLayer = new Chunks(size);
+            TreeLayer.normalStrength = 0.2f;
+            WaterLayer = new Chunks(size);
+            WaterLayer.transparent = true;
+            BuildingLayer = new Chunks(size);
 
             treeMap = new TreeMap(boundsInt);
             voxelMap = new VoxelMap(boundsInt);
 
-            defaultLayer.GetGameObject().layer = LayerMask.NameToLayer("terrian");
-            treeLayer.GetGameObject().layer = LayerMask.NameToLayer("trees");
-            waterLayer.GetGameObject().layer = LayerMask.NameToLayer("water");
+            DefaultLayer.GetGameObject().layer = LayerMask.NameToLayer("terrian");
+            TreeLayer.GetGameObject().layer = LayerMask.NameToLayer("trees");
+            WaterLayer.GetGameObject().layer = LayerMask.NameToLayer("water");
              
-            defaultLayer.GetGameObject().name = "default";
-            treeLayer.GetGameObject().name = "trees";
-            waterLayer.GetGameObject().name = "water";
+            DefaultLayer.GetGameObject().name = "default";
+            TreeLayer.GetGameObject().name = "trees";
+            WaterLayer.GetGameObject().name = "water";
 
-            defaultLayer.GetGameObject().transform.parent = terrianObject.transform;
-            treeLayer.GetGameObject().transform.parent = terrianObject.transform;
-            waterLayer.GetGameObject().transform.parent = terrianObject.transform;
+            DefaultLayer.GetGameObject().transform.parent = terrianObject.transform;
+            TreeLayer.GetGameObject().transform.parent = terrianObject.transform;
+            WaterLayer.GetGameObject().transform.parent = terrianObject.transform;
 
-            waterLayer.useNormals = false;
-            waterLayer.isWater = true;
+            WaterLayer.useNormals = false;
+            WaterLayer.isWater = true;
 
-            chunksToDraw = new Chunks[] { defaultLayer, treeLayer, waterLayer, buildingLayer };
+            chunksToDraw = new Chunks[] { DefaultLayer, TreeLayer, WaterLayer, BuildingLayer };
 
             shadowMap = new VoxelShadowMap(size, config);
 
@@ -156,14 +116,14 @@ namespace FarmVox
             var list = new List<TerrianChunk>();
             for (int j = 0; j < maxChunksY; j++)
             {
-                var origin = new Vector3Int(columnOrigin.x, j * size, columnOrigin.z);
+                var origin = new Vector3Int(columnOrigin.x, j * Size, columnOrigin.z);
                 var terrianChunk = GetOrCreateTerrianChunk(origin);
                 list.Add(terrianChunk);
             }
 
             if (!columns.ContainsKey(columnOrigin))
             {
-                var terrianColumn = new TerrianColumn(size, columnOrigin, list);
+                var terrianColumn = new TerrianColumn(Size, columnOrigin, list);
                 columns[columnOrigin] = terrianColumn;
 
                 columnsList.Add(terrianColumn);
@@ -194,7 +154,7 @@ namespace FarmVox
             {
                 for (var k = -config.maxChunksX; k < config.maxChunksX; k++)
                 {
-                    var columnOrigin = new Vector3Int(i, 0, k) * size;
+                    var columnOrigin = new Vector3Int(i, 0, k) * Size;
                     GenerateColumn(columnOrigin);
                 }
             }
@@ -260,8 +220,8 @@ namespace FarmVox
                 return map[origin];
             }
 
-            Vector3Int key = new Vector3Int(origin.x / size, origin.y / size, origin.z / size);
-            map[origin] = new TerrianChunk(key, size, this);
+            Vector3Int key = new Vector3Int(origin.x / Size, origin.y / Size, origin.z / Size);
+            map[origin] = new TerrianChunk(key, Size, this);
             map[origin].Config = config;
             return map[origin];
         }
@@ -269,18 +229,18 @@ namespace FarmVox
         public Vector3Int GetOrigin(float i, float j, float k)
         {
             return new Vector3Int(
-               Mathf.FloorToInt(i / this.sizeF) * this.size,
-               Mathf.FloorToInt(j / this.sizeF) * this.size,
-               Mathf.FloorToInt(k / this.sizeF) * this.size
+               Mathf.FloorToInt(i / this.sizeF) * this.Size,
+               Mathf.FloorToInt(j / this.sizeF) * this.Size,
+               Mathf.FloorToInt(k / this.sizeF) * this.Size
             );
         }
 
         public Vector3Int GetOrigin(int i, int j, int k)
         {
             return new Vector3Int(
-                Mathf.FloorToInt(i / this.sizeF) * this.size,
-                Mathf.FloorToInt(j / this.sizeF) * this.size,
-                Mathf.FloorToInt(k / this.sizeF) * this.size
+                Mathf.FloorToInt(i / this.sizeF) * this.Size,
+                Mathf.FloorToInt(j / this.sizeF) * this.Size,
+                Mathf.FloorToInt(k / this.sizeF) * this.Size
             );
         }
 

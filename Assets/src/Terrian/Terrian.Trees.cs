@@ -33,7 +33,7 @@ namespace FarmVox
             //var pine = new Maple(7.0f, 2);
 
             var origin = terrianChunk.Origin;
-            var chunk = defaultLayer.GetChunk(origin);
+            var chunk = DefaultLayer.GetChunk(origin);
             chunk.UpdateNormals();
 
             foreach (var kv in chunk.Normals)
@@ -86,12 +86,12 @@ namespace FarmVox
                     continue;
                 }
 
-                var tree = pine.Place(this, treeLayer, globalCoord, config);
+                var tree = pine.Place(this, TreeLayer, globalCoord, config);
 
                 treeMap.AddTree(tree);
             }
 
-            var treeChunk = treeLayer.GetChunk(terrianChunk.Origin);
+            var treeChunk = TreeLayer.GetChunk(terrianChunk.Origin);
             if (treeChunk != null)
             {
                 treeChunk.UpdateSurfaceCoords();

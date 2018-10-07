@@ -6,15 +6,20 @@ namespace FarmVox
 
     public partial class Terrian
     {
-        bool ShouldGenerateWaterFalls(TerrianChunk terrianChunk) {
+        bool ShouldGenerateWaterFalls(TerrianChunk terrianChunk)
+        {
             var key = terrianChunk.key;
 
-            for (var i = -1; i <= 1; i ++) {
-                for (var k = -1; k <= 1; k ++) {
-                    for (var j = 0; j < config.maxChunksY; j++) {
-                        var origin = new Vector3Int(i + key.x, j, k + key.z) * size;
+            for (var i = -1; i <= 1; i++)
+            {
+                for (var k = -1; k <= 1; k++)
+                {
+                    for (var j = 0; j < config.maxChunksY; j++)
+                    {
+                        var origin = new Vector3Int(i + key.x, j, k + key.z) * Size;
                         var tc = GetTerrianChunk(origin);
-                        if (tc == null || tc.rockNeedsUpdate) {
+                        if (tc == null || tc.rockNeedsUpdate)
+                        {
                             return false;
                         }
                     }
@@ -23,22 +28,26 @@ namespace FarmVox
             return true;
         }
 
-        public void GenerateWaterfalls(TerrianChunk terrianChunk) {
-            if (!terrianChunk.waterfallsNeedsUpdate) {
+        public void GenerateWaterfalls(TerrianChunk terrianChunk)
+        {
+            if (!terrianChunk.waterfallsNeedsUpdate)
+            {
                 return;
             }
 
-            if (!ShouldGenerateWaterFalls(terrianChunk)) {
+            if (!ShouldGenerateWaterFalls(terrianChunk))
+            {
                 return;
             }
 
             var origin = terrianChunk.Origin;
 
-            var chunk = defaultLayer.GetChunk(origin);
+            var chunk = DefaultLayer.GetChunk(origin);
             var dataSize = chunk.dataSize;
             chunk.UpdateSurfaceCoords();
-            
-            foreach(var coord in chunk.surfaceCoords) {
+
+            foreach (var coord in chunk.surfaceCoords)
+            {
                 var r = config.waterfallRandom.NextDouble();
 
                 var index = coord.x * dataSize * dataSize + coord.y * dataSize + coord.z;
@@ -62,7 +71,8 @@ namespace FarmVox
             terrianChunk.waterfallsNeedsUpdate = false;
         }
 
-        class WaterTracker {
+        class WaterTracker
+        {
             private float speed = 0.0f;
             private bool freefall = false;
             private float freefallFriction = 0f;
@@ -76,7 +86,8 @@ namespace FarmVox
 
             TerrianConfig config;
 
-            public WaterTracker(TerrianConfig config) {
+            public WaterTracker(TerrianConfig config)
+            {
                 this.config = config;
             }
 
@@ -96,19 +107,22 @@ namespace FarmVox
                 }
             }
 
-            public void Start(Vector3Int coord) {
+            public void Start(Vector3Int coord)
+            {
                 coords.Add(coord);
                 costs.Add(1.0f);
             }
 
-            public void Freefall(Vector3Int coord) {
+            public void Freefall(Vector3Int coord)
+            {
                 speed += 1f;
                 freefall = true;
                 lastCost = 1 / speed;
 
                 speed *= friction;
 
-                if (speed > maxSpeed) {
+                if (speed > maxSpeed)
+                {
                     speed = maxSpeed;
                 }
 
@@ -118,8 +132,10 @@ namespace FarmVox
                 emptyCoords.Add(coord);
             }
 
-            public void Flow(Vector3Int from, Vector3Int to) {
-                if (freefall) {
+            public void Flow(Vector3Int from, Vector3Int to)
+            {
+                if (freefall)
+                {
                     speed *= freefallFriction;
                     freefall = false;
                 }
@@ -134,24 +150,29 @@ namespace FarmVox
                 costs.Add(costs[costs.Count - 1] + lastCost);
             }
 
-            public void ReachedWater() {
+            public void ReachedWater()
+            {
                 didReachedWater = true;
             }
 
-            public void Apply(Chunks chunks) {
-                for (var i = 0; i < coords.Count; i++) {
+            public void Apply(Chunks chunks)
+            {
+                for (var i = 0; i < coords.Count; i++)
+                {
                     var coord = coords[i];
                     var cost = costs[i];
                     chunks.SetColor(coord.x, coord.y, coord.z, config.waterColor);
                     chunks.SetWaterfall(coord, cost);
                 }
-                foreach(var coord in emptyCoords) {
+                foreach (var coord in emptyCoords)
+                {
                     chunks.Set(coord, 1);
                 }
             }
         }
 
-        private void GenerateWaterfall(Vector3Int coord) {
+        private void GenerateWaterfall(Vector3Int coord)
+        {
 
             Vector3Int? nextPoint = coord;
 
@@ -160,8 +181,10 @@ namespace FarmVox
             var waterTracker = new WaterTracker(config);
             waterTracker.Start(coord);
 
-            while (true) {
-                if (nextPoint == null) {
+            while (true)
+            {
+                if (nextPoint == null)
+                {
                     break;
                 }
 
@@ -174,25 +197,30 @@ namespace FarmVox
 
                 cost += waterTracker.LastCost;
 
-                if (cost > 1000) {
+                if (cost > 1000)
+                {
                     break;
                 }
             }
 
-            if (waterTracker.DidReachedWater) {
-                waterTracker.Apply(defaultLayer);    
-            }
+            //if (waterTracker.DidReachedWater)
+            //{
+                waterTracker.Apply(DefaultLayer);
+            //}
         }
 
-        private Vector3Int? ProcessNextWater(Vector3Int coord, WaterTracker waterTracker) {
-            if (coord.y < config.waterLevel + config.groundHeight) {
+        private Vector3Int? ProcessNextWater(Vector3Int coord, WaterTracker waterTracker)
+        {
+            if (coord.y < config.waterLevel + config.groundHeight)
+            {
                 waterTracker.ReachedWater();
-                return null;    
+                return null;
             }
 
             var down = new Vector3Int(coord.x, coord.y - 1, coord.z);
 
-            if (defaultLayer.Get(down) < 0) {
+            if (DefaultLayer.Get(down) < 0)
+            {
                 waterTracker.Freefall(down);
                 return down;
             }
@@ -211,54 +239,68 @@ namespace FarmVox
 
             var coordsBelow = new List<Vector3Int>();
 
-            for (var i = 0; i < coords.Length; i ++) {
+            for (var i = 0; i < coords.Length; i++)
+            {
                 var c = coords[i];
-                var v = defaultLayer.Get(c);
-                if (v > 0) {
+                var v = DefaultLayer.Get(c);
+                if (v > 0)
+                {
                     continue;
                 }
 
                 var coordBelow = new Vector3Int(c.x, c.y - 1, c.z);
-                var v2 = defaultLayer.Get(coordBelow);
-                if (v2 > 0) {
+                var v2 = DefaultLayer.Get(coordBelow);
+                if (v2 > 0)
+                {
                     coordsBelow.Add(coordBelow);
-                } else {
+                }
+                else
+                {
                     // From the sides
-                    if (i < 4) {
+                    if (i < 4)
+                    {
                         waterTracker.Flow(coord, down);
-                        return down;      
+                        return down;
                     }
                 }
             }
 
             Vector3Int[] listToUse;
-            if (coordsBelow.Count > 0) {
+            if (coordsBelow.Count > 0)
+            {
                 listToUse = coordsBelow.ToArray();
-            } else {
+            }
+            else
+            {
                 listToUse = coords;
             }
-                
+
             var minValue = Mathf.Infinity;
             Vector3Int? minCoord = null;
 
-            for (var i = 0; i < listToUse.Length; i++) {
-                var value = defaultLayer.Get(listToUse[i]);
-                if (value < 0) {
+            for (var i = 0; i < listToUse.Length; i++)
+            {
+                var value = DefaultLayer.Get(listToUse[i]);
+                if (value < 0)
+                {
                     continue;
                 }
 
-                if (defaultLayer.GetWaterfall(listToUse[i])) {
+                if (DefaultLayer.GetWaterfall(listToUse[i]))
+                {
                     continue;
                 }
 
-                if (value < minValue) {
+                if (value < minValue)
+                {
                     minValue = value;
                     minCoord = listToUse[i];
                 }
             }
 
-            if (minCoord.HasValue) {
-                waterTracker.Flow(coord, minCoord.Value);    
+            if (minCoord.HasValue)
+            {
+                waterTracker.Flow(coord, minCoord.Value);
             }
 
             return minCoord;

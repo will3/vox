@@ -11,7 +11,7 @@ namespace FarmVox
 
                     var origin = chunk.Origin;
                     material.SetVector("_Origin", (Vector3)origin);
-                    material.SetInt("_Size", size);
+                    material.SetInt("_Size", Size);
 
                     shadowMap.UpdateMaterial(material, origin);
                 }
