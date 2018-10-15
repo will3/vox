@@ -39,25 +39,9 @@ namespace FarmVox
 
         GameObject terrianObject;
 
-        VoxelShadowMap shadowMap;
+        public TreeMap TreeMap { get; private set; }
 
-        TreeMap treeMap;
-
-        public TreeMap TreeMap
-        {
-            get
-            {
-                return treeMap;
-            }
-        }
-
-        public VoxelShadowMap ShadowMap
-        {
-            get
-            {
-                return shadowMap;
-            }
-        }
+        public VoxelShadowMap ShadowMap { get; private set; }
 
         VoxelMap voxelMap;
 
@@ -86,7 +70,7 @@ namespace FarmVox
             WaterLayer.transparent = true;
             BuildingLayer = new Chunks(size);
 
-            treeMap = new TreeMap(boundsInt);
+            TreeMap = new TreeMap(boundsInt);
             voxelMap = new VoxelMap(boundsInt);
 
             DefaultLayer.GetGameObject().layer = LayerMask.NameToLayer("terrian");
@@ -106,7 +90,7 @@ namespace FarmVox
 
             chunksToDraw = new Chunks[] { DefaultLayer, TreeLayer, WaterLayer, BuildingLayer };
 
-            shadowMap = new VoxelShadowMap(size, config);
+            ShadowMap = new VoxelShadowMap(size, config);
 
             heightMap = new HeightMap(size);
         }
@@ -200,7 +184,7 @@ namespace FarmVox
                 foreach (var column in columnsList)
                 {
                     UpdateMaterial();
-                    shadowMap.Update();
+                    ShadowMap.Update();
                     GenerateMeshes(column);
                     yield return null;
                 }
@@ -211,6 +195,12 @@ namespace FarmVox
             TerrianChunk terrianChunk = null;
             map.TryGetValue(origin, out terrianChunk);
             return terrianChunk;
+        }
+
+        public TerrianColumn GetTerrianColumn(Vector3Int origin) {
+            TerrianColumn terrianColumn = null;
+            columns.TryGetValue(origin, out terrianColumn);
+            return terrianColumn;
         }
 
         TerrianChunk GetOrCreateTerrianChunk(Vector3Int origin)
@@ -264,7 +254,7 @@ namespace FarmVox
         }
 
         public void Dispose() {
-            shadowMap.Dispose();
+            ShadowMap.Dispose();
             foreach (var tc in map.Values) {
                 tc.Dispose();
             }

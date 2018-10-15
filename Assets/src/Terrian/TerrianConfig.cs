@@ -26,7 +26,7 @@ namespace FarmVox
         public float plainHeight = 4;
         public int waterLevel = 0;
         public int groundHeight = 12;
-        public int maxChunksX = 2;
+        public int maxChunksX = 3;
         public bool generateWater = true;
         public bool generateTrees = true;
 
@@ -64,7 +64,7 @@ namespace FarmVox
         public Random waterfallRandom;
         public Noise waterfallNoise;
         public ValueGradient waterfallHeightFilter;
-        public float waterfallChance = 0.001f;
+        public float waterfallChance = 0.01f;
 #endregion
 
 #region river
@@ -80,8 +80,8 @@ namespace FarmVox
         public Noise stoneNoise;
         public Noise stoneNoise2;
         public Color stoneColor = GetColor("#676767");
-        //public float stoneThreshold = 0.5f;
-        public float stoneThreshold = 2.0f;
+        public float stoneThreshold = 0.5f;
+        //public float stoneThreshold = 2.0f;
 
         public ValueGradient stoneHeightFilter = new ValueGradient(new Dictionary<float, float>
         {

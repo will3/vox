@@ -81,14 +81,14 @@ namespace FarmVox
                 var radius = 3;
                 var treeBoundsSize = new Vector3Int(radius, radius, radius);
                 var treeBounds = new BoundsInt(globalCoord - treeBoundsSize, treeBoundsSize * 2);
-                if (treeMap.HasTrees(treeBounds))
+                if (TreeMap.HasTrees(treeBounds))
                 {
                     continue;
                 }
 
                 var tree = pine.Place(this, TreeLayer, globalCoord, config);
 
-                treeMap.AddTree(tree);
+                TreeMap.AddTree(tree);
             }
 
             var treeChunk = TreeLayer.GetChunk(terrianChunk.Origin);

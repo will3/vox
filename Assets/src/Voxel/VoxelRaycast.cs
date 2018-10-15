@@ -2,7 +2,7 @@
 
 namespace FarmVox
 {
-    class VoxelRaycast
+    public class VoxelRaycast
     {
         public static VoxelRaycastResult TraceMouse(int layerMask = 0)
         {

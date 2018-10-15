@@ -32,7 +32,7 @@ namespace FarmVox
 
             chunk.Dirty = false;
 
-            shadowMap.ChunkDrawn(origin);
+            ShadowMap.ChunkDrawn(origin);
 
             return true;
         }

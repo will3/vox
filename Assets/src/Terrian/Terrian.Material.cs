@@ -13,7 +13,7 @@ namespace FarmVox
                     material.SetVector("_Origin", (Vector3)origin);
                     material.SetInt("_Size", Size);
 
-                    shadowMap.UpdateMaterial(material, origin);
+                    ShadowMap.UpdateMaterial(material, origin);
                 }
             }
         }

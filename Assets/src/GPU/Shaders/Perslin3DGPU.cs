@@ -1,13 +1,12 @@
 using UnityEngine;
-using System.Collections;
 using System;
 
 namespace FarmVox
 {
     public class Perlin3DGPU : IDisposable
     {
-        int workGroups = 8;
-        int size;
+        readonly int workGroups = 8;
+        readonly int size;
         Noise noise;
 
         ComputeShader shader;
@@ -17,15 +16,8 @@ namespace FarmVox
         ValueGradient.ValueGradientBuffers buffers;
 
         Vector3 origin;
-        int dataSize;
 
-        public int DataSize
-        {
-            get
-            {
-                return dataSize;
-            }
-        }
+        public int DataSize { get; private set; }
 
         public Perlin3DGPU(Noise noise, int size, Vector3 origin)
         {
@@ -33,8 +25,8 @@ namespace FarmVox
             this.size = size;
             this.origin = origin;
             shader = Resources.Load<ComputeShader>("Shaders/Perlin3D");
-            dataSize = size;
-            Results = new ComputeBuffer(dataSize * dataSize * dataSize, sizeof(float));
+            DataSize = size;
+            Results = new ComputeBuffer(DataSize * DataSize * DataSize, sizeof(float));
             Dispatch();
         }
 
@@ -60,7 +52,7 @@ namespace FarmVox
             shader.SetFloat("_YScale", yScale);
             shader.SetFloat("_XZScale", xzScale);
             shader.SetFloat("_Amplitude", amplitude);
-            shader.SetInt("_DataSize", dataSize);
+            shader.SetInt("_DataSize", DataSize);
             shader.SetInt("_Type", (int)noise.type);
 
             buffers = noise.filter.CreateBuffers(shader, "_Filter");
