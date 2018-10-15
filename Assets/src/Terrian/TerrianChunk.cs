@@ -5,6 +5,10 @@ using System.Linq;
 
 namespace FarmVox
 {
+    class TerrianChunkBuildGrid {
+
+    }
+
     public partial class TerrianChunk
     {
         readonly HashSet<int> waters = new HashSet<int>();

@@ -14,17 +14,22 @@ namespace FarmVox
         // Update is called once per frame
         void Update()
         {
-            //var result = VoxelRaycast.TraceMouse();
-            //if (result != null) {
-            //    var coord = result.GetCoord();
+            var result = VoxelRaycast.TraceMouse(1 << UserLayers.terrian);
+            if (result != null) {
+                var coord = result.GetCoord();
 
-            //    var gridSize = 7;
-
-            //    var x = Mathf.FloorToInt(coord.x / (float)gridSize) * gridSize;
-            //    var z = Mathf.FloorToInt(coord.z / (float)gridSize) * gridSize;
-
-
-            //}
+                var tile = Finder.FindTerrian().heightMap.GetTile(coord);
+                if (tile == null || !tile.CanBuild()) {
+                    // Hide object
+                } else {
+                    // Show object
+                    var go = new GameObject();
+                    var meshFitler = go.AddComponent<MeshFilter>();
+                    var meshRenderer = go.AddComponent<MeshRenderer>();
+                    meshFitler.mesh = Cube.GetTopQuad();
+                    go.transform.position = coord + result.hit.normal * 0.1f;
+                }
+            }
         }
     }
 }

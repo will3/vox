@@ -47,7 +47,7 @@ namespace FarmVox
 
         Bounds bounds;
 
-        HeightMap heightMap;
+        public HeightMap heightMap;
 
         public Terrian(int size = 32)
         {
@@ -92,7 +92,7 @@ namespace FarmVox
 
             ShadowMap = new VoxelShadowMap(size, config);
 
-            heightMap = new HeightMap(size);
+            heightMap = new HeightMap();
         }
 
         void GenerateColumn(Vector3Int columnOrigin) {
@@ -163,8 +163,6 @@ namespace FarmVox
                 }
 
                 column.generatedTerrian = true;
-
-                heightMap.LoadColumn(column);
 
                 yield return null; // new WaitForSeconds(0.1f);
             }

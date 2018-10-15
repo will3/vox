@@ -30,6 +30,10 @@ namespace FarmVox
             cubeMesh = GenCube();
         }
 
+        public static Mesh GetTopQuad() {
+            return GetQuad(1, true);
+        }
+
         public static Mesh GetQuad(int d, bool front)
         {
             var index = d * 2 + (front ? 1 : 0);

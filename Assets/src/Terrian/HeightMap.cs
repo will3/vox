@@ -5,39 +5,83 @@ namespace FarmVox
 {
     public class HeightMap
     {
-        int size;
-        public HeightMap(int size) {
-            this.size = size;
+        Dictionary<Vector3Int, Tile> tiles = new Dictionary<Vector3Int, Tile>();
+
+        public void LoadChunk(Terrian terrian, TerrianChunk terrianChunk)
+        {
+            var chunk = terrian.DefaultLayer.GetChunk(terrianChunk.Origin);
+
+            chunk.UpdateSurfaceCoords();
+
+            foreach (var coord in chunk.surfaceCoordsUp)
+            {
+                var worldCoord = coord + chunk.Origin;
+                var tile = GetOrCreateTile(worldCoord);
+
+                tile.AddCoord(worldCoord);
+            }
         }
 
-        Dictionary<Vector2Int, Dictionary<Vector2Int, int>> map = 
-            new Dictionary<Vector2Int, Dictionary<Vector2Int, int>>();
+        public Tile GetTile(Vector3Int coord) {
+            var origin = GetTileOrigin(coord);
+            Tile tile = null;
+            tiles.TryGetValue(origin, out tile);
+            return tile;
+        }
 
-        public void LoadColumn(TerrianColumn column) {
-            float startY = 200;
-            var origin = Vectors.GetXZ(column.Origin);
-            if (!map.ContainsKey(origin)) {
-                map[origin] = new Dictionary<Vector2Int, int>();
+        Vector3Int GetTileOrigin(Vector3Int coord) {
+            int tileSize = 7;
+
+            var origin = new Vector3Int(
+                Mathf.FloorToInt(coord.x / (float)tileSize) * tileSize,
+                Mathf.FloorToInt(coord.y / (float)tileSize) * tileSize,
+                Mathf.FloorToInt(coord.z / (float)tileSize) * tileSize
+            );
+
+            return origin;
+        }
+
+        Tile GetOrCreateTile(Vector3Int coord)
+        {
+            var origin = GetTileOrigin(coord);
+
+            if (!tiles.ContainsKey(origin))
+            {
+                tiles[origin] = new Tile(origin);
             }
-            var m = map[origin];
 
-            for (var i = 0; i < size; i ++) {
-                for (var k = 0; k < size; k ++) {
-                    var coord = new Vector2Int(i + column.Origin.x, 
-                                               k + column.Origin.z);
-                    var pos = new Vector3(i + column.Origin.x, startY, 
-                                          k + column.Origin.z);
-                    var ray = new Ray(pos, Vector3.down);
+            return tiles[origin];
+        }
 
-                    var result = VoxelRaycast.TraceRay(ray, 1 << UserLayers.terrian);
+        public class Tile
+        {
+            Vector3Int origin;
+            public Tile(Vector3Int origin)
+            {
+                this.origin = origin;
+            }
 
-                    if (result == null) {
-                        m[coord] = 999;
-                    } else {
-                        var y = result.GetCoord().y;
-                        m[coord] = y;
+            // There's a bug here, 2 coords can be in the same cube
+            Dictionary<Vector2Int, Vector3Int> coords = new Dictionary<Vector2Int, Vector3Int>();
+
+            public void AddCoord(Vector3Int coord)
+            {
+                coords[new Vector2Int(coord.x, coord.z)] = coord;
+            }
+
+            public bool CanBuild() {
+                var minY = Mathf.Infinity;
+                var maxY = -Mathf.Infinity;
+                foreach(var value in coords.Values) {
+                    if (value.y > maxY) {
+                        maxY = value.y;
+                    }
+                    if (value.y < minY) {
+                        minY = value.y;
                     }
                 }
+
+                return maxY - minY <= 2;
             }
         }
     }

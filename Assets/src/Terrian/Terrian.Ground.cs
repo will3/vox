@@ -42,6 +42,8 @@ namespace FarmVox
 
             foreach (var terrianChunk in column.TerrianChunks) {
                 GenerateGround(terrianChunk);
+
+                heightMap.LoadChunk(this, terrianChunk);
             }
 
             column.generatedGround = true;
