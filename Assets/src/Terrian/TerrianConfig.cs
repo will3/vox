@@ -7,6 +7,8 @@ namespace FarmVox
 {
     public class TerrianConfig
     {
+        public Colors colors = new Colors();
+
         static TerrianConfig instance;
 
         public static TerrianConfig Instance {
@@ -35,9 +37,7 @@ namespace FarmVox
 
 #region ground
         public Noise heightNoise;
-
         public Noise rockNoise;
-        public ColorGradient rockColorGradient;
         public Noise rockColorNoise;
 #endregion
 
@@ -48,7 +48,6 @@ namespace FarmVox
         public ValueGradient grassNormalFilter;
         public float grassOffset = 0f;
         public float grassMultiplier = 1.2f;
-        public ColorGradient grassColor;
 #endregion
 
 #region tree
@@ -72,14 +71,9 @@ namespace FarmVox
         public ValueGradient riverNoiseFilter;
 #endregion
 
-#region water
-        public Color waterColor;
-        #endregion
-
         #region stone
         public Noise stoneNoise;
         public Noise stoneNoise2;
-        public Color stoneColor = GetColor("#676767");
         public float stoneThreshold = 0.5f;
         //public float stoneThreshold = 2.0f;
 
@@ -98,9 +92,6 @@ namespace FarmVox
         public Random monsterRandom;
 
         Random r;
-
-        public Color trunkColor = GetColor("#4f402a");
-        public Color leafColor = GetColor("#2f510c");
 
         Perlin NextPerlin()
         {
@@ -174,9 +165,6 @@ namespace FarmVox
             stoneNoise2.yScale = 4.0f;
             stoneNoise2.amplitude = 1.2f;
 
-            waterColor = GetColor("#297eb6");
-            waterColor.a = 0.4f;
-
             riverNoise = NextNoise();
             riverNoise.type = NoiseType.FBM;
             riverNoise.yScale = 0.2f;
@@ -229,30 +217,11 @@ namespace FarmVox
                 { 0.5f, 1 },
                 { 1, 1 } });
 
-            rockColorGradient = new ColorGradient(new Dictionary<float, UnityEngine.Color> {
-                {0, GetColor("#654d1f")},
-                {1, GetColor("#654d1f")}
-            });
-            rockColorGradient.banding = 8;
-
             //var grass1 = GetColor("#cec479");
             //var grass2 = GetColor("#1EA14E");
             // var grass3 = GetColor("#285224");
 
-            grassColor = new ColorGradient(new Dictionary<float, UnityEngine.Color> {
-                {0, GetColor("#597420")},
-                {1.0f, GetColor("#597420")},
-                //{1, grass3}
-            });
-
             // grassGradient.banding = 8;
-        }
-
-        public static UnityEngine.Color GetColor(string hex)
-        {
-            UnityEngine.Color color = UnityEngine.Color.white;
-            UnityEngine.ColorUtility.TryParseHtmlString(hex, out color);
-            return color;
         }
     }
 }

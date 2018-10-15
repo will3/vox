@@ -37,8 +37,8 @@ namespace FarmVox
 
         public void Dispatch(ComputeBuffer voxelBuffer, ComputeBuffer colorBuffer, ComputeBuffer typeBuffer, TerrianChunk terrianChunk) {
             using (var noises = new GenTerrianNoiseGPU(dataSize, origin, config))
-            using(var rockGradientBuffers = SetColorGradient(config.rockColorGradient, "_Rock"))
-            using(var grassGradientBuffers = SetColorGradient(config.grassColor, "_Grass"))
+            using(var rockGradientBuffers = SetColorGradient(config.colors.rockColorGradient, "_Rock"))
+            using(var grassGradientBuffers = SetColorGradient(config.colors.grassColor, "_Grass"))
             using(var grassNormalBuffers = config.grassNormalFilter.CreateBuffers(shader, "_GrassNormal"))
             using(var grassHeightBuffers = config.grassHeightFilter.CreateBuffers(shader, "_GrassHeight"))
             using(config.riverNoiseFilter.CreateBuffers(shader, "_River"))
@@ -52,8 +52,8 @@ namespace FarmVox
 
                 shader.SetFloat("_MaxHeight", config.maxHeight);
 
-                shader.SetVector("_SoilColor", Colors.soil);
-                shader.SetVector("_WaterColor", config.waterColor);
+                shader.SetVector("_SoilColor", config.colors.soil);
+                shader.SetVector("_WaterColor", config.colors.waterColor);
 
                 shader.SetInt("_Size", size);
                 shader.SetVector("_Origin", (Vector3)origin);
@@ -62,7 +62,7 @@ namespace FarmVox
                 shader.SetFloat("_GroundHeight", config.groundHeight);
                 shader.SetInt("_WaterLevel", config.waterLevel);
 
-                shader.SetVector("_StoneColor", config.stoneColor);
+                shader.SetVector("_StoneColor", config.colors.stoneColor);
                 shader.SetFloat("_StoneThreshold", config.stoneThreshold);
 
                 shader.SetInt("_DataSize", dataSize);

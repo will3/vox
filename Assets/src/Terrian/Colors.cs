@@ -1,30 +1,36 @@
+﻿using System.Collections.Generic;
 using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
 
 namespace FarmVox
 {
-
-    public static class Colors
+    public class Colors
     {
-        public static Color soil;
-        public static Color road;
-        public static Color special;
+        public ColorGradient rockColorGradient;
+        public Color stoneColor = GetColor("#676767");
+        public Color trunkColor = GetColor("#4f402a");
+        public Color leafColor = GetColor("#2f510c");
+        public Color soil = GetColor("#413535");
+        public Color road = GetColor("#bbaf4d");
+        public Color special = GetColor("#ff0000");
+        public Color waterColor;
+        public ColorGradient grassColor;
 
-        static Colors()
+        public Colors()
         {
-            //var grass3 = GetColor("#cec479");
-            //var grass = GetColor("#447c3e");
-             //var grass2 = GetColor("#285224");
-
-            soil = GetColor("#413535");
-            road = GetColor("#bbaf4d");
-            special = GetColor("#ff0000");
-
-            //rock
-            //{ 0, GetColor("#cec479")},
-                //{ 1, GetColor("#a77757")}
-
+            rockColorGradient = new ColorGradient(new Dictionary<float, Color> {
+                    {0, GetColor("#654d1f")},
+                    {1, GetColor("#654d1f")}
+                })
+            {
+                banding = 8
+            };
+            grassColor = new ColorGradient(new Dictionary<float, UnityEngine.Color> {
+                {0, GetColor("#597420")},
+                {1.0f, GetColor("#597420")},
+                //{1, grass3}
+            });
+            waterColor = Colors.GetColor("#297eb6");
+            waterColor.a = 0.4f;
         }
 
         public static Color GetColor(string hex)

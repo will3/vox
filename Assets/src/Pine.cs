@@ -28,7 +28,7 @@ namespace FarmVox
                         if (j <= trunkHeight) {
                             if (i == centerX && k == centerX) {
                                 layer.Set(coord, 1.0f);
-                                layer.SetColor(coord, config.trunkColor);
+                                layer.SetColor(coord, config.colors.trunkColor);
                             }
                         } else {
                             var dis = (c - center).magnitude;
@@ -36,7 +36,7 @@ namespace FarmVox
                             density -= (float)config.treeRandom.NextDouble() * 1.0f;
 
                             layer.Set(coord, density);
-                            layer.SetColor(coord, config.leafColor);
+                            layer.SetColor(coord, config.colors.leafColor);
                         }
                     }
                 }
@@ -84,7 +84,7 @@ namespace FarmVox
                         if (j < trunkHeight + 2 && i == mid && k == mid)
                         {
                             layer.Set(coord, 1);
-                            layer.SetColor(coord, config.trunkColor);
+                            layer.SetColor(coord, config.colors.trunkColor);
 
                             //if (j == 1) {
                             //    var stump1 = coord + new Vector3Int(0, 0, 1);
@@ -125,7 +125,7 @@ namespace FarmVox
                             {
                                 var value = density - (float)config.treeRandom.NextDouble() * 1.0f;
                                 layer.Set(coord, value);
-                                layer.SetColor(coord, config.leafColor);
+                                layer.SetColor(coord, config.colors.leafColor);
                                 treeCoords.Add(coord);
                             }
                         }

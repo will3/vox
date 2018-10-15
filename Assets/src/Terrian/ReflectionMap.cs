@@ -8,15 +8,7 @@ namespace FarmVox
     {
         public class ReflectionMapChunk : IDisposable
         {
-            ComputeBuffer buffer;
-
-            public ComputeBuffer Buffer
-            {
-                get
-                {
-                    return buffer;
-                }
-            }
+            public ComputeBuffer Buffer { get; private set; }
 
             Color[] data;
             int size;
@@ -27,16 +19,16 @@ namespace FarmVox
 
             public void Clear() {
                 data = null;
-                if (buffer != null) {
-                    buffer.Dispose();
-                    buffer = null;
+                if (Buffer != null) {
+                    Buffer.Dispose();
+                    Buffer = null;
                 }
             }
 
             public void Dispose()
             {
-                if (buffer != null) {
-                    buffer.Dispose();
+                if (Buffer != null) {
+                    Buffer.Dispose();
                 }
             }
 
@@ -50,16 +42,16 @@ namespace FarmVox
 
             public void UpdateBuffer() {
                 if (data != null) {
-                    if (buffer != null) {
-                        buffer = new ComputeBuffer(size * size, sizeof(float) * 4);
+                    if (Buffer != null) {
+                        Buffer = new ComputeBuffer(size * size, sizeof(float) * 4);
                     }
 
-                    buffer.SetData(data);
+                    Buffer.SetData(data);
                 }
             }
 
             public ComputeBuffer GetBuffer() {
-                return buffer;
+                return Buffer;
             }
         }
 

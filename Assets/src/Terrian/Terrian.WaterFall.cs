@@ -161,7 +161,7 @@ namespace FarmVox
                 {
                     var coord = coords[i];
                     var cost = costs[i];
-                    chunks.SetColor(coord.x, coord.y, coord.z, config.waterColor);
+                    chunks.SetColor(coord.x, coord.y, coord.z, config.colors.waterColor);
                     chunks.SetWaterfall(coord, cost);
                 }
                 foreach (var coord in emptyCoords)
