@@ -8,17 +8,18 @@ public class Commander : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        //highlight = gameObject.AddComponent<HighlightHoveredSurface>();
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        //if (Input.GetKeyDown(KeyCode.Mouse0)) {
-        //    if (highlight.result != null) {
-        //        var model = new VoxelModel("house");
-        //        model.Add(Finder.FindTerrian().BuildingLayer, highlight.result.GetCoord());
-        //    }
-        //}
+        if (Input.GetKeyDown(KeyCode.Mouse0)) {
+            var result = VoxelRaycast.TraceMouse(1 << UserLayers.terrian);
+            if (result != null) {
+                var model = new VoxelModel("house");
+                model.Add(Finder.FindTerrian().BuildingLayer, result.GetCoord());
+            }
+        }
     }
 }
