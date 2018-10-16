@@ -20,6 +20,12 @@ namespace FarmVox
             }
         }
 
+        public int ActualWaterLevel {
+            get {
+                return waterLevel + groundHeight;
+            }
+        }
+
         public int size = 32;
         public int maxChunksY = 2;
         public int generateDis = 2;

@@ -1,4 +1,6 @@
-﻿namespace FarmVox
+﻿using UnityEngine;
+
+namespace FarmVox
 {
 
     public partial class Terrian
@@ -26,7 +28,7 @@
             var origin = terrianChunk.Origin;
             var chunk = DefaultLayer.GetChunk(origin);
             var waterChunk = WaterLayer.GetOrCreateChunk(terrianChunk.Origin);
-            if (chunk.Origin.y < config.waterLevel + config.groundHeight)
+            if (chunk.Origin.y < config.ActualWaterLevel)
             {
                 float maxJ = config.waterLevel + config.groundHeight - chunk.Origin.y;
                 if (maxJ > chunk.Size)
@@ -44,6 +46,7 @@
                                 waterChunk.Set(i, j, k, 1);
                                 waterChunk.SetColor(i, j, k, config.colors.waterColor);
                                 terrianChunk.SetWater(i, j, k, true);
+                                waterMap.AddWater(new Vector3Int(i, j, k) + origin);
                             }
                         }
                     }

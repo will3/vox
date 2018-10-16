@@ -2,6 +2,7 @@
 
 namespace FarmVox
 {
+
     public class Materials
     {
         public static Material GetVoxelMaterial() {

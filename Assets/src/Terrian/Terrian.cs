@@ -1,7 +1,5 @@
 using UnityEngine;
-using UnityEngine.AI;
 using System.Collections.Generic;
-using System;
 using System.Collections;
 
 namespace FarmVox
@@ -49,6 +47,8 @@ namespace FarmVox
 
         public HeightMap heightMap;
 
+        public WaterMap waterMap;
+
         public Terrian(int size = 32)
         {
             this.Size = size;
@@ -93,6 +93,8 @@ namespace FarmVox
             ShadowMap = new VoxelShadowMap(size, config);
 
             heightMap = new HeightMap();
+
+            waterMap = new WaterMap(size, config);
         }
 
         void GenerateColumn(Vector3Int columnOrigin) {
@@ -155,7 +157,7 @@ namespace FarmVox
                 GenerateGround(column);
 
                 if (config.generateWater) {
-                    GenerateWaters(column);    
+                    GenerateWaters(column);
                 }
 
                 if (config.generateTrees) {
@@ -165,6 +167,12 @@ namespace FarmVox
                 column.generatedTerrian = true;
 
                 yield return null; // new WaitForSeconds(0.1f);
+            }
+        }
+
+        public void UpdateReflection() {
+            foreach(var chunk in waterMap.Map.Values) {
+                chunk.UpdateReflection();
             }
         }
 
@@ -256,6 +264,7 @@ namespace FarmVox
             foreach (var tc in map.Values) {
                 tc.Dispose();
             }
+            waterMap.Dispose();
         }
     }
 }

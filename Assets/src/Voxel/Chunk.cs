@@ -16,25 +16,15 @@ namespace FarmVox
         readonly Vector3Int origin;
         public Chunks Chunks;
 
-        float[] data;
-        Color[] colors;
-        int[] types;
-
-        public int[] Types
-        {
-            get
-            {
-                return types;
-            }
-        }
+        public int[] Types { get; private set; }
 
         public void SetTypes(int[] types) {
-            this.types = types;
+            Types = types;
         }
 
         public VoxelType GetType(Vector3Int coord) {
             var index = GetIndex(coord);
-            int value = types[index];
+            int value = Types[index];
             return (VoxelType)value;
         }
 
@@ -51,31 +41,25 @@ namespace FarmVox
 
         public readonly int dataSize;
 
-        public Color[] Colors
-        {
-            get
-            {
-                return colors;
-            }
-        }
+        public Color[] Colors { get; private set; }
 
         public void SetColors(Color[] colors)
         {
-            if (colors.Length != this.colors.Length)
+            if (colors.Length != this.Colors.Length)
             {
                 throw new System.ArgumentException("invalid length");
             }
-            this.colors = colors;
+            this.Colors = colors;
             dirty = true;
         }
 
         public void SetData(float[] data)
         {
-            if (data.Length != this.data.Length)
+            if (data.Length != this.Data.Length)
             {
                 throw new System.ArgumentException("invalid length");
             }
-            this.data = data;
+            this.Data = data;
             dirty = true;
             surfaceCoordsDirty = true;
             normalsNeedsUpdate = true;
@@ -186,13 +170,7 @@ namespace FarmVox
             }
         }
 
-        public float[] Data
-        {
-            get
-            {
-                return data;
-            }
-        }
+        public float[] Data { get; private set; }
 
         public int Size { get { return size; } }
 
@@ -222,7 +200,7 @@ namespace FarmVox
             }
         }
 
-        private Material material;
+        Material material;
 
         public Material Material {
             get {
@@ -242,8 +220,8 @@ namespace FarmVox
             this.size = size;
             this.origin = origin;
             dataSize = size + 3;
-            data = new float[dataSize * dataSize * dataSize];
-            colors = new Color[dataSize * dataSize * dataSize];
+            Data = new float[dataSize * dataSize * dataSize];
+            Colors = new Color[dataSize * dataSize * dataSize];
         }
 
         public float Get(int i, int j, int k)
@@ -255,7 +233,7 @@ namespace FarmVox
                 throw new System.Exception("out of bounds:" + new Vector3Int(i, j, k).ToString());
             }
             var index = GetIndex(i, j, k);
-            return data[index];
+            return Data[index];
         }
 
         public void Set(int i, int j, int k, float v)
@@ -267,7 +245,7 @@ namespace FarmVox
                 throw new System.Exception("out of bounds:" + new Vector3Int(i, j, k).ToString());
             }
             var index = GetIndex(i, j, k);
-            data[index] = v;
+            Data[index] = v;
             dirty = true;
             surfaceCoordsDirty = true;
             normalsNeedsUpdate = true;
@@ -276,7 +254,7 @@ namespace FarmVox
         public void SetColor(int i, int j, int k, Color v)
         {
             var index = GetIndex(i, j, k);
-            colors[index] = v;
+            Colors[index] = v;
             dirty = true;
         }
 
@@ -311,7 +289,7 @@ namespace FarmVox
         public Color GetColor(int i, int j, int k)
         {
             var index = GetIndex(i, j, k);
-            return colors[index];
+            return Colors[index];
         }
 
         public Color GetColorGlobal(int i, int j, int k)

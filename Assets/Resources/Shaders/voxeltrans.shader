@@ -1,5 +1,6 @@
 ﻿// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
 
+//Shader "Unlit/voxelunlit"
 Shader "Unlit/voxeltrans"
 {
     Properties
@@ -8,6 +9,9 @@ Shader "Unlit/voxeltrans"
     }
     SubShader
     {
+        //Tags { "RenderType"="Opaque" }
+        //LOD 100
+        
         Tags { "Queue" = "Transparent" "RenderType" = "Transparent" }
         LOD 100
         Blend SrcAlpha OneMinusSrcAlpha
@@ -21,17 +25,7 @@ Shader "Unlit/voxeltrans"
             #pragma multi_compile_fog
             
             #include "UnityCG.cginc"
-
-
-            struct Vision {
-                float x;
-                float z;
-                float radius;
-            };
-
-            StructuredBuffer<Vision> _VisionBuffer;
-            int _MaxVisionNumber;
-            int _UseVision;
+            
             float3 _Origin;
             int _Size;
             float _ShadowStrength;
@@ -43,6 +37,14 @@ Shader "Unlit/voxeltrans"
             StructuredBuffer<int> _ShadowMap10;
             StructuredBuffer<int> _ShadowMap11;
             int _ShadowMapSize;
+            
+            // Reflection
+            StructuredBuffer<float4> _ReflectionMap;
+            int _WaterLevel;
+            float4 getReflection(int x, int z) {
+                int index = x * _Size + z;
+                return _ReflectionMap[index];
+            }
 
             int getShadow(int3 coord) {
                 int x = coord.x - coord.y;
@@ -104,72 +106,6 @@ Shader "Unlit/voxeltrans"
                 float3 normal : NORMAL;
             };
 
-            float Epsilon = 1e-10;
-
-            float3 rgb2hcv(in float3 RGB)
-            {
-                // Based on work by Sam Hocevar and Emil Persson
-                float4 P = lerp(float4(RGB.bg, -1.0, 2.0/3.0), float4(RGB.gb, 0.0, -1.0/3.0), step(RGB.b, RGB.g));
-                float4 Q = lerp(float4(P.xyw, RGB.r), float4(RGB.r, P.yzx), step(P.x, RGB.r));
-                float C = Q.x - min(Q.w, Q.y);
-                float H = abs((Q.w - Q.y) / (6 * C + Epsilon) + Q.z);
-                return float3(H, C, Q.x);
-            }
-
-            float3 rgb2hsl(in float3 RGB)
-            {
-                float3 HCV = rgb2hcv(RGB);
-                float L = HCV.z - HCV.y * 0.5;
-                float S = HCV.y / (1 - abs(L * 2 - 1) + Epsilon);
-                return float3(HCV.x, S, L);
-            }
-
-            float3 hsl2rgb(float3 c)
-            {
-                c = float3(frac(c.x), clamp(c.yz, 0.0, 1.0));
-                float3 rgb = clamp(abs(fmod(c.x * 6.0 + float3(0.0, 4.0, 2.0), 6.0) - 3.0) - 1.0, 0.0, 1.0);
-                return c.z + c.y * (rgb - 0.5) * (1.0 - abs(2.0 * c.z - 1.0));
-            }
-
-            float getVision(float3 worldCoord) {
-                float amount = 0;
-                float visionBlur = 33;
-
-                // pos banding
-                worldCoord /= 2.0;
-                worldCoord = floor(worldCoord);
-                worldCoord *= 2.0;
-
-                for (int i = 0; i < _MaxVisionNumber; i++) {
-                    Vision vision = _VisionBuffer[i];
-                    // Break signal
-                    if (vision.radius == 0) {
-                        break;
-                    }
-
-                    float dx = vision.x - worldCoord.x;
-                    float dz = vision.z - worldCoord.z;
-
-                    float dis = sqrt(dx * dx + dz * dz);
-
-                    if (dis < (vision.radius - visionBlur)) {
-                        amount += 1.0;
-                    } else if (dis < vision.radius) {
-                        amount += (vision.radius - dis) / visionBlur;
-                    }
-                }
-                if (amount > 1.0) {
-                    amount = 1.0;
-                }
-
-                // amount banding
-                // amount *= 4;
-                // amount = floor(amount);
-                // amount /= 4;
-
-                return amount;
-            }
-
             int3 getCoord(int index) {
                 int x = floor(index / 35.0 / 35.0);
                 index -= x * 35 * 35;
@@ -198,14 +134,8 @@ Shader "Unlit/voxeltrans"
                 }
 
                 int3 worldCoord = coord + floor(_Origin);
-
-                if (_UseVision > 0) {
-                    float vision = getVision(worldCoord);
-                    float4 color = c * vision;
-                    o.color = color;
-                } else {
-                    o.color = c;
-                }
+                
+                o.color = c;
 
                 float shadowHeight = getShadow(coord);
                 float shadow = shadowHeight > worldCoord.y ? 1.0 : 0;

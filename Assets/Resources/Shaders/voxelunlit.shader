@@ -2,39 +2,32 @@
 
 Shader "Unlit/voxelunlit"
 {
-	Properties
-	{
-		
-	}
-	SubShader
-	{
+    Properties
+    {
+        
+    }
+    SubShader
+    {
         Tags { "RenderType"="Opaque" }
-		//Tags { "Queue" = "Transparent" "RenderType"="Transparent" }
-		LOD 100
-        // Blend SrcAlpha OneMinusSrcAlpha
+        LOD 100
+        
+        //Tags { "Queue" = "Transparent" "RenderType" = "Transparent" }
+        //LOD 100
+        //Blend SrcAlpha OneMinusSrcAlpha
 
-		Pass
-		{
-			CGPROGRAM
-			#pragma vertex vert
-			#pragma fragment frag
-			// make fog work
-			#pragma multi_compile_fog
-			
-			#include "UnityCG.cginc"
-
-
-            struct Vision {
-                float x;
-                float z;
-                float radius;
-            };
+        Pass
+        {
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+            // make fog work
+            #pragma multi_compile_fog
             
-            int _MaxVisionNumber;
+            #include "UnityCG.cginc"
+            
             float3 _Origin;
             int _Size;
             float _ShadowStrength;
-            int _ShowGrid;
 
             // 11 10 
             // 01 00 <- chunk
@@ -88,48 +81,21 @@ Shader "Unlit/voxelunlit"
             }
 
             struct appdata
-			{
-				float4 vertex : POSITION;
-				float2 uv : TEXCOORD0;
+            {
+                float4 vertex : POSITION;
+                float2 uv : TEXCOORD0;
                 float4 color : COLOR;
                 float3 normal : NORMAL;
-			};
+            };
 
-			struct v2f
-			{
-				float2 uv : TEXCOORD0;
-				UNITY_FOG_COORDS(1)
-				float4 vertex : SV_POSITION;
+            struct v2f
+            {
+                float2 uv : TEXCOORD0;
+                UNITY_FOG_COORDS(1)
+                float4 vertex : SV_POSITION;
                 float4 color : COLOR;
                 float3 normal : NORMAL;
-			};
-
-            float Epsilon = 1e-10;
-
-            float3 rgb2hcv(in float3 RGB)
-            {
-                // Based on work by Sam Hocevar and Emil Persson
-                float4 P = lerp(float4(RGB.bg, -1.0, 2.0/3.0), float4(RGB.gb, 0.0, -1.0/3.0), step(RGB.b, RGB.g));
-                float4 Q = lerp(float4(P.xyw, RGB.r), float4(RGB.r, P.yzx), step(P.x, RGB.r));
-                float C = Q.x - min(Q.w, Q.y);
-                float H = abs((Q.w - Q.y) / (6 * C + Epsilon) + Q.z);
-                return float3(H, C, Q.x);
-            }
-
-            float3 rgb2hsl(in float3 RGB)
-            {
-                float3 HCV = rgb2hcv(RGB);
-                float L = HCV.z - HCV.y * 0.5;
-                float S = HCV.y / (1 - abs(L * 2 - 1) + Epsilon);
-                return float3(HCV.x, S, L);
-            }
-
-            float3 hsl2rgb(float3 c)
-            {
-                c = float3(frac(c.x), clamp(c.yz, 0.0, 1.0));
-                float3 rgb = clamp(abs(fmod(c.x * 6.0 + float3(0.0, 4.0, 2.0), 6.0) - 3.0) - 1.0, 0.0, 1.0);
-                return c.z + c.y * (rgb - 0.5) * (1.0 - abs(2.0 * c.z - 1.0));
-            }
+            };
 
             int3 getCoord(int index) {
                 int x = floor(index / 35.0 / 35.0);
@@ -139,12 +105,12 @@ Shader "Unlit/voxelunlit"
 
                 return int3(x, y, z);
             }
-            
-			v2f vert (appdata v)
-			{
-				v2f o;
-				o.vertex = UnityObjectToClipPos(v.vertex);            
-				UNITY_TRANSFER_FOG(o,o.vertex);
+
+            v2f vert (appdata v)
+            {
+                v2f o;
+                o.vertex = UnityObjectToClipPos(v.vertex);            
+                UNITY_TRANSFER_FOG(o,o.vertex);
                 o.normal = v.normal;
                 o.uv = v.uv;
 
@@ -159,32 +125,23 @@ Shader "Unlit/voxelunlit"
                 }
 
                 int3 worldCoord = coord + floor(_Origin);
+                
+                o.color = c;
 
                 float shadowHeight = getShadow(coord);
                 float shadow = shadowHeight > worldCoord.y ? 1.0 : 0;
-                c *= 1 - shadow * _ShadowStrength;
+                o.color.xyz *= 1 - shadow * _ShadowStrength;
 
                 if (shadowHeight == 99) {
                     o.color = float4(1.0, 0, 0, 1.0);
                     return o;
                 }
-                
-                if (_ShowGrid > 0) {
-                    int gridSize = 5;
-                    if (worldCoord.x % gridSize == 0 || worldCoord.z % gridSize == 0) {
-                        
-                    } else {
-                        c *= 1.4;
-                    }
-                }
-                
-                o.color = c;
 
-				return o;
-			}
+                return o;
+            }
 
-			fixed4 frag (v2f i) : SV_Target
-			{         
+            fixed4 frag (v2f i) : SV_Target
+            {         
                 int index = floor(i.uv.y);
                 int3 coord = getCoord(index);
                 int3 worldCoord = coord + floor(_Origin);
@@ -201,8 +158,8 @@ Shader "Unlit/voxelunlit"
                 // sample the texture
                 fixed4 col = diffuse + ambient;
 
-				// apply fog
-				UNITY_APPLY_FOG(i.fogCoord, col);
+                // apply fog
+                UNITY_APPLY_FOG(i.fogCoord, col);
 
                 if (worldCoord.x % 3 == 0 || worldCoord.z % 3 == 0) {
                     // col *= float4(1.0,0.5,0.5, 1.0);
@@ -213,9 +170,9 @@ Shader "Unlit/voxelunlit"
                     // col *= float4(1.0, 1.0, 1.0, 1.0);
                 }
                 
-				return col;
-			}
-			ENDCG
-		}
-	}
+                return col;
+            }
+            ENDCG
+        }
+    }
 }

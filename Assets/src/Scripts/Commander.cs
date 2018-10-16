@@ -21,5 +21,9 @@ public class Commander : MonoBehaviour
                 model.Add(Finder.FindTerrian().BuildingLayer, result.GetCoord());
             }
         }
+
+        if (Input.GetKeyDown(KeyCode.R)) {
+            Finder.FindTerrian().UpdateReflection();
+        }
     }
 }
