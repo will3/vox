@@ -46,7 +46,6 @@ namespace FarmVox
                                 waterChunk.Set(i, j, k, 1);
                                 waterChunk.SetColor(i, j, k, config.colors.waterColor);
                                 terrianChunk.SetWater(i, j, k, true);
-                                waterMap.AddWater(new Vector3Int(i, j, k) + origin);
                             }
                         }
                     }

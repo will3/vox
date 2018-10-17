@@ -47,11 +47,9 @@ namespace FarmVox
 
         public HeightMap heightMap;
 
-        public WaterMap waterMap;
-
         public Terrian(int size = 32)
         {
-            this.Size = size;
+            Size = size;
             sizeF = size;
 
             bounds = new Bounds();
@@ -93,8 +91,6 @@ namespace FarmVox
             ShadowMap = new VoxelShadowMap(size, config);
 
             heightMap = new HeightMap();
-
-            waterMap = new WaterMap(size, config);
         }
 
         void GenerateColumn(Vector3Int columnOrigin) {
@@ -167,12 +163,6 @@ namespace FarmVox
                 column.generatedTerrian = true;
 
                 yield return null; // new WaitForSeconds(0.1f);
-            }
-        }
-
-        public void UpdateReflection() {
-            foreach(var chunk in waterMap.Map.Values) {
-                chunk.UpdateReflection();
             }
         }
 
@@ -264,7 +254,6 @@ namespace FarmVox
             foreach (var tc in map.Values) {
                 tc.Dispose();
             }
-            waterMap.Dispose();
         }
     }
 }
