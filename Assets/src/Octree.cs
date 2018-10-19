@@ -5,61 +5,43 @@ namespace FarmVox
 {
     class Octree<T>
     {
-        Vector3Int start;
-        Vector3Int size;
-        Vector3Int end;
-        BoundsInt bounds;
+        public Vector3Int Start { get; private set; }
+        public Vector3Int Size { get; private set; }
+        public BoundsInt Bounds { get; private set; }
 
-        int minSize = 4;
-        int maxValues = 32;
+        private const int MinSize = 4;
+        private const int MaxValues = 32;
 
-        List<Octree<T>> children = new List<Octree<T>>();
-        Dictionary<Vector3Int, T> values = new Dictionary<Vector3Int, T>();
-
-        public delegate void VisitDelegate(Vector3Int coord, T value);
-
-        public void Visit(VisitDelegate visitDelegate)
-        {
-            foreach (var kv in values)
-            {
-                visitDelegate(kv.Key, kv.Value);
-            }
-
-            foreach (var child in children)
-            {
-                child.Visit(visitDelegate);
-            }
-        }
+        readonly List<Octree<T>> children = new List<Octree<T>>();
+        readonly Dictionary<Vector3Int, T> values = new Dictionary<Vector3Int, T>();
 
         public Octree(Vector3Int start, Vector3Int size)
         {
-            this.start = start;
-            this.size = size;
-            bounds = new BoundsInt();
-            bounds.min = start;
-            bounds.max = start + size;
+            Start = start;
+            Size = size;
+            Bounds = new BoundsInt {min = start, max = start + size};
         }
 
         public Octree(BoundsInt bounds)
         {
-            this.bounds = bounds;
-            start = Vectors.FloorToInt(bounds.min);
-            size = Vectors.FloorToInt(bounds.size);
+            Bounds = bounds;
+            Start = Vectors.FloorToInt(bounds.min);
+            Size = Vectors.FloorToInt(bounds.size);
         }
 
         public bool Contains(Vector3Int pos)
         {
-            return bounds.Contains(pos);
+            return Bounds.Contains(pos);
         }
 
         public bool Set(Vector3Int pos, T value)
         {
-            if (!bounds.Contains(pos))
+            if (!Bounds.Contains(pos))
             {
                 return false;
             }
 
-            bool leaf = values.Count < maxValues || size.x <= minSize;
+            var leaf = values.Count < MaxValues || Size.x <= MinSize;
 
             if (leaf)
             {
@@ -80,32 +62,32 @@ namespace FarmVox
             return false;
         }
 
-        public void Divide()
+        private void Divide()
         {
             if (children.Count > 0)
             {
                 return;
             }
 
-            var halfX = size.x / 2;
-            var halfY = size.y / 2;
-            var halfZ = size.z / 2;
+            var halfX = Size.x / 2;
+            var halfY = Size.y / 2;
+            var halfZ = Size.z / 2;
 
             var halfSize = new Vector3Int(halfX, halfY, halfZ);
 
-            children.Add(new Octree<T>(new Vector3Int(start.x, start.y, start.z), halfSize));
-            children.Add(new Octree<T>(new Vector3Int(start.x + halfX, start.y, start.z), halfSize));
-            children.Add(new Octree<T>(new Vector3Int(start.x, start.y + halfY, start.z), halfSize));
-            children.Add(new Octree<T>(new Vector3Int(start.x + halfX, start.y + halfY, start.z), halfSize));
-            children.Add(new Octree<T>(new Vector3Int(start.x, start.y, start.z + halfZ), halfSize));
-            children.Add(new Octree<T>(new Vector3Int(start.x + halfX, start.y, start.z + halfZ), halfSize));
-            children.Add(new Octree<T>(new Vector3Int(start.x, start.y + halfY, start.z + halfZ), halfSize));
-            children.Add(new Octree<T>(new Vector3Int(start.x + halfX, start.y + halfY, start.z + halfZ), halfSize));
+            children.Add(new Octree<T>(new Vector3Int(Start.x, Start.y, Start.z), halfSize));
+            children.Add(new Octree<T>(new Vector3Int(Start.x + halfX, Start.y, Start.z), halfSize));
+            children.Add(new Octree<T>(new Vector3Int(Start.x, Start.y + halfY, Start.z), halfSize));
+            children.Add(new Octree<T>(new Vector3Int(Start.x + halfX, Start.y + halfY, Start.z), halfSize));
+            children.Add(new Octree<T>(new Vector3Int(Start.x, Start.y, Start.z + halfZ), halfSize));
+            children.Add(new Octree<T>(new Vector3Int(Start.x + halfX, Start.y, Start.z + halfZ), halfSize));
+            children.Add(new Octree<T>(new Vector3Int(Start.x, Start.y + halfY, Start.z + halfZ), halfSize));
+            children.Add(new Octree<T>(new Vector3Int(Start.x + halfX, Start.y + halfY, Start.z + halfZ), halfSize));
         }
 
         public bool Any(BoundsInt bounds)
         {
-            if (!IntersectsBounds(this.bounds, bounds))
+            if (!IntersectsBounds(this.Bounds, bounds))
             {
                 return false;
             }
@@ -141,24 +123,19 @@ namespace FarmVox
             var s = new Vector3Int(radius, radius, radius);
             var b = new BoundsInt(from - s, s * 2);
             var results = Search(b);
-            if (results.Count > 0)
-            {
-                return results;
-            }
-
-            return new List<T>();
+            return results.Count > 0 ? results : new List<T>();
         }
 
-        bool IntersectsBounds(BoundsInt a, BoundsInt b)
+        private static bool IntersectsBounds(BoundsInt a, BoundsInt b)
         {
             return (a.min.x >= b.min.x || a.min.x < b.max.x) &&
                 (a.min.y >= b.min.y || a.min.y < b.max.y) &&
                 (a.min.z >= b.min.z || a.min.z < b.max.z);
         }
 
-        public void Search(BoundsInt bounds, List<T> results)
+        private void Search(BoundsInt bounds, ICollection<T> results)
         {
-            if (!IntersectsBounds(this.bounds, bounds))
+            if (!IntersectsBounds(this.Bounds, bounds))
             {
                 return;
             }
@@ -171,18 +148,17 @@ namespace FarmVox
                 }
             }
 
-            if (children.Count > 0)
+            if (children.Count <= 0) return;
+            
+            foreach (var child in children)
             {
-                foreach (var child in children)
-                {
-                    child.Search(bounds, results);
-                }
+                child.Search(bounds, results);
             }
         }
 
         public bool Remove(Vector3Int coord)
         {
-            if (!bounds.Contains(coord))
+            if (!Bounds.Contains(coord))
             {
                 return false;
             }
@@ -192,18 +168,16 @@ namespace FarmVox
                 values.Remove(coord);
                 return true;
             }
-            else
-            {
-                foreach (var child in children)
-                {
-                    if (child.Remove(coord))
-                    {
-                        return true;
-                    }
-                }
 
-                return false;
+            foreach (var child in children)
+            {
+                if (child.Remove(coord))
+                {
+                    return true;
+                }
             }
+
+            return false;
         }
     }
 }

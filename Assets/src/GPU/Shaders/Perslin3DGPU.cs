@@ -32,14 +32,14 @@ namespace FarmVox
 
         void Dispatch()
         {
-            var frequency = noise.frequency;
-            var amplitude = noise.amplitude;
-            var seed = noise.seed;
-            var lacunarity = noise.lacunarity;
-            var persistence = noise.persistence;
-            var octaves = noise.octaves;
-            var yScale = noise.yScale;
-            var xzScale = noise.xzScale;
+            var frequency = noise.Frequency;
+            var amplitude = noise.Amplitude;
+            var seed = noise.Seed;
+            var lacunarity = noise.Lacunarity;
+            var persistence = noise.Persistence;
+            var octaves = noise.Octaves;
+            var yScale = noise.YScale;
+            var xzScale = noise.XzScale;
 
             shader.SetBuffer(0, "_Results", Results);
             shader.SetFloat("_Persistence", persistence);
@@ -53,9 +53,9 @@ namespace FarmVox
             shader.SetFloat("_XZScale", xzScale);
             shader.SetFloat("_Amplitude", amplitude);
             shader.SetInt("_DataSize", DataSize);
-            shader.SetInt("_Type", (int)noise.type);
+            shader.SetInt("_Type", (int)noise.Type);
 
-            buffers = noise.filter.CreateBuffers(shader, "_Filter");
+            buffers = noise.Filter.CreateBuffers(shader, "_Filter");
 
             var dispatchNum = Mathf.CeilToInt(size / (float)workGroups);
             shader.Dispatch(0, dispatchNum, dispatchNum, dispatchNum);

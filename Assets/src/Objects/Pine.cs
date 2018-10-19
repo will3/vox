@@ -43,7 +43,7 @@ namespace FarmVox
                         if (j < trunkHeight + 2 && i == mid && k == mid)
                         {
                             layer.Set(coord, 1);
-                            layer.SetColor(coord, config.Colors.trunkColor);
+                            layer.SetColor(coord, config.Colors.TrunkColor);
 
                             //if (j == 1) {
                             //    var stump1 = coord + new Vector3Int(0, 0, 1);
@@ -84,7 +84,7 @@ namespace FarmVox
                             {
                                 var value = density - (float)config.TreeRandom.NextDouble() * 1.0f;
                                 layer.Set(coord, value);
-                                layer.SetColor(coord, config.Colors.leafColor);
+                                layer.SetColor(coord, config.Colors.LeafColor);
                                 treeCoords.Add(coord);
                             }
                         }

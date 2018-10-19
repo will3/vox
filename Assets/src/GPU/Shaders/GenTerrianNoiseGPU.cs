@@ -3,81 +3,56 @@ using IDisposable = System.IDisposable;
 
 namespace FarmVox
 {
-    struct GenTerrianNoise
+    public class GenTerrianNoiseGpu : IDisposable
     {
-        public float height;
-        public float rockColor;
-        public float grass;
-        public float river;
-        public float stone;
-        public float stone2;
+        private int DataSize { get; set; }
+        private Vector3Int Origin { get; set; }
+        private TerrianConfig Config { get; set; }
+        private ComputeShader Shader { get; set; }
 
-        public static int Stride
+        private const int WorkGroups = 8;
+
+        public ComputeBuffer Results { get; private set; }
+
+        public GenTerrianNoiseGpu(int dataSize, Vector3Int origin, TerrianConfig config)
         {
-            get
-            {
-                return sizeof(float) * 6;
-            }
-        }
-    }
-
-    public class GenTerrianNoiseGPU : IDisposable
-    {
-        int dataSize;
-        Vector3Int origin;
-        TerrianConfig config;
-        ComputeShader shader;
-        readonly int workGroups = 8;
-
-        ComputeBuffer results;
-
-        public ComputeBuffer Results
-        {
-            get
-            {
-                return results;
-            }
-        }
-
-        public GenTerrianNoiseGPU(int dataSize, Vector3Int origin, TerrianConfig config)
-        {
-            this.dataSize = dataSize;
-            this.origin = origin;
-            this.config = config;
-            shader = Resources.Load<ComputeShader>("Shaders/GenTerrianNoise");
-            results = new ComputeBuffer(dataSize * dataSize * dataSize, GenTerrianNoise.Stride);
+            DataSize = dataSize;
+            Origin = origin;
+            Config = config;
+            Shader = Resources.Load<ComputeShader>("Shaders/GenTerrianNoise");
+            Results = new ComputeBuffer(dataSize * dataSize * dataSize, GenTerrianNoise.Stride);
 
             Dispatch();
         }
 
         void Dispatch()
         {
-            using (var heightNoise = new Perlin3DGPU(config.HeightNoise, dataSize, origin))
-            using (var rockColorNoise = new Perlin3DGPU(config.RockColorNoise, dataSize, origin))
-            using (var grassNoise = new Perlin3DGPU(config.GrassNoise, dataSize, origin))
-            using (var riverNoise = new Perlin3DGPU(config.RiverNoise, dataSize, origin))
-            using (var stoneNoise = new Perlin3DGPU(config.StoneNoise, dataSize, origin))
-            using (var stoneNoise2 = new Perlin3DGPU(config.StoneNoise2, dataSize, origin))
+            using (var heightNoise = new Perlin3DGPU(Config.HeightNoise, DataSize, Origin))
+            using (var rockColorNoise = new Perlin3DGPU(Config.RockColorNoise, DataSize, Origin))
+            using (var grassNoise = new Perlin3DGPU(Config.GrassNoise, DataSize, Origin))
+            using (var riverNoise = new Perlin3DGPU(Config.RiverNoise, DataSize, Origin))
+            using (var stoneNoise = new Perlin3DGPU(Config.StoneNoise, DataSize, Origin))
+            using (var stoneNoise2 = new Perlin3DGPU(Config.StoneNoise2, DataSize, Origin))
             {
-                shader.SetBuffer(0, "_HeightBuffer", heightNoise.Results);
-                shader.SetBuffer(0, "_GrassBuffer", grassNoise.Results);
-                shader.SetBuffer(0, "_RiverBuffer", riverNoise.Results);
-                shader.SetBuffer(0, "_RockColorBuffer", rockColorNoise.Results);
-                shader.SetBuffer(0, "_StoneBuffer", stoneNoise.Results);
-                shader.SetBuffer(0, "_StoneBuffer2", stoneNoise2.Results);
+                Shader.SetBuffer(0, "_HeightBuffer", heightNoise.Results);
+                Shader.SetBuffer(0, "_GrassBuffer", grassNoise.Results);
+                Shader.SetBuffer(0, "_RiverBuffer", riverNoise.Results);
+                Shader.SetBuffer(0, "_RockColorBuffer", rockColorNoise.Results);
+                Shader.SetBuffer(0, "_StoneBuffer", stoneNoise.Results);
+                Shader.SetBuffer(0, "_StoneBuffer2", stoneNoise2.Results);
 
-                shader.SetBuffer(0, "_NoiseBuffer", results);
+                Shader.SetBuffer(0, "_NoiseBuffer", Results);
 
-                shader.SetInt("_DataSize", dataSize);
+                Shader.SetInt("_DataSize", DataSize);
 
-                var dispatchNum = Mathf.CeilToInt(dataSize / (float)workGroups);
-                shader.Dispatch(0, dispatchNum, dispatchNum, dispatchNum);
+                var dispatchNum = Mathf.CeilToInt(DataSize / (float)WorkGroups);
+                Shader.Dispatch(0, dispatchNum, dispatchNum, dispatchNum);
             }
         }
 
         public void Dispose()
         {
-            results.Dispose();
+            Results.Dispose();
         }
     }
 }

@@ -6,18 +6,18 @@ namespace FarmVox
 
     public partial class Terrian
     {
-        public bool GenerateMesh(Chunks chunks, Vector3Int origin, TerrianChunk terrianChunk)
+        private void GenerateMesh(Chunks chunks, Vector3Int origin, TerrianChunk terrianChunk)
         {
             if (!chunks.HasChunk(origin))
             {
-                return false;
+                return;
             }
 
             var chunk = chunks.GetChunk(origin);
 
             if (!chunk.Dirty)
             {
-                return false;
+                return;
             }
 
             if (chunk.Mesh != null)
@@ -25,7 +25,7 @@ namespace FarmVox
                 Object.Destroy(chunk.Mesh);
             }
 
-            chunk.Mesh = MeshGPU(chunk, terrianChunk);
+            chunk.Mesh = MeshGpu(chunk, terrianChunk);
             chunk.GetMeshRenderer().material = chunk.Material;
             chunk.GetMeshFilter().sharedMesh = chunk.Mesh;
             chunk.GetMeshCollider().sharedMesh = chunk.Mesh;
@@ -33,11 +33,9 @@ namespace FarmVox
             chunk.Dirty = false;
 
             ShadowMap.ChunkDrawn(origin);
-
-            return true;
         }
 
-        public void GenerateMeshes(TerrianColumn column) {
+        private void GenerateMeshes(TerrianColumn column) {
             foreach (var terrianChunk in column.TerrianChunks)
             {
                 foreach (var chunks in chunksToDraw)
@@ -47,24 +45,24 @@ namespace FarmVox
             }
         }
 
-        Mesh MeshGPU(Chunk chunk, TerrianChunk terrianChunk)
+        Mesh MeshGpu(Chunk chunk, TerrianChunk terrianChunk)
         {
             var chunks = chunk.Chunks;
-            var mesherGPU = new MesherGPU(Size);
-            var voxelBuffer = mesherGPU.CreateVoxelBuffer();
-            var colorBuffer = mesherGPU.CreateColorBuffer();
+            var mesherGpu = new MesherGpu(Size);
+            var voxelBuffer = mesherGpu.CreateVoxelBuffer();
+            var colorBuffer = mesherGpu.CreateColorBuffer();
 
-            var trianglesBuffer = mesherGPU.CreateTrianglesBuffer();
-            mesherGPU.useNormals = chunks.useNormals;
-            mesherGPU.isWater = chunks.isWater;
+            var trianglesBuffer = mesherGpu.CreateTrianglesBuffer();
+            mesherGpu.UseNormals = chunks.useNormals;
+            mesherGpu.IsWater = chunks.isWater;
 
             voxelBuffer.SetData(chunk.Data);
             colorBuffer.SetData(chunk.Colors);
 
-            mesherGPU.Dispatch(voxelBuffer, colorBuffer, trianglesBuffer, terrianChunk, chunk);
-            var triangles = mesherGPU.ReadTriangles(trianglesBuffer);
+            mesherGpu.Dispatch(voxelBuffer, colorBuffer, trianglesBuffer, terrianChunk, chunk);
+            var triangles = mesherGpu.ReadTriangles(trianglesBuffer);
 
-            var builder = new VoxelMeshBuilder();
+            var builder = new MeshBuilder();
             foreach (var triangle in triangles)
             {
                 builder.AddTriangle(triangle);

@@ -5,7 +5,7 @@ namespace FarmVox
 {
     public class HeightMap
     {
-        Dictionary<Vector3Int, Tile> tiles = new Dictionary<Vector3Int, Tile>();
+        readonly Dictionary<Vector3Int, Tile> _tiles = new Dictionary<Vector3Int, Tile>();
 
         public void LoadChunk(Terrian terrian, TerrianChunk terrianChunk)
         {
@@ -24,13 +24,13 @@ namespace FarmVox
 
         public Tile GetTile(Vector3Int coord) {
             var origin = GetTileOrigin(coord);
-            Tile tile = null;
-            tiles.TryGetValue(origin, out tile);
+            Tile tile;
+            _tiles.TryGetValue(origin, out tile);
             return tile;
         }
 
-        Vector3Int GetTileOrigin(Vector3Int coord) {
-            int tileSize = 7;
+        static Vector3Int GetTileOrigin(Vector3Int coord) {
+            const int tileSize = 7;
 
             var origin = new Vector3Int(
                 Mathf.FloorToInt(coord.x / (float)tileSize) * tileSize,
@@ -41,38 +41,38 @@ namespace FarmVox
             return origin;
         }
 
-        Tile GetOrCreateTile(Vector3Int coord)
+        private Tile GetOrCreateTile(Vector3Int coord)
         {
             var origin = GetTileOrigin(coord);
 
-            if (!tiles.ContainsKey(origin))
+            if (!_tiles.ContainsKey(origin))
             {
-                tiles[origin] = new Tile(origin);
+                _tiles[origin] = new Tile(origin);
             }
 
-            return tiles[origin];
+            return _tiles[origin];
         }
 
         public class Tile
         {
-            Vector3Int origin;
+            private Vector3Int _origin;
             public Tile(Vector3Int origin)
             {
-                this.origin = origin;
+                _origin = origin;
             }
 
             // There's a bug here, 2 coords can be in the same cube
-            Dictionary<Vector2Int, Vector3Int> coords = new Dictionary<Vector2Int, Vector3Int>();
+            private readonly Dictionary<Vector2Int, Vector3Int> _coords = new Dictionary<Vector2Int, Vector3Int>();
 
             public void AddCoord(Vector3Int coord)
             {
-                coords[new Vector2Int(coord.x, coord.z)] = coord;
+                _coords[new Vector2Int(coord.x, coord.z)] = coord;
             }
 
             public bool CanBuild() {
                 var minY = Mathf.Infinity;
                 var maxY = -Mathf.Infinity;
-                foreach(var value in coords.Values) {
+                foreach(var value in _coords.Values) {
                     if (value.y > maxY) {
                         maxY = value.y;
                     }

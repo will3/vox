@@ -41,8 +41,6 @@ namespace FarmVox
 
         public VoxelShadowMap ShadowMap { get; private set; }
 
-        VoxelMap voxelMap;
-
         Bounds bounds;
 
         public HeightMap heightMap;
@@ -69,7 +67,6 @@ namespace FarmVox
             BuildingLayer = new Chunks(size);
 
             TreeMap = new TreeMap(boundsInt);
-            voxelMap = new VoxelMap(boundsInt);
 
             DefaultLayer.GetGameObject().layer = LayerMask.NameToLayer("terrian");
             TreeLayer.GetGameObject().layer = LayerMask.NameToLayer("trees");

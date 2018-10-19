@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace FarmVox
 {
-    public partial class GenTerrianGpu
+    public class GenTerrianGpu
     {
         private readonly int _size;
         private readonly int _dataSize;
@@ -35,9 +35,9 @@ namespace FarmVox
         }
 
         public void Dispatch(ComputeBuffer voxelBuffer, ComputeBuffer colorBuffer, ComputeBuffer typeBuffer, TerrianChunk terrianChunk) {
-            using (var noises = new GenTerrianNoiseGPU(_dataSize, _origin, _config))
-            using (SetColorGradient(_config.Colors.rockColorGradient, "_Rock"))
-            using (SetColorGradient(_config.Colors.grassColor, "_Grass"))
+            using (var noises = new GenTerrianNoiseGpu(_dataSize, _origin, _config))
+            using (SetColorGradient(_config.Colors.RockColorGradient, "_Rock"))
+            using (SetColorGradient(_config.Colors.GrassColor, "_Grass"))
             using (_config.GrassNormalFilter.CreateBuffers(_shader, "_GrassNormal"))
             using (_config.GrassHeightFilter.CreateBuffers(_shader, "_GrassHeight"))
             using(_config.RiverNoiseFilter.CreateBuffers(_shader, "_River"))
@@ -51,8 +51,8 @@ namespace FarmVox
 
                 _shader.SetFloat("_MaxHeight", _config.MaxHeight);
 
-                _shader.SetVector("_SoilColor", _config.Colors.soil);
-                _shader.SetVector("_WaterColor", _config.Colors.waterColor);
+                _shader.SetVector("_SoilColor", _config.Colors.Soil);
+                _shader.SetVector("_WaterColor", _config.Colors.WaterColor);
 
                 _shader.SetInt("_Size", _size);
                 _shader.SetVector("_Origin", (Vector3)_origin);
@@ -61,7 +61,7 @@ namespace FarmVox
                 _shader.SetFloat("_GroundHeight", _config.GroundHeight);
                 _shader.SetInt("_WaterLevel", _config.WaterLevel);
 
-                _shader.SetVector("_StoneColor", _config.Colors.stoneColor);
+                _shader.SetVector("_StoneColor", _config.Colors.StoneColor);
                 _shader.SetFloat("_StoneThreshold", _config.StoneThreshold);
 
                 _shader.SetInt("_DataSize", _dataSize);

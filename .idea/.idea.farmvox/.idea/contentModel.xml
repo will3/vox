@@ -231,6 +231,7 @@
             <e p="ColorGradientBuffers.cs" t="Include" />
             <e p="Shaders" t="Include">
               <e p="GenTerrianGPU.cs" t="Include" />
+              <e p="GenTerrianNoise.cs" t="Include" />
               <e p="GenTerrianNoiseGPU.cs" t="Include" />
               <e p="MesherGPU.cs" t="Include" />
               <e p="Perslin3DGPU.cs" t="Include" />
@@ -270,7 +271,7 @@
             <e p="TerrianColumn.cs" t="Include" />
             <e p="TerrianConfig.cs" t="Include" />
             <e p="TreeMap.cs" t="Include" />
-            <e p="VoxelMap.cs" t="Include" />
+            <e p="VoxelType.cs" t="Include" />
           </e>
           <e p="Textures.cs" t="Include" />
           <e p="UserLayers.cs" t="Include" />
@@ -281,9 +282,9 @@
             <e p="Chunks.cs" t="Include" />
             <e p="ChunksGroup.cs" t="Include" />
             <e p="Cube.cs" t="Include" />
+            <e p="MeshBuilder.cs" t="Include" />
             <e p="Origins.cs" t="Include" />
             <e p="Raycast4545.cs" t="Include" />
-            <e p="VoxelMeshBuilder.cs" t="Include" />
             <e p="VoxelRaycast.cs" t="Include" />
             <e p="VoxelRaycastResult.cs" t="Include" />
             <e p="VoxelShadowMap.cs" t="Include" />

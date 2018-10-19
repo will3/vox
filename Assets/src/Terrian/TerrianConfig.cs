@@ -94,7 +94,7 @@ namespace FarmVox
         }
 
         Noise NextNoise() {
-            var noise = new Noise {seed = _r.Next()};
+            var noise = new Noise {Seed = _r.Next()};
             return noise;
         }
 
@@ -115,10 +115,10 @@ namespace FarmVox
         {
             _r = new Random(seed);
             HeightNoise = NextNoise();
-            HeightNoise.frequency = 0.015f;
-            HeightNoise.yScale = 0.4f;
-            HeightNoise.octaves = 5;
-            HeightNoise.filter = new ValueGradient(new Dictionary<float, float>
+            HeightNoise.Frequency = 0.015f;
+            HeightNoise.YScale = 0.4f;
+            HeightNoise.Octaves = 5;
+            HeightNoise.Filter = new ValueGradient(new Dictionary<float, float>
             {
                 {-1.0f, -0.4f},
                 {-0.2f, 0.05f},
@@ -130,9 +130,9 @@ namespace FarmVox
             RockNoise = NextNoise();
 
             RockColorNoise = NextNoise();
-            RockColorNoise.frequency = 0.05f;
-            RockColorNoise.yScale = 4.0f;
-            RockColorNoise.amplitude = 1.0f;
+            RockColorNoise.Frequency = 0.05f;
+            RockColorNoise.YScale = 4.0f;
+            RockColorNoise.Amplitude = 1.0f;
 
             GrassNoise = NextNoise();
 
@@ -142,23 +142,23 @@ namespace FarmVox
             WaterfallRandom = NextRandom();
 
             WaterfallNoise = NextNoise();
-            WaterfallNoise.frequency = 0.005f;
+            WaterfallNoise.Frequency = 0.005f;
 
             StoneNoise = NextNoise();
-            StoneNoise.frequency = 0.01f;
-            StoneNoise.amplitude = 0.5f;
+            StoneNoise.Frequency = 0.01f;
+            StoneNoise.Amplitude = 0.5f;
             StoneNoise2 = NextNoise();
-            StoneNoise2.frequency = 0.005f;
-            StoneNoise2.yScale = 4.0f;
-            StoneNoise2.amplitude = 1.2f;
+            StoneNoise2.Frequency = 0.005f;
+            StoneNoise2.YScale = 4.0f;
+            StoneNoise2.Amplitude = 1.2f;
 
             RiverNoise = NextNoise();
-            RiverNoise.type = NoiseType.FBM;
-            RiverNoise.yScale = 0.2f;
-            RiverNoise.frequency = 0.05f;
-            RiverNoise.persistence = 0.5f;
-            RiverNoise.octaves = 7;
-            RiverNoise.amplitude = 4f;
+            RiverNoise.Type = NoiseType.FBM;
+            RiverNoise.YScale = 0.2f;
+            RiverNoise.Frequency = 0.05f;
+            RiverNoise.Persistence = 0.5f;
+            RiverNoise.Octaves = 7;
+            RiverNoise.Amplitude = 4f;
 
             RiverNoiseFilter = new ValueGradient(new Dictionary<float, float>() {
                 {0, 0},
@@ -174,11 +174,11 @@ namespace FarmVox
                 {1.0f, 1}
             });
 
-            GrassNoise.frequency = 0.01f;
-            GrassNoise.amplitude = 2.0f;
+            GrassNoise.Frequency = 0.01f;
+            GrassNoise.Amplitude = 2.0f;
 
-            RockNoise.frequency = 0.02f;
-            RockNoise.amplitude = 1.5f;
+            RockNoise.Frequency = 0.02f;
+            RockNoise.Amplitude = 1.5f;
 
             TreeNoise.Frequency = 0.05f;
             TreeNoise.OctaveCount = 5;

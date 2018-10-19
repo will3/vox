@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public partial class Card
+namespace FarmVox
 {
     static class Textures
     {

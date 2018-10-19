@@ -44,7 +44,7 @@ namespace FarmVox
                             if (chunk.Get(i, j, k) <= 0)
                             {
                                 waterChunk.Set(i, j, k, 1);
-                                waterChunk.SetColor(i, j, k, config.Colors.waterColor);
+                                waterChunk.SetColor(i, j, k, config.Colors.WaterColor);
                                 terrianChunk.SetWater(i, j, k, true);
                             }
                         }
