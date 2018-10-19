@@ -3,22 +3,14 @@ using UnityEngine;
 
 namespace FarmVox
 {
-    public static class Cube
+    public static class CubeMesh
     {
-        static Mesh[] meshes;
-        static Mesh cubeMesh;
+        private static readonly Mesh[] Meshes;
+        private static Mesh _mesh;
 
-        public static Mesh CubeMesh
+        static CubeMesh()
         {
-            get
-            {
-                return cubeMesh;
-            }
-        }
-
-        static Cube()
-        {
-            meshes = new Mesh[] {
+            Meshes = new[] {
                 GenQuad(0, false),
                 GenQuad(0, true),
                 GenQuad(1, false),
@@ -27,7 +19,7 @@ namespace FarmVox
                 GenQuad(2, true)
             };
 
-            cubeMesh = GenCube();
+            _mesh = GenCube();
         }
 
         public static Mesh GetTopQuad() {
@@ -37,7 +29,7 @@ namespace FarmVox
         public static Mesh GetQuad(int d, bool front)
         {
             var index = d * 2 + (front ? 1 : 0);
-            return meshes[index];
+            return Meshes[index];
         }
 
         static Mesh GenCube() {
@@ -73,10 +65,7 @@ namespace FarmVox
             return mesh;
         }
 
-        public static void GenQuad(int d, bool front, List<Vector3> vertices, List<int> indices, List<Vector2> uvs) {
-            var u = (d + 1) % 3;
-            var v = (d + 2) % 3;
-
+        private static void GenQuad(int d, bool front, ICollection<Vector3> vertices, ICollection<int> indices, ICollection<Vector2> uvs) {
             var diffI = front ? 1.0f : 0.0f;
 
             var v0 = GetVector(diffI, 0, 0, d);
@@ -84,7 +73,7 @@ namespace FarmVox
             var v2 = GetVector(diffI, 1.0f, 1.0f, d);
             var v3 = GetVector(diffI, 0, 1.0f, d);
 
-            int index = vertices.Count;
+            var index = vertices.Count;
 
             vertices.Add(v0);
             vertices.Add(v1);
@@ -115,15 +104,15 @@ namespace FarmVox
 
         static Vector3 GetVector(float i, float j, float k, int d)
         {
-            if (d == 0)
+            switch (d)
             {
-                return new Vector3(i, j, k);
+                case 0:
+                    return new Vector3(i, j, k);
+                case 1:
+                    return new Vector3(k, i, j);
+                default:
+                    return new Vector3(j, k, i);
             }
-            if (d == 1)
-            {
-                return new Vector3(k, i, j);
-            }
-            return new Vector3(j, k, i);
         }
     }
 }

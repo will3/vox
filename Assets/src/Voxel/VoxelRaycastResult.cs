@@ -42,7 +42,7 @@ namespace FarmVox
                 front = hit.normal.z > 0;
             }
 
-            return Cube.GetQuad(d, front);
+            return CubeMesh.GetQuad(d, front);
         }
 
         public int FindNoneDefaultLayer()

@@ -26,7 +26,7 @@ namespace FarmVox
                     var go = new GameObject();
                     var meshFitler = go.AddComponent<MeshFilter>();
                     var meshRenderer = go.AddComponent<MeshRenderer>();
-                    meshFitler.mesh = Cube.GetTopQuad();
+                    meshFitler.mesh = CubeMesh.GetTopQuad();
                     go.transform.position = coord + result.hit.normal * 0.1f;
                 }
             }

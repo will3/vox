@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace FarmVox
@@ -7,70 +6,45 @@ namespace FarmVox
 
     public class Chunks
     {
-        float sizeF;
-        readonly int size;
-        public bool useNormals = true;
-        public bool isWater = false;
-        public string groupName = "chunks";
-        public float normalStrength = 0.0f;
-        GameObject gameObject;
+        GameObject _gameObject;
+        
+        public readonly int Size;
+        public bool UseNormals = true;
+        public bool IsWater = false;
+        private readonly string _groupName = "chunks";
+        public float NormalStrength = 0.0f;
 
-        public bool transparent;
+        public bool Transparent;
 
         public GameObject GetGameObject() {
-            if (gameObject == null) {
-                gameObject = new GameObject(groupName);
+            if (_gameObject == null) {
+                _gameObject = new GameObject(_groupName);
             }
-            return gameObject;
+            return _gameObject;
         }
 
-        public int Size
-        {
-            get
-            {
-                return size;
-            }
-        }
-
-        Dictionary<Vector3Int, Chunk> map = new Dictionary<Vector3Int, Chunk>();
-
-        public Dictionary<Vector3Int, Chunk> Map
-        {
-            get
-            {
-                return map;
-            }
-        }
+        public readonly Dictionary<Vector3Int, Chunk> Map = new Dictionary<Vector3Int, Chunk>();
 
         public Chunks(int size)
         {
-            this.size = size;
-            sizeF = size;
+            Size = size;
         }
 
-        private Vector3Int getKey(int i, int j, int k) {
+        private Vector3Int GetKey(int i, int j, int k) {
             return new Vector3Int(
-                Mathf.FloorToInt(i / this.sizeF),
-                Mathf.FloorToInt(j / this.sizeF),
-                Mathf.FloorToInt(k / this.sizeF)
+                Mathf.FloorToInt(i / (float)Size),
+                Mathf.FloorToInt(j / (float)Size),
+                Mathf.FloorToInt(k / (float)Size)
             );
         }
 
-        Vector3Int GetOrigin(Vector3Int coord) {
-            return GetOrigin(coord.x, coord.y, coord.z);
-        }
-
-        Vector3Int GetOrigin(int i, int j, int k)
+        private Vector3Int GetOrigin(int i, int j, int k)
         {
             return new Vector3Int(
-                Mathf.FloorToInt(i / this.sizeF) * this.size,
-                Mathf.FloorToInt(j / this.sizeF) * this.size,
-                Mathf.FloorToInt(k / this.sizeF) * this.size
+                Mathf.FloorToInt(i / (float)Size) * Size,
+                Mathf.FloorToInt(j / (float)Size) * Size,
+                Mathf.FloorToInt(k / (float)Size) * Size
             );
-        }
-
-        public void SetActive(bool active) {
-            gameObject.SetActive(active);
         }
 
         public float Get(Vector3Int coord) {
@@ -80,12 +54,12 @@ namespace FarmVox
         public float Get(int i, int j, int k)
         {
             var origin = GetOrigin(i, j, k);
-            if (!map.ContainsKey(origin))
+            if (!Map.ContainsKey(origin))
             {
                 return 0;
             }
 
-            return map[origin].Get(i - origin.x, j - origin.y, k - origin.z);
+            return Map[origin].Get(i - origin.x, j - origin.y, k - origin.z);
         }
 
         public Color GetColor(Vector3Int coord) {
@@ -95,51 +69,46 @@ namespace FarmVox
         public Color GetColor(int i, int j, int k)
         {
             var origin = GetOrigin(i, j, k);
-            if (!map.ContainsKey(origin))
-            {
-                return default(Color);
-            }
-            return map[origin].GetColor(i - origin.x, j - origin.y, k - origin.z);
+            return !Map.ContainsKey(origin) ? 
+                default(Color) : 
+                Map[origin].GetColor(i - origin.x, j - origin.y, k - origin.z);
         }
 
         public Chunk GetOrCreateChunk(Vector3Int origin)
         {
-            if (map.ContainsKey(origin))
+            if (Map.ContainsKey(origin))
             {
-                return map[origin];
+                return Map[origin];
             }
-            map[origin] = new Chunk(size, origin);
-            map[origin].Chunks = this;
-            return map[origin];
+
+            Map[origin] = new Chunk(Size, origin) {Chunks = this};
+            return Map[origin];
         }
 
         public Chunk GetChunk(Vector3Int origin)
         {
-            Chunk chunk = null;
-            map.TryGetValue(origin, out chunk);
+            Chunk chunk;
+            Map.TryGetValue(origin, out chunk);
             return chunk;
         }
 
         public bool HasChunk(Vector3Int origin)
         {
-            return map.ContainsKey(origin);
+            return Map.ContainsKey(origin);
         }
 
-        private List<Vector3Int> GetKeys(int i, int j, int k) {
-            var key = getKey(i, j, k);
+        private IEnumerable<Vector3Int> GetKeys(int i, int j, int k) {
+            var key = GetKey(i, j, k);
             var list = new List<Vector3Int>();
 
-            var origin = key * size;
+            var origin = key * Size;
             var ri = i - origin.x;
             var rj = j - origin.y;
             var rk = k - origin.z;
 
-            var iList = new List<int>();
-            iList.Add(0);
-            var jList = new List<int>();
-            jList.Add(0);
-            var kList = new List<int>();
-            kList.Add(0);
+            var iList = new List<int> {0};
+            var jList = new List<int> {0};
+            var kList = new List<int> {0};
 
             if (ri == 0 || ri == 1) {
                 iList.Add(-1);
@@ -154,16 +123,16 @@ namespace FarmVox
                 kList.Add(-1);
             }
 
-            if (ri >= size) {
+            if (ri >= Size) {
                 iList.Add(1);
             }
 
-            if (rj >= size)
+            if (rj >= Size)
             {
                 jList.Add(1);
             }
 
-            if (rk >= size) {
+            if (rk >= Size) {
                 kList.Add(1);
             }
 
@@ -190,7 +159,7 @@ namespace FarmVox
 
             var keys = GetKeys(i, j, k);
             foreach(var key in keys) {
-                var origin = key * size;
+                var origin = key * Size;
                 var chunk = GetOrCreateChunk(origin);
                 chunk.Set(i - origin.x, j - origin.y, k - origin.z, v);
             }
@@ -204,7 +173,7 @@ namespace FarmVox
 
             var keys = GetKeys(i, j, k);
             foreach(var key in keys) {
-                var origin = key * size;
+                var origin = key * Size;
                 var chunk = GetOrCreateChunk(origin);
                 chunk.SetColor(i - origin.x, j - origin.y, k - origin.z, v);
             }
@@ -234,47 +203,10 @@ namespace FarmVox
             var keys = GetKeys(i, j, k);
             foreach (var key in keys)
             {
-                var origin = key * size;
+                var origin = key * Size;
                 var chunk = GetOrCreateChunk(origin);
                 chunk.SetWaterfall(i - origin.x, j - origin.y, k - origin.z, value);
             }
-        }
-
-        public bool IsSurfaceCoord(Vector3Int coord) {
-            var origin = GetOrigin(coord);
-
-            var chunk = GetChunk(origin);
-            if (chunk == null) {
-                return false;
-            }
-
-            chunk.UpdateSurfaceCoords();
-            return chunk.IsSurfaceCoord(coord - origin);
-        }
-
-        public bool IsSurfaceCoordUp(Vector3Int coord) {
-            var origin = GetOrigin(coord);
-
-            var chunk = GetChunk(origin);
-            if (chunk == null)
-            {
-                return false;
-            }
-
-            chunk.UpdateSurfaceCoords();
-            return chunk.IsSurfaceCoordUp(coord - origin);
-        }
-
-        public VoxelType GetTypes(Vector3Int coord) {
-            var origin = GetOrigin(coord);
-
-            var chunk = GetChunk(origin);
-
-            if (chunk == null) {
-                return VoxelType.Air;
-            }
-
-            return chunk.GetType(coord - origin);
         }
     }
 }

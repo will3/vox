@@ -5,65 +5,30 @@ namespace FarmVox
 {
     internal class MeshBuilder
     {
-        private readonly List<Vector3> _vertices = new List<Vector3>();
-
-        public List<Vector3> Vertices
-        {
-            get
-            {
-                return _vertices;
-            }
-        }
-
-        readonly List<Color> _colors = new List<Color>();
-
-        public List<Color> Colors
-        {
-            get
-            {
-                return _colors;
-            }
-        }
-
-        readonly List<Vector2> _uvs = new List<Vector2>();
-
-        public List<Vector2> Uvs
-        {
-            get
-            {
-                return _uvs;
-            }
-        }
-
-        readonly List<int> _indices = new List<int>();
-
-        public List<int> Indices
-        {
-            get
-            {
-                return _indices;
-            }
-        }
+        public readonly List<Vector3> Vertices = new List<Vector3>();
+        public readonly List<Color> Colors = new List<Color>();
+        public readonly List<Vector2> Uvs = new List<Vector2>();
+        public readonly List<int> Indices = new List<int>();
 
         public void AddTriangle(MesherGpu.Triangle triangle)
         {
-            int i = _vertices.Count / 3;
+            var i = Vertices.Count / 3;
 
-            _vertices.Add(triangle.A);
-            _vertices.Add(triangle.B);
-            _vertices.Add(triangle.C);
+            Vertices.Add(triangle.A);
+            Vertices.Add(triangle.B);
+            Vertices.Add(triangle.C);
 
-            _indices.Add(i * 3);
-            _indices.Add(i * 3 + 1);
-            _indices.Add(i * 3 + 2);
+            Indices.Add(i * 3);
+            Indices.Add(i * 3 + 1);
+            Indices.Add(i * 3 + 2);
 
-            _colors.Add(triangle.ColorA);
-            _colors.Add(triangle.ColorB);
-            _colors.Add(triangle.ColorC);
+            Colors.Add(triangle.ColorA);
+            Colors.Add(triangle.ColorB);
+            Colors.Add(triangle.ColorC);
 
-            _uvs.Add(new Vector2(0, triangle.Index));
-            _uvs.Add(new Vector2(0, triangle.Index));
-            _uvs.Add(new Vector2(0, triangle.Index));
+            Uvs.Add(new Vector2(0, triangle.Index));
+            Uvs.Add(new Vector2(0, triangle.Index));
+            Uvs.Add(new Vector2(0, triangle.Index));
         }
     }
 }

@@ -7,8 +7,9 @@ namespace FarmVox
     {
         public readonly int Size;
         public readonly Vector3Int Origin;
-        public float[] Data { get; private set; }
         public readonly int DataSize;
+        
+        public float[] Data { get; private set; }
         
         public Chunks Chunks { get; set; }
         public bool Dirty { get; set; }
@@ -20,11 +21,12 @@ namespace FarmVox
 
         public readonly HashSet<Vector3Int> SurfaceCoords = new HashSet<Vector3Int>();
         public readonly HashSet<Vector3Int> SurfaceCoordsUp = new HashSet<Vector3Int>();
-        private readonly Dictionary<Vector3Int, float> _lightNormals = new Dictionary<Vector3Int, float>();
+        public readonly Dictionary<Vector3Int, Vector3> Normals = new Dictionary<Vector3Int, Vector3>();
 
         public Color[] Colors { get; private set; }
         
         private int[] Types { get; set; }
+        
         private bool _surfaceCoordsDirty = true;
         private bool _normalsNeedsUpdate = true;
         
@@ -62,15 +64,7 @@ namespace FarmVox
 
         private readonly Dictionary<Vector3Int, float> _waterfalls = new Dictionary<Vector3Int, float>();
 
-        public Dictionary<Vector3Int, float> Waterfalls
-        {
-            get
-            {
-                return _waterfalls;
-            }
-        }
-
-        public GameObject GetGameObject() {
+        private GameObject GetGameObject() {
             if (_gameObject == null) {
                 var name = "Chunk" + Origin.ToString();
                 _gameObject = new GameObject(name);
@@ -160,7 +154,7 @@ namespace FarmVox
         public Material Material {
             get {
                 if (_material != null) return _material;
-                _material = Chunks.transparent ? Materials.GetVoxelMaterialTrans() : Materials.GetVoxelMaterial();
+                _material = Chunks.Transparent ? Materials.GetVoxelMaterialTrans() : Materials.GetVoxelMaterial();
                 return _material;
             }
         }
@@ -208,74 +202,20 @@ namespace FarmVox
             Dirty = true;
         }
 
-        public void SetGlobal(int i, int j, int k, float v)
-        {
-            int max = Size - 1;
-            if (i < 0 || i > max || j < 0 || j > max || k < 0 || k > max)
-            {
-                Chunks.Set(i + Origin.x, j + Origin.y, k + Origin.z, v);
-            }
-            else
-            {
-                Set(i, j, k, v);
-            }
-        }
-
-        public void SetColorGlobal(int i, int j, int k, Color color)
-        {
-            int max = Size - 1;
-            if (i < 0 || i > max || j < 0 || j > max || k < 0 || k > max)
-            {
-                Chunks.SetColor(i + Origin.x, j + Origin.y, k + Origin.z, color);
-            }
-            else
-            {
-                SetColor(i, j, k, color);
-            }
-        }
-
-
-
         public Color GetColor(int i, int j, int k)
         {
             var index = GetIndex(i, j, k);
             return Colors[index];
         }
 
-        public Color GetColorGlobal(int i, int j, int k)
-        {
-            int max = Size - 1;
-            if (i < 0 || i > max || j < 0 || j > max || k < 0 || k > max)
-            {
-                return Chunks.GetColor(i + Origin.x, j + Origin.y, k + Origin.z);
-            }
-            else
-            {
-                return GetColor(i, j, k);
-            }
-        }
-
-        public float GetGlobal(int i, int j, int k)
-        {
-            int max = Size - 1;
-            if (i < 0 || i > max || j < 0 || j > max || k < 0 || k > max)
-            {
-                return Chunks.Get(i + Origin.x, j + Origin.y, k + Origin.z);
-            }
-            else
-            {
-                return Get(i, j, k);
-            }
-        }
-
-        public int GetIndex(Vector3Int coord)
+        private int GetIndex(Vector3Int coord)
         {
             return GetIndex(coord.x, coord.y, coord.z);
         }
 
-        public int GetIndex(int i, int j, int k)
+        private int GetIndex(int i, int j, int k)
         {
-            int index = i * DataSize * DataSize + j * DataSize + k;
+            var index = i * DataSize * DataSize + j * DataSize + k;
             return index;
         }
 
@@ -288,20 +228,15 @@ namespace FarmVox
 
             UpdateSurfaceCoords();
 
-            var lightDir = Raycast4545.LightDir;
-
             foreach (var coord in SurfaceCoords)
             {
                 if (coord.x >= DataSize - 1 || coord.y >= DataSize - 1 || coord.z >= DataSize - 1)
                 {
                     continue;
                 }
-                else
-                {
-                    var normal = CalcNormal(coord);
-                    normals[coord] = normal;
-                    _lightNormals[coord] = Vector3.Dot(lightDir, normal);
-                }
+                
+                var normal = CalcNormal(coord);
+                Normals[coord] = normal;
             }
 
             _normalsNeedsUpdate = false;
@@ -322,42 +257,9 @@ namespace FarmVox
             return n.normalized * -1;
         }
 
-        public float? GetLightNormal(Vector3Int coord)
-        {
-            if (_lightNormals.ContainsKey(coord))
-            {
-                return _lightNormals[coord];
-            }
-            return null;
-        }
-
-        public Vector3? GetNormal(Vector3Int coord)
-        {
-            if (normals.ContainsKey(coord))
-            {
-                return normals[coord];
-            }
-            return null;
-        }
-
-        private readonly Dictionary<Vector3Int, Vector3> normals = new Dictionary<Vector3Int, Vector3>();
-
-        public Dictionary<Vector3Int, Vector3> Normals
-        {
-            get
-            {
-                return normals;
-            }
-        }
-
-        public float Get(Vector3Int coord)
+        private float Get(Vector3Int coord)
         {
             return Get(coord.x, coord.y, coord.z);
-        }
-
-        public void SetWaterfall(Vector3Int coord, float v)
-        {
-            SetWaterfall(coord.x, coord.y, coord.z, v);
         }
 
         public void SetWaterfall(int i, int j, int k, float v)
@@ -371,7 +273,7 @@ namespace FarmVox
             return GetWaterfall(coord.x, coord.y, coord.z);
         }
 
-        public bool GetWaterfall(int i, int j, int k)
+        private bool GetWaterfall(int i, int j, int k)
         {
             var coord = new Vector3Int(i, j, k);
             return _waterfalls.ContainsKey(coord);

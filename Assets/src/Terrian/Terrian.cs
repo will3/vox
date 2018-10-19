@@ -59,11 +59,11 @@ namespace FarmVox
             terrianObject = new GameObject("terrian");
 
             DefaultLayer = new Chunks(size);
-            DefaultLayer.normalStrength = 0.4f;
+            DefaultLayer.NormalStrength = 0.4f;
             TreeLayer = new Chunks(size);
-            TreeLayer.normalStrength = 0.2f;
+            TreeLayer.NormalStrength = 0.2f;
             WaterLayer = new Chunks(size);
-            WaterLayer.transparent = true;
+            WaterLayer.Transparent = true;
             BuildingLayer = new Chunks(size);
 
             TreeMap = new TreeMap(boundsInt);
@@ -80,8 +80,8 @@ namespace FarmVox
             TreeLayer.GetGameObject().transform.parent = terrianObject.transform;
             WaterLayer.GetGameObject().transform.parent = terrianObject.transform;
 
-            WaterLayer.useNormals = false;
-            WaterLayer.isWater = true;
+            WaterLayer.UseNormals = false;
+            WaterLayer.IsWater = true;
 
             chunksToDraw = new Chunks[] { DefaultLayer, TreeLayer, WaterLayer, BuildingLayer };
 

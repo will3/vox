@@ -53,8 +53,8 @@ namespace FarmVox
             var colorBuffer = mesherGpu.CreateColorBuffer();
 
             var trianglesBuffer = mesherGpu.CreateTrianglesBuffer();
-            mesherGpu.UseNormals = chunks.useNormals;
-            mesherGpu.IsWater = chunks.isWater;
+            mesherGpu.UseNormals = chunks.UseNormals;
+            mesherGpu.IsWater = chunks.IsWater;
 
             voxelBuffer.SetData(chunk.Data);
             colorBuffer.SetData(chunk.Colors);
