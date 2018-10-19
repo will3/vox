@@ -3,7 +3,7 @@
 namespace FarmVox
 {
 
-    public class Materials
+    public static class Materials
     {
         public static Material GetVoxelMaterial() {
             return new Material(Shader.Find("Unlit/voxelunlit"));

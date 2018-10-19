@@ -6,8 +6,8 @@ namespace FarmVox
     {
         float GetValue(int i, int j, int k, int dataSize, Vector3Int origin, float[] heightNoiseData, float[] canyonNoiseData)
         {
-            var plainHeight = config.plainHeight;
-            var hillHeight = config.hillHeight;
+            var plainHeight = config.PlainHeight;
+            var hillHeight = config.HillHeight;
 
             var index = i * dataSize * dataSize + j * dataSize + k;
 
@@ -35,7 +35,7 @@ namespace FarmVox
             return value + n1;
         }
 
-        void GenerateGround(TerrianColumn column) {
+        private void GenerateGround(TerrianColumn column) {
             if (column.generatedGround) {
                 return;
             }
@@ -49,7 +49,7 @@ namespace FarmVox
             column.generatedGround = true;
         }
 
-        void GenerateGround(TerrianChunk terrianChunk)
+        private void GenerateGround(TerrianChunk terrianChunk)
         {
             if (!terrianChunk.rockNeedsUpdate)
             {
@@ -59,13 +59,13 @@ namespace FarmVox
             var origin = terrianChunk.Origin;
             var chunk = DefaultLayer.GetOrCreateChunk(origin);
 
-            var genTerrianGPU = new GenTerrianGPU(Size, origin, config);
+            var genTerrianGpu = new GenTerrianGpu(Size, origin, config);
 
-            var voxelBuffer = genTerrianGPU.CreateVoxelBuffer();
-            var colorBuffer = genTerrianGPU.CreateColorBuffer();
-            var typeBuffer = genTerrianGPU.CreateTypeBuffer();
+            var voxelBuffer = genTerrianGpu.CreateVoxelBuffer();
+            var colorBuffer = genTerrianGpu.CreateColorBuffer();
+            var typeBuffer = genTerrianGpu.CreateTypeBuffer();
 
-            genTerrianGPU.Dispatch(voxelBuffer, colorBuffer, typeBuffer, terrianChunk);
+            genTerrianGpu.Dispatch(voxelBuffer, colorBuffer, typeBuffer, terrianChunk);
 
             var voxelBufferData = new float[voxelBuffer.count];
             voxelBuffer.GetData(voxelBufferData);

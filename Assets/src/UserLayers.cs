@@ -3,14 +3,14 @@
 namespace FarmVox
 {
     public static class UserLayers {
-        public static int terrian {
+        public static int Terrian {
             get {
                 var mask = LayerMask.NameToLayer("terrian");
                 return mask;
             }
         }
 
-        public static int trees
+        public static int Trees
         {
             get
             {
@@ -19,7 +19,7 @@ namespace FarmVox
             }
         }
 
-        public static int water
+        public static int Water
         {
             get
             {

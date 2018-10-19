@@ -1,44 +1,31 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class CameraController : MonoBehaviour
 {
-    Vector3 target = new Vector3(0, 32, 0);
-    float speed = 20f;
-    float rotateSpeed = 80f;
-    Vector3 velocity;
-    float friction = 0.001f;
-    float zoomRate = 1.1f;
-    float mouseRotateSpeed = 0.2f;
+    public Vector3 Target = new Vector3(0, 32, 0);
+    public float Speed = 20f;
+    public float RotateSpeed = 80f;
+    public Vector3 Velocity;
+    public float Friction = 0.001f;
+    public float ZoomRate = 1.1f;
+    public float MouseRotateSpeed = 0.2f;
 
+    public float RotateX = 45;
+    public Vector3 Rotation = new Vector3(45, 45, 0);
+    public float Distance = 300;
+    
+    private Vector3 _lastDragPosition;
+    private bool _dragging;
+    
     public Vector3 GetVector() {
         return (Target - transform.position).normalized;
     }
 
-    public Vector3 Target
-    {
-        get
-        {
-            return target;
-        }
-    }
-
-    public float rotateX = 45;
-    Vector3 rotation = new Vector3(45, 45, 0);
-    float distance = 300;
-    Vector3 lastDragPosition;
-
-    bool dragging;
-
-	// Use this for initialization
-	void Start()
-	{
-        
-	}
-
     // Update is called once per frame
     void Update()
     {
-        var f = Mathf.Pow(friction, Time.deltaTime);
+        var f = Mathf.Pow(Friction, Time.deltaTime);
 
         var forward = 0.0f;
         if (Input.GetKey(KeyCode.W)) forward += 1.0f;
@@ -51,43 +38,43 @@ public class CameraController : MonoBehaviour
         var rotate = 0.0f;
         if (Input.GetKey(KeyCode.Q)) rotate -= 1.0f;
         if (Input.GetKey(KeyCode.E)) rotate += 1.0f;
-        rotation.x = rotateX;
-        rotation.y += rotate * Time.deltaTime * rotateSpeed;
+        Rotation.x = RotateX;
+        Rotation.y += rotate * Time.deltaTime * RotateSpeed;
 
         if (Input.GetKeyDown(KeyCode.Equals)) {
-            distance /= zoomRate;
+            Distance /= ZoomRate;
         }
 
         if (Input.GetKeyDown(KeyCode.Minus)) {
-            distance *= zoomRate;
+            Distance *= ZoomRate;
         }
 
-        if (!dragging && Input.GetKey(KeyCode.Mouse1)) {
-            dragging = true;
-            lastDragPosition = Input.mousePosition;
+        if (!_dragging && Input.GetKey(KeyCode.Mouse1)) {
+            _dragging = true;
+            _lastDragPosition = Input.mousePosition;
         }
 
-        if (dragging && !Input.GetKey(KeyCode.Mouse1)) {
-            dragging = false;
+        if (_dragging && !Input.GetKey(KeyCode.Mouse1)) {
+            _dragging = false;
         }
 
-        if (dragging)
+        if (_dragging)
         {
-            var diff = Input.mousePosition - lastDragPosition;
-            rotation.y -= diff.x * mouseRotateSpeed;
-            lastDragPosition = Input.mousePosition;
+            var diff = Input.mousePosition - _lastDragPosition;
+            Rotation.y -= diff.x * MouseRotateSpeed;
+            _lastDragPosition = Input.mousePosition;
         }
     
-        var forwardVector = (target - transform.position).normalized;
+        var forwardVector = (Target - transform.position).normalized;
         forwardVector = Vector3.ProjectOnPlane(forwardVector, Vector3.up);
         var rightVector = Vector3.Cross(Vector3.up, forwardVector);
-        velocity += forwardVector * forward * speed * Time.deltaTime;
-        velocity += rightVector * right * speed * Time.deltaTime;
-        target += velocity;
-        velocity *= f;
+        Velocity += forwardVector * forward * Speed * Time.deltaTime;
+        Velocity += rightVector * right * Speed * Time.deltaTime;
+        Target += Velocity;
+        Velocity *= f;
 
-        var position = target - Quaternion.Euler(rotation) * Vector3.forward * distance;
+        var position = Target - Quaternion.Euler(Rotation) * Vector3.forward * Distance;
         transform.position = position;
-        transform.LookAt(target, Vector3.up);
+        transform.LookAt(Target, Vector3.up);
 	}
 }

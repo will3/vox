@@ -238,9 +238,14 @@
           </e>
           <e p="Materials.cs" t="Include" />
           <e p="Noise.cs" t="Include" />
+          <e p="Objects" t="Include">
+            <e p="House.cs" t="Include" />
+            <e p="Maple.cs" t="Include" />
+            <e p="Pine.cs" t="Include" />
+            <e p="VoxelModel.cs" t="Include" />
+          </e>
           <e p="Octree.cs" t="Include" />
           <e p="PerformanceLogger.cs" t="Include" />
-          <e p="Pine.cs" t="Include" />
           <e p="Scripts" t="Include">
             <e p="CameraController.cs" t="Include" />
             <e p="Card.cs" t="Include" />
@@ -283,7 +288,6 @@
             <e p="VoxelRaycastResult.cs" t="Include" />
             <e p="VoxelShadowMap.cs" t="Include" />
           </e>
-          <e p="VoxelModel.cs" t="Include" />
         </e>
         <e p="vox" t="Include">
           <e p="KaitaiStream.cs" t="Include" />

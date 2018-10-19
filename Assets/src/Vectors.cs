@@ -2,20 +2,19 @@
 
 namespace FarmVox
 {
-
-    public class Vectors
+    public static class Vectors
     {
         public static Vector3Int GetVector3Int(int i, int j, int k, int d)
         {
-            if (d == 0)
+            switch (d)
             {
-                return new Vector3Int(i, j, k);
+                case 0:
+                    return new Vector3Int(i, j, k);
+                case 1:
+                    return new Vector3Int(k, i, j);
+                default:
+                    return new Vector3Int(j, k, i);
             }
-            else if (d == 1)
-            {
-                return new Vector3Int(k, i, j);
-            }
-            return new Vector3Int(j, k, i);
         }
 
         public static Vector3Int FloorToInt(Vector3 vector) {

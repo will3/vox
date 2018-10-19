@@ -4,7 +4,7 @@ namespace FarmVox
 {
     public partial class Terrian
     {
-        void GenerateTrees(TerrianColumn column)
+        private void GenerateTrees(TerrianColumn column)
         {
             if (column.generatedTrees)
             {
@@ -22,7 +22,7 @@ namespace FarmVox
 
         void GenerateTrees(TerrianChunk terrianChunk)
         {
-            var treeNoise = config.treeNoise;
+            var treeNoise = config.TreeNoise;
 
             if (!terrianChunk.treesNeedsUpdate)
             {
@@ -46,9 +46,9 @@ namespace FarmVox
 
                 Vector3Int globalCoord = localCoord + chunk.Origin;
                 var noise = (float)treeNoise.GetValue(globalCoord);
-                var treeDensity = config.treeDensityFilter.GetValue(noise);
+                var treeDensity = config.TreeDensityFilter.GetValue(noise);
 
-                if (config.treeRandom.NextDouble() * treeDensity > 0.02)
+                if (config.TreeRandom.NextDouble() * treeDensity > 0.02)
                 {
                     continue;
                 }
@@ -58,9 +58,9 @@ namespace FarmVox
                     continue;
                 }
 
-                var relY = j + chunk.Origin.y - config.groundHeight;
+                var relY = j + chunk.Origin.y - config.GroundHeight;
 
-                if (relY <= config.waterLevel) {
+                if (relY <= config.WaterLevel) {
                     continue;
                 }
 
@@ -71,14 +71,14 @@ namespace FarmVox
                     continue;
                 }
 
-                var height = relY / config.maxHeight;
-                var treeHeightValue = config.treeHeightGradient.GetValue(height);
+                var height = relY / config.MaxHeight;
+                var treeHeightValue = config.TreeHeightGradient.GetValue(height);
 
-                var value = noise * treeHeightValue * config.treeAmount;
+                var value = noise * treeHeightValue * config.TreeAmount;
 
                 if (value < 0.5f) { continue; }
 
-                var radius = 3;
+                var radius = config.TreeMinDis;
                 var treeBoundsSize = new Vector3Int(radius, radius, radius);
                 var treeBounds = new BoundsInt(globalCoord - treeBoundsSize, treeBoundsSize * 2);
                 if (TreeMap.HasTrees(treeBounds))

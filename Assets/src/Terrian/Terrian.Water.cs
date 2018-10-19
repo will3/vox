@@ -30,7 +30,7 @@ namespace FarmVox
             var waterChunk = WaterLayer.GetOrCreateChunk(terrianChunk.Origin);
             if (chunk.Origin.y < config.ActualWaterLevel)
             {
-                float maxJ = config.waterLevel + config.groundHeight - chunk.Origin.y;
+                float maxJ = config.WaterLevel + config.GroundHeight - chunk.Origin.y;
                 if (maxJ > chunk.Size)
                 {
                     maxJ = chunk.Size;
@@ -44,7 +44,7 @@ namespace FarmVox
                             if (chunk.Get(i, j, k) <= 0)
                             {
                                 waterChunk.Set(i, j, k, 1);
-                                waterChunk.SetColor(i, j, k, config.colors.waterColor);
+                                waterChunk.SetColor(i, j, k, config.Colors.waterColor);
                                 terrianChunk.SetWater(i, j, k, true);
                             }
                         }

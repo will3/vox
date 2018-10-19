@@ -14,7 +14,7 @@ namespace FarmVox
             {
                 for (var k = -1; k <= 1; k++)
                 {
-                    for (var j = 0; j < config.maxChunksY; j++)
+                    for (var j = 0; j < config.MaxChunksY; j++)
                     {
                         var origin = new Vector3Int(i + key.x, j, k + key.z) * Size;
                         var tc = GetTerrianChunk(origin);
@@ -48,19 +48,19 @@ namespace FarmVox
 
             foreach (var coord in chunk.surfaceCoords)
             {
-                var r = config.waterfallRandom.NextDouble();
+                var r = config.WaterfallRandom.NextDouble();
 
                 var index = coord.x * dataSize * dataSize + coord.y * dataSize + coord.z;
 
                 var absY = coord.y + origin.y;
 
-                var height = (absY - config.groundHeight) / config.maxHeight;
+                var height = (absY - config.GroundHeight) / config.MaxHeight;
 
-                var heightValue = config.waterfallHeightFilter.GetValue(height);
+                var heightValue = config.WaterfallHeightFilter.GetValue(height);
 
                 var v = r / heightValue;
 
-                if (v < 0 || v > config.waterfallChance)
+                if (v < 0 || v > config.WaterfallChance)
                 {
                     continue;
                 }
@@ -161,7 +161,7 @@ namespace FarmVox
                 {
                     var coord = coords[i];
                     var cost = costs[i];
-                    chunks.SetColor(coord.x, coord.y, coord.z, config.colors.waterColor);
+                    chunks.SetColor(coord.x, coord.y, coord.z, config.Colors.waterColor);
                     chunks.SetWaterfall(coord, cost);
                 }
                 foreach (var coord in emptyCoords)
@@ -176,7 +176,7 @@ namespace FarmVox
 
             Vector3Int? nextPoint = coord;
 
-            var cost = (float)config.waterfallRandom.NextDouble() * 1000.0f;
+            var cost = (float)config.WaterfallRandom.NextDouble() * 1000.0f;
 
             var waterTracker = new WaterTracker(config);
             waterTracker.Start(coord);
@@ -211,7 +211,7 @@ namespace FarmVox
 
         private Vector3Int? ProcessNextWater(Vector3Int coord, WaterTracker waterTracker)
         {
-            if (coord.y < config.waterLevel + config.groundHeight)
+            if (coord.y < config.WaterLevel + config.GroundHeight)
             {
                 waterTracker.ReachedWater();
                 return null;

@@ -6,20 +6,21 @@ namespace FarmVox
 {
     public class ColorGradient
     {
-        private Dictionary<float, Color> map = new Dictionary<float, Color>();
-        private List<float> keys = new List<float>();
-        public int banding = 0;
+        private readonly Dictionary<float, Color> _map = new Dictionary<float, Color>();
+        private readonly List<float> _keys = new List<float>();
+        
+        public int Banding { get; set; }
 
         public int Count {
-            get { return map.Count; }
+            get { return _map.Count; }
         }
 
         public ColorGradient(Color a, Color b)
         {
-            keys.Add(0);
-            keys.Add(1);
-            map[0] = a;
-            map[1] = b;
+            _keys.Add(0);
+            _keys.Add(1);
+            _map[0] = a;
+            _map[1] = b;
         }
 
         public ColorGradient(Dictionary<float, Color> map) {
@@ -28,11 +29,11 @@ namespace FarmVox
             }
         }
 
-        public void Add(float position, Color v)
+        private void Add(float position, Color v)
         {
-            map[position] = v;
-            keys.Add(position);
-            keys.Sort();
+            _map[position] = v;
+            _keys.Add(position);
+            _keys.Sort();
         }
 
         public Color GetValue(float ratio)
@@ -40,24 +41,23 @@ namespace FarmVox
             if (ratio < 0.0) { ratio = 0.0f; }
             if (ratio > 1.0) { ratio = 1.0f; }
 
-            if (banding > 0)
+            if (Banding > 0)
             {
-                ratio = Mathf.Floor(ratio * (float)banding) / (float)banding;
+                ratio = Mathf.Floor(ratio * Banding) / Banding;
             }
 
-            for (int i = 0; i < keys.Count - 1; i++)
+            for (var i = 0; i < _keys.Count - 1; i++)
             {
-                float min = keys[i];
-                float max = keys[i + 1];
+                var min = _keys[i];
+                var max = _keys[i + 1];
 
-                if (max >= ratio)
-                {
-                    var minV = map[min];
-                    var maxV = map[max];
-                    var r = (ratio - min) / (max - min);
+                if (!(max >= ratio)) continue;
+                
+                var minV = _map[min];
+                var maxV = _map[max];
+                var r = (ratio - min) / (max - min);
 
-                    return Color.Lerp(minV, maxV, r);
-                }
+                return Color.Lerp(minV, maxV, r);
             }
 
             throw new Exception("ratio must be between 0 and 1");
@@ -65,14 +65,14 @@ namespace FarmVox
 
         public Color[] GetValues() {
             var list = new List<Color>();
-            foreach(var key in keys) {
-                list.Add(map[key]);
+            foreach(var key in _keys) {
+                list.Add(_map[key]);
             }
             return list.ToArray();
         }
 
         public float[] GetKeys() {
-            return keys.ToArray();
+            return _keys.ToArray();
         }
 	}
 }

@@ -14,7 +14,7 @@ namespace FarmVox
         // Update is called once per frame
         void Update()
         {
-            var result = VoxelRaycast.TraceMouse(1 << UserLayers.terrian);
+            var result = VoxelRaycast.TraceMouse(1 << UserLayers.Terrian);
             if (result != null) {
                 var coord = result.GetCoord();
 

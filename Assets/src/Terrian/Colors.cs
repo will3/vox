@@ -22,7 +22,7 @@ namespace FarmVox
                     {1, GetColor("#654d1f")}
                 })
             {
-                banding = 8
+                Banding = 8
             };
             grassColor = new ColorGradient(new Dictionary<float, UnityEngine.Color> {
                 {0, GetColor("#597420")},

@@ -53,8 +53,8 @@ namespace FarmVox
             sizeF = size;
 
             bounds = new Bounds();
-            bounds.min = new Vector3(-config.maxChunksX, 0, -config.maxChunksX) * size;
-            bounds.max = new Vector3(config.maxChunksX, config.maxChunksY, config.maxChunksX) * size;
+            bounds.min = new Vector3(-config.MaxChunksX, 0, -config.MaxChunksX) * size;
+            bounds.max = new Vector3(config.MaxChunksX, config.MaxChunksY, config.MaxChunksX) * size;
 
             var boundsInt = config.BoundsInt;
 
@@ -94,7 +94,7 @@ namespace FarmVox
         }
 
         void GenerateColumn(Vector3Int columnOrigin) {
-            var maxChunksY = config.maxChunksY;
+            var maxChunksY = config.MaxChunksY;
             var list = new List<TerrianChunk>();
             for (int j = 0; j < maxChunksY; j++)
             {
@@ -132,9 +132,9 @@ namespace FarmVox
         }
 
         public void InitColumns() {
-            for (var i = -config.maxChunksX; i < config.maxChunksX; i++)
+            for (var i = -config.MaxChunksX; i < config.MaxChunksX; i++)
             {
-                for (var k = -config.maxChunksX; k < config.maxChunksX; k++)
+                for (var k = -config.MaxChunksX; k < config.MaxChunksX; k++)
                 {
                     var columnOrigin = new Vector3Int(i, 0, k) * Size;
                     GenerateColumn(columnOrigin);
@@ -152,11 +152,11 @@ namespace FarmVox
 
                 GenerateGround(column);
 
-                if (config.generateWater) {
+                if (config.GenerateWater) {
                     GenerateWaters(column);
                 }
 
-                if (config.generateTrees) {
+                if (config.GenerateTrees) {
                     GenerateTrees(column);    
                 }
 

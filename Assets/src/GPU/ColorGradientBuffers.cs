@@ -2,23 +2,23 @@
 
 namespace FarmVox
 {
-    public partial class GenTerrianGPU
+    public partial class GenTerrianGpu
     {
-        class ColorGradientBuffers : System.IDisposable
+        private class ColorGradientBuffers : System.IDisposable
         {
-            public readonly ComputeBuffer intervalsBuffer;
-            public readonly ComputeBuffer colorsBuffer;
+            private readonly ComputeBuffer _intervalsBuffer;
+            private readonly ComputeBuffer _colorsBuffer;
 
             public ColorGradientBuffers(ComputeBuffer intervalsBuffer, ComputeBuffer colorsBuffer)
             {
-                this.intervalsBuffer = intervalsBuffer;
-                this.colorsBuffer = colorsBuffer;
+                _intervalsBuffer = intervalsBuffer;
+                _colorsBuffer = colorsBuffer;
             }
 
             public void Dispose()
             {
-                intervalsBuffer.Dispose();
-                colorsBuffer.Dispose();
+                _intervalsBuffer.Dispose();
+                _colorsBuffer.Dispose();
             }
         }
     }

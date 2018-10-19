@@ -69,7 +69,7 @@ namespace FarmVox
             shader.SetInt("_UseNormals", useNormals ? 1 : 0);
             shader.SetInt("_IsWater", isWater ? 1 : 0);
             shader.SetFloat("_NormalStrength", chunk.Chunks.normalStrength);
-            shader.SetFloat("_AoStrength", TerrianConfig.Instance.aoStrength);
+            shader.SetFloat("_AoStrength", TerrianConfig.Instance.AoStrength);
 
             var disptachNumber = Mathf.CeilToInt(dataSize / (float)workGroups);
             shader.Dispatch(0, 3 * disptachNumber, disptachNumber, disptachNumber);

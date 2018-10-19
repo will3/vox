@@ -1,138 +1,124 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using LibNoise.Generator;
 using UnityEngine;
 using Random = System.Random;
 
 namespace FarmVox
 {
+    [Serializable]
     public class TerrianConfig
     {
-        public Colors colors = new Colors();
+        public readonly Colors Colors = new Colors();
 
-        static TerrianConfig instance;
+        private static TerrianConfig _instance;
 
         public static TerrianConfig Instance {
-            get {
-                if (instance == null) {
-                    instance = new TerrianConfig();
-                }
-                return instance;
-            }
+            get { return _instance ?? (_instance = new TerrianConfig()); }
         }
 
         public int ActualWaterLevel {
             get {
-                return waterLevel + groundHeight;
+                return WaterLevel + GroundHeight;
             }
         }
 
-        public int size = 32;
-        public int maxChunksY = 2;
-        public int generateDis = 2;
-        public float maxHeight = 64;
-        public float hillHeight = 48;
-        public float plainHeight = 4;
-        public int waterLevel = 0;
-        public int groundHeight = 12;
-        public int maxChunksX = 3;
-        public bool generateWater = true;
-        public bool generateTrees = true;
+        public int Size = 32;
+        public int MaxChunksY = 2;
+        public float MaxHeight = 64;
+        public float HillHeight = 48;
+        public float PlainHeight = 4;
+        public int WaterLevel = 0;
+        public int GroundHeight = 12;
+        public int MaxChunksX = 3;
+        public bool GenerateWater = true;
+        public bool GenerateTrees = true;
 
-        public float aoStrength = 0.2f;
-        public float shadowStrength = 0.5f;
+        public float AoStrength = 0.2f;
+        public float ShadowStrength = 0.5f;
 
+        public int TreeMinDis = 3;
+        
 #region ground
-        public Noise heightNoise;
-        public Noise rockNoise;
-        public Noise rockColorNoise;
+        public Noise HeightNoise;
+        public Noise RockNoise;
+        public Noise RockColorNoise;
 #endregion
 
 #region grass
-        public Noise grassNoise;
-        public Random grassRandom;
-        public ValueGradient grassHeightFilter;
-        public ValueGradient grassNormalFilter;
-        public float grassOffset = 0f;
-        public float grassMultiplier = 1.2f;
-#endregion
+        public Noise GrassNoise;
+        public ValueGradient GrassHeightFilter;
+        public ValueGradient GrassNormalFilter;
+
+        #endregion
 
 #region tree
-        public Perlin treeNoise;
-        public Random treeRandom;
-        public ValueGradient treeHeightGradient;
-        public float treeSparse = 5.0f;
-        public float treeAmount = 2.0f;
-        public ValueGradient treeDensityFilter;
+        public Perlin TreeNoise;
+        public Random TreeRandom;
+        public ValueGradient TreeHeightGradient;
+        public float TreeAmount = 2.0f;
+        public ValueGradient TreeDensityFilter;
 #endregion
 
 #region waterfall
-        public Random waterfallRandom;
-        public Noise waterfallNoise;
-        public ValueGradient waterfallHeightFilter;
-        public float waterfallChance = 0.01f;
+        public Random WaterfallRandom;
+        public Noise WaterfallNoise;
+        public ValueGradient WaterfallHeightFilter;
+        public float WaterfallChance = 0.01f;
 #endregion
 
 #region river
-        public Noise riverNoise;
-        public ValueGradient riverNoiseFilter;
+        public Noise RiverNoise;
+        public ValueGradient RiverNoiseFilter;
 #endregion
 
-        #region stone
-        public Noise stoneNoise;
-        public Noise stoneNoise2;
-        public float stoneThreshold = 0.5f;
-        //public float stoneThreshold = 2.0f;
+#region stone
+        public Noise StoneNoise;
+        public Noise StoneNoise2;
+        public float StoneThreshold = 0.5f;
 
-        public ValueGradient stoneHeightFilter = new ValueGradient(new Dictionary<float, float>
+        public ValueGradient StoneHeightFilter = new ValueGradient(new Dictionary<float, float>
         {
             {-1.0f, 1.0f},
             {0f, 1.0f},
             {1.0f, 0.0f},
         });
-        #endregion
+#endregion
 
-        public Noise monsterNoise;
-
-        public Random townRandom;
-        public Random roadRandom;
-        public Random monsterRandom;
-
-        Random r;
+        private readonly Random _r;
 
         Perlin NextPerlin()
         {
-            var noise = new Perlin();
-            noise.Seed = r.Next();
+            var noise = new Perlin {Seed = _r.Next()};
             return noise;
         }
 
         Noise NextNoise() {
-            var noise = new Noise();
-            noise.seed = r.Next();
+            var noise = new Noise {seed = _r.Next()};
             return noise;
         }
 
         Random NextRandom() {
-            var seed = r.Next();
+            var seed = _r.Next();
             var random = new Random(seed);
             return random;
         }
 
         public BoundsInt BoundsInt {
             get {
-                var boundingCubeSize = new Vector3Int(maxChunksX, maxChunksX, maxChunksX) * size;
+                var boundingCubeSize = new Vector3Int(MaxChunksX, MaxChunksX, MaxChunksX) * Size;
                 return  new BoundsInt(boundingCubeSize * -1, boundingCubeSize * 2);
             }
         }
 
-        TerrianConfig(int seed = 1337)
+        private TerrianConfig(int seed = 1337)
         {
-            r = new Random(seed);
-            heightNoise = NextNoise();
-            heightNoise.frequency = 0.015f;
-            heightNoise.yScale = 0.4f;
-            heightNoise.octaves = 5;
-            heightNoise.filter = new ValueGradient(new Dictionary<float, float>
+            _r = new Random(seed);
+            HeightNoise = NextNoise();
+            HeightNoise.frequency = 0.015f;
+            HeightNoise.yScale = 0.4f;
+            HeightNoise.octaves = 5;
+            HeightNoise.filter = new ValueGradient(new Dictionary<float, float>
             {
                 {-1.0f, -0.4f},
                 {-0.2f, 0.05f},
@@ -141,51 +127,46 @@ namespace FarmVox
                 {1, 1.2f}
             });
 
-            rockNoise = NextNoise();
-            monsterNoise = NextNoise();
+            RockNoise = NextNoise();
 
-            rockColorNoise = NextNoise();
-            rockColorNoise.frequency = 0.05f;
-            rockColorNoise.yScale = 4.0f;
-            rockColorNoise.amplitude = 1.0f;
+            RockColorNoise = NextNoise();
+            RockColorNoise.frequency = 0.05f;
+            RockColorNoise.yScale = 4.0f;
+            RockColorNoise.amplitude = 1.0f;
 
-            grassNoise = NextNoise();
+            GrassNoise = NextNoise();
 
-            treeNoise = NextPerlin();
+            TreeNoise = NextPerlin();
 
-            townRandom = NextRandom();
-            roadRandom = NextRandom();
-            monsterRandom = NextRandom();
-            treeRandom = NextRandom();
-            waterfallRandom = NextRandom();
-            grassRandom = NextRandom();
+            TreeRandom = NextRandom();
+            WaterfallRandom = NextRandom();
 
-            waterfallNoise = NextNoise();
-            waterfallNoise.frequency = 0.005f;
+            WaterfallNoise = NextNoise();
+            WaterfallNoise.frequency = 0.005f;
 
-            stoneNoise = NextNoise();
-            stoneNoise.frequency = 0.01f;
-            stoneNoise.amplitude = 0.5f;
-            stoneNoise2 = NextNoise();
-            stoneNoise2.frequency = 0.005f;
-            stoneNoise2.yScale = 4.0f;
-            stoneNoise2.amplitude = 1.2f;
+            StoneNoise = NextNoise();
+            StoneNoise.frequency = 0.01f;
+            StoneNoise.amplitude = 0.5f;
+            StoneNoise2 = NextNoise();
+            StoneNoise2.frequency = 0.005f;
+            StoneNoise2.yScale = 4.0f;
+            StoneNoise2.amplitude = 1.2f;
 
-            riverNoise = NextNoise();
-            riverNoise.type = NoiseType.FBM;
-            riverNoise.yScale = 0.2f;
-            riverNoise.frequency = 0.05f;
-            riverNoise.persistence = 0.5f;
-            riverNoise.octaves = 7;
-            riverNoise.amplitude = 4f;
+            RiverNoise = NextNoise();
+            RiverNoise.type = NoiseType.FBM;
+            RiverNoise.yScale = 0.2f;
+            RiverNoise.frequency = 0.05f;
+            RiverNoise.persistence = 0.5f;
+            RiverNoise.octaves = 7;
+            RiverNoise.amplitude = 4f;
 
-            riverNoiseFilter = new ValueGradient(new Dictionary<float, float>() {
+            RiverNoiseFilter = new ValueGradient(new Dictionary<float, float>() {
                 {0, 0},
                 //{0.9f, 1},
                 //{1.0f, 1}
             });
 
-            waterfallHeightFilter = new ValueGradient(new Dictionary<float, float>()
+            WaterfallHeightFilter = new ValueGradient(new Dictionary<float, float>()
             {
                 {0, 0},
                 {0.3f, 0},
@@ -193,41 +174,35 @@ namespace FarmVox
                 {1.0f, 1}
             });
 
-            grassNoise.frequency = 0.01f;
-            grassNoise.amplitude = 2.0f;
+            GrassNoise.frequency = 0.01f;
+            GrassNoise.amplitude = 2.0f;
 
-            rockNoise.frequency = 0.02f;
-            rockNoise.amplitude = 1.5f;
+            RockNoise.frequency = 0.02f;
+            RockNoise.amplitude = 1.5f;
 
-            treeNoise.Frequency = 0.05f;
-            treeNoise.OctaveCount = 5;
+            TreeNoise.Frequency = 0.05f;
+            TreeNoise.OctaveCount = 5;
 
-            treeHeightGradient = new ValueGradient(1, 0);
+            TreeHeightGradient = new ValueGradient(1, 0);
 
-            treeDensityFilter = new ValueGradient(new Dictionary<float, float>
+            TreeDensityFilter = new ValueGradient(new Dictionary<float, float>
             {
                 {-1, 0},
                 {1, 1}
             });
 
-            grassHeightFilter = new ValueGradient(new Dictionary<float, float>{
+            GrassHeightFilter = new ValueGradient(new Dictionary<float, float>{
                 { 0, 0.5f },
                 { 0.5f, 0},
                 { 1, 0 } });
 
-            grassNormalFilter = new ValueGradient(
+            GrassNormalFilter = new ValueGradient(
                 new Dictionary<float, float>{
                 { -1, 0 },
                 { 0, 0 },
                 { 0.49f, 0},
                 { 0.5f, 1 },
                 { 1, 1 } });
-
-            //var grass1 = GetColor("#cec479");
-            //var grass2 = GetColor("#1EA14E");
-            // var grass3 = GetColor("#285224");
-
-            // grassGradient.banding = 8;
         }
     }
 }

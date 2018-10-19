@@ -5,16 +5,16 @@ public partial class Card
 {
     static class Textures
     {
-        static readonly Dictionary<string, Texture2D> textureMap = new Dictionary<string, Texture2D>();
+        private static readonly Dictionary<string, Texture2D> TextureMap = new Dictionary<string, Texture2D>();
 
         public static Texture2D Load(string name)
         {
-            if (textureMap.ContainsKey(name)) {
-                return textureMap[name];
+            if (TextureMap.ContainsKey(name)) {
+                return TextureMap[name];
             }
 
-            textureMap[name] = Resources.Load<Texture2D>("Textures/" + name);
-            return textureMap[name];
+            TextureMap[name] = Resources.Load<Texture2D>("Textures/" + name);
+            return TextureMap[name];
         }
     }
 }

@@ -32,7 +32,7 @@ public class HighlightHoveredSurface : MonoBehaviour
 	void Update()
 	{
         
-        result = VoxelRaycast.TraceMouse(1 << UserLayers.terrian);
+        result = VoxelRaycast.TraceMouse(1 << UserLayers.Terrian);
         if (result != null) {
             var mesh = result.GetQuad();
             var pos = result.GetCoord();

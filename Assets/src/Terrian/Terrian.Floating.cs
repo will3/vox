@@ -18,14 +18,14 @@ namespace FarmVox
 
             if (terrianChunk.Origin.y == 0)
             {
-                Vector3Int startCoord = new Vector3Int(Size / 2, config.waterLevel - 1, Size / 2) + terrianChunk.Origin;
+                Vector3Int startCoord = new Vector3Int(Size / 2, config.WaterLevel - 1, Size / 2) + terrianChunk.Origin;
 
                 var leads = new HashSet<Vector3Int>() { startCoord };
                 var visited = new HashSet<Vector3Int>() { startCoord };
 
                 var start = terrianChunk.Origin;
                 var end = start + new Vector3Int(Size, Size, Size);
-                start.y = config.waterLevel - 1;
+                start.y = config.WaterLevel - 1;
 
                 var startTime = System.DateTime.Now;
 
@@ -132,7 +132,7 @@ namespace FarmVox
                 return;
             }
 
-            var any = coord.y < config.waterLevel || DefaultLayer.Get(c.x, c.y, c.z) > 0;
+            var any = coord.y < config.WaterLevel || DefaultLayer.Get(c.x, c.y, c.z) > 0;
             if (any)
             {
                 if (!visited.Contains(c))

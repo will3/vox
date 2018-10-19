@@ -4,14 +4,14 @@ using System.Collections.Generic;
 
 public class ValueGradient
 {
-    private readonly Dictionary<float, float> map = new Dictionary<float, float>();
-    private readonly List<float> keys = new List<float>();
+    private readonly Dictionary<float, float> _map = new Dictionary<float, float>();
+    private readonly List<float> _keys = new List<float>();
 
     public List<float> Keys
     {
         get
         {
-            return keys;
+            return _keys;
         }
     }
 
@@ -19,8 +19,8 @@ public class ValueGradient
         get 
         {
             var list = new List<float>();
-            foreach (var key in keys) {
-                list.Add(map[key]);
+            foreach (var key in _keys) {
+                list.Add(_map[key]);
             }
             return list;
         }
@@ -29,11 +29,11 @@ public class ValueGradient
     public int banding = 0;
 
     public ValueGradient(float min, float max) {
-        map[0.0f] = min;
-        map[1.0f] = max;
+        _map[0.0f] = min;
+        _map[1.0f] = max;
 
-        keys.Add(0.0f);
-        keys.Add(1.0f);
+        _keys.Add(0.0f);
+        _keys.Add(1.0f);
     }
 
     public ValueGradient(Dictionary<float, float> map) {
@@ -43,11 +43,11 @@ public class ValueGradient
     }
 
     public void Set(float position, float v) {
-        bool existing = map.ContainsKey(position);
-        map[position] = v;
+        bool existing = _map.ContainsKey(position);
+        _map[position] = v;
         if (!existing) {
-            keys.Add(position);
-            keys.Sort();    
+            _keys.Add(position);
+            _keys.Sort();    
         }
     }
 
@@ -55,13 +55,13 @@ public class ValueGradient
         if (banding > 0) {
             ratio = Mathf.Floor(ratio * (float)banding) / (float)banding;
         }
-        for (int i = 0; i < keys.Count - 1; i++) {
-            float min = keys[i];
-            float max = keys[i + 1];
+        for (int i = 0; i < _keys.Count - 1; i++) {
+            float min = _keys[i];
+            float max = _keys[i + 1];
 
             if (max > ratio) {
-                float minV = map[min];
-                float maxV = map[max];
+                float minV = _map[min];
+                float maxV = _map[max];
                 var r = (ratio - min) / (max - min);
 
                 return minV + (maxV - minV) * r;
@@ -86,19 +86,19 @@ public class ValueGradient
     }
 
     public class ValueGradientBuffers : System.IDisposable {
-        public readonly ComputeBuffer keysBuffer;
-        public readonly ComputeBuffer valuesBuffer;
+        public readonly ComputeBuffer KeysBuffer;
+        public readonly ComputeBuffer ValuesBuffer;
 
         public ValueGradientBuffers(ComputeBuffer keysBuffer, ComputeBuffer valuesBuffer)
         {
-            this.keysBuffer = keysBuffer;
-            this.valuesBuffer = valuesBuffer;
+            KeysBuffer = keysBuffer;
+            ValuesBuffer = valuesBuffer;
         }
 
         public void Dispose()
         {
-            keysBuffer.Dispose();
-            valuesBuffer.Dispose();
+            KeysBuffer.Dispose();
+            ValuesBuffer.Dispose();
         }
     }
 }
