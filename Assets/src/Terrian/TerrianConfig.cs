@@ -38,7 +38,7 @@ namespace FarmVox
         public bool generateWater = true;
         public bool generateTrees = true;
 
-        public float aoStrength = 0.05f;
+        public float aoStrength = 0.2f;
         public float shadowStrength = 0.5f;
 
 #region ground

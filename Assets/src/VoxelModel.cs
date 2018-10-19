@@ -4,6 +4,16 @@ using UnityEngine;
 
 namespace FarmVox
 {
+    class House {
+        static VoxelModel model = new VoxelModel("house");
+
+        public void Add(Chunks chunks, Vector3Int position)
+        {
+            var offset = new Vector3Int(-3, 0, -3);
+            model.Add(chunks, position, offset);
+        }
+    }
+
     class VoxelModel
     {
         public VoxelModel(string name) {
@@ -15,7 +25,8 @@ namespace FarmVox
             Colors.GetColor("#654f30"),
             Colors.GetColor("#705836"),
             Colors.GetColor("#ac8956"),
-            Colors.GetColor("#4d4232")
+            Colors.GetColor("#4d4232"),
+            Colors.GetColor("#676767")
         };
 
         List<Vox.Voxel> voxels = new List<Vox.Voxel>();
@@ -47,10 +58,10 @@ namespace FarmVox
             }
         }
 
-        public void Add(Chunks chunks, Vector3Int position) {
+        public void Add(Chunks chunks, Vector3Int position, Vector3Int offset) {
             foreach (var voxel in voxels) {
                 var color = palette[voxel.ColorIndex - 1];
-                var coord = new Vector3Int(voxel.X, voxel.Z, voxel.Y);
+                var coord = new Vector3Int(voxel.X, voxel.Z, voxel.Y) + offset;
 
                 chunks.Set(coord + position, 1.0f);
                 chunks.SetColor(coord + position, color);

@@ -17,8 +17,8 @@ public class Commander : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Mouse0)) {
             var result = VoxelRaycast.TraceMouse(1 << UserLayers.terrian);
             if (result != null) {
-                var model = new VoxelModel("house");
-                model.Add(Finder.FindTerrian().BuildingLayer, result.GetCoord());
+                var house = new House();
+                house.Add(Finder.FindTerrian().BuildingLayer, result.GetCoord());
             }
         }
     }
