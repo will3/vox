@@ -43,10 +43,10 @@ namespace FarmVox
             var origin = terrianChunk.Origin;
 
             var chunk = DefaultLayer.GetChunk(origin);
-            var dataSize = chunk.dataSize;
+            var dataSize = chunk.DataSize;
             chunk.UpdateSurfaceCoords();
 
-            foreach (var coord in chunk.surfaceCoords)
+            foreach (var coord in chunk.SurfaceCoords)
             {
                 var r = config.WaterfallRandom.NextDouble();
 

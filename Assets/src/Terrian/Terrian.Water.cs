@@ -35,9 +35,9 @@ namespace FarmVox
                 {
                     maxJ = chunk.Size;
                 }
-                for (var i = 0; i < chunk.dataSize; i++)
+                for (var i = 0; i < chunk.DataSize; i++)
                 {
-                    for (var k = 0; k < chunk.dataSize; k++)
+                    for (var k = 0; k < chunk.DataSize; k++)
                     {
                         for (var j = 0; j < maxJ; j++)
                         {

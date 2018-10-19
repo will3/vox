@@ -13,7 +13,7 @@ namespace FarmVox
 
             chunk.UpdateSurfaceCoords();
 
-            foreach (var coord in chunk.surfaceCoordsUp)
+            foreach (var coord in chunk.SurfaceCoordsUp)
             {
                 var worldCoord = coord + chunk.Origin;
                 var tile = GetOrCreateTile(worldCoord);
