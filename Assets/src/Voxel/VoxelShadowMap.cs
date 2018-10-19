@@ -27,8 +27,8 @@ namespace FarmVox
         readonly Dictionary<Vector2Int, ShadowMapState> _states = new Dictionary<Vector2Int, ShadowMapState>();
         readonly Dictionary<Vector2Int, ComputeBuffer> _buffers = new Dictionary<Vector2Int, ComputeBuffer>();
 
-        const int LightY = 100;
-        const int MinY = -100;
+        private const int LightY = 100;
+        private const int MinY = -100;
 
         private Vector2Int GetOrigin(Vector2Int coord)
         {
