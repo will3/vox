@@ -1,87 +1,77 @@
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace FarmVox
 {
     public class VoxelShadowMap
     {
-        public enum ShadowMapState {
+        private enum ShadowMapState {
             Pending,
             Ready,
             Drawn
         }
 
-        int dataSize;
+        public int DataSize { get; private set; }
 
-        public int DataSize
-        {
-            get
-            {
-                return dataSize;
-            }
-        }
+        public int Size { get; private set; }
 
-        int size;
-
-        TerrianConfig config;
+        readonly TerrianConfig _config;
+        
         public VoxelShadowMap(int size, TerrianConfig config)
         {
-            this.size = size;
-            this.dataSize = size + 1;
-            this.config = config;
+            Size = size;
+            DataSize = size + 1;
+            _config = config;
         }
 
-        Dictionary<Vector2Int, ShadowMapState> states = new Dictionary<Vector2Int, ShadowMapState>();
-        Dictionary<Vector2Int, ComputeBuffer> buffers = new Dictionary<Vector2Int, ComputeBuffer>();
+        readonly Dictionary<Vector2Int, ShadowMapState> _states = new Dictionary<Vector2Int, ShadowMapState>();
+        readonly Dictionary<Vector2Int, ComputeBuffer> _buffers = new Dictionary<Vector2Int, ComputeBuffer>();
 
-        static int lightY = 100;
-        static int minY = -100;
+        const int LightY = 100;
+        const int MinY = -100;
 
         private Vector2Int GetOrigin(Vector2Int coord)
         {
             return new Vector2Int(
-                Mathf.FloorToInt(coord.x / (float)size),
-                Mathf.FloorToInt(coord.y / (float)size)
-            ) * size;
+                Mathf.FloorToInt(coord.x / (float)Size),
+                Mathf.FloorToInt(coord.y / (float)Size)
+            ) * Size;
         }
 
         public void Update()
         {
-            var keys = new Vector2Int[states.Keys.Count];
-            states.Keys.CopyTo(keys, 0);
+            var keys = new Vector2Int[_states.Keys.Count];
+            _states.Keys.CopyTo(keys, 0);
 
             foreach (var origin in keys)
             {
-                var state = states[origin];
-                if (state == ShadowMapState.Pending)
-                {
-                    Update(origin);
-                    SetState(origin, ShadowMapState.Ready);
-                }
+                var state = _states[origin];
+                if (state != ShadowMapState.Pending) continue;
+                Update(origin);
+                SetState(origin, ShadowMapState.Ready);
             }
         }
 
         void SetState(Vector2Int origin, ShadowMapState state) {
-            states[origin] = state;
+            _states[origin] = state;
         }
 
         ShadowMapState GetState(Vector2Int origin) {
             ShadowMapState state;
-            states.TryGetValue(origin, out state);
+            _states.TryGetValue(origin, out state);
             return state;
         }
 
         public void ChunkDrawn(Vector3Int origin)
         {
-            var num = 2;
+            const int num = 2;
             var from = new Vector2Int(origin.x - origin.y, origin.z - origin.y);
 
             for (var i = 0; i < num; i++)
             {
                 for (var j = 0; j < num; j++)
                 {
-                    var uv = new Vector2Int(from.x - i * size, from.y - j * size);
+                    var uv = new Vector2Int(from.x - i * Size, from.y - j * Size);
                     SetState(uv, ShadowMapState.Pending);
                 }
             }
@@ -91,30 +81,30 @@ namespace FarmVox
         {
             PerformanceLogger.Push("Shadowmap");
             // Clear
-            var texture = new int[dataSize * dataSize];
-            for (var i = 0; i < dataSize; i++)
+            var texture = new int[DataSize * DataSize];
+            for (var i = 0; i < DataSize; i++)
             {
-                for (var j = 0; j < dataSize; j++)
+                for (var j = 0; j < DataSize; j++)
                 {
-                    int index = i * dataSize + j;
+                    int index = i * DataSize + j;
                     var v = CalcShadow(new Vector3Int(i + origin.x, 0, j + origin.y));
                     texture[index] = v;
                 }
             }
 
-            if (!buffers.ContainsKey(origin))
+            if (!_buffers.ContainsKey(origin))
             {
-                buffers[origin] = new ComputeBuffer(dataSize * dataSize, sizeof(int));
+                _buffers[origin] = new ComputeBuffer(DataSize * DataSize, sizeof(int));
             }
 
-            buffers[origin].SetData(texture);
+            _buffers[origin].SetData(texture);
             PerformanceLogger.Pop();
         }
 
         int CalcShadow(Vector3Int coord)
         {
-            var start = liftVector(coord, lightY);
-            // + new Vector3(-0.51f, 0.0f, -0.51f);
+            var start = LiftVector(coord, LightY);
+            
             var dir = new Vector3(-1, -1, -1).normalized;
             var ray = new Ray(start, dir);
             RaycastHit hit;
@@ -122,19 +112,17 @@ namespace FarmVox
             {
                 return GetCoord(hit, dir).y;
             }
-            else
-            {
-                return minY;
-            }
+
+            return MinY;
         }
 
-        Vector3Int liftVector(Vector3Int coord, int height)
+        static Vector3Int LiftVector(Vector3Int coord, int height)
         {
             var diff = height - coord.y;
             return new Vector3Int(coord.x + diff, coord.y + diff, coord.z + diff);
         }
 
-        Vector3Int GetCoord(RaycastHit hit, Vector3 dir)
+        private static Vector3Int GetCoord(RaycastHit hit, Vector3 dir)
         {
             var point = hit.point + dir * 0.1f;
             return new Vector3Int(Mathf.FloorToInt(point.x),
@@ -144,24 +132,21 @@ namespace FarmVox
 
         public void Dispose()
         {
-            foreach (var buffer in buffers.Values)
+            foreach (var buffer in _buffers.Values)
             {
                 buffer.Dispose();
             }
-            if (defaultBuffer != null)
+            if (_defaultBuffer != null)
             {
-                defaultBuffer.Dispose();
+                _defaultBuffer.Dispose();
             }
         }
 
-        ComputeBuffer defaultBuffer;
-        ComputeBuffer GetDefaultBuffer()
+        private ComputeBuffer _defaultBuffer;
+
+        private ComputeBuffer GetDefaultBuffer()
         {
-            if (defaultBuffer == null)
-            {
-                defaultBuffer = new ComputeBuffer(dataSize * dataSize, sizeof(int));
-            }
-            return defaultBuffer;
+            return _defaultBuffer ?? (_defaultBuffer = new ComputeBuffer(DataSize * DataSize, sizeof(int)));
         }
 
         public ComputeBuffer GetBuffer(Vector3Int origin, Vector2Int offset)
@@ -171,29 +156,24 @@ namespace FarmVox
                 throw new System.ArgumentException("offset must be within 0 - 2");
             }
             var y = origin.y;
-            var o = new Vector2Int(origin.x - y, origin.z - y) - offset * size;
+            var o = new Vector2Int(origin.x - y, origin.z - y) - offset * Size;
 
-            if (buffers.ContainsKey(o))
-            {
-                return buffers[o];
-            }
-
-            return GetDefaultBuffer();
+            return _buffers.ContainsKey(o) ? _buffers[o] : GetDefaultBuffer();
         }
 
         public int[] ReadShadowBuffer(ComputeBuffer buffer)
         {
-            var data = new int[dataSize * dataSize];
+            var data = new int[DataSize * DataSize];
             buffer.GetData(data);
             return data;
         }
 
         public void Rebuild() {
-            var keys = new Vector2Int[states.Keys.Count];
-            states.Keys.CopyTo(keys, 0);
+            var keys = new Vector2Int[_states.Keys.Count];
+            _states.Keys.CopyTo(keys, 0);
 
             foreach (var key in keys) {
-                states[key] = ShadowMapState.Pending;
+                _states[key] = ShadowMapState.Pending;
             }
 
             Update();
@@ -205,8 +185,8 @@ namespace FarmVox
             material.SetBuffer("_ShadowMap01", GetBuffer(origin, new Vector2Int(0, 1)));
             material.SetBuffer("_ShadowMap10", GetBuffer(origin, new Vector2Int(1, 0)));
             material.SetBuffer("_ShadowMap11", GetBuffer(origin, new Vector2Int(1, 1)));
-            material.SetInt("_ShadowMapSize", dataSize);
-            material.SetFloat("_ShadowStrength", TerrianConfig.Instance.ShadowStrength);
+            material.SetInt("_ShadowMapSize", DataSize);
+            material.SetFloat("_ShadowStrength", _config.ShadowStrength);
         }
     }
 }
