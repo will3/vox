@@ -48,7 +48,7 @@ namespace FarmVox
             Destroy(_meshFilter.mesh);
             _meshRenderer.enabled = true;
             var meshBuilder = new CubeMeshBuilder();
-            foreach (var tileCoord in HoveredTile.Coords.Values)
+            foreach (var tileCoord in HoveredTile.Coords)
             {
                 meshBuilder.AddQuad(Axis.Y, true, tileCoord);
             }

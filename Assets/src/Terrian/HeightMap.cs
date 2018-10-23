@@ -6,8 +6,8 @@ namespace FarmVox
 {
     public class HeightMap
     {
-        readonly Dictionary<Vector3Int, Tile> _tiles = new Dictionary<Vector3Int, Tile>();
-
+        readonly Dictionary<Vector2Int, Tile> _tiles = new Dictionary<Vector2Int, Tile>();
+        
         public void LoadChunk(Terrian terrian, TerrianChunk terrianChunk)
         {
             var chunk = terrian.DefaultLayer.GetChunk(terrianChunk.Origin);
@@ -38,12 +38,11 @@ namespace FarmVox
             return tile;
         }
 
-        const int TileSize = 7;
+        private const int TileSize = 6;
         
-        static Vector3Int GetTileOrigin(Vector3Int coord) {
-            var origin = new Vector3Int(
+        static Vector2Int GetTileOrigin(Vector3Int coord) {
+            var origin = new Vector2Int(
                 Mathf.FloorToInt(coord.x / (float)TileSize) * TileSize,
-                Mathf.FloorToInt(coord.y / (float)TileSize) * TileSize,
                 Mathf.FloorToInt(coord.z / (float)TileSize) * TileSize
             );
 
@@ -64,61 +63,81 @@ namespace FarmVox
 
         public class Tile
         {
-            private Vector3Int _origin;
+            private Vector2Int _origin;
             public readonly int Size;
             
-            public Tile(Vector3Int origin, int size)
+            public Tile(Vector2Int origin, int size)
             {
                 _origin = origin;
                 Size = size;
             }
 
-            // There's a bug here, 2 coords can share the same xz
-            public readonly Dictionary<Vector2Int, Vector3Int> Coords = new Dictionary<Vector2Int, Vector3Int>();
+            public readonly HashSet<Vector3Int> Coords = new HashSet<Vector3Int>();
 
-            public Vector3Int Center { get; private set; }
+            public Vector3Int? Center { get; private set; }
             public bool CanBuild { get; private set; }
 
             public void AddCoord(Vector3Int coord)
             {
-                Coords[new Vector2Int(coord.x, coord.z)] = coord;
+                Coords.Add(coord);
             }
 
             public void Update()
             {
-                var minY = Mathf.Infinity;
-                var maxY = -Mathf.Infinity;
-                
-                for (var i = 0; i < Size; i++)
+                CanBuild = true;
+
+                var halfSize = Mathf.CeilToInt(Size / 2.0f);
+
+                // Find center
+                Center = null;
+                foreach (var coord in Coords)
                 {
-                    for (var j = 0; j < Size; j++)
+                    if (coord.x == _origin.x + halfSize &&
+                        coord.z == _origin.y + halfSize)
                     {
-                        var coord = new Vector2Int(_origin.x + i, _origin.z + j);
-                        if (!Coords.ContainsKey(coord))
-                        {
-                            CanBuild = false;
-                            break;
-                        }
-
-                        var pos = Coords[coord];
-                        if (pos.y < minY)
-                        {
-                            minY = pos.y;
-                        }
-
-                        if (pos.y > maxY)
-                        {
-                            maxY = pos.y;
-                        }
-                    }
+                        Center = coord;
+                        break;
+                    } 
                 }
-
-                CanBuild = maxY - minY <= 2;
-
-                var centerXz = new Vector2Int(
-                    _origin.x + Mathf.CeilToInt(Size / 2.0f), 
-                    _origin.z + Mathf.CeilToInt(Size / 2.0f));
-                Center = Coords[centerXz];
+                
+//                var minY = Mathf.Infinity;
+//                var maxY = -Mathf.Infinity;
+//
+//                var hasAllCoords = true;
+//                for (var i = 0; i < Size; i++)
+//                {
+//                    for (var j = 0; j < Size; j++)
+//                    {
+//                        var coord = new Vector2Int(_origin.x + i, _origin.z + j);
+//                        if (!Coords.ContainsKey(coord))
+//                        {
+//                            hasAllCoords = false;
+//                            continue;
+//                        }
+//
+//                        var pos = Coords[coord];
+//                        if (pos.y < minY)
+//                        {
+//                            minY = pos.y;
+//                        }
+//
+//                        if (pos.y > maxY)
+//                        {
+//                            maxY = pos.y;
+//                        }
+//                    }
+//                }
+//
+//                CanBuild = hasAllCoords; // && maxY - minY <= 2;
+//
+//                var centerXz = new Vector2Int(
+//                    _origin.x + Mathf.CeilToInt(Size / 2.0f), 
+//                    _origin.z + Mathf.CeilToInt(Size / 2.0f));
+//
+//                if (Coords.ContainsKey(centerXz))
+//                {
+//                    Center = Coords[centerXz];    
+//                }
             }
         }
     }

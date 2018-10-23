@@ -23,7 +23,13 @@ public class Commander : MonoBehaviour
             if (tile.CanBuild)
             {
                 var go = new GameObject();
+
+//                var building = BuildingFactory.GetHouse();
+                var building = BuildingFactory.GetWall();
+                building.Tile = tile;
                 
+                var houseScript = go.AddComponent<BuildingScript>();
+                houseScript.Building = building;
             }
         }
     }

@@ -49,14 +49,15 @@ namespace FarmVox
         {
             var chunks = chunk.Chunks;
             
-            using (var mesher = new MesherGpu(Size))
+            using (var mesher = new MesherGpu(Size, chunk.DataSize))
             {
                 mesher.UseNormals = chunks.UseNormals;
                 mesher.IsWater = chunks.IsWater;
-
+                mesher.NormalStrength = chunk.Chunks.NormalStrength;
+                
                 mesher.SetData(chunk.Data);
                 mesher.SetColors(chunk.Colors);
-
+                
                 mesher.Dispatch();
             
                 var triangles = mesher.ReadTriangles();

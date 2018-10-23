@@ -10,7 +10,7 @@ namespace FarmVox
 
         public Mesh Mesh(Building building)
         {
-            var key = building.Name + building.Variation;
+            var key = building.ModelName;
             if (_meshes.ContainsKey(key))
             {
                 return _meshes[key];
@@ -24,18 +24,19 @@ namespace FarmVox
         {
             var model = VoxLoader.Load(building.Name);
             
-            var modelSize = model.Size;
-            var size = Mathf.Max(modelSize.x, modelSize.y, modelSize.z);
-            using (var mesher = new MesherGpu(size))
+            // var modelSize = model.Size;
+            // var size = Mathf.Max(modelSize.x, modelSize.y, modelSize.z);
+            var size = 32;
+            using (var mesher = new MesherGpu(size, size))
             {
                 var data = new float[size * size * size];
                 var colors = new Color[size * size * size];
 
                 foreach (var voxel in model.Voxels)
                 {
-                    var index = voxel.X * size * size + voxel.Y * size + voxel.Z;
+                    var index = (voxel.X + 1) * size * size + (voxel.Y + 1) * size + (voxel.Z + 1);
                     data[index] = 1.0f;
-                    colors[index] = model.Palette[voxel.ColorIndex];
+                    colors[index] = model.Palette[voxel.ColorIndex - 1];
                 }
                 
                 mesher.SetData(data);

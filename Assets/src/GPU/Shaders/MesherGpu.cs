@@ -46,10 +46,10 @@ namespace FarmVox
 
         public float NormalStrength = 0.0f;
         
-        public MesherGpu(int size)
+        public MesherGpu(int size, int dataSize)
         {
             _size = size;
-            _dataSize = size + 3;
+            _dataSize = dataSize;
             _shader = Resources.Load<ComputeShader>("Shaders/Mesher");
 
             trianglesBuffer =

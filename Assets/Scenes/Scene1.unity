@@ -204,7 +204,7 @@ Camera:
   far clip plane: 1000
   field of view: 30
   orthographic: 1
-  orthographic size: 80
+  orthographic size: 100
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -244,7 +244,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d0a2114e5d4245bbb819c8a479f50cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotateX: 45
+  Target: {x: 0, y: 32, z: 0}
+  Speed: 20
+  RotateSpeed: 80
+  Velocity: {x: 0, y: 0, z: 0}
+  Friction: 0.001
+  ZoomRate: 1.1
+  MouseRotateSpeed: 0.2
+  RotateX: 45
+  Rotation: {x: 45, y: 45, z: 0}
+  Distance: 400
 --- !u!114 &534669907
 MonoBehaviour:
   m_ObjectHideFlags: 0

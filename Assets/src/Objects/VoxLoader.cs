@@ -35,11 +35,18 @@ namespace FarmVox
                         var chunkContent = (Vox.Xyzi)chunk.ChunkContent;
                         foreach (var voxel in chunkContent.Voxels)
                         {
-                            voxelModel.Voxels.Add(voxel);
+                            var v = new VoxelModel.Voxel
+                            {
+                                X = voxel.X,
+                                Y = voxel.Z,
+                                Z = voxel.Y,
+                                ColorIndex = voxel.ColorIndex
+                            };
+                            voxelModel.Voxels.Add(v);
                         }
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        break;
                 }
             }
 

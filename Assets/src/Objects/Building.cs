@@ -6,13 +6,10 @@ namespace FarmVox
     {
         public string Name { get; set; }
 
-        public int Variation = 0;
+        public string ModelName { get; set; }
+
+        public HeightMap.Tile Tile { get; set; }
         
-//        public readonly VoxelModel Model;  
-//        public Building(string name)
-//        {
-//            Model = VoxLoader.LoadData("house");
-//            Model.Offset = new Vector3Int(-3, 0, -3);
-//        }
+        public Vector3Int Offset { get; set; }
     }
 }
