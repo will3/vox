@@ -1,43 +1,60 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 namespace FarmVox
 {
     public class HighlightBuildingGrid : MonoBehaviour
     {
-        // Use this for initialization
-        void Start()
+        public HeightMap.Tile HoveredTile;
+        private HeightMap.Tile _lastDrawnTile;
+        private MeshFilter _meshFilter;
+        private MeshRenderer _meshRenderer;
+
+        private void Start()
         {
-
+            
+            _meshFilter = gameObject.AddComponent<MeshFilter>();
+            _meshRenderer = gameObject.AddComponent<MeshRenderer>();    
         }
-
+        
         // Update is called once per frame
-        void Update()
+        public void Update()
         {
             var result = VoxelRaycast.TraceMouse(1 << UserLayers.Terrian);
-            if (result != null) {
-                var coord = result.GetCoord();
+            if (result == null)
+            {
+                HoveredTile = null;
+                _meshRenderer.enabled = false;
+                return;
+            } 
+            
+            var coord = result.GetCoord();
 
-                var tile = Finder.FindTerrian().heightMap.GetTile(coord);
-                if (tile == null || !tile.CanBuild()) {
-                    // Hide object
-                } else {
-                    // Show object
-                    var go = new GameObject();
-                    var meshFilter = go.AddComponent<MeshFilter>();
-                    var meshRenderer = go.AddComponent<MeshRenderer>();
-                    
-                    var meshBuilder = new CubeMeshBuilder();
-                    foreach (var tileCoord in tile.Coords.Values)
-                    {
-                        meshBuilder.AddQuad(Axis.Y, true, tileCoord);
-                    }
+            HoveredTile = Finder.FindTerrian().heightMap.GetTile(coord);
 
-                    meshFilter.mesh = meshBuilder.Build();
-                    
-                    // go.transform.position = coord + result.hit.normal * 0.1f;
-                }
+            if (HoveredTile == null)
+            {
+                _meshRenderer.enabled = false;
+                return;
             }
+            
+            if (!HoveredTile.CanBuild) {
+                _meshRenderer.enabled = false;
+                return;
+            } 
+            
+            // Update mesh
+            if (HoveredTile == _lastDrawnTile) return;
+            
+            Destroy(_meshFilter.mesh);
+            _meshRenderer.enabled = true;
+            var meshBuilder = new CubeMeshBuilder();
+            foreach (var tileCoord in HoveredTile.Coords.Values)
+            {
+                meshBuilder.AddQuad(Axis.Y, true, tileCoord);
+            }
+
+            _meshFilter.mesh = meshBuilder.Build();
+            _lastDrawnTile = HoveredTile;
         }
     }
 }

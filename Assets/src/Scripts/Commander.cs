@@ -5,20 +5,25 @@ public class Commander : MonoBehaviour
 {
     HighlightHoveredSurface highlight;
 
+    HighlightBuildingGrid highlightBuildingGrid;
+    
     // Use this for initialization
     void Start()
     {
-
+        var go = new GameObject();
+        highlightBuildingGrid = go.AddComponent<HighlightBuildingGrid>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse0)) {
-            var result = VoxelRaycast.TraceMouse(1 << UserLayers.Terrian);
-            if (result != null) {
-                var house = new House();
-                house.Add(Finder.FindTerrian().BuildingLayer, result.GetCoord());
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            var tile = highlightBuildingGrid.HoveredTile; 
+            if (tile.CanBuild)
+            {
+                var house = new Building("house");
+                
             }
         }
     }
