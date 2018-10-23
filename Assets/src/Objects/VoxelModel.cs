@@ -7,8 +7,12 @@ namespace FarmVox
 {
     public class VoxelModel
     {
-        public Vector3Int Offset { get; private set; }
+        public Vector3Int Offset { get; set; }
+        
         public readonly List<Vox.Voxel> Voxels = new List<Vox.Voxel>();
+        
+        public Vector3Int Size { get; set; }
+        
         public readonly List<Color> Palette = new List<Color> {
             Colors.GetColor("#654f30"),
             Colors.GetColor("#705836"),
@@ -16,11 +20,5 @@ namespace FarmVox
             Colors.GetColor("#4d4232"),
             Colors.GetColor("#676767")
         };
-        
-        public VoxelModel(string name, Vector3Int offset) {
-            Offset = offset;
-            var data = Vox.FromFile(Application.dataPath + "/Resources/vox/" + name + ".vox");
-            VoxLoader.LoadData(data, Voxels);
-        }
     }
 }

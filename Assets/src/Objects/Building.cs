@@ -8,7 +8,8 @@ namespace FarmVox
         
         public Building(string name)
         {
-            Model = new VoxelModel("house", new Vector3Int(-3, 0, -3));
+            Model = VoxLoader.LoadData("house");
+            Model.Offset = new Vector3Int(-3, 0, -3);
         }
     }
 }

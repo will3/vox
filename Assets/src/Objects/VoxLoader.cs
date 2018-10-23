@@ -1,12 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using Kaitai;
+using UnityEngine;
 
 namespace FarmVox
 {
     static class VoxLoader
     {
-        public static void LoadData(Vox data, List<Vox.Voxel> voxels) {
+        public static VoxelModel LoadData(string name) {
+            
+            var data = Vox.FromFile(Application.dataPath + "/Resources/vox/" + name + ".vox");
+            
+            var voxelModel = new VoxelModel();
+            
+            voxelModel.Voxels.Clear();
+            
             foreach (var chunk in data.Main.ChildrenChunks)
             {
                 switch (chunk.ChunkId)
@@ -21,18 +29,21 @@ namespace FarmVox
                         break;
                     case Vox.ChunkType.Size:
                         var size = (Vox.Size)chunk.ChunkContent;
+                        voxelModel.Size = new Vector3Int((int)size.SizeX, (int)size.SizeY, (int)size.SizeZ);
                         break;
                     case Vox.ChunkType.Xyzi:
-                        var xyzi = (Vox.Xyzi)chunk.ChunkContent;
-                        foreach (var voxel in xyzi.Voxels)
+                        var chunkContent = (Vox.Xyzi)chunk.ChunkContent;
+                        foreach (var voxel in chunkContent.Voxels)
                         {
-                            voxels.Add(voxel);
+                            voxelModel.Voxels.Add(voxel);
                         }
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
             }
+
+            return voxelModel;
         }
     }
 }
