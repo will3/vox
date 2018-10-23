@@ -24,25 +24,25 @@ namespace FarmVox
 
         public Mesh GetQuad()
         {
-            int d = 0;
+            Axis d = Axis.X;
             var front = false;
             if (Mathf.Abs(hit.normal.x) > Mathf.Epsilon)
             {
-                d = 0;
+                d = Axis.X;
                 front = hit.normal.x > 0;
             }
             else if (Mathf.Abs(hit.normal.y) > Mathf.Epsilon)
             {
-                d = 1;
+                d = Axis.Y;
                 front = hit.normal.y > 0;
             }
             else if (Mathf.Abs(hit.normal.z) > Mathf.Epsilon)
             {
-                d = 2;
+                d = Axis.Z;
                 front = hit.normal.z > 0;
             }
 
-            return CubeMesh.GetQuad(d, front);
+            return new CubeMeshBuilder().AddQuad(d, front, new Vector3()).Build();
         }
 
         public int FindNoneDefaultLayer()

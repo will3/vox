@@ -24,10 +24,18 @@ namespace FarmVox
                 } else {
                     // Show object
                     var go = new GameObject();
-                    var meshFitler = go.AddComponent<MeshFilter>();
+                    var meshFilter = go.AddComponent<MeshFilter>();
                     var meshRenderer = go.AddComponent<MeshRenderer>();
-                    meshFitler.mesh = CubeMesh.GetTopQuad();
-                    go.transform.position = coord + result.hit.normal * 0.1f;
+                    
+                    var meshBuilder = new CubeMeshBuilder();
+                    foreach (var tileCoord in tile.Coords.Values)
+                    {
+                        meshBuilder.AddQuad(Axis.Y, true, tileCoord);
+                    }
+
+                    meshFilter.mesh = meshBuilder.Build();
+                    
+                    // go.transform.position = coord + result.hit.normal * 0.1f;
                 }
             }
         }

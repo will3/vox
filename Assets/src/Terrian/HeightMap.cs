@@ -61,18 +61,18 @@ namespace FarmVox
                 _origin = origin;
             }
 
-            // There's a bug here, 2 coords can be in the same cube
-            private readonly Dictionary<Vector2Int, Vector3Int> _coords = new Dictionary<Vector2Int, Vector3Int>();
+            // There's a bug here, 2 coords can share the same xz
+            public readonly Dictionary<Vector2Int, Vector3Int> Coords = new Dictionary<Vector2Int, Vector3Int>();
 
             public void AddCoord(Vector3Int coord)
             {
-                _coords[new Vector2Int(coord.x, coord.z)] = coord;
+                Coords[new Vector2Int(coord.x, coord.z)] = coord;
             }
 
             public bool CanBuild() {
                 var minY = Mathf.Infinity;
                 var maxY = -Mathf.Infinity;
-                foreach(var value in _coords.Values) {
+                foreach(var value in Coords.Values) {
                     if (value.y > maxY) {
                         maxY = value.y;
                     }

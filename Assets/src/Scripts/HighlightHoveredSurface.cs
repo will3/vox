@@ -37,7 +37,7 @@ public class HighlightHoveredSurface : MonoBehaviour
             var mesh = result.GetQuad();
             var pos = result.GetCoord();
             go.GetComponent<MeshFilter>().mesh = mesh;
-            go.transform.position = pos + result.hit.normal * 0.1f;
+            // go.transform.position = pos + result.hit.normal * 0.1f;
         }
 	}
 }
