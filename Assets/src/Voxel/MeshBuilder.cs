@@ -5,30 +5,52 @@ namespace FarmVox
 {
     internal class MeshBuilder
     {
-        public readonly List<Vector3> Vertices = new List<Vector3>();
-        public readonly List<Color> Colors = new List<Color>();
-        public readonly List<Vector2> Uvs = new List<Vector2>();
-        public readonly List<int> Indices = new List<int>();
+        private readonly List<Vector3> _vertices = new List<Vector3>();
+        private readonly List<Color> _colors = new List<Color>();
+        private readonly List<Vector2> _uvs = new List<Vector2>();
+        private readonly List<int> _indices = new List<int>();
 
-        public void AddTriangle(MesherGpu.Triangle triangle)
+        public MeshBuilder AddTriangle(MesherGpu.Triangle triangle)
         {
-            var i = Vertices.Count / 3;
+            var i = _vertices.Count / 3;
 
-            Vertices.Add(triangle.A);
-            Vertices.Add(triangle.B);
-            Vertices.Add(triangle.C);
+            _vertices.Add(triangle.A);
+            _vertices.Add(triangle.B);
+            _vertices.Add(triangle.C);
 
-            Indices.Add(i * 3);
-            Indices.Add(i * 3 + 1);
-            Indices.Add(i * 3 + 2);
+            _indices.Add(i * 3);
+            _indices.Add(i * 3 + 1);
+            _indices.Add(i * 3 + 2);
 
-            Colors.Add(triangle.ColorA);
-            Colors.Add(triangle.ColorB);
-            Colors.Add(triangle.ColorC);
+            _colors.Add(triangle.ColorA);
+            _colors.Add(triangle.ColorB);
+            _colors.Add(triangle.ColorC);
 
-            Uvs.Add(new Vector2(0, triangle.Index));
-            Uvs.Add(new Vector2(0, triangle.Index));
-            Uvs.Add(new Vector2(0, triangle.Index));
+            _uvs.Add(new Vector2(0, triangle.Index));
+            _uvs.Add(new Vector2(0, triangle.Index));
+            _uvs.Add(new Vector2(0, triangle.Index));
+            
+            return this;
+        }
+
+        public MeshBuilder AddTriangles(IEnumerable<MesherGpu.Triangle> triangles)
+        {
+            foreach (var triangle in triangles)
+            {
+                AddTriangle(triangle);
+            }
+
+            return this;
+        }
+
+        public Mesh Build()
+        {
+            var mesh = new Mesh();
+            mesh.SetVertices(_vertices);
+            mesh.SetTriangles(_indices, 0);
+            mesh.SetColors(_colors);
+            mesh.uv = _uvs.ToArray();
+            return mesh;
         }
     }
 }

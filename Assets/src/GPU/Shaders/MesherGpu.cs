@@ -58,7 +58,7 @@ namespace FarmVox
             return new ComputeBuffer(_dataSize * _dataSize * _dataSize, sizeof(float) * 4);
         }
 
-        public void Dispatch(ComputeBuffer voxelBuffer, ComputeBuffer colorsBuffer, ComputeBuffer trianglesBuffer, TerrianChunk terrianChunk, Chunk chunk)
+        public void Dispatch(ComputeBuffer voxelBuffer, ComputeBuffer colorsBuffer, ComputeBuffer trianglesBuffer, Chunk chunk)
         {
             _shader.SetInt("_DataSize", _dataSize);
             _shader.SetBuffer(0, "_VoxelBuffer", voxelBuffer);
