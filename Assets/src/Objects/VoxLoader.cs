@@ -7,7 +7,7 @@ namespace FarmVox
 {
     static class VoxLoader
     {
-        public static VoxelModel LoadData(string name) {
+        public static VoxelModel Load(string name) {
             
             var data = Vox.FromFile(Application.dataPath + "/Resources/vox/" + name + ".vox");
             

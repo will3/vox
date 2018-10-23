@@ -4,12 +4,15 @@ namespace FarmVox
 {
     public class Building
     {
-        public readonly VoxelModel Model;
+        public string Name { get; set; }
+
+        public int Variation = 0;
         
-        public Building(string name)
-        {
-            Model = VoxLoader.LoadData("house");
-            Model.Offset = new Vector3Int(-3, 0, -3);
-        }
+//        public readonly VoxelModel Model;  
+//        public Building(string name)
+//        {
+//            Model = VoxLoader.LoadData("house");
+//            Model.Offset = new Vector3Int(-3, 0, -3);
+//        }
     }
 }

@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace FarmVox
 {
-    public class MesherGpu
+    public class MesherGpu : IDisposable
     {
         public struct Triangle
         {
@@ -39,26 +40,25 @@ namespace FarmVox
         public bool UseNormals = true;
         public bool IsWater = false;
 
+        private ComputeBuffer voxelBuffer;
+        private ComputeBuffer colorsBuffer;
+        private ComputeBuffer trianglesBuffer;
+
+        public float NormalStrength = 0.0f;
+        
         public MesherGpu(int size)
         {
-            this._size = size;
+            _size = size;
             _dataSize = size + 3;
             _shader = Resources.Load<ComputeShader>("Shaders/Mesher");
+
+            trianglesBuffer =
+                new ComputeBuffer(_dataSize * _dataSize * _dataSize, Triangle.Size, ComputeBufferType.Append);
+            voxelBuffer = new ComputeBuffer(_dataSize * _dataSize * _dataSize, sizeof(float) * 3);
+            colorsBuffer = new ComputeBuffer(_dataSize * _dataSize * _dataSize, sizeof(float) * 4);
         }
 
-        public ComputeBuffer CreateTrianglesBuffer() {
-            return new ComputeBuffer(_dataSize * _dataSize * _dataSize, Triangle.Size, ComputeBufferType.Append);
-        }
-
-        public ComputeBuffer CreateVoxelBuffer() {
-            return new ComputeBuffer(_dataSize * _dataSize * _dataSize, sizeof(float) * 3);
-        }
-
-        public ComputeBuffer CreateColorBuffer() {
-            return new ComputeBuffer(_dataSize * _dataSize * _dataSize, sizeof(float) * 4);
-        }
-
-        public void Dispatch(ComputeBuffer voxelBuffer, ComputeBuffer colorsBuffer, ComputeBuffer trianglesBuffer, Chunk chunk)
+        public void Dispatch()
         {
             _shader.SetInt("_DataSize", _dataSize);
             _shader.SetBuffer(0, "_VoxelBuffer", voxelBuffer);
@@ -69,20 +69,37 @@ namespace FarmVox
             _shader.SetFloat("_NormalBanding", NormalBanding);
             _shader.SetInt("_UseNormals", UseNormals ? 1 : 0);
             _shader.SetInt("_IsWater", IsWater ? 1 : 0);
-            _shader.SetFloat("_NormalStrength", chunk.Chunks.NormalStrength);
+            _shader.SetFloat("_NormalStrength", NormalStrength);
             _shader.SetFloat("_AoStrength", TerrianConfig.Instance.AoStrength);
 
-            var disptachNumber = Mathf.CeilToInt(_dataSize / (float)_workGroups);
-            _shader.Dispatch(0, 3 * disptachNumber, disptachNumber, disptachNumber);
+            var dispatchNumber = Mathf.CeilToInt(_dataSize / (float)_workGroups);
+            _shader.Dispatch(0, 3 * dispatchNumber, dispatchNumber, dispatchNumber);
         }
 
-        public Triangle[] ReadTriangles(ComputeBuffer trianglesBuffer) {
+        public Triangle[] ReadTriangles() {
             var count = AppendBufferCounter.Count(trianglesBuffer);
             var triangles = new Triangle[count];
 
             trianglesBuffer.GetData(triangles);
 
             return triangles;
+        }
+
+        public void SetData(float[] data)
+        {
+            voxelBuffer.SetData(data);
+        }
+
+        public void SetColors(Color[] colors)
+        {
+            colorsBuffer.SetData(colors);
+        }
+
+        public void Dispose()
+        {
+            if (voxelBuffer != null) voxelBuffer.Dispose();
+            if (colorsBuffer != null) colorsBuffer.Dispose();
+            if (trianglesBuffer != null) trianglesBuffer.Dispose();
         }
     }
 }

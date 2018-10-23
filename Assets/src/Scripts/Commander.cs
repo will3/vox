@@ -22,7 +22,7 @@ public class Commander : MonoBehaviour
             var tile = highlightBuildingGrid.HoveredTile; 
             if (tile.CanBuild)
             {
-                var house = new Building("house");
+                var go = new GameObject();
                 
             }
         }
