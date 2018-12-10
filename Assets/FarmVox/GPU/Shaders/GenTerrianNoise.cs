@@ -1,4 +1,4 @@
-﻿namespace FarmVox
+﻿namespace FarmVox.GPU.Shaders
 {
     struct GenTerrianNoise
     {

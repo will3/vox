@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using FarmVox.Scripts;
+using UnityEngine;
 
 namespace FarmVox
 {
@@ -9,7 +10,7 @@ namespace FarmVox
             return go == null ? null : go.GetComponent<GameController>();
         }
 
-        public static Terrian FindTerrian() {
+        public static Terrain.Terrian FindTerrian() {
             var gc = FindGameController();
             return gc == null ? null : gc.Terrian;
         }

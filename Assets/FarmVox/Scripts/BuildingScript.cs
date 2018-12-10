@@ -1,6 +1,7 @@
+using FarmVox.Objects;
 using UnityEngine;
 
-namespace FarmVox
+namespace FarmVox.Scripts
 {
     public class BuildingScript : MonoBehaviour
     {

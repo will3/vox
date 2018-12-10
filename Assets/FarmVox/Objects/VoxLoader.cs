@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Kaitai;
+﻿using Kaitai;
 using UnityEngine;
 
-namespace FarmVox
+namespace FarmVox.Objects
 {
     static class VoxLoader
     {

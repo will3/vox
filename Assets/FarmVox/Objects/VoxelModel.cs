@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using Kaitai;
+using FarmVox.Terrain;
 using UnityEngine;
-using Application = UnityEngine.Application;
 
-namespace FarmVox
+namespace FarmVox.Objects
 {
     public class VoxelModel
     {

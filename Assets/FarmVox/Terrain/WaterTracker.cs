@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
+using FarmVox.Voxel;
 using UnityEngine;
 
-namespace FarmVox
+namespace FarmVox.Terrain
 {
     class WaterTracker
     {

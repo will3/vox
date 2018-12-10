@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace FarmVox
+namespace FarmVox.GPU
 {
     public static class AppendBufferCounter
     {

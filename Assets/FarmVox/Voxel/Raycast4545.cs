@@ -1,7 +1,7 @@
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 
-namespace FarmVox
+namespace FarmVox.Voxel
 {
     public static class Raycast4545
     {

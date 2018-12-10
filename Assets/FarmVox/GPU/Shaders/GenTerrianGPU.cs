@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using FarmVox.Terrain;
 using UnityEngine;
 
-namespace FarmVox
+namespace FarmVox.GPU.Shaders
 {
     public class GenTerrianGpu
     {

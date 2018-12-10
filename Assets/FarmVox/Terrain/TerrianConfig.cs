@@ -4,7 +4,7 @@ using LibNoise.Generator;
 using UnityEngine;
 using Random = System.Random;
 
-namespace FarmVox
+namespace FarmVox.Terrain
 {
     [Serializable]
     public class TerrianConfig

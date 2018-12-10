@@ -1,6 +1,8 @@
+using FarmVox.Terrain;
+using FarmVox.Voxel;
 using UnityEngine;
 
-namespace FarmVox
+namespace FarmVox.Objects
 {
     public class Maple {
         readonly float size;
@@ -11,7 +13,7 @@ namespace FarmVox
             this.trunkHeight = trunkHeight;
         }
 
-        public void Place(Terrian terrian, Chunks layer, Vector3Int position, TerrianConfig config) {
+        public void Place(Terrain.Terrian terrian, Chunks layer, Vector3Int position, TerrianConfig config) {
             var height = trunkHeight + size;
             var centerX = Mathf.FloorToInt(size / 2);
             var offset = new Vector3Int(centerX - 1, 0, centerX - 1);

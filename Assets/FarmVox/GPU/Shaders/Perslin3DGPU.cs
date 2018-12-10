@@ -1,7 +1,7 @@
-using UnityEngine;
 using System;
+using UnityEngine;
 
-namespace FarmVox
+namespace FarmVox.GPU.Shaders
 {
     public class Perlin3DGPU : IDisposable
     {

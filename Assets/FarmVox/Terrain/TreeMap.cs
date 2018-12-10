@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace FarmVox
+namespace FarmVox.Terrain
 {
     public class Tree
     {

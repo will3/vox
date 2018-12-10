@@ -1,4 +1,4 @@
-﻿namespace FarmVox
+﻿namespace FarmVox.Voxel
 {
     public enum Axis
     {

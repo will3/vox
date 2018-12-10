@@ -1,7 +1,8 @@
 ﻿using System;
+using FarmVox.Terrain;
 using UnityEngine;
 
-namespace FarmVox
+namespace FarmVox.GPU.Shaders
 {
     public class MesherGpu : IDisposable
     {

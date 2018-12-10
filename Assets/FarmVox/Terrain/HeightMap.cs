@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Xml.Xsl;
 using UnityEngine;
 
-namespace FarmVox
+namespace FarmVox.Terrain
 {
     public class HeightMap
     {

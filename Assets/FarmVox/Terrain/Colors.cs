@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using FarmVox.GPU;
 using UnityEngine;
 
-namespace FarmVox
+namespace FarmVox.Terrain
 {
     [Serializable]
     public class Colors

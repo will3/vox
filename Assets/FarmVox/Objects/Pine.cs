@@ -1,8 +1,10 @@
-using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
+using FarmVox.Terrain;
+using FarmVox.Voxel;
+using UnityEngine;
+using Tree = FarmVox.Terrain.Tree;
 
-namespace FarmVox
+namespace FarmVox.Objects
 {
     public class Pine
     {
@@ -21,7 +23,7 @@ namespace FarmVox
             offset = new Vector3Int(-radius, 0, -radius);
         }
 
-        public Tree Place(Terrian terrian, Chunks layer, Vector3Int position, TerrianConfig config)
+        public Tree Place(Terrain.Terrian terrian, Chunks layer, Vector3Int position, TerrianConfig config)
         {
             int radius = Mathf.CeilToInt(r);
             int mid = radius + 1;

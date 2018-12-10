@@ -1,9 +1,7 @@
-using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using UnityEngine;
 
-namespace FarmVox
+namespace FarmVox.Terrain
 {
     class TerrianChunkBuildGrid {
 
@@ -27,7 +25,7 @@ namespace FarmVox
         public bool waterfallsNeedsUpdate = true;
         public TerrianColumn column;
 
-        Terrian terrian;
+        Terrain.Terrian terrian;
 
         Vector3Int origin;
 
@@ -41,7 +39,7 @@ namespace FarmVox
 
         int size;
 
-        public TerrianChunk(Vector3Int key, int size, Terrian terrian)
+        public TerrianChunk(Vector3Int key, int size, Terrain.Terrian terrian)
         {
             this.key = key;
             origin = key * size;

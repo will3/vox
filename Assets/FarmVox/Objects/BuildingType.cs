@@ -1,4 +1,4 @@
-﻿namespace FarmVox
+﻿namespace FarmVox.Objects
 {
     public static class BuildingType
     {

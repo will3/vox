@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using FarmVox.GPU.Shaders;
+using FarmVox.Voxel;
 using UnityEngine;
-using UnityEngine.Experimental.UIElements;
 
-namespace FarmVox
+namespace FarmVox.Objects
 {
     public class BuildingMesher
     {   

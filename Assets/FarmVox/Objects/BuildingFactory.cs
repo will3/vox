@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace FarmVox
+namespace FarmVox.Objects
 {
     public static class BuildingFactory
     {

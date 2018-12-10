@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace FarmVox
+namespace FarmVox.Voxel
 {
     public class VoxelRaycastResult
     {

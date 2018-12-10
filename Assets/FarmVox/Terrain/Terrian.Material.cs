@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace FarmVox
+namespace FarmVox.Terrain
 {
     public partial class Terrian
     {

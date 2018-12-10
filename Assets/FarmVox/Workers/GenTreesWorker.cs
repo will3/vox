@@ -1,7 +1,10 @@
-﻿using FarmVox.Threading;
+﻿using FarmVox.Objects;
+using FarmVox.Terrain;
+using FarmVox.Threading;
+using FarmVox.Voxel;
 using UnityEngine;
 
-namespace FarmVox
+namespace FarmVox.Workers
 {
     public class GenTreesWorker : Worker
     {
@@ -9,11 +12,11 @@ namespace FarmVox
         private readonly TerrianChunk _terrianChunk;
         private readonly Chunks _defaultLayer;
         private readonly Chunks _treeLayer;
-        private readonly Terrian _terrian;
+        private readonly Terrain.Terrian _terrian;
         private readonly TreeMap _treeMap;
 
         public GenTreesWorker(TerrianConfig config, TerrianChunk terrianChunk, Chunks defaultLayer, Chunks treeLayer,
-            Terrian terrian, TreeMap treeMap)
+            Terrain.Terrian terrian, TreeMap treeMap)
         {
             _config = config;
             _terrianChunk = terrianChunk;

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace FarmVox
+namespace FarmVox.GPU
 {
     internal class ColorGradientBuffers : System.IDisposable
     {

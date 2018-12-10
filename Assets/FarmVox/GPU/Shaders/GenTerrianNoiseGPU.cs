@@ -1,7 +1,8 @@
-﻿using UnityEngine;
+﻿using FarmVox.Terrain;
+using UnityEngine;
 using IDisposable = System.IDisposable;
 
-namespace FarmVox
+namespace FarmVox.GPU.Shaders
 {
     public class GenTerrianNoiseGpu : IDisposable
     {

@@ -1,7 +1,8 @@
-using UnityEngine;
 using System.Collections.Generic;
+using FarmVox.Terrain;
+using UnityEngine;
 
-namespace FarmVox
+namespace FarmVox.Voxel
 {
     public class VoxelShadowMap
     {

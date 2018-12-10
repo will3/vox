@@ -1,7 +1,8 @@
-﻿using UnityEngine;
-using UnityEngine.Profiling;
+﻿using FarmVox.GPU.Shaders;
+using FarmVox.Voxel;
+using UnityEngine;
 
-namespace FarmVox
+namespace FarmVox.Terrain
 {
 
     public partial class Terrian

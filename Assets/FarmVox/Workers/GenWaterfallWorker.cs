@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using FarmVox.Terrain;
 using FarmVox.Threading;
+using FarmVox.Voxel;
 using UnityEngine;
 
-namespace FarmVox
+namespace FarmVox.Workers
 {
     public class GenWaterfallWorker : Worker
     {

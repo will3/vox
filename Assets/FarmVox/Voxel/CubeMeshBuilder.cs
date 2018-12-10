@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using FarmVox.Voxel;
 using UnityEngine;
 
 namespace FarmVox

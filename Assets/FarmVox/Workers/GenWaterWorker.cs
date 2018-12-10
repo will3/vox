@@ -1,6 +1,8 @@
-﻿using FarmVox.Threading;
+﻿using FarmVox.Terrain;
+using FarmVox.Threading;
+using FarmVox.Voxel;
 
-namespace FarmVox
+namespace FarmVox.Workers
 {
     public class GenWaterWorker : Worker
     {

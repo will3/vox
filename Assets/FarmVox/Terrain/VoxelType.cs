@@ -1,4 +1,4 @@
-﻿namespace FarmVox
+﻿namespace FarmVox.Terrain
 {
     public enum VoxelType {
         Air,

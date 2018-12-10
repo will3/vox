@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace FarmVox
+namespace FarmVox.GPU
 {
     public class ColorGradient
     {

@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+﻿using FarmVox.Terrain;
+using FarmVox.Voxel;
+using UnityEngine;
 
-namespace FarmVox
+namespace FarmVox.Objects
 {
     static class BuildingPlacer
     {

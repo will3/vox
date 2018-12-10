@@ -1,7 +1,10 @@
-﻿using FarmVox.Threading;
+﻿using FarmVox.GPU.Shaders;
+using FarmVox.Terrain;
+using FarmVox.Threading;
+using FarmVox.Voxel;
 using UnityEngine;
 
-namespace FarmVox
+namespace FarmVox.Workers
 {
     public class GenGroundWorker : Worker
     {

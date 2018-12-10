@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using FarmVox.Terrain;
+using UnityEngine;
 
-namespace FarmVox
+namespace FarmVox.Objects
 {
     public class Building
     {
