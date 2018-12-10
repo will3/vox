@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using FarmVox.GPU.Shaders;
+using FarmVox.Terrain;
 using FarmVox.Voxel;
 using UnityEngine;
 
@@ -28,7 +29,7 @@ namespace FarmVox.Objects
             // var modelSize = model.Size;
             // var size = Mathf.Max(modelSize.x, modelSize.y, modelSize.z);
             var size = 32;
-            using (var mesher = new MesherGpu(size, size))
+            using (var mesher = new MesherGpu(size, size, Terrian.Instance.config))
             {
                 var data = new float[size * size * size];
                 var colors = new Color[size * size * size];

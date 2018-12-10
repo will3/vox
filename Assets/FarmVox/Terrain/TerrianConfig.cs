@@ -11,12 +11,6 @@ namespace FarmVox.Terrain
     {
         public readonly Colors Colors = new Colors();
 
-        private static TerrianConfig _instance;
-
-        public static TerrianConfig Instance {
-            get { return _instance ?? (_instance = new TerrianConfig()); }
-        }
-
         public int ActualWaterLevel {
             get {
                 return WaterLevel + GroundHeight;
@@ -111,7 +105,7 @@ namespace FarmVox.Terrain
             }
         }
 
-        private TerrianConfig(int seed = 1337)
+        public TerrianConfig(int seed = 1337)
         {
             _r = new Random(seed);
             HeightNoise = NextNoise();

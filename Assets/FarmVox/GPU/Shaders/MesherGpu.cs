@@ -35,6 +35,7 @@ namespace FarmVox.GPU.Shaders
         private readonly ComputeShader _shader;
         private readonly int _size;
         private readonly int _dataSize;
+        private readonly TerrianConfig _config;
         private readonly int _workGroups = 8;
         
         public int NormalBanding = 6;
@@ -47,10 +48,11 @@ namespace FarmVox.GPU.Shaders
 
         public float NormalStrength = 0.0f;
         
-        public MesherGpu(int size, int dataSize)
+        public MesherGpu(int size, int dataSize, TerrianConfig config)
         {
             _size = size;
             _dataSize = dataSize;
+            _config = config;
             _shader = Resources.Load<ComputeShader>("Shaders/Mesher");
 
             trianglesBuffer =
@@ -71,7 +73,7 @@ namespace FarmVox.GPU.Shaders
             _shader.SetInt("_UseNormals", UseNormals ? 1 : 0);
             _shader.SetInt("_IsWater", IsWater ? 1 : 0);
             _shader.SetFloat("_NormalStrength", NormalStrength);
-            _shader.SetFloat("_AoStrength", TerrianConfig.Instance.AoStrength);
+            _shader.SetFloat("_AoStrength", _config.AoStrength);
 
             var dispatchNumber = Mathf.CeilToInt(_dataSize / (float)_workGroups);
             _shader.Dispatch(0, 3 * dispatchNumber, dispatchNumber, dispatchNumber);

@@ -2,26 +2,14 @@ using UnityEngine;
 using System.Collections;
 using FarmVox;
 using FarmVox.Voxel;
+using UnityEngine.Serialization;
 using Terrian = FarmVox.Terrain.Terrian;
 
 namespace FarmVox.Scripts
 {
     public class HighlightHoveredSurface : MonoBehaviour
     {
-        private Terrian _terrian;
-
-        private Terrian Terrian
-        {
-            get
-            {
-                if (_terrian == null)
-                {
-                    _terrian = GameObject.FindWithTag("GameController").GetComponent<GameController>().Terrian;
-                }
-
-                return _terrian;
-            }
-        }
+        public Terrian Terrian;
 
         public VoxelRaycastResult result;
 

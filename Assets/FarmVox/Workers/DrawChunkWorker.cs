@@ -1,14 +1,35 @@
 ﻿using FarmVox.GPU.Shaders;
+using FarmVox.Terrain;
+using FarmVox.Threading;
 using FarmVox.Voxel;
 using UnityEngine;
 
-namespace FarmVox.Terrain
+namespace FarmVox.Workers
 {
-
-    public partial class Terrian
+    public class DrawChunkWorker : Worker
     {
-        private void GenerateMesh(Chunks chunks, Vector3Int origin, TerrianChunk terrianChunk)
+        private readonly TerrianConfig _config;
+        private readonly VoxelShadowMap _shadowMap;
+        private readonly Chunks _chunks;
+        private readonly TerrianChunk _terrianChunk;
+        
+        public DrawChunkWorker(TerrianConfig config, VoxelShadowMap shadowMap, Chunks chunks, TerrianChunk terrianChunk)
         {
+            _config = config;
+            _shadowMap = shadowMap;
+            _chunks = chunks;
+            _terrianChunk = terrianChunk;
+        }
+        
+        public override void Start()
+        {
+            GenerateMesh(_chunks, _terrianChunk);
+        }
+        
+        private void GenerateMesh(Chunks chunks, TerrianChunk terrianChunk)
+        {
+            var origin = terrianChunk.Origin;
+            
             if (!chunks.HasChunk(origin))
             {
                 return;
@@ -33,24 +54,14 @@ namespace FarmVox.Terrain
 
             chunk.Dirty = false;
 
-            ShadowMap.ChunkDrawn(origin);
-        }
-
-        private void GenerateMeshes(TerrianColumn column) {
-            foreach (var terrianChunk in column.TerrianChunks)
-            {
-                foreach (var chunks in chunksToDraw)
-                {
-                    GenerateMesh(chunks, terrianChunk.Origin, terrianChunk);
-                }
-            }
+            _shadowMap.ChunkDrawn(origin);
         }
 
         private Mesh MeshGpu(Chunk chunk)
         {
             var chunks = chunk.Chunks;
             
-            using (var mesher = new MesherGpu(Size, chunk.DataSize))
+            using (var mesher = new MesherGpu(_config.Size, chunk.DataSize, _config))
             {
                 mesher.UseNormals = chunks.UseNormals;
                 mesher.IsWater = chunks.IsWater;

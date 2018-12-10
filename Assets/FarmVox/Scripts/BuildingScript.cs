@@ -1,4 +1,5 @@
 using FarmVox.Objects;
+using FarmVox.Terrain;
 using UnityEngine;
 
 namespace FarmVox.Scripts
@@ -13,7 +14,7 @@ namespace FarmVox.Scripts
 
             if (Building.Tile.Center.HasValue)
             {
-                BuildingPlacer.Place(Building, Finder.FindTerrian().BuildingLayer, Building.Tile);    
+                BuildingPlacer.Place(Building, Terrian.Instance.BuildingLayer, Building.Tile);    
             }
             
 //            var mesh = new BuildingMesher().Mesh(Building);

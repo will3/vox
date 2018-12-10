@@ -1,13 +1,18 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using FarmVox.Scripts;
 using FarmVox.Voxel;
 using FarmVox.Workers;
+using UnityEditor;
 using UnityEngine;
 
 namespace FarmVox.Terrain
 {
-    public partial class Terrian
+    public class Terrian : MonoBehaviour
     {
+        public static Terrian Instance;
+        
         public int Size { get; private set; }
 
         float sizeF;
@@ -22,15 +27,12 @@ namespace FarmVox.Terrain
 
         Dictionary<Vector3Int, TerrianChunk> map = new Dictionary<Vector3Int, TerrianChunk>();
 
-        public Dictionary<Vector3Int, TerrianChunk> Map
+        public TerrianConfig config
         {
-            get
-            {
-                return map;
-            }
+            get { return _config; }
         }
 
-        TerrianConfig config = TerrianConfig.Instance;
+        private TerrianConfig _config;
 
         Chunks[] chunksToDraw;
 
@@ -46,50 +48,13 @@ namespace FarmVox.Terrain
         Bounds bounds;
 
         public HeightMap heightMap;
-
-        public Terrian(int size = 32)
+        
+        public Dictionary<Vector3Int, TerrianChunk> Map
         {
-            Size = size;
-            sizeF = size;
-
-            bounds = new Bounds();
-            bounds.min = new Vector3(-config.MaxChunksX, 0, -config.MaxChunksX) * size;
-            bounds.max = new Vector3(config.MaxChunksX, config.MaxChunksY, config.MaxChunksX) * size;
-
-            var boundsInt = config.BoundsInt;
-
-            terrianObject = new GameObject("terrian");
-
-            DefaultLayer = new Chunks(size);
-            DefaultLayer.NormalStrength = 0.4f;
-            TreeLayer = new Chunks(size);
-            TreeLayer.NormalStrength = 0.2f;
-            WaterLayer = new Chunks(size);
-            WaterLayer.Transparent = true;
-            BuildingLayer = new Chunks(size);
-
-            TreeMap = new TreeMap(boundsInt);
-
-            DefaultLayer.GetGameObject().layer = LayerMask.NameToLayer("terrian");
-            TreeLayer.GetGameObject().layer = LayerMask.NameToLayer("trees");
-            WaterLayer.GetGameObject().layer = LayerMask.NameToLayer("water");
-             
-            DefaultLayer.GetGameObject().name = "default";
-            TreeLayer.GetGameObject().name = "trees";
-            WaterLayer.GetGameObject().name = "water";
-
-            DefaultLayer.GetGameObject().transform.parent = terrianObject.transform;
-            TreeLayer.GetGameObject().transform.parent = terrianObject.transform;
-            WaterLayer.GetGameObject().transform.parent = terrianObject.transform;
-
-            WaterLayer.UseNormals = false;
-            WaterLayer.IsWater = true;
-
-            chunksToDraw = new Chunks[] { DefaultLayer, TreeLayer, WaterLayer, BuildingLayer };
-
-            ShadowMap = new VoxelShadowMap(size, config);
-
-            heightMap = new HeightMap();
+            get
+            {
+                return map;
+            }
         }
 
         void GenerateColumn(Vector3Int columnOrigin) {
@@ -141,9 +106,69 @@ namespace FarmVox.Terrain
             }
         }
 
+        private void Awake()
+        {
+            _config = new TerrianConfig();
+            
+            var size = config.Size;
+            Size = size;
+            sizeF = size;
+
+            bounds = new Bounds();
+            bounds.min = new Vector3(-config.MaxChunksX, 0, -config.MaxChunksX) * size;
+            bounds.max = new Vector3(config.MaxChunksX, config.MaxChunksY, config.MaxChunksX) * size;
+
+            var boundsInt = config.BoundsInt;
+
+            terrianObject = new GameObject("terrian");
+
+            DefaultLayer = new Chunks(size);
+            DefaultLayer.NormalStrength = 0.4f;
+            TreeLayer = new Chunks(size);
+            TreeLayer.NormalStrength = 0.2f;
+            WaterLayer = new Chunks(size);
+            WaterLayer.Transparent = true;
+            WaterLayer.UseNormals = false;
+            BuildingLayer = new Chunks(size);
+
+            TreeMap = new TreeMap(boundsInt);
+
+            DefaultLayer.GetGameObject().layer = LayerMask.NameToLayer("terrian");
+            TreeLayer.GetGameObject().layer = LayerMask.NameToLayer("trees");
+            WaterLayer.GetGameObject().layer = LayerMask.NameToLayer("water");
+             
+            DefaultLayer.GetGameObject().name = "default";
+            TreeLayer.GetGameObject().name = "trees";
+            WaterLayer.GetGameObject().name = "water";
+
+            DefaultLayer.GetGameObject().transform.parent = terrianObject.transform;
+            TreeLayer.GetGameObject().transform.parent = terrianObject.transform;
+            WaterLayer.GetGameObject().transform.parent = terrianObject.transform;
+
+            WaterLayer.UseNormals = false;
+            WaterLayer.IsWater = true;
+
+            chunksToDraw = new Chunks[] { DefaultLayer, TreeLayer, WaterLayer, BuildingLayer };
+
+            ShadowMap = new VoxelShadowMap(size, config);
+
+            heightMap = new HeightMap();
+
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+            else
+            {
+                throw new Exception("Only one instance of Terrian is allowed");
+            }
+        }
+
         public void Start()
         {
-            var queue = Finder.FindGameController().Queue;
+            InitColumns();
+
+            var queue = GameController.Instance.Queue;
 
             foreach (var column in columnsList)
             {
@@ -162,6 +187,8 @@ namespace FarmVox.Terrain
                     queue.Enqueue(new GenWaterfallWorker(chunk, DefaultLayer, config));
                 }
             }
+            
+            StartCoroutine(UpdateMeshesLoop());
         }
 
         public IEnumerator UpdateMeshesLoop() {
@@ -170,8 +197,31 @@ namespace FarmVox.Terrain
                 {
                     UpdateMaterial();
                     ShadowMap.Update();
-                    GenerateMeshes(column);
+
+                    foreach (var chunks in chunksToDraw)
+                    {
+                        foreach (var terrianChunk in column.TerrianChunks)
+                        {
+                            var worker = new DrawChunkWorker(config, ShadowMap, chunks, terrianChunk);    
+                            worker.Start();
+                        }
+                    }
+                    
                     yield return null;
+                }
+            }
+        }
+        
+        void UpdateMaterial() {
+            foreach (var chunks in chunksToDraw) {
+                foreach (var chunk in chunks.Map.Values) {
+                    var material = chunk.Material;
+
+                    var origin = chunk.Origin;
+                    material.SetVector("_Origin", (Vector3)origin);
+                    material.SetInt("_Size", Size);
+
+                    ShadowMap.UpdateMaterial(material, origin);
                 }
             }
         }
@@ -238,7 +288,8 @@ namespace FarmVox.Terrain
             terrianChunk.SetWater(coord, true);
         }
 
-        public void Dispose() {
+        private void OnDestroy()
+        {
             ShadowMap.Dispose();
             foreach (var tc in map.Values) {
                 tc.Dispose();

@@ -1,18 +1,19 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using FarmVox;
+using FarmVox.Terrain;
 using FarmVox.Threading;
 using UnityEngine;
 using UnityEngine.AI;
-using Terrian = FarmVox.Terrain.Terrian;
 
 namespace FarmVox.Scripts
 {
 	public class GameController : MonoBehaviour
 	{
+		public static GameController Instance;
+		
 		public bool drawRoutes = false;
-
-		public Terrian Terrian { get; private set; }
 
 		private readonly WorkerQueue _queue = new WorkerQueue();
 
@@ -21,16 +22,21 @@ namespace FarmVox.Scripts
 			get { return _queue; }
 		}
 
+		private void Awake()
+		{
+			if (Instance == null)
+			{
+				Instance = this;
+			}
+			else
+			{
+				throw new Exception("Only one GameController allowed");
+			}
+		}
+
 		// Use this for initialization
 		void Start()
 		{
-			Terrian = new Terrian();
-
-			Terrian.InitColumns();
-
-			Terrian.Start();
-
-			StartCoroutine(Terrian.UpdateMeshesLoop());
 			StartCoroutine(_queue.DoWork());
 		}
 
@@ -49,11 +55,6 @@ namespace FarmVox.Scripts
 				//    }
 				//}
 			}
-		}
-
-		void OnDestroy()
-		{
-			if (Terrian != null) Terrian.Dispose();
 		}
 
 		void OnDrawGizmosSelected()
