@@ -4,7 +4,7 @@ namespace FarmVox
 {
     public static class Finder
     {
-        private static GameController FindGameController() {
+        public static GameController FindGameController() {
             var go = GameObject.FindWithTag("GameController");
             return go == null ? null : go.GetComponent<GameController>();
         }

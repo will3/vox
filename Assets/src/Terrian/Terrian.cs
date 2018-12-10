@@ -139,35 +139,25 @@ namespace FarmVox
             }
         }
 
-        public IEnumerator UpdateTerrianLoop() {
+        public void Start()
+        {
+            var queue = Finder.FindGameController().Queue;
+
             foreach (var column in columnsList)
             {
-                if (column.generatedTerrian)
+                foreach (var chunk in column.TerrianChunks)
                 {
-                    continue;
+                    queue.Enqueue(new GenGroundWorker(chunk, DefaultLayer, config));
+                    queue.Enqueue(new GenWaterWorker(chunk, DefaultLayer, WaterLayer, config));
+                    queue.Enqueue(new GenTreesWorker(config, chunk, DefaultLayer, TreeLayer, this, TreeMap));
                 }
-
-                GenerateGround(column);
-
-                if (config.GenerateWater) {
-                    GenerateWaters(column);
-                }
-
-                if (config.GenerateTrees) {
-                    GenerateTrees(column);    
-                }
-
-                column.generatedTerrian = true;
-
-                yield return null; // new WaitForSeconds(0.1f);
             }
-        }
-
-        public IEnumerator UpdateWaterfallsLoop() {
-            while (true) {
-                foreach (var chunk in map.Values) {
-                    GenerateWaterfalls(chunk);
-                    yield return null;
+            
+            foreach (var column in columnsList)
+            {
+                foreach (var chunk in column.TerrianChunks)
+                {
+                    queue.Enqueue(new GenWaterfallWorker(chunk, DefaultLayer, config));
                 }
             }
         }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using FarmVox;
+using FarmVox.Threading;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -9,17 +10,25 @@ public class GameController : MonoBehaviour
     public bool drawRoutes = false;
 
     public Terrian Terrian { get; private set; }
+	
+	private readonly WorkerQueue _queue = new WorkerQueue();
+	
+	public WorkerQueue Queue
+	{
+		get { return _queue; }
+	}
 
-    // Use this for initialization
+	// Use this for initialization
     void Start () {
         Terrian = new Terrian();
 
         Terrian.InitColumns();
 
-        StartCoroutine(Terrian.UpdateTerrianLoop());
+	    Terrian.Start();
+	    
         StartCoroutine(Terrian.UpdateMeshesLoop());
-        StartCoroutine(Terrian.UpdateWaterfallsLoop());
-	}
+	    StartCoroutine(_queue.DoWork());
+    }
 	
 	// Update is called once per frame
 	void Update () {
