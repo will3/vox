@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using FarmVox.Scripts;
 using FarmVox.Voxel;
 using FarmVox.Workers;
-using UnityEditor;
 using UnityEngine;
 
 namespace FarmVox.Terrain
@@ -12,10 +11,13 @@ namespace FarmVox.Terrain
     public class Terrian : MonoBehaviour
     {
         public static Terrian Instance;
-        
-        public int Size { get; private set; }
 
-        float sizeF;
+        private int Size
+        {
+            get { return config.Size; }
+        }
+
+        float _sizeF;
 
         public Chunks DefaultLayer { get; private set; }
 
@@ -25,8 +27,12 @@ namespace FarmVox.Terrain
 
         public Chunks BuildingLayer { get; private set; }
 
-        Dictionary<Vector3Int, TerrianChunk> map = new Dictionary<Vector3Int, TerrianChunk>();
-
+        private readonly Dictionary<Vector3Int, TerrianChunk> _map = new Dictionary<Vector3Int, TerrianChunk>();
+        
+        private readonly Dictionary<Vector3Int, TerrianColumn> _columns = new Dictionary<Vector3Int, TerrianColumn>();
+        
+        private readonly List<TerrianColumn> _columnsList = new List<TerrianColumn>();
+        
         public TerrianConfig config
         {
             get { return _config; }
@@ -34,68 +40,38 @@ namespace FarmVox.Terrain
 
         private TerrianConfig _config;
 
-        Chunks[] chunksToDraw;
+        Chunks[] _chunksToDraw;
 
-        Dictionary<Vector3Int, TerrianColumn> columns = new Dictionary<Vector3Int, TerrianColumn>();
-        List<TerrianColumn> columnsList = new List<TerrianColumn>();
+        private TreeMap TreeMap { get; set; }
 
-        GameObject terrianObject;
+        private VoxelShadowMap ShadowMap { get; set; }
 
-        public TreeMap TreeMap { get; private set; }
-
-        public VoxelShadowMap ShadowMap { get; private set; }
-
-        Bounds bounds;
+        private Bounds _bounds;
 
         public HeightMap heightMap;
-        
-        public Dictionary<Vector3Int, TerrianChunk> Map
-        {
-            get
-            {
-                return map;
-            }
-        }
 
-        void GenerateColumn(Vector3Int columnOrigin) {
+        private void GenerateColumn(Vector3Int columnOrigin) {
             var maxChunksY = config.MaxChunksY;
             var list = new List<TerrianChunk>();
-            for (int j = 0; j < maxChunksY; j++)
+            for (var j = 0; j < maxChunksY; j++)
             {
                 var origin = new Vector3Int(columnOrigin.x, j * Size, columnOrigin.z);
                 var terrianChunk = GetOrCreateTerrianChunk(origin);
                 list.Add(terrianChunk);
             }
 
-            if (!columns.ContainsKey(columnOrigin))
+            if (!_columns.ContainsKey(columnOrigin))
             {
                 var terrianColumn = new TerrianColumn(Size, columnOrigin, list);
-                columns[columnOrigin] = terrianColumn;
+                _columns[columnOrigin] = terrianColumn;
 
-                columnsList.Add(terrianColumn);
+                _columnsList.Add(terrianColumn);
             }
 
-            columnsList.Sort(new TerrianColumnDistanceComparer());
+            _columnsList.Sort(new TerrianColumnDistanceComparer());
         }
 
-        class TerrianColumnDistanceComparer : IComparer<TerrianColumn>
-        {
-            public int Compare(TerrianColumn x, TerrianColumn y)
-            {
-                return GetDistance(x).CompareTo(GetDistance(y));
-            }
-
-            float GetDistance(TerrianColumn column) {
-                var xDis = column.Origin.x + column.Size / 2.0f;
-                var zDis = column.Origin.z + column.Size / 2.0f;
-
-                var distance = (Mathf.Abs(xDis) + Mathf.Abs(zDis)) * 1024;
-
-                return distance;
-            }
-        }
-
-        public void InitColumns() {
+        private void InitColumns() {
             for (var i = -config.MaxChunksX; i < config.MaxChunksX; i++)
             {
                 for (var k = -config.MaxChunksX; k < config.MaxChunksX; k++)
@@ -111,16 +87,13 @@ namespace FarmVox.Terrain
             _config = new TerrianConfig();
             
             var size = config.Size;
-            Size = size;
-            sizeF = size;
+            _sizeF = size;
 
-            bounds = new Bounds();
-            bounds.min = new Vector3(-config.MaxChunksX, 0, -config.MaxChunksX) * size;
-            bounds.max = new Vector3(config.MaxChunksX, config.MaxChunksY, config.MaxChunksX) * size;
+            _bounds = new Bounds();
+            _bounds.min = new Vector3(-config.MaxChunksX, 0, -config.MaxChunksX) * size;
+            _bounds.max = new Vector3(config.MaxChunksX, config.MaxChunksY, config.MaxChunksX) * size;
 
             var boundsInt = config.BoundsInt;
-
-            terrianObject = new GameObject("terrian");
 
             DefaultLayer = new Chunks(size);
             DefaultLayer.NormalStrength = 0.4f;
@@ -141,14 +114,14 @@ namespace FarmVox.Terrain
             TreeLayer.GetGameObject().name = "trees";
             WaterLayer.GetGameObject().name = "water";
 
-            DefaultLayer.GetGameObject().transform.parent = terrianObject.transform;
-            TreeLayer.GetGameObject().transform.parent = terrianObject.transform;
-            WaterLayer.GetGameObject().transform.parent = terrianObject.transform;
+            DefaultLayer.GetGameObject().transform.parent = transform;
+            TreeLayer.GetGameObject().transform.parent = transform;
+            WaterLayer.GetGameObject().transform.parent = transform;
 
             WaterLayer.UseNormals = false;
             WaterLayer.IsWater = true;
 
-            chunksToDraw = new Chunks[] { DefaultLayer, TreeLayer, WaterLayer, BuildingLayer };
+            _chunksToDraw = new Chunks[] { DefaultLayer, TreeLayer, WaterLayer, BuildingLayer };
 
             ShadowMap = new VoxelShadowMap(size, config);
 
@@ -170,7 +143,7 @@ namespace FarmVox.Terrain
 
             var queue = GameController.Instance.Queue;
 
-            foreach (var column in columnsList)
+            foreach (var column in _columnsList)
             {
                 foreach (var chunk in column.TerrianChunks)
                 {
@@ -180,7 +153,7 @@ namespace FarmVox.Terrain
                 }
             }
             
-            foreach (var column in columnsList)
+            foreach (var column in _columnsList)
             {
                 foreach (var chunk in column.TerrianChunks)
                 {
@@ -191,14 +164,14 @@ namespace FarmVox.Terrain
             StartCoroutine(UpdateMeshesLoop());
         }
 
-        public IEnumerator UpdateMeshesLoop() {
+        private IEnumerator UpdateMeshesLoop() {
             while (true) {
-                foreach (var column in columnsList)
+                foreach (var column in _columnsList)
                 {
                     UpdateMaterial();
                     ShadowMap.Update();
 
-                    foreach (var chunks in chunksToDraw)
+                    foreach (var chunks in _chunksToDraw)
                     {
                         foreach (var terrianChunk in column.TerrianChunks)
                         {
@@ -211,9 +184,9 @@ namespace FarmVox.Terrain
                 }
             }
         }
-        
-        void UpdateMaterial() {
-            foreach (var chunks in chunksToDraw) {
+
+        private void UpdateMaterial() {
+            foreach (var chunks in _chunksToDraw) {
                 foreach (var chunk in chunks.Map.Values) {
                     var material = chunk.Material;
 
@@ -226,46 +199,46 @@ namespace FarmVox.Terrain
             }
         }
 
-        public TerrianChunk GetTerrianChunk(Vector3Int origin) {
+        private TerrianChunk GetTerrianChunk(Vector3Int origin) {
             TerrianChunk terrianChunk = null;
-            map.TryGetValue(origin, out terrianChunk);
+            _map.TryGetValue(origin, out terrianChunk);
             return terrianChunk;
         }
 
         public TerrianColumn GetTerrianColumn(Vector3Int origin) {
             TerrianColumn terrianColumn = null;
-            columns.TryGetValue(origin, out terrianColumn);
+            _columns.TryGetValue(origin, out terrianColumn);
             return terrianColumn;
         }
 
-        TerrianChunk GetOrCreateTerrianChunk(Vector3Int origin)
+        private TerrianChunk GetOrCreateTerrianChunk(Vector3Int origin)
         {
-            if (map.ContainsKey(origin))
+            if (_map.ContainsKey(origin))
             {
-                return map[origin];
+                return _map[origin];
             }
 
             Vector3Int key = new Vector3Int(origin.x / Size, origin.y / Size, origin.z / Size);
-            map[origin] = new TerrianChunk(key, Size, this);
-            map[origin].Config = config;
-            return map[origin];
+            _map[origin] = new TerrianChunk(key, Size, this);
+            _map[origin].Config = config;
+            return _map[origin];
         }
 
         public Vector3Int GetOrigin(float i, float j, float k)
         {
             return new Vector3Int(
-               Mathf.FloorToInt(i / this.sizeF) * this.Size,
-               Mathf.FloorToInt(j / this.sizeF) * this.Size,
-               Mathf.FloorToInt(k / this.sizeF) * this.Size
+               Mathf.FloorToInt(i / _sizeF) * Size,
+               Mathf.FloorToInt(j / _sizeF) * Size,
+               Mathf.FloorToInt(k / _sizeF) * Size
             );
         }
 
-        public Vector3Int GetOrigin(int i, int j, int k)
+        private Vector3Int GetOrigin(int i, int j, int k)
         {
             return new Vector3Int(
-                Mathf.FloorToInt(i / this.sizeF) * this.Size,
-                Mathf.FloorToInt(j / this.sizeF) * this.Size,
-                Mathf.FloorToInt(k / this.sizeF) * this.Size
+                Mathf.FloorToInt(i / _sizeF) * Size,
+                Mathf.FloorToInt(j / _sizeF) * Size,
+                Mathf.FloorToInt(k / _sizeF) * Size
             );
         }
 
@@ -291,7 +264,7 @@ namespace FarmVox.Terrain
         private void OnDestroy()
         {
             ShadowMap.Dispose();
-            foreach (var tc in map.Values) {
+            foreach (var tc in _map.Values) {
                 tc.Dispose();
             }
         }
