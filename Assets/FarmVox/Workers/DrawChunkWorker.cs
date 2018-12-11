@@ -1,4 +1,5 @@
-﻿using FarmVox.GPU.Shaders;
+﻿using System.Security.Permissions;
+using FarmVox.GPU.Shaders;
 using FarmVox.Terrain;
 using FarmVox.Threading;
 using FarmVox.Voxel;
@@ -6,7 +7,7 @@ using UnityEngine;
 
 namespace FarmVox.Workers
 {
-    public class DrawChunkWorker : Worker
+    public class DrawChunkWorker : IWorker
     {
         private readonly TerrianConfig _config;
         private readonly VoxelShadowMap _shadowMap;
@@ -21,7 +22,7 @@ namespace FarmVox.Workers
             _terrianChunk = terrianChunk;
         }
         
-        public override void Start()
+        public void Start()
         {
             GenerateMesh(_chunks, _terrianChunk);
         }
@@ -78,6 +79,11 @@ namespace FarmVox.Workers
                 var mesh = builder.AddTriangles(triangles).Build();
                 return mesh;
             }
+        }
+
+        public float Priority
+        {
+            get { return Priorities.GenTrees; }
         }
     }
 }

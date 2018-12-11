@@ -31,7 +31,7 @@ namespace FarmVox.Terrain
         
         private readonly Dictionary<Vector3Int, TerrianColumn> _columns = new Dictionary<Vector3Int, TerrianColumn>();
         
-        private readonly List<TerrianColumn> _columnsList = new List<TerrianColumn>();
+        private readonly List<TerrianColumn> _columnList = new List<TerrianColumn>();
         
         public TerrianConfig config
         {
@@ -65,10 +65,10 @@ namespace FarmVox.Terrain
                 var terrianColumn = new TerrianColumn(Size, columnOrigin, list);
                 _columns[columnOrigin] = terrianColumn;
 
-                _columnsList.Add(terrianColumn);
+                _columnList.Add(terrianColumn);
             }
 
-            _columnsList.Sort(new TerrianColumnDistanceComparer());
+            _columnList.Sort(new TerrianColumnDistanceComparer());
         }
 
         private void InitColumns() {
@@ -143,7 +143,7 @@ namespace FarmVox.Terrain
 
             var queue = GameController.Instance.Queue;
 
-            foreach (var column in _columnsList)
+            foreach (var column in _columnList)
             {
                 foreach (var chunk in column.TerrianChunks)
                 {
@@ -153,7 +153,7 @@ namespace FarmVox.Terrain
                 }
             }
             
-            foreach (var column in _columnsList)
+            foreach (var column in _columnList)
             {
                 foreach (var chunk in column.TerrianChunks)
                 {
@@ -166,7 +166,7 @@ namespace FarmVox.Terrain
 
         private IEnumerator UpdateMeshesLoop() {
             while (true) {
-                foreach (var column in _columnsList)
+                foreach (var column in _columnList)
                 {
                     UpdateMaterial();
                     ShadowMap.Update();

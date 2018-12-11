@@ -4,7 +4,7 @@ using FarmVox.Voxel;
 
 namespace FarmVox.Workers
 {
-    public class GenWaterWorker : Worker
+    public class GenWaterWorker : IWorker
     {
         private readonly TerrianChunk _terrianChunk;
         private readonly Chunks _defaultLayer;
@@ -19,7 +19,7 @@ namespace FarmVox.Workers
             _config = config;
         }
         
-        public override void Start()
+        public void Start()
         {
             if (!_terrianChunk.waterNeedsUpdate)
             {
@@ -54,6 +54,11 @@ namespace FarmVox.Workers
             }
 
             _terrianChunk.waterNeedsUpdate = false;
+        }
+        
+        public float Priority
+        {
+            get { return Priorities.GenWater - _terrianChunk.Distance / 1024f; }
         }
     }
 }

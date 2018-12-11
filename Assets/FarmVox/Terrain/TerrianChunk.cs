@@ -130,6 +130,14 @@ namespace FarmVox.Terrain
             }
         }
 
+        public float Distance {
+            get {
+                var xDiff = Mathf.Abs(origin.x + size / 2);
+                var yDiff = Mathf.Abs(origin.z + size / 2);
+                return xDiff + yDiff;
+            }
+        }
+        
         public void Dispose() {
             
         }

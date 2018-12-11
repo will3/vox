@@ -25,8 +25,6 @@ namespace FarmVox.Terrain
         public int WaterLevel = 0;
         public int GroundHeight = 12;
         public int MaxChunksX = 3;
-        public bool GenerateWater = true;
-        public bool GenerateTrees = true;
 
         public float AoStrength = 0.15f;
         public float ShadowStrength = 0.5f;

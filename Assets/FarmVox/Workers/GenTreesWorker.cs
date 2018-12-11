@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace FarmVox.Workers
 {
-    public class GenTreesWorker : Worker
+    public class GenTreesWorker : IWorker
     {
         private readonly TerrianConfig _config;
         private readonly TerrianChunk _terrianChunk;
@@ -26,7 +26,7 @@ namespace FarmVox.Workers
             _treeMap = treeMap;
         }
 
-        public override void Start()
+        public void Start()
         {
             var treeNoise = _config.TreeNoise;
 
@@ -104,6 +104,11 @@ namespace FarmVox.Workers
             }
 
             _terrianChunk.treesNeedsUpdate = false;
+        }
+        
+        public float Priority
+        {
+            get { return Priorities.GenTrees - _terrianChunk.Distance / 1024f; }
         }
     }
 }

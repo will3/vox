@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace FarmVox.Workers
 {
-    public class GenWaterfallWorker : Worker
+    public class GenWaterfallWorker : IWorker
     {
         private readonly TerrianChunk _terrianChunk;
         private readonly Chunks _defaultLayer;
@@ -19,7 +19,7 @@ namespace FarmVox.Workers
             _config = config;
         }
             
-        public override void Start()
+        public void Start()
         {
             if (!_terrianChunk.waterfallsNeedsUpdate)
             {
@@ -190,6 +190,11 @@ namespace FarmVox.Workers
             }
 
             return minCoord;
+        }
+        
+        public float Priority
+        {
+            get { return Priorities.GenWaterfall - _terrianChunk.Distance / 1024f; }
         }
     }
 }

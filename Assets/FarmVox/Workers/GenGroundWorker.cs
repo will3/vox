@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace FarmVox.Workers
 {
-    public class GenGroundWorker : Worker
+    public class GenGroundWorker : IWorker
     {
         private readonly TerrianChunk _terrianChunk;
         private readonly Chunks _layer;
@@ -19,7 +19,7 @@ namespace FarmVox.Workers
             _config = config;
         }
         
-        public override void Start()
+        public void Start()
         {
             if (!_terrianChunk.rockNeedsUpdate)
             {
@@ -55,6 +55,11 @@ namespace FarmVox.Workers
             voxelBuffer.Dispose();
             typeBuffer.Dispose();
             colorBuffer.Dispose();
+        }
+        
+        public float Priority
+        {
+            get { return Priorities.GenGround - _terrianChunk.Distance / 1024f; }
         }
     }
 }

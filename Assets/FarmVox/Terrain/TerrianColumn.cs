@@ -24,7 +24,7 @@ namespace FarmVox.Terrain
             }
         }
 
-        public float distance {
+        public float Distance {
             get {
                 var xDiff = Mathf.Abs(origin.x + size / 2);
                 var yDiff = Mathf.Abs(origin.y + size / 2);
