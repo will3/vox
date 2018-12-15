@@ -36,7 +36,7 @@ namespace FarmVox.Terrain
 
         public TerrianConfig Config;
 
-        public TerrianConfig Config5;
+        public TerrianConfig Config9;
 
         Chunks[] _chunksToDraw;
 

@@ -21,12 +21,5 @@ namespace FarmVox
         public float YScale = 1.0f;
         public float XzScale = 1.0f;
         public NoiseType Type;
-
-        public ValueGradient Filter = new ValueGradient(new Dictionary<float, float>
-        {
-            {-1.0f, -1.0f},
-            {0.0f, 0.0f},
-            {1.0f, 1.0f}
-        });
     }
 }

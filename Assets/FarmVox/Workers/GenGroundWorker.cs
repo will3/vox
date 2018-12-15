@@ -35,7 +35,7 @@ namespace FarmVox.Workers
             var colorBuffer = genTerrianGpu.CreateColorBuffer();
             var typeBuffer = genTerrianGpu.CreateTypeBuffer();
 
-            genTerrianGpu.Dispatch(voxelBuffer, colorBuffer, typeBuffer, _terrianChunk);
+            genTerrianGpu.Dispatch(voxelBuffer, colorBuffer, typeBuffer);
 
             var voxelBufferData = new float[voxelBuffer.count];
             voxelBuffer.GetData(voxelBufferData);

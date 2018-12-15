@@ -15,32 +15,6 @@ float _Amplitude;
 int _DataSize;
 int _Type;
 
-StructuredBuffer<float> _FilterValues;
-StructuredBuffer<float> _FilterKeys;
-int _FilterSize;
-
-float sampleValue(StructuredBuffer<float> values, StructuredBuffer<float> keys, int size, float ratio) {
-    if (ratio < keys[0]) {
-        ratio = keys[0];
-    }
-    if (ratio > keys[size - 1]) {
-        ratio = keys[size - 1];
-    }
-
-    for (int i = 0; i < size - 1; i++) {
-        float ra = keys[i];
-        float rb = keys[i + 1];
-
-        if (ratio >= ra && ratio <= rb) {
-            float r = (ratio - ra) / (rb - ra);
-            float va = values[i];
-            float vb = values[i + 1];
-            return va + (vb - va) * r;
-        }
-    }
-    return 0;
-}
-
 float3 mod289(float3 x)
 {
     return x - floor(x / 289.0) * 289.0;
@@ -298,8 +272,6 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     int index = getIndex(id.x, id.y, id.z);
     
     value = value * _Amplitude;
-    
-    value = sampleValue(_FilterValues, _FilterKeys, _FilterSize, value);
     
     _Results[index] = value;
 }

@@ -1,4 +1,5 @@
-﻿using FarmVox.Terrain;
+﻿using System.Linq;
+using FarmVox.Terrain;
 using UnityEngine;
 
 namespace FarmVox.GPU.Shaders
@@ -34,10 +35,10 @@ namespace FarmVox.GPU.Shaders
             return new ComputeBuffer(_dataSize * _dataSize * _dataSize, sizeof(int));
         }
 
-        public void Dispatch(ComputeBuffer voxelBuffer, ComputeBuffer colorBuffer, ComputeBuffer typeBuffer, TerrianChunk terrianChunk) {
+        public void Dispatch(ComputeBuffer voxelBuffer, ComputeBuffer colorBuffer, ComputeBuffer typeBuffer) {
             using (var noises = new GenTerrianNoiseGpu(_dataSize, _origin, _config))
-            using (SetColorGradient(_config.Biome.Colors.RockColorGradient, "_Rock"))
-            using (SetColorGradient(_config.Biome.Colors.GrassColor, "_Grass"))
+            using (SetColorGradient(_config.Biome.Colors.RockColorGradient, _config.Biome.Colors.RockColorBanding, "_Rock"))
+            using (SetColorGradient(_config.Biome.Colors.GrassColor, _config.Biome.Colors.GrassColorBanding, "_Grass"))
             using (_config.Biome.GrassNormalFilter.CreateBuffers(_shader, "_GrassNormal"))
             using (_config.Biome.GrassHeightFilter.CreateBuffers(_shader, "_GrassHeight"))
             using(_config.Biome.RiverNoiseFilter.CreateBuffers(_shader, "_River"))
@@ -71,17 +72,17 @@ namespace FarmVox.GPU.Shaders
             }
         }
 
-        ColorGradientBuffers SetColorGradient(ColorGradient colorGradient, string prefix) {
-            var intervalsBuffer = new ComputeBuffer(colorGradient.Count, sizeof(float));
-            intervalsBuffer.SetData(colorGradient.GetKeys());
+        ColorGradientBuffers SetColorGradient(Gradient colorGradient, int banding, string prefix) {
+            var intervalsBuffer = new ComputeBuffer(colorGradient.colorKeys.Length, sizeof(float));
+            intervalsBuffer.SetData(colorGradient.colorKeys.Select(u => u.color).ToArray());
 
-            var gradientBuffer = new ComputeBuffer(colorGradient.Count, sizeof(float) * 4);
-            gradientBuffer.SetData(colorGradient.GetValues());
+            var gradientBuffer = new ComputeBuffer(colorGradient.colorKeys.Length, sizeof(float) * 4);
+            gradientBuffer.SetData(colorGradient.colorKeys.Select(u => u.time).ToArray());
 
             _shader.SetBuffer(0, prefix + "Gradient", gradientBuffer);
             _shader.SetBuffer(0, prefix + "GradientIntervals", intervalsBuffer);
-            _shader.SetInt(prefix + "GradientSize", colorGradient.Count);
-            _shader.SetFloat(prefix + "GradientBanding", colorGradient.Banding);
+            _shader.SetInt(prefix + "GradientSize", colorGradient.colorKeys.Length);
+            _shader.SetFloat(prefix + "GradientBanding", banding);
 
             return new ColorGradientBuffers(intervalsBuffer, gradientBuffer);
         }

@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.Serialization;
 
 namespace FarmVox
 {
@@ -10,7 +11,7 @@ namespace FarmVox
     {
         public float[] Keys;
         public float[] Values;
-        public int banding = 0;
+        public int Banding = 0;
 
         public ValueGradient(float min, float max)
         {
@@ -18,6 +19,12 @@ namespace FarmVox
             Values = new[] {min, max};
         }
 
+        public ValueGradient()
+        {
+            Keys = new[] {0.0f, 1.0f};
+            Values = new[] {0.0f, 1.0f};
+        }
+        
         public ValueGradient(Dictionary<float, float> map)
         {
             Keys = map.Keys.ToArray();
@@ -26,9 +33,9 @@ namespace FarmVox
 
         public float GetValue(float ratio)
         {
-            if (banding > 0)
+            if (Banding > 0)
             {
-                ratio = Mathf.Floor(ratio * (float) banding) / (float) banding;
+                ratio = Mathf.Floor(ratio * Banding) / Banding;
             }
 
             for (var i = 0; i < Keys.Length - 1; i++)
