@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Globalization;
 using FarmVox.GPU;
 using UnityEngine;
 
@@ -9,37 +9,62 @@ namespace FarmVox.Terrain
     public class Colors
     {
         public ColorGradient RockColorGradient;
-        public Color StoneColor = GetColor("#676767");
-        public Color TrunkColor = GetColor("#4f402a");
-        public Color LeafColor = GetColor("#2f510c");
-        public Color Soil = GetColor("#413535");
-        public Color Road = GetColor("#bbaf4d");
-        public Color Special = GetColor("#ff0000");
-        public Color WaterColor = GetColor("#297eb6", 0.4f);
+
+        [ColorHtmlProperty] 
+        public Color StoneColor;
+        
+        [ColorHtmlProperty]
+        public Color TrunkColor;
+        
+        [ColorHtmlProperty]
+        public Color LeafColor;
+        
+        [ColorHtmlProperty]
+        public Color Soil;
+        
+        [ColorHtmlProperty]
+        public Color WaterColor;
+        
         public ColorGradient GrassColor;
 
         public Colors()
-        {
-            RockColorGradient = new ColorGradient(new Dictionary<float, Color> {
-                    {0, GetColor("#654d1f")},
-                    {1, GetColor("#654d1f")}
-                })
-            {
-                Banding = 8
-            };
-            
-            GrassColor = new ColorGradient(new Dictionary<float, Color> {
-                {0, GetColor("#597420")},
-                {1.0f, GetColor("#597420")}
-            });
-        }
+        {        
+            StoneColor = ColorUtils.GetColor("#676767");
+            TrunkColor = ColorUtils.GetColor("#4f402a");
+            LeafColor = ColorUtils.GetColor("#2f510c");
+            Soil = ColorUtils.GetColor("#413535");
+            WaterColor = ColorUtils.GetColor("#297eb6"); //, 0.4f);
 
-        public static Color GetColor(string hex, float a = 1.0f)
-        {
-            Color color;
-            ColorUtility.TryParseHtmlString(hex, out color);
-            color.a = a;
-            return color;
+            RockColorGradient = new ColorGradient();
+            RockColorGradient.Gradient.SetKeys(
+                new []{new GradientColorKey(ColorUtils.GetColor("#654d1f"), 0) }, 
+                new GradientAlphaKey[2]);
+            
+            GrassColor = new ColorGradient();
+            GrassColor.Gradient.SetKeys(
+                new[] {new GradientColorKey(ColorUtils.GetColor("#597420"), 0)},
+                new GradientAlphaKey[2]);
+        }
+    }
+
+    public static class ColorUtils
+    {
+        public static Color GetColor(string hex)
+        {    
+            hex = hex.TrimStart('#');
+
+            if (hex.Length == 6)
+            {
+                return new Color32(byte.Parse(hex.Substring(0,2), NumberStyles.HexNumber),
+                    byte.Parse(hex.Substring(2, 2), NumberStyles.HexNumber),
+                    byte.Parse(hex.Substring(4, 2), NumberStyles.HexNumber),
+                    255);
+            }
+
+            return new Color32(byte.Parse(hex.Substring(0, 2), NumberStyles.HexNumber),
+                byte.Parse(hex.Substring(2, 2), NumberStyles.HexNumber),
+                byte.Parse(hex.Substring(4, 2), NumberStyles.HexNumber),
+                byte.Parse(hex.Substring(6, 2), NumberStyles.HexNumber));
         }
     }
 }

@@ -19,11 +19,11 @@ namespace FarmVox.Objects
         public Vector3Int Size { get; set; }
         
         public readonly List<Color> Palette = new List<Color> {
-            Colors.GetColor("#654f30"),
-            Colors.GetColor("#705836"),
-            Colors.GetColor("#9a7a4d"),
-            Colors.GetColor("#4d4232"),
-            Colors.GetColor("#818181")
+            ColorUtils.GetColor("#654f30"),
+            ColorUtils.GetColor("#705836"),
+            ColorUtils.GetColor("#9a7a4d"),
+            ColorUtils.GetColor("#4d4232"),
+            ColorUtils.GetColor("#818181")
         };
     }
 }

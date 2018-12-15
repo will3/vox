@@ -36,12 +36,12 @@ namespace FarmVox.GPU.Shaders
 
         public void Dispatch(ComputeBuffer voxelBuffer, ComputeBuffer colorBuffer, ComputeBuffer typeBuffer, TerrianChunk terrianChunk) {
             using (var noises = new GenTerrianNoiseGpu(_dataSize, _origin, _config))
-            using (SetColorGradient(_config.Colors.RockColorGradient, "_Rock"))
-            using (SetColorGradient(_config.Colors.GrassColor, "_Grass"))
-            using (_config.GrassNormalFilter.CreateBuffers(_shader, "_GrassNormal"))
-            using (_config.GrassHeightFilter.CreateBuffers(_shader, "_GrassHeight"))
-            using(_config.RiverNoiseFilter.CreateBuffers(_shader, "_River"))
-            using(_config.StoneHeightFilter.CreateBuffers(_shader, "_StoneHeight"))
+            using (SetColorGradient(_config.Biome.Colors.RockColorGradient, "_Rock"))
+            using (SetColorGradient(_config.Biome.Colors.GrassColor, "_Grass"))
+            using (_config.Biome.GrassNormalFilter.CreateBuffers(_shader, "_GrassNormal"))
+            using (_config.Biome.GrassHeightFilter.CreateBuffers(_shader, "_GrassHeight"))
+            using(_config.Biome.RiverNoiseFilter.CreateBuffers(_shader, "_River"))
+            using(_config.Biome.StoneHeightFilter.CreateBuffers(_shader, "_StoneHeight"))
             {
                 _shader.SetBuffer(0, "_NoiseBuffer", noises.Results);
 
@@ -51,8 +51,8 @@ namespace FarmVox.GPU.Shaders
 
                 _shader.SetFloat("_MaxHeight", _config.MaxHeight);
 
-                _shader.SetVector("_SoilColor", _config.Colors.Soil);
-                _shader.SetVector("_WaterColor", _config.Colors.WaterColor);
+                _shader.SetVector("_SoilColor", _config.Biome.Colors.Soil);
+                _shader.SetVector("_WaterColor", _config.Biome.Colors.WaterColor);
 
                 _shader.SetInt("_Size", _size);
                 _shader.SetVector("_Origin", (Vector3)_origin);
@@ -61,8 +61,8 @@ namespace FarmVox.GPU.Shaders
                 _shader.SetFloat("_GroundHeight", _config.GroundHeight);
                 _shader.SetInt("_WaterLevel", _config.WaterLevel);
 
-                _shader.SetVector("_StoneColor", _config.Colors.StoneColor);
-                _shader.SetFloat("_StoneThreshold", _config.StoneThreshold);
+                _shader.SetVector("_StoneColor", _config.Biome.Colors.StoneColor);
+                _shader.SetFloat("_StoneThreshold", _config.Biome.StoneThreshold);
 
                 _shader.SetInt("_DataSize", _dataSize);
 

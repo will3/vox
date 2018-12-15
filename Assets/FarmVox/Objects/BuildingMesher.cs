@@ -29,7 +29,7 @@ namespace FarmVox.Objects
             // var modelSize = model.Size;
             // var size = Mathf.Max(modelSize.x, modelSize.y, modelSize.z);
             var size = 32;
-            using (var mesher = new MesherGpu(size, size, Terrian.Instance.config))
+            using (var mesher = new MesherGpu(size, size, Terrian.Instance.Config))
             {
                 var data = new float[size * size * size];
                 var colors = new Color[size * size * size];

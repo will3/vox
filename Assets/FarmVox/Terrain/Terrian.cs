@@ -5,6 +5,7 @@ using FarmVox.Scripts;
 using FarmVox.Voxel;
 using FarmVox.Workers;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace FarmVox.Terrain
 {
@@ -14,7 +15,7 @@ namespace FarmVox.Terrain
 
         private int Size
         {
-            get { return config.Size; }
+            get { return Config.Size; }
         }
 
         float _sizeF;
@@ -32,13 +33,10 @@ namespace FarmVox.Terrain
         private readonly Dictionary<Vector3Int, TerrianColumn> _columns = new Dictionary<Vector3Int, TerrianColumn>();
         
         private readonly List<TerrianColumn> _columnList = new List<TerrianColumn>();
-        
-        public TerrianConfig config
-        {
-            get { return _config; }
-        }
 
-        private TerrianConfig _config;
+        public TerrianConfig Config;
+
+        public TerrianConfig Config5;
 
         Chunks[] _chunksToDraw;
 
@@ -51,7 +49,7 @@ namespace FarmVox.Terrain
         public HeightMap heightMap;
 
         private void GenerateColumn(Vector3Int columnOrigin) {
-            var maxChunksY = config.MaxChunksY;
+            var maxChunksY = Config.MaxChunksY;
             var list = new List<TerrianChunk>();
             for (var j = 0; j < maxChunksY; j++)
             {
@@ -72,9 +70,9 @@ namespace FarmVox.Terrain
         }
 
         private void InitColumns() {
-            for (var i = -config.MaxChunksX; i < config.MaxChunksX; i++)
+            for (var i = -Config.MaxChunksX; i < Config.MaxChunksX; i++)
             {
-                for (var k = -config.MaxChunksX; k < config.MaxChunksX; k++)
+                for (var k = -Config.MaxChunksX; k < Config.MaxChunksX; k++)
                 {
                     var columnOrigin = new Vector3Int(i, 0, k) * Size;
                     GenerateColumn(columnOrigin);
@@ -84,16 +82,14 @@ namespace FarmVox.Terrain
 
         private void Awake()
         {
-            _config = new TerrianConfig();
-            
-            var size = config.Size;
+            var size = Config.Size;
             _sizeF = size;
 
             _bounds = new Bounds();
-            _bounds.min = new Vector3(-config.MaxChunksX, 0, -config.MaxChunksX) * size;
-            _bounds.max = new Vector3(config.MaxChunksX, config.MaxChunksY, config.MaxChunksX) * size;
+            _bounds.min = new Vector3(-Config.MaxChunksX, 0, -Config.MaxChunksX) * size;
+            _bounds.max = new Vector3(Config.MaxChunksX, Config.MaxChunksY, Config.MaxChunksX) * size;
 
-            var boundsInt = config.BoundsInt;
+            var boundsInt = Config.BoundsInt;
 
             DefaultLayer = new Chunks(size);
             DefaultLayer.NormalStrength = 0.4f;
@@ -123,7 +119,7 @@ namespace FarmVox.Terrain
 
             _chunksToDraw = new Chunks[] { DefaultLayer, TreeLayer, WaterLayer, BuildingLayer };
 
-            ShadowMap = new VoxelShadowMap(size, config);
+            ShadowMap = new VoxelShadowMap(size, Config);
 
             heightMap = new HeightMap();
 
@@ -147,9 +143,9 @@ namespace FarmVox.Terrain
             {
                 foreach (var chunk in column.TerrianChunks)
                 {
-                    queue.Enqueue(new GenGroundWorker(chunk, DefaultLayer, config));
-                    queue.Enqueue(new GenWaterWorker(chunk, DefaultLayer, WaterLayer, config));
-                    queue.Enqueue(new GenTreesWorker(config, chunk, DefaultLayer, TreeLayer, this, TreeMap));
+                    queue.Enqueue(new GenGroundWorker(chunk, DefaultLayer, Config));
+                    queue.Enqueue(new GenWaterWorker(chunk, DefaultLayer, WaterLayer, Config));
+                    queue.Enqueue(new GenTreesWorker(Config, chunk, DefaultLayer, TreeLayer, this, TreeMap));
                 }
             }
             
@@ -157,7 +153,7 @@ namespace FarmVox.Terrain
             {
                 foreach (var chunk in column.TerrianChunks)
                 {
-                    queue.Enqueue(new GenWaterfallWorker(chunk, DefaultLayer, config));
+                    queue.Enqueue(new GenWaterfallWorker(chunk, DefaultLayer, Config));
                 }
             }
             
@@ -175,7 +171,7 @@ namespace FarmVox.Terrain
                     {
                         foreach (var terrianChunk in column.TerrianChunks)
                         {
-                            var worker = new DrawChunkWorker(config, ShadowMap, chunks, terrianChunk);    
+                            var worker = new DrawChunkWorker(Config, ShadowMap, chunks, terrianChunk);    
                             worker.Start();
                         }
                     }
@@ -220,7 +216,7 @@ namespace FarmVox.Terrain
 
             Vector3Int key = new Vector3Int(origin.x / Size, origin.y / Size, origin.z / Size);
             _map[origin] = new TerrianChunk(key, Size, this);
-            _map[origin].Config = config;
+            _map[origin].Config = Config;
             return _map[origin];
         }
 

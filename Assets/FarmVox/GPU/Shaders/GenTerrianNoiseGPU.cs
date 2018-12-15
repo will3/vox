@@ -28,12 +28,12 @@ namespace FarmVox.GPU.Shaders
 
         void Dispatch()
         {
-            using (var heightNoise = new Perlin3DGPU(Config.HeightNoise, DataSize, Origin))
-            using (var rockColorNoise = new Perlin3DGPU(Config.RockColorNoise, DataSize, Origin))
-            using (var grassNoise = new Perlin3DGPU(Config.GrassNoise, DataSize, Origin))
-            using (var riverNoise = new Perlin3DGPU(Config.RiverNoise, DataSize, Origin))
-            using (var stoneNoise = new Perlin3DGPU(Config.StoneNoise, DataSize, Origin))
-            using (var stoneNoise2 = new Perlin3DGPU(Config.StoneNoise2, DataSize, Origin))
+            using (var heightNoise = new Perlin3DGPU(Config.Biome.HeightNoise, DataSize, Origin))
+            using (var rockColorNoise = new Perlin3DGPU(Config.Biome.RockColorNoise, DataSize, Origin))
+            using (var grassNoise = new Perlin3DGPU(Config.Biome.GrassNoise, DataSize, Origin))
+            using (var riverNoise = new Perlin3DGPU(Config.Biome.RiverNoise, DataSize, Origin))
+            using (var stoneNoise = new Perlin3DGPU(Config.Biome.StoneNoise, DataSize, Origin))
+            using (var stoneNoise2 = new Perlin3DGPU(Config.Biome.StoneNoise2, DataSize, Origin))
             {
                 Shader.SetBuffer(0, "_HeightBuffer", heightNoise.Results);
                 Shader.SetBuffer(0, "_GrassBuffer", grassNoise.Results);

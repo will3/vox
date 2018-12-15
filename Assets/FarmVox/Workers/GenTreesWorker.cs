@@ -28,7 +28,7 @@ namespace FarmVox.Workers
 
         public void Start()
         {
-            var treeNoise = _config.TreeNoise;
+            var treeNoise = _config.Biome.TreeNoise;
 
             if (!_terrianChunk.treesNeedsUpdate)
             {
@@ -52,9 +52,9 @@ namespace FarmVox.Workers
 
                 Vector3Int globalCoord = localCoord + chunk.Origin;
                 var noise = (float)treeNoise.GetValue(globalCoord);
-                var treeDensity = _config.TreeDensityFilter.GetValue(noise);
+                var treeDensity = _config.Biome.TreeDensityFilter.GetValue(noise);
 
-                if (_config.TreeRandom.NextDouble() * treeDensity > 0.02)
+                if (_config.Biome.TreeRandom.NextDouble() * treeDensity > 0.02)
                 {
                     continue;
                 }
@@ -78,9 +78,9 @@ namespace FarmVox.Workers
                 }
 
                 var height = relY / _config.MaxHeight;
-                var treeHeightValue = _config.TreeHeightGradient.GetValue(height);
+                var treeHeightValue = _config.Biome.TreeHeightGradient.GetValue(height);
 
-                var value = noise * treeHeightValue * _config.TreeAmount;
+                var value = noise * treeHeightValue * _config.Biome.TreeAmount;
 
                 if (value < 0.5f) { continue; }
 

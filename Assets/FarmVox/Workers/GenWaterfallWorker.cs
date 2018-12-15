@@ -34,7 +34,7 @@ namespace FarmVox.Workers
 
             foreach (var coord in chunk.SurfaceCoords)
             {
-                var r = _config.WaterfallRandom.NextDouble();
+                var r = _config.Biome.WaterfallRandom.NextDouble();
 
                 var index = coord.x * dataSize * dataSize + coord.y * dataSize + coord.z;
 
@@ -42,11 +42,11 @@ namespace FarmVox.Workers
 
                 var height = (absY - _config.GroundHeight) / _config.MaxHeight;
 
-                var heightValue = _config.WaterfallHeightFilter.GetValue(height);
+                var heightValue = _config.Biome.WaterfallHeightFilter.GetValue(height);
 
                 var v = r / heightValue;
 
-                if (v < 0 || v > _config.WaterfallChance)
+                if (v < 0 || v > _config.Biome.WaterfallChance)
                 {
                     continue;
                 }
@@ -62,7 +62,7 @@ namespace FarmVox.Workers
 
             Vector3Int? nextPoint = coord;
 
-            var cost = (float)_config.WaterfallRandom.NextDouble() * 1000.0f;
+            var cost = (float)_config.Biome.WaterfallRandom.NextDouble() * 1000.0f;
 
             var waterTracker = new WaterTracker(_config);
             waterTracker.Start(coord);

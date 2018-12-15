@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074, b: 0.35872698, a: 1}
+  m_IndirectSpecularColor: {r: 0.3731196, g: 0.38074002, b: 0.35872713, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -140,6 +140,68 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a709a314f7d124b32be69669a48c99de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  config:
+    Colors:
+      RockColorGradient:
+        Steps:
+        - Key: 0
+          Color: {r: 0.39607844, g: 0.3019608, b: 0.12156863, a: 1}
+      StoneColor: {r: 0.40392157, g: 0.40392157, b: 0.40392157, a: 1}
+      TrunkColor: {r: 0.30980393, g: 0.2509804, b: 0.16470589, a: 1}
+      LeafColor: {r: 0.18431373, g: 0.31764707, b: 0.047058824, a: 1}
+      Soil: {r: 0.25490198, g: 0.20784314, b: 0.20784314, a: 1}
+      WaterColor: {r: 0.16078432, g: 0.49411765, b: 0.7137255, a: 1}
+      GrassColor:
+        Steps:
+        - Key: 0
+          Color: {r: 0.34901962, g: 0.45490196, b: 0.1254902, a: 1}
+    Size: 32
+    MaxChunksY: 2
+    MaxHeight: 64
+    HillHeight: 48
+    PlainHeight: 4
+    WaterLevel: 0
+    GroundHeight: 12
+    MaxChunksX: 3
+    AoStrength: 0.15
+    ShadowStrength: 0.5
+    TreeMinDis: 3
+    TreeAmount: 0.2
+    WaterfallChance: 0.01
+    StoneThreshold: 0.5
+  Config2:
+    Colors:
+      RockColorGradient:
+        Steps:
+        - Key: 0
+          Color: {r: 0.39607844, g: 0.3019608, b: 0.12156863, a: 1}
+        - Key: 1
+          Color: {r: 0.39607844, g: 0.3019608, b: 0.12156863, a: 1}
+      StoneColor: {r: 0.40392157, g: 0.40392157, b: 0.40392157, a: 1}
+      TrunkColor: {r: 0.30980393, g: 0.2509804, b: 0.16470589, a: 1}
+      LeafColor: {r: 0.18431373, g: 0.31764707, b: 0.047058824, a: 1}
+      Soil: {r: 0.25490198, g: 0.20784314, b: 0.20784314, a: 1}
+      WaterColor: {r: 0.16078432, g: 0.49411765, b: 0.7137255, a: 1}
+      GrassColor:
+        Steps:
+        - Key: 0
+          Color: {r: 0.34901962, g: 0.45490196, b: 0.1254902, a: 1}
+        - Key: 1
+          Color: {r: 0.34901962, g: 0.45490196, b: 0.1254902, a: 1}
+    Size: 32
+    MaxChunksY: 2
+    MaxHeight: 64
+    HillHeight: 48
+    PlainHeight: 4
+    WaterLevel: 0
+    GroundHeight: 12
+    MaxChunksX: 3
+    AoStrength: 0.15
+    ShadowStrength: 0.5
+    TreeMinDis: 3
+    TreeAmount: 0.2
+    WaterfallChance: 0.01
+    StoneThreshold: 0.5
 --- !u!4 &108989302
 Transform:
   m_ObjectHideFlags: 0
@@ -180,7 +242,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b8e92769eacb4672b888f1ab521aeaf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Terrian: {fileID: 108989301}
   drawRoutes: 0
 --- !u!4 &362043728
 Transform:

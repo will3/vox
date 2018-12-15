@@ -28,15 +28,15 @@ namespace FarmVox.Objects
                         if (j <= trunkHeight) {
                             if (i == centerX && k == centerX) {
                                 layer.Set(coord, 1.0f);
-                                layer.SetColor(coord, config.Colors.TrunkColor);
+                                layer.SetColor(coord, config.Biome.Colors.TrunkColor);
                             }
                         } else {
                             var dis = (c - center).magnitude;
                             float density = size / 2.0f - dis;
-                            density -= (float)config.TreeRandom.NextDouble() * 1.0f;
+                            density -= (float)config.Biome.TreeRandom.NextDouble() * 1.0f;
 
                             layer.Set(coord, density);
-                            layer.SetColor(coord, config.Colors.LeafColor);
+                            layer.SetColor(coord, config.Biome.Colors.LeafColor);
                         }
                     }
                 }

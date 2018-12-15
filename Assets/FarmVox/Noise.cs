@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace FarmVox
 {
@@ -8,6 +9,7 @@ namespace FarmVox
         Turbulence = 2
     }
 
+    [Serializable]
     public class Noise
     {
         public float Frequency = 0.01f;
