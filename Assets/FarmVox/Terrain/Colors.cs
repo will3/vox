@@ -22,9 +22,6 @@ namespace FarmVox.Terrain
         public Color LeafColor;
         
         [ColorHtmlProperty]
-        public Color Soil;
-        
-        [ColorHtmlProperty]
         public Color WaterColor;
         
         public Gradient GrassColor;
@@ -36,8 +33,8 @@ namespace FarmVox.Terrain
             StoneColor = ColorUtils.GetColor("#676767");
             TrunkColor = ColorUtils.GetColor("#4f402a");
             LeafColor = ColorUtils.GetColor("#2f510c");
-            Soil = ColorUtils.GetColor("#413535");
-            WaterColor = ColorUtils.GetColor("#297eb6"); //, 0.4f);
+            WaterColor = ColorUtils.GetColor("#297eb6");
+            WaterColor.a = 0.4f;
 
             RockColorGradient = new Gradient();
             RockColorGradient.SetKeys(

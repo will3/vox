@@ -19,12 +19,6 @@ namespace FarmVox
             Values = new[] {min, max};
         }
 
-        public ValueGradient()
-        {
-            Keys = new[] {0.0f, 1.0f};
-            Values = new[] {0.0f, 1.0f};
-        }
-        
         public ValueGradient(Dictionary<float, float> map)
         {
             Keys = map.Keys.ToArray();
@@ -57,6 +51,11 @@ namespace FarmVox
 
         public ValueGradientBuffers CreateBuffers(ComputeShader shader, string prefix)
         {
+            if (Keys.Length == 0)
+            {
+                throw new Exception("cannot be empty");
+            }
+            
             var keysBuffer = new ComputeBuffer(Keys.Length, sizeof(float));
             keysBuffer.SetData(Keys);
 
@@ -70,7 +69,7 @@ namespace FarmVox
             return new ValueGradientBuffers(keysBuffer, valuesBuffer);
         }
 
-        public class ValueGradientBuffers : System.IDisposable
+        public class ValueGradientBuffers : IDisposable
         {
             public readonly ComputeBuffer KeysBuffer;
             public readonly ComputeBuffer ValuesBuffer;

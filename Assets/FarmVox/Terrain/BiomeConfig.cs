@@ -51,6 +51,8 @@ namespace FarmVox.Terrain
         #endregion
         
         private readonly Random _r;
+
+        public ValueGradient HeightFilter;
         
         public BiomeConfig(int seed = 1337)
         {
@@ -59,16 +61,15 @@ namespace FarmVox.Terrain
             HeightNoise.Frequency = 0.015f;
             HeightNoise.YScale = 0.4f;
             HeightNoise.Octaves = 5;
-            
-            // TODO height noise filter
-//            HeightNoise.Filter = new ValueGradient(new Dictionary<float, float>
-//            {
-//                {-1.0f, -0.4f},
-//                {-0.2f, 0.05f},
-//                {0.15f, 0.1f},
-//                {0.5f, 1.0f},
-//                {1, 1.2f}
-//            });
+
+            HeightFilter = new ValueGradient(new Dictionary<float, float>
+            {
+                {-1.0f, -0.4f},
+                {-0.2f, 0.05f},
+                {0.15f, 0.1f},
+                {0.5f, 1.0f},
+                {1, 1.2f}
+            });
 
             RockNoise = NextNoise();
 

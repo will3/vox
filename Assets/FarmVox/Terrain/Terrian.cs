@@ -12,6 +12,8 @@ namespace FarmVox.Terrain
     public class Terrian : MonoBehaviour
     {
         public static Terrian Instance;
+        
+        public TerrianConfig Config;
 
         private int Size
         {
@@ -33,10 +35,6 @@ namespace FarmVox.Terrain
         private readonly Dictionary<Vector3Int, TerrianColumn> _columns = new Dictionary<Vector3Int, TerrianColumn>();
         
         private readonly List<TerrianColumn> _columnList = new List<TerrianColumn>();
-
-        public TerrianConfig Config;
-
-        public TerrianConfig Config9;
 
         Chunks[] _chunksToDraw;
 

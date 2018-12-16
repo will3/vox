@@ -16,7 +16,6 @@ float _HillHeight;
 float _PlainHeight;
 float _GroundHeight;
 
-float4 _SoilColor;
 float4 _WaterColor;
 float _MaxHeight;
 int _WaterLevel;
@@ -26,9 +25,6 @@ StructuredBuffer<float4> _RockGradient;
 StructuredBuffer<float> _RockGradientIntervals;
 float _RockGradientBanding;
 int _RockGradientSize;
-StructuredBuffer<float> _HeightValues;
-StructuredBuffer<float> _HeightKeys;
-int _HeightSize;
 
 // Grass color
 StructuredBuffer<float4> _GrassGradient;
@@ -61,6 +57,11 @@ StructuredBuffer<float> _RiverValues;
 StructuredBuffer<float> _RiverKeys;
 int _RiverSize;
 
+// Height
+StructuredBuffer<float> _HeightValues;
+StructuredBuffer<float> _HeightKeys;
+int _HeightSize;
+
 // Output
 RWStructuredBuffer<float> _VoxelBuffer;
 RWStructuredBuffer<float4> _ColorBuffer;
@@ -74,6 +75,7 @@ int _Resolution;
 float Epsilon = 1e-10;
 
 float4 sampleColor(StructuredBuffer<float4> gradient, StructuredBuffer<float> intervals, int size, float banding, float ratio) {
+    return gradient[0];
     if (ratio < 0) {
         ratio = 0;
     }
@@ -261,6 +263,8 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     float gradient = -relY / terrainHeight;
     
     float height = noise.height;
+    
+    height = sampleValue(_HeightValues, _HeightKeys, _HeightSize, height);
 
     float value = height + gradient;
     //value -= riverValue;

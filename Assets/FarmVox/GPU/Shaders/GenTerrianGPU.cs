@@ -41,8 +41,9 @@ namespace FarmVox.GPU.Shaders
             using (SetColorGradient(_config.Biome.Colors.GrassColor, _config.Biome.Colors.GrassColorBanding, "_Grass"))
             using (_config.Biome.GrassNormalFilter.CreateBuffers(_shader, "_GrassNormal"))
             using (_config.Biome.GrassHeightFilter.CreateBuffers(_shader, "_GrassHeight"))
-            using(_config.Biome.RiverNoiseFilter.CreateBuffers(_shader, "_River"))
-            using(_config.Biome.StoneHeightFilter.CreateBuffers(_shader, "_StoneHeight"))
+            using (_config.Biome.RiverNoiseFilter.CreateBuffers(_shader, "_River"))
+            using (_config.Biome.StoneHeightFilter.CreateBuffers(_shader, "_StoneHeight"))
+            using (_config.Biome.HeightFilter.CreateBuffers(_shader, "_Height"))
             {
                 _shader.SetBuffer(0, "_NoiseBuffer", noises.Results);
 
@@ -52,7 +53,6 @@ namespace FarmVox.GPU.Shaders
 
                 _shader.SetFloat("_MaxHeight", _config.MaxHeight);
 
-                _shader.SetVector("_SoilColor", _config.Biome.Colors.Soil);
                 _shader.SetVector("_WaterColor", _config.Biome.Colors.WaterColor);
 
                 _shader.SetInt("_Size", _size);
@@ -74,10 +74,10 @@ namespace FarmVox.GPU.Shaders
 
         ColorGradientBuffers SetColorGradient(Gradient colorGradient, int banding, string prefix) {
             var intervalsBuffer = new ComputeBuffer(colorGradient.colorKeys.Length, sizeof(float));
-            intervalsBuffer.SetData(colorGradient.colorKeys.Select(u => u.color).ToArray());
+            intervalsBuffer.SetData(colorGradient.colorKeys.Select(u => u.time).ToArray());
 
             var gradientBuffer = new ComputeBuffer(colorGradient.colorKeys.Length, sizeof(float) * 4);
-            gradientBuffer.SetData(colorGradient.colorKeys.Select(u => u.time).ToArray());
+            gradientBuffer.SetData(colorGradient.colorKeys.Select(u => u.color).ToArray());
 
             _shader.SetBuffer(0, prefix + "Gradient", gradientBuffer);
             _shader.SetBuffer(0, prefix + "GradientIntervals", intervalsBuffer);

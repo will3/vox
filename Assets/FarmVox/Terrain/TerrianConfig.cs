@@ -39,6 +39,8 @@ namespace FarmVox.Terrain
             AoStrength = 0.15f;
             ShadowStrength = 0.5f;
             TreeMinDis = 3;
+            
+            Biome = new BiomeConfig();
         }
 
         public BoundsInt BoundsInt {
