@@ -152,10 +152,6 @@ namespace FarmVox.Voxel
 
         public void Set(int i, int j, int k, float v)
         {
-            //var origin = getOrigin(i, j, k);
-            //var chunk = GetOrCreateChunk(origin);
-            //chunk.Set(i - origin.x, j - origin.y, k - origin.z, v);
-
             var keys = GetKeys(i, j, k);
             foreach(var key in keys) {
                 var origin = key * Size;
@@ -166,10 +162,6 @@ namespace FarmVox.Voxel
 
         public void SetColor(int i, int j, int k, Color v)
         {
-            //var origin = getOrigin(i, j, k);
-            //var chunk = GetOrCreateChunk(origin);
-            //chunk.SetColor(i - origin.x, j - origin.y, k - origin.z, v);
-
             var keys = GetKeys(i, j, k);
             foreach(var key in keys) {
                 var origin = key * Size;

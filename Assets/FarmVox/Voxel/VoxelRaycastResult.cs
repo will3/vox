@@ -4,15 +4,15 @@ namespace FarmVox.Voxel
 {
     public class VoxelRaycastResult
     {
-        public readonly RaycastHit hit;
+        private readonly RaycastHit _hit;
 
         public VoxelRaycastResult(RaycastHit hit) {
-            this.hit = hit;
+            _hit = hit;
         }
 
         public Vector3Int GetCoord()
         {
-            var point = hit.point - hit.normal * 0.1f;
+            var point = _hit.point - _hit.normal * 0.1f;
             return new Vector3Int(Mathf.FloorToInt(point.x),
                                   Mathf.FloorToInt(point.y),
                                   Mathf.FloorToInt(point.z));
@@ -24,48 +24,25 @@ namespace FarmVox.Voxel
 
         public Mesh GetQuad()
         {
-            Axis d = Axis.X;
+            var d = Axis.X;
             var front = false;
-            if (Mathf.Abs(hit.normal.x) > Mathf.Epsilon)
+            if (Mathf.Abs(_hit.normal.x) > Mathf.Epsilon)
             {
                 d = Axis.X;
-                front = hit.normal.x > 0;
+                front = _hit.normal.x > 0;
             }
-            else if (Mathf.Abs(hit.normal.y) > Mathf.Epsilon)
+            else if (Mathf.Abs(_hit.normal.y) > Mathf.Epsilon)
             {
                 d = Axis.Y;
-                front = hit.normal.y > 0;
+                front = _hit.normal.y > 0;
             }
-            else if (Mathf.Abs(hit.normal.z) > Mathf.Epsilon)
+            else if (Mathf.Abs(_hit.normal.z) > Mathf.Epsilon)
             {
                 d = Axis.Z;
-                front = hit.normal.z > 0;
+                front = _hit.normal.z > 0;
             }
 
             return new CubeMeshBuilder().AddQuad(d, front, new Vector3()).Build();
-        }
-
-        public int FindNoneDefaultLayer()
-        {
-            if (hit.collider == null) {
-                return 0;
-            }
-            return FindNoneDefaultLayer(hit.collider.gameObject);
-        }
-
-        int FindNoneDefaultLayer(GameObject gameObject) {
-            if (gameObject.layer != 0)
-            {
-                return gameObject.layer;
-            }
-
-            var parentTransform = gameObject.transform.parent;
-            if (parentTransform != null)
-            {
-                return FindNoneDefaultLayer(parentTransform.gameObject);
-            }
-
-            return 0;
         }
     }
 }

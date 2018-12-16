@@ -5,54 +5,21 @@ namespace FarmVox.Terrain
 {
     public class TerrianColumn
     {
-        Vector3Int origin;
-        int size;
-
-        public int Size
-        {
-            get
-            {
-                return size;
-            }
-        }
-
-        public Vector3Int Origin
-        {
-            get
-            {
-                return origin;
-            }
-        }
-
+        private readonly Vector3Int _origin;
+        private readonly int _size;
+        public readonly List<TerrianChunk> TerrianChunks;
+        
         public float Distance {
             get {
-                var xDiff = Mathf.Abs(origin.x + size / 2);
-                var yDiff = Mathf.Abs(origin.y + size / 2);
+                var xDiff = Mathf.Abs(_origin.x + _size / 2);
+                var yDiff = Mathf.Abs(_origin.y + _size / 2);
                 return xDiff + yDiff;
-            }
-        }
-
-        List<TerrianChunk> terrianChunks;
-
-        public bool generatedGround = false;
-        public bool generatedTerrian = false;
-        public bool generatedShadows = false;
-        public bool generatedWater = false;
-        public bool generatedTrees = false;
-        public bool generatedGrass = false;
-        public bool drawn = false;
-
-        public List<TerrianChunk> TerrianChunks
-        {
-            get
-            {
-                return terrianChunks;
             }
         }
 
         public TerrianColumn(int size, Vector3Int origin, List<TerrianChunk> terrianChunks)
         {
-            this.size = size;
+            _size = size;
             if (origin.y != 0) {
                 throw new System.ArgumentException("origin y has to be 0");
             }
@@ -63,11 +30,8 @@ namespace FarmVox.Terrain
                 }
             }
 
-            this.origin = origin;
-            this.terrianChunks = terrianChunks;
-            foreach (var tc in terrianChunks)
-            {
-            }
+            _origin = origin;
+            TerrianChunks = terrianChunks;
         }
     }
 }
