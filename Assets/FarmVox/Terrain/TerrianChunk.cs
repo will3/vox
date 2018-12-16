@@ -3,11 +3,7 @@ using UnityEngine;
 
 namespace FarmVox.Terrain
 {
-    class TerrianChunkBuildGrid {
-
-    }
-
-    public partial class TerrianChunk
+    public class TerrianChunk
     {
         readonly HashSet<int> waters = new HashSet<int>();
 

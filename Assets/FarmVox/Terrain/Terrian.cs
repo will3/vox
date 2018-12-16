@@ -83,19 +83,17 @@ namespace FarmVox.Terrain
             var size = Config.Size;
             _sizeF = size;
 
-            _bounds = new Bounds();
-            _bounds.min = new Vector3(-Config.MaxChunksX, 0, -Config.MaxChunksX) * size;
-            _bounds.max = new Vector3(Config.MaxChunksX, Config.MaxChunksY, Config.MaxChunksX) * size;
+            _bounds = new Bounds
+            {
+                min = new Vector3(-Config.MaxChunksX, 0, -Config.MaxChunksX) * size,
+                max = new Vector3(Config.MaxChunksX, Config.MaxChunksY, Config.MaxChunksX) * size
+            };
 
             var boundsInt = Config.BoundsInt;
 
-            DefaultLayer = new Chunks(size);
-            DefaultLayer.NormalStrength = 0.4f;
-            TreeLayer = new Chunks(size);
-            TreeLayer.NormalStrength = 0.2f;
-            WaterLayer = new Chunks(size);
-            WaterLayer.Transparent = true;
-            WaterLayer.UseNormals = false;
+            DefaultLayer = new Chunks(size) {NormalStrength = 0.4f};
+            TreeLayer = new Chunks(size) {NormalStrength = 0.2f};
+            WaterLayer = new Chunks(size) {Transparent = true, UseNormals = false};
             BuildingLayer = new Chunks(size);
 
             TreeMap = new TreeMap(boundsInt);
@@ -115,7 +113,7 @@ namespace FarmVox.Terrain
             WaterLayer.UseNormals = false;
             WaterLayer.IsWater = true;
 
-            _chunksToDraw = new Chunks[] { DefaultLayer, TreeLayer, WaterLayer, BuildingLayer };
+            _chunksToDraw = new[] { DefaultLayer, TreeLayer, WaterLayer, BuildingLayer };
 
             ShadowMap = new VoxelShadowMap(size, Config);
 
@@ -176,7 +174,7 @@ namespace FarmVox.Terrain
                     
                     yield return null;
                 }
-            }
+            }            
         }
 
         private void UpdateMaterial() {
@@ -194,13 +192,13 @@ namespace FarmVox.Terrain
         }
 
         private TerrianChunk GetTerrianChunk(Vector3Int origin) {
-            TerrianChunk terrianChunk = null;
+            TerrianChunk terrianChunk;
             _map.TryGetValue(origin, out terrianChunk);
             return terrianChunk;
         }
 
         public TerrianColumn GetTerrianColumn(Vector3Int origin) {
-            TerrianColumn terrianColumn = null;
+            TerrianColumn terrianColumn;
             _columns.TryGetValue(origin, out terrianColumn);
             return terrianColumn;
         }
@@ -212,9 +210,8 @@ namespace FarmVox.Terrain
                 return _map[origin];
             }
 
-            Vector3Int key = new Vector3Int(origin.x / Size, origin.y / Size, origin.z / Size);
-            _map[origin] = new TerrianChunk(key, Size, this);
-            _map[origin].Config = Config;
+            var key = new Vector3Int(origin.x / Size, origin.y / Size, origin.z / Size);
+            _map[origin] = new TerrianChunk(key, Size, this) {Config = Config};
             return _map[origin];
         }
 
@@ -239,10 +236,7 @@ namespace FarmVox.Terrain
         public bool GetWater(Vector3Int coord) {
             var origin = GetOrigin(coord.x, coord.y, coord.z);
             var terrianChunk = GetTerrianChunk(origin);
-            if (terrianChunk == null) {
-                return false;
-            }
-            return terrianChunk.GetWater(coord);
+            return terrianChunk != null && terrianChunk.GetWater(coord);
         }
 
         public void SetWater(Vector3Int coord) {

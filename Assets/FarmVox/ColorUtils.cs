@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using UnityEngine;
 
-namespace FarmVox.Terrain
+namespace FarmVox
 {
     public static class ColorUtils
     {

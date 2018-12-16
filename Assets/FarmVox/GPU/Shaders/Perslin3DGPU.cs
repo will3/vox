@@ -3,58 +3,55 @@ using UnityEngine;
 
 namespace FarmVox.GPU.Shaders
 {
-    public class Perlin3DGPU : IDisposable
+    public class Perlin3DGpu : IDisposable
     {
-        readonly int workGroups = 8;
-        readonly int size;
-        Noise noise;
-
-        ComputeShader shader;
-
+        private const int WorkGroups = 8;
+        private readonly int _size;
+        private readonly Noise _noise;
+        private readonly ComputeShader _shader;
+        private readonly Vector3 _origin;
+        private readonly int _dataSize;
+        
         public ComputeBuffer Results { get; private set; }
 
-        Vector3 origin;
-
-        public int DataSize { get; private set; }
-
-        public Perlin3DGPU(Noise noise, int size, Vector3 origin)
+        public Perlin3DGpu(Noise noise, int size, Vector3 origin)
         {
-            this.noise = noise;
-            this.size = size;
-            this.origin = origin;
-            shader = Resources.Load<ComputeShader>("Shaders/Perlin3D");
-            DataSize = size;
-            Results = new ComputeBuffer(DataSize * DataSize * DataSize, sizeof(float));
+            _noise = noise;
+            _size = size;
+            _origin = origin;
+            _shader = Resources.Load<ComputeShader>("Shaders/Perlin3D");
+            _dataSize = size;
+            Results = new ComputeBuffer(_dataSize * _dataSize * _dataSize, sizeof(float));
             Dispatch();
         }
 
         void Dispatch()
         {
-            var frequency = noise.Frequency;
-            var amplitude = noise.Amplitude;
-            var seed = noise.Seed;
-            var lacunarity = noise.Lacunarity;
-            var persistence = noise.Persistence;
-            var octaves = noise.Octaves;
-            var yScale = noise.YScale;
-            var xzScale = noise.XzScale;
+            var frequency = _noise.Frequency;
+            var amplitude = _noise.Amplitude;
+            var seed = _noise.Seed;
+            var lacunarity = _noise.Lacunarity;
+            var persistence = _noise.Persistence;
+            var octaves = _noise.Octaves;
+            var yScale = _noise.YScale;
+            var xzScale = _noise.XzScale;
 
-            shader.SetBuffer(0, "_Results", Results);
-            shader.SetFloat("_Persistence", persistence);
-            shader.SetVector("_Origin", origin);
-            shader.SetInt("_Size", size);
-            shader.SetInt("_Seed", seed);
-            shader.SetFloat("_Frequency", frequency);
-            shader.SetFloat("_Lacunarity", lacunarity);
-            shader.SetInt("_Octaves", octaves);
-            shader.SetFloat("_YScale", yScale);
-            shader.SetFloat("_XZScale", xzScale);
-            shader.SetFloat("_Amplitude", amplitude);
-            shader.SetInt("_DataSize", DataSize);
-            shader.SetInt("_Type", (int)noise.Type);
+            _shader.SetBuffer(0, "_Results", Results);
+            _shader.SetFloat("_Persistence", persistence);
+            _shader.SetVector("_Origin", _origin);
+            _shader.SetInt("_Size", _size);
+            _shader.SetInt("_Seed", seed);
+            _shader.SetFloat("_Frequency", frequency);
+            _shader.SetFloat("_Lacunarity", lacunarity);
+            _shader.SetInt("_Octaves", octaves);
+            _shader.SetFloat("_YScale", yScale);
+            _shader.SetFloat("_XZScale", xzScale);
+            _shader.SetFloat("_Amplitude", amplitude);
+            _shader.SetInt("_DataSize", _dataSize);
+            _shader.SetInt("_Type", (int)_noise.Type);
 
-            var dispatchNum = Mathf.CeilToInt(size / (float)workGroups);
-            shader.Dispatch(0, dispatchNum, dispatchNum, dispatchNum);
+            var dispatchNum = Mathf.CeilToInt(_size / (float)WorkGroups);
+            _shader.Dispatch(0, dispatchNum, dispatchNum, dispatchNum);
         }
 
         public void Dispose()
@@ -64,7 +61,7 @@ namespace FarmVox.GPU.Shaders
 
         public float[] Read()
         {
-            var data = new float[size * size * size];
+            var data = new float[_size * _size * _size];
             Results.GetData(data);
             return data;
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using FarmVox.Terrain;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace FarmVox.GPU.Shaders
@@ -8,12 +9,25 @@ namespace FarmVox.GPU.Shaders
     {
         public struct Triangle
         {
+            [UsedImplicitly]
             public Vector3 A;
+            
+            [UsedImplicitly]
             public Vector3 B;
+            
+            [UsedImplicitly]
             public Vector3 C;
+            
+            [UsedImplicitly]
             public Color ColorA;
+            
+            [UsedImplicitly]
             public Color ColorB;
+            
+            [UsedImplicitly]
             public Color ColorC;
+            
+            [UsedImplicitly]
             public int Index;
 
             public static int Size
