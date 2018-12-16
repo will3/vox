@@ -21,7 +21,7 @@ namespace FarmVox.Workers
         
         public void Start()
         {
-            if (!_terrianChunk.rockNeedsUpdate)
+            if (!_terrianChunk.RockNeedsUpdate)
             {
                 return;
             }
@@ -50,7 +50,7 @@ namespace FarmVox.Workers
             chunk.SetData(voxelBufferData);
             chunk.SetTypes(typeBufferData);
 
-            _terrianChunk.rockNeedsUpdate = false;
+            _terrianChunk.RockNeedsUpdate = false;
 
             voxelBuffer.Dispose();
             typeBuffer.Dispose();

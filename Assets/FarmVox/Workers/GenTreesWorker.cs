@@ -30,7 +30,7 @@ namespace FarmVox.Workers
         {
             var treeNoise = _config.Biome.TreeNoise;
 
-            if (!_terrianChunk.treesNeedsUpdate)
+            if (!_terrianChunk.TreesNeedsUpdate)
             {
                 return;
             }
@@ -103,7 +103,7 @@ namespace FarmVox.Workers
                 treeChunk.UpdateSurfaceCoords();
             }
 
-            _terrianChunk.treesNeedsUpdate = false;
+            _terrianChunk.TreesNeedsUpdate = false;
         }
         
         public float Priority

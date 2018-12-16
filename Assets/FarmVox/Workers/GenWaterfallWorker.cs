@@ -21,7 +21,7 @@ namespace FarmVox.Workers
             
         public void Start()
         {
-            if (!_terrianChunk.waterfallsNeedsUpdate)
+            if (!_terrianChunk.WaterfallsNeedsUpdate)
             {
                 return;
             }
@@ -54,7 +54,7 @@ namespace FarmVox.Workers
                 GenerateWaterfall(coord + origin);
             }
 
-            _terrianChunk.waterfallsNeedsUpdate = false;
+            _terrianChunk.WaterfallsNeedsUpdate = false;
         }
             
         private void GenerateWaterfall(Vector3Int coord)

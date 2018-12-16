@@ -211,7 +211,7 @@ namespace FarmVox.Terrain
             }
 
             var key = new Vector3Int(origin.x / Size, origin.y / Size, origin.z / Size);
-            _map[origin] = new TerrianChunk(key, Size, this) {Config = Config};
+            _map[origin] = new TerrianChunk(key, Size);
             return _map[origin];
         }
 

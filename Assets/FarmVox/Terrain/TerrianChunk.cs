@@ -5,46 +5,24 @@ namespace FarmVox.Terrain
 {
     public class TerrianChunk
     {
-        readonly HashSet<int> waters = new HashSet<int>();
+        private readonly HashSet<int> _waters = new HashSet<int>();
 
-        public readonly Vector3Int key;
-        public bool rockNeedsUpdate = true;
-        public bool waterNeedsUpdate = true;
-        public bool grassNeedsUpdate = true;
-        public bool treesNeedsUpdate = true;
-        public bool housesNeedsUpdate = true;
-        public bool routesNeedsUpdate = true;
-        public bool townPointsNeedsUpdate = true;
-        public bool roadsNeedsUpdate = true;
-        public bool enemiesNeedsUpdate = true;
-        public bool floatingNeedsUpdate = true;
-        public bool waterfallsNeedsUpdate = true;
-        public TerrianColumn column;
+        public bool RockNeedsUpdate = true;
+        public bool WaterNeedsUpdate = true;
+        public bool TreesNeedsUpdate = true;
+        public bool WaterfallsNeedsUpdate = true;
 
-        Terrain.Terrian terrian;
+        public readonly Vector3Int Origin;
 
-        Vector3Int origin;
-
-        public Vector3Int Origin
+        private readonly int _size;
+        private readonly int _dataSize;
+        
+        public TerrianChunk(Vector3Int key, int size)
         {
-            get
-            {
-                return origin;
-            }
+            Origin = key * size;
+            _size = size;
+            _dataSize = size + 3;
         }
-
-        int size;
-
-        public TerrianChunk(Vector3Int key, int size, Terrain.Terrian terrian)
-        {
-            this.key = key;
-            origin = key * size;
-            this.size = size;
-            dataSize = size + 3;
-            this.terrian = terrian;
-        }
-
-        public readonly int dataSize;
 
         public void SetWater(Vector3Int coord, bool flag)
         {
@@ -53,14 +31,14 @@ namespace FarmVox.Terrain
 
         public void SetWater(int i, int j, int k, bool flag)
         {
-            var index = getIndex(i, j, k);
+            var index = GetIndex(i, j, k);
             if (flag)
             {
-                waters.Add(index);
+                _waters.Add(index);
             }
             else
             {
-                waters.Remove(index);
+                _waters.Remove(index);
             }
         }
 
@@ -69,67 +47,22 @@ namespace FarmVox.Terrain
             return GetWater(coord.x, coord.y, coord.z);
         }
 
-        public bool GetWater(int i, int j, int k)
+        private bool GetWater(int i, int j, int k)
         {
-            var index = getIndex(i, j, k);
-            return waters.Contains(index);
+            var index = GetIndex(i, j, k);
+            return _waters.Contains(index);
         }
 
-        private int getIndex(int i, int j, int k)
+        private int GetIndex(int i, int j, int k)
         {
-            int index = i * dataSize * dataSize + j * dataSize + k;
+            var index = i * _dataSize * _dataSize + j * _dataSize + k;
             return index;
-        }
-
-        readonly HashSet<Vector3Int> townPoints = new HashSet<Vector3Int>();
-
-        public HashSet<Vector3Int> TownPoints
-        {
-            get
-            {
-                return townPoints;
-            }
-        }
-
-        public TerrianConfig Config
-        {
-            get
-            {
-                return config;
-            }
-
-            set
-            {
-                config = value;
-            }
-        }
-
-        public void AddTownPoint(Vector3Int townPoint)
-        {
-            townPoints.Add(townPoint);
-        }
-
-        TerrianConfig config;
-
-        HashSet<Vector3Int> floating = new HashSet<Vector3Int>();
-        public void SetFloating(Vector3Int coord)
-        {
-            floating.Add(coord);
-        }
-
-        public Bounds Bounds {
-            get {
-                var bounds = new Bounds();
-                bounds.min = origin;
-                bounds.max = origin + new Vector3(size, size, size);
-                return bounds;
-            }
         }
 
         public float Distance {
             get {
-                var xDiff = Mathf.Abs(origin.x + size / 2);
-                var yDiff = Mathf.Abs(origin.z + size / 2);
+                var xDiff = Mathf.Abs(Origin.x + _size / 2);
+                var yDiff = Mathf.Abs(Origin.z + _size / 2);
                 return xDiff + yDiff;
             }
         }

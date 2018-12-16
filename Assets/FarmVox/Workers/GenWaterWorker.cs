@@ -21,7 +21,7 @@ namespace FarmVox.Workers
         
         public void Start()
         {
-            if (!_terrianChunk.waterNeedsUpdate)
+            if (!_terrianChunk.WaterNeedsUpdate)
             {
                 return;
             }
@@ -53,7 +53,7 @@ namespace FarmVox.Workers
                 }
             }
 
-            _terrianChunk.waterNeedsUpdate = false;
+            _terrianChunk.WaterNeedsUpdate = false;
         }
         
         public float Priority

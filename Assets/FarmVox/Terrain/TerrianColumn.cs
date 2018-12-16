@@ -67,7 +67,6 @@ namespace FarmVox.Terrain
             this.terrianChunks = terrianChunks;
             foreach (var tc in terrianChunks)
             {
-                tc.column = this;
             }
         }
     }
