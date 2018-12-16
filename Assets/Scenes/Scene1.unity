@@ -148,7 +148,7 @@ MonoBehaviour:
     PlainHeight: 4
     WaterLevel: 0
     GroundHeight: 12
-    MaxChunksX: 3
+    MaxChunksX: 5
     AoStrength: 0.15
     ShadowStrength: 0.5
     TreeMinDis: 3
@@ -187,7 +187,6 @@ MonoBehaviour:
         StoneColor: {r: 0.40392157, g: 0.40392157, b: 0.40392157, a: 1}
         TrunkColor: {r: 0.30980393, g: 0.2509804, b: 0.16470589, a: 1}
         LeafColor: {r: 0.18431373, g: 0.31764707, b: 0.047058824, a: 1}
-        Soil: {r: 0.25490198, g: 0.20784314, b: 0.20784314, a: 1}
         WaterColor: {r: 0.16078432, g: 0.49411765, b: 0.7137255, a: 0.4}
         GrassColor:
           serializedVersion: 2
@@ -369,6 +368,20 @@ MonoBehaviour:
         - 1
         - 1
         - 0
+        Banding: 0
+      HeightFilter:
+        Keys:
+        - -1
+        - -0.2
+        - 0.15
+        - 0.5
+        - 1
+        Values:
+        - -0.4
+        - 0.05
+        - 0.1
+        - 1
+        - 1.2
         Banding: 0
 --- !u!4 &108989302
 Transform:
