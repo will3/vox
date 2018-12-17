@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace FarmVox
+namespace FarmVox.Editor
 {
     [CustomPropertyDrawer(typeof(ColorHtmlPropertyAttribute))]
     public class ColorHtmlPropertyDrawer : PropertyDrawer

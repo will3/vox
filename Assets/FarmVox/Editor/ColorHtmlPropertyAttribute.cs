@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace FarmVox
+namespace FarmVox.Editor
 {
     public class ColorHtmlPropertyAttribute : PropertyAttribute
     {
