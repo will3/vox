@@ -33,6 +33,7 @@ namespace FarmVox.GPU.Shaders
             using (var grassNoise = new Perlin3DGpu(Config.Biome.GrassNoise, DataSize, Origin))
             using (var riverNoise = new Perlin3DGpu(Config.Biome.RiverNoise, DataSize, Origin))
             using (var stoneNoise = new Perlin3DGpu(Config.Biome.StoneNoise, DataSize, Origin))
+            using (Config.Biome.HeightFilter.CreateBuffers(Shader, "_Height"))
             using (var stoneNoise2 = new Perlin3DGpu(Config.Biome.StoneNoise2, DataSize, Origin))
             {
                 Shader.SetBuffer(0, "_HeightBuffer", heightNoise.Results);

@@ -43,7 +43,6 @@ namespace FarmVox.GPU.Shaders
             using (_config.Biome.GrassHeightFilter.CreateBuffers(_shader, "_GrassHeight"))
             using (_config.Biome.RiverNoiseFilter.CreateBuffers(_shader, "_River"))
             using (_config.Biome.StoneHeightFilter.CreateBuffers(_shader, "_StoneHeight"))
-            using (_config.Biome.HeightFilter.CreateBuffers(_shader, "_Height"))
             {
                 _shader.SetBuffer(0, "_NoiseBuffer", noises.Results);
 
