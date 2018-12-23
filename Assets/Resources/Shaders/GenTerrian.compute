@@ -5,15 +5,6 @@ struct GenTerrianNoise {
     float height;
     float rockColor;
     float grass;
-    float stone;
-    float stone2;
-};
-
-struct Output {
-    float grass;
-    float4 grassColor;
-    float4 rockColor;
-    float height;
 };
 
 StructuredBuffer<GenTerrianNoise> _NoiseBuffer;
@@ -47,13 +38,6 @@ int _GrassNormalSize;
 float _GrassHeightValues[8];
 float _GrassHeightKeys[8];
 int _GrassHeightSize;
-
-float4 _StoneColor;
-float _StoneThreshold;
-
-float _StoneHeightValues[8];
-float _StoneHeightKeys[8];
-int _StoneHeightSize;
 
 // Output
 RWStructuredBuffer<float> _VoxelBuffer;
@@ -123,14 +107,6 @@ int getIndex(int3 coord) {
 float readBuffer(StructuredBuffer<float> buffer, int3 coord) {
     int index = coord.x * _DataSize * _DataSize + coord.y * _DataSize + coord.z;
     return buffer[index];
-}
-
-float getStone(int3 coord, float heightRatio, GenTerrianNoise noise) {
-    int index = getIndex(coord);
-    float value = noise.stone + noise.stone2;
-    float stoneMultiplier = sampleValue(_StoneHeightValues, _StoneHeightKeys, _StoneHeightSize, heightRatio);
-    return value * stoneMultiplier;
-    return value;
 }
 
 float sampleNoise(StructuredBuffer<float> buffer, int3 coord) {

@@ -37,13 +37,6 @@ namespace FarmVox.Terrain
         public ValueGradient WaterfallHeightFilter;
         public float WaterfallChance;
         #endregion
-
-        #region stone
-        public Noise StoneNoise;
-        public Noise StoneNoise2;
-        public float StoneThreshold;
-        public ValueGradient StoneHeightFilter;
-        #endregion
         
         private readonly Random _r;
 
@@ -84,21 +77,6 @@ namespace FarmVox.Terrain
             WaterfallNoise = NextNoise();
             WaterfallNoise.Frequency = 0.005f;
             WaterfallChance = 0.01f;
-            
-            StoneNoise = NextNoise();
-            StoneNoise.Frequency = 0.01f;
-            StoneNoise.Amplitude = 0.5f;
-            StoneNoise2 = NextNoise();
-            StoneNoise2.Frequency = 0.005f;
-            StoneNoise2.YScale = 4.0f;
-            StoneNoise2.Amplitude = 1.2f;
-            StoneThreshold = 0.5f;
-            StoneHeightFilter = new ValueGradient(new Dictionary<float, float>
-            {
-                {-1.0f, 1.0f},
-                {0f, 1.0f},
-                {1.0f, 0.0f},
-            });
 
             WaterfallHeightFilter = new ValueGradient(new Dictionary<float, float>()
             {

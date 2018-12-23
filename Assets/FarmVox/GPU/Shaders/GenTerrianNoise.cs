@@ -9,14 +9,10 @@ namespace FarmVox.GPU.Shaders
         public float RockColor { get; set; }
         
         public float Grass { get; set; }
-        
-        public float Stone { get; set; }
-        
-        public float Stone2 { get; set; }
 
         public static int Stride
         {
-            get { return sizeof(float) * 5; }
+            get { return sizeof(float) * 3; }
         }
     }
 }

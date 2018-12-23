@@ -55,13 +55,11 @@ namespace FarmVox.GPU.Shaders
                 _shader.SetInt("_WaterLevel", _config.WaterLevel);
 
                 _shader.SetVector("_StoneColor", _config.Biome.Colors.StoneColor);
-                _shader.SetFloat("_StoneThreshold", _config.Biome.StoneThreshold);
 
                 _shader.SetInt("_DataSize", _dataSize);
                 
                 _shader.SetValueGradient(_config.Biome.GrassNormalFilter, "_GrassNormal");
                 _shader.SetValueGradient(_config.Biome.GrassHeightFilter, "_GrassHeight");
-                _shader.SetValueGradient(_config.Biome.StoneHeightFilter, "_StoneHeight");
                 
                 _shader.SetColorGradient(_config.Biome.Colors.RockColorGradient, "_Rock");
                 _shader.SetColorGradient(_config.Biome.Colors.GrassColor, "_Grass");
