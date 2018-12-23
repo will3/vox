@@ -10,8 +10,6 @@ namespace FarmVox.GPU.Shaders
         
         public float Grass { get; set; }
         
-        public float River { get; set; }
-        
         public float Stone { get; set; }
         
         public float Stone2 { get; set; }
@@ -20,7 +18,7 @@ namespace FarmVox.GPU.Shaders
         {
             get
             {
-                return sizeof(float) * 5 + 
+                return sizeof(float) * 4 + 
                        sizeof(float) * 4;
             }
         }

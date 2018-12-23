@@ -38,11 +38,6 @@ namespace FarmVox.Terrain
         public float WaterfallChance;
         #endregion
 
-        #region river
-        public Noise RiverNoise;
-        public ValueGradient RiverNoiseFilter;
-        #endregion
-
         #region stone
         public Noise StoneNoise;
         public Noise StoneNoise2;
@@ -103,20 +98,6 @@ namespace FarmVox.Terrain
                 {-1.0f, 1.0f},
                 {0f, 1.0f},
                 {1.0f, 0.0f},
-            });
-            
-            RiverNoise = NextNoise();
-            RiverNoise.Type = NoiseType.FBM;
-            RiverNoise.YScale = 0.2f;
-            RiverNoise.Frequency = 0.05f;
-            RiverNoise.Persistence = 0.5f;
-            RiverNoise.Octaves = 7;
-            RiverNoise.Amplitude = 4f;
-
-            RiverNoiseFilter = new ValueGradient(new Dictionary<float, float>() {
-                {0, 0},
-                //{0.9f, 1},
-                //{1.0f, 1}
             });
 
             WaterfallHeightFilter = new ValueGradient(new Dictionary<float, float>()

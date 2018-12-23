@@ -39,7 +39,6 @@ namespace FarmVox.GPU.Shaders
             using (_shader.SetColorGradient(_config.Biome.Colors.GrassColor, _config.Biome.Colors.GrassColorBanding, "_Grass"))
             using (_config.Biome.GrassNormalFilter.CreateBuffers(_shader, "_GrassNormal"))
             using (_config.Biome.GrassHeightFilter.CreateBuffers(_shader, "_GrassHeight"))
-            using (_config.Biome.RiverNoiseFilter.CreateBuffers(_shader, "_River"))
             using (_config.Biome.StoneHeightFilter.CreateBuffers(_shader, "_StoneHeight"))
             {
                 _shader.SetBuffer(0, "_NoiseBuffer", noises.Results);

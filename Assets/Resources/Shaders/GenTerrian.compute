@@ -5,7 +5,6 @@ struct GenTerrianNoise {
     float height;
     float4 rockColor;
     float grass;
-    float river;
     float stone;
     float stone2;
 };
@@ -36,20 +35,12 @@ StructuredBuffer<float> _GrassHeightValues;
 StructuredBuffer<float> _GrassHeightKeys;
 int _GrassHeightSize;
 
-// Grass color
-float4 _GrassColor;
-
 float4 _StoneColor;
 float _StoneThreshold;
 
 StructuredBuffer<float> _StoneHeightValues;
 StructuredBuffer<float> _StoneHeightKeys;
 int _StoneHeightSize;
-
-// River
-StructuredBuffer<float> _RiverValues;
-StructuredBuffer<float> _RiverKeys;
-int _RiverSize;
 
 // Output
 RWStructuredBuffer<float> _VoxelBuffer;
