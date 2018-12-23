@@ -200,10 +200,7 @@ float getGrassDot(int i, int j, int k) {
     return dot(-normalize(d), up);
 }
 
-float getGrass(int3 coord, float heightRatio, int absY, float stone, GenTerrianNoise noise) {
-    if (stone > _StoneThreshold) {
-        return 0;
-    }
+float getGrass(int3 coord, float heightRatio, int absY, GenTerrianNoise noise) {
     if (absY < _WaterLevel + _GroundHeight) {
         return 0;
     }
@@ -252,18 +249,14 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     _VoxelBuffer[index] = value;
 
     float heightRatio = relY / _MaxHeight;
-    float colorRatio = heightRatio + noise.rockColor;
-    float4 rockColor = sampleColor(_RockGradient, _RockGradientIntervals, _RockGradientSize, _RockGradientBanding, colorRatio);
-
+    float4 rockColor = sampleColor(_RockGradient, _RockGradientIntervals, _RockGradientSize, _RockGradientBanding, heightRatio + noise.rockColor);
+    float grass = getGrass(coord, heightRatio, absY, noise);
+    float4 grassColor = sampleColor(_GrassGradient, _GrassGradientIntervals, _GrassGradientSize, _GrassGradientBanding, grass);
+    
     int typeAir = 0;
     int typeRock = 1;
     int typeGrass = 2;
     int type = typeAir;
-    
-    float stone = getStone(coord, heightRatio, noise);
-    
-    // Color
-    float grass = getGrass(coord, heightRatio, absY, stone, noise);
     
     if (grass > 0) {
         type = typeGrass;
@@ -274,8 +267,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     _TypeBuffer[index] = type;
     
     if (type == typeGrass) {
-        _ColorBuffer[index] = sampleColor(_GrassGradient, _GrassGradientIntervals, 
-            _GrassGradientSize, _GrassGradientBanding, grass);;
+        _ColorBuffer[index] = grassColor; 
     } else if (type == typeRock) {
         _ColorBuffer[index] = rockColor;
     }
