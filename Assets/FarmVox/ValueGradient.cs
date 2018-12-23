@@ -11,7 +11,6 @@ namespace FarmVox
     {
         public float[] Keys;
         public float[] Values;
-        public int Banding = 0;
 
         public ValueGradient(float min, float max)
         {
@@ -27,11 +26,6 @@ namespace FarmVox
 
         public float GetValue(float ratio)
         {
-            if (Banding > 0)
-            {
-                ratio = Mathf.Floor(ratio * Banding) / Banding;
-            }
-
             for (var i = 0; i < Keys.Length - 1; i++)
             {
                 var min = Keys[i];
@@ -47,44 +41,6 @@ namespace FarmVox
             }
 
             return 0.0f;
-        }
-
-        public ValueGradientBuffers CreateBuffers(ComputeShader shader, string prefix)
-        {
-            if (Keys.Length == 0)
-            {
-                throw new Exception("cannot be empty");
-            }
-            
-            var keysBuffer = new ComputeBuffer(Keys.Length, sizeof(float));
-            keysBuffer.SetData(Keys);
-
-            var valuesBuffer = new ComputeBuffer(Keys.Length, sizeof(float));
-            valuesBuffer.SetData(Values);
-
-            shader.SetBuffer(0, prefix + "Keys", keysBuffer);
-            shader.SetBuffer(0, prefix + "Values", valuesBuffer);
-            shader.SetInt(prefix + "Size", Keys.Length);
-
-            return new ValueGradientBuffers(keysBuffer, valuesBuffer);
-        }
-
-        public class ValueGradientBuffers : IDisposable
-        {
-            public readonly ComputeBuffer KeysBuffer;
-            public readonly ComputeBuffer ValuesBuffer;
-
-            public ValueGradientBuffers(ComputeBuffer keysBuffer, ComputeBuffer valuesBuffer)
-            {
-                KeysBuffer = keysBuffer;
-                ValuesBuffer = valuesBuffer;
-            }
-
-            public void Dispose()
-            {
-                KeysBuffer.Dispose();
-                ValuesBuffer.Dispose();
-            }
         }
     }
 }

@@ -37,9 +37,6 @@ namespace FarmVox.GPU.Shaders
         public void Dispatch(ComputeBuffer voxelBuffer, ComputeBuffer colorBuffer, ComputeBuffer typeBuffer) {
             using (var noises = new GenTerrianNoiseGpu(_dataSize, _origin, _config))
             using (_shader.SetColorGradient(_config.Biome.Colors.GrassColor, _config.Biome.Colors.GrassColorBanding, "_Grass"))
-            using (_config.Biome.GrassNormalFilter.CreateBuffers(_shader, "_GrassNormal"))
-            using (_config.Biome.GrassHeightFilter.CreateBuffers(_shader, "_GrassHeight"))
-            using (_config.Biome.StoneHeightFilter.CreateBuffers(_shader, "_StoneHeight"))
             {
                 _shader.SetBuffer(0, "_NoiseBuffer", noises.Results);
 
@@ -62,6 +59,10 @@ namespace FarmVox.GPU.Shaders
                 _shader.SetFloat("_StoneThreshold", _config.Biome.StoneThreshold);
 
                 _shader.SetInt("_DataSize", _dataSize);
+                
+                _shader.SetValueGradient(_config.Biome.GrassNormalFilter, "_GrassNormal");
+                _shader.SetValueGradient(_config.Biome.GrassHeightFilter, "_GrassHeight");
+                _shader.SetValueGradient(_config.Biome.StoneHeightFilter, "_StoneHeight");
 
                 var dispatchNum = Mathf.CeilToInt(_dataSize / (float)_workGroups);
                 _shader.Dispatch(0, dispatchNum, dispatchNum, dispatchNum);

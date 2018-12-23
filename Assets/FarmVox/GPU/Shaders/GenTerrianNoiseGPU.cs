@@ -33,7 +33,6 @@ namespace FarmVox.GPU.Shaders
             using (var rockColorNoise = new Perlin3DGpu(Config.Biome.RockColorNoise, DataSize, Origin))
             using (var grassNoise = new Perlin3DGpu(Config.Biome.GrassNoise, DataSize, Origin))
             using (var stoneNoise = new Perlin3DGpu(Config.Biome.StoneNoise, DataSize, Origin))
-            using (Config.Biome.HeightFilter.CreateBuffers(Shader, "_Height"))
             using (var stoneNoise2 = new Perlin3DGpu(Config.Biome.StoneNoise2, DataSize, Origin))
             {
                 Shader.SetBuffer(0, "_HeightBuffer", heightNoise.Results);
@@ -54,6 +53,8 @@ namespace FarmVox.GPU.Shaders
                 
                 Shader.SetColorGradient2(Config.Biome.Colors.RockColorGradient, "_Rock");
 
+                Shader.SetValueGradient(Config.Biome.HeightFilter, "_Height");
+                
                 var dispatchNum = Mathf.CeilToInt(DataSize / (float)WorkGroups);
                 Shader.Dispatch(0, dispatchNum, dispatchNum, dispatchNum);
             }

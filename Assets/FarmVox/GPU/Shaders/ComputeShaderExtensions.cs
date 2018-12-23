@@ -27,5 +27,24 @@ namespace FarmVox.GPU.Shaders
             computeShader.SetInt(prefix + "GradientSize", colorGradient2.Keys.Length);
             computeShader.SetFloat(prefix + "GradientBanding", colorGradient2.Banding);
         }
+
+        public static void SetValueGradient(this ComputeShader computeShader, ValueGradient valueGradient, string prefix)
+        {            
+            computeShader.SetFloats(prefix + "Keys", PackFloats(valueGradient.Keys));
+            computeShader.SetFloats(prefix + "Values", PackFloats(valueGradient.Values));
+            computeShader.SetInt(prefix + "Size", valueGradient.Keys.Length);
+        }
+        
+        private static float[] PackFloats(float[] floats)
+        {
+            var array = new float[floats.Length * 4];
+
+            for (var i = 0; i < floats.Length; i++)
+            {
+                array[i * 4] = floats[i];
+            }
+
+            return array;
+        }
     }
 }

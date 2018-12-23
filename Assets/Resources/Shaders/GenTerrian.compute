@@ -26,20 +26,20 @@ float _GrassGradientBanding;
 int _GrassGradientSize;
 
 // Grass Normal Filter
-StructuredBuffer<float> _GrassNormalValues;
-StructuredBuffer<float> _GrassNormalKeys;
+float _GrassNormalValues[8];
+float _GrassNormalKeys[8];
 int _GrassNormalSize;
 
 // Grass Height Filter
-StructuredBuffer<float> _GrassHeightValues;
-StructuredBuffer<float> _GrassHeightKeys;
+float _GrassHeightValues[8];
+float _GrassHeightKeys[8];
 int _GrassHeightSize;
 
 float4 _StoneColor;
 float _StoneThreshold;
 
-StructuredBuffer<float> _StoneHeightValues;
-StructuredBuffer<float> _StoneHeightKeys;
+float _StoneHeightValues[8];
+float _StoneHeightKeys[8];
 int _StoneHeightSize;
 
 // Output
@@ -80,7 +80,7 @@ float4 sampleColor(StructuredBuffer<float4> gradient, StructuredBuffer<float> in
     return float4(0, 0, 0, 0);
 }
 
-float sampleValue(StructuredBuffer<float> values, StructuredBuffer<float> keys, int size, float ratio) {
+float sampleValue(float values[8], float keys[8], int size, float ratio) {
     if (ratio < keys[0]) {
         ratio = keys[0];
     }
