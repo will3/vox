@@ -20,12 +20,6 @@ float4 _WaterColor;
 float _MaxHeight;
 int _WaterLevel;
 
-// Rock color
-StructuredBuffer<float4> _RockGradient;
-StructuredBuffer<float> _RockGradientIntervals;
-float _RockGradientBanding;
-int _RockGradientSize;
-
 // Grass color
 StructuredBuffer<float4> _GrassGradient;
 StructuredBuffer<float> _GrassGradientIntervals;
