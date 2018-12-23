@@ -1,5 +1,6 @@
 ﻿using System;
 using FarmVox.Editor;
+using FarmVox.GPU;
 using UnityEngine;
 
 namespace FarmVox.Terrain
@@ -7,7 +8,7 @@ namespace FarmVox.Terrain
     [Serializable]
     public class Colors
     {
-        public Gradient RockColorGradient;
+        public ColorGradient2 RockColorGradient;
 
         public int RockColorBanding;
 
@@ -35,16 +36,7 @@ namespace FarmVox.Terrain
             WaterColor = ColorUtils.GetColor("#297eb6");
             WaterColor.a = 0.4f;
 
-            RockColorGradient = new Gradient();
-            RockColorGradient.SetKeys(
-                new []
-                {
-                    new GradientColorKey(ColorUtils.GetColor("#654d1f"), 0)
-                }, 
-                new []
-                {
-                    new GradientAlphaKey(1.0f, 0.0f), 
-                });
+            RockColorGradient = new ColorGradient2(ColorUtils.GetColor("#654d1f"));
             
             GrassColor = new Gradient();
             GrassColor.SetKeys(

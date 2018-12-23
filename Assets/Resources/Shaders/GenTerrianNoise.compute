@@ -41,8 +41,8 @@ StructuredBuffer<float> _HeightValues;
 StructuredBuffer<float> _HeightKeys;
 
 // Rock color
-StructuredBuffer<float4> _RockGradient;
-StructuredBuffer<float> _RockGradientIntervals;
+float4 _RockGradient[8];
+float _RockGradientIntervals[8];
 float _RockGradientBanding;
 int _RockGradientSize;
 
@@ -55,7 +55,7 @@ RWStructuredBuffer<GenTerrianNoise> _NoiseBuffer;
 
 int _DataSize;
 
-float4 sampleColor(StructuredBuffer<float4> gradient, StructuredBuffer<float> intervals, int size, float banding, float ratio) {
+float4 sampleColor(float4 gradient[8], float intervals[8], int size, float banding, float ratio) {
     return gradient[0];
     if (ratio < 0) {
         ratio = 0;

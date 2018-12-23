@@ -19,5 +19,13 @@ namespace FarmVox.GPU.Shaders
 
             return new ColorGradientBuffers(intervalsBuffer, gradientBuffer);
         }
+
+        public static void SetColorGradient2(this ComputeShader computeShader, ColorGradient2 colorGradient2, string prefix)
+        {
+            computeShader.SetVectorArray(prefix + "Gradient", colorGradient2.Colors);
+            computeShader.SetFloats(prefix + "GradientIntervals", colorGradient2.Keys);
+            computeShader.SetInt(prefix + "GradientSize", colorGradient2.Keys.Length);
+            computeShader.SetFloat(prefix + "GradientBanding", colorGradient2.Banding);
+        }
     }
 }
