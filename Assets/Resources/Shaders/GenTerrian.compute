@@ -1,6 +1,8 @@
 ﻿// Each #kernel tells which function to compile; you can have many kernels
 #pragma kernel CSMain
 
+#include "common.cginc"
+
 struct GenTerrianNoise {
     float height;
     float rockColor;
@@ -57,56 +59,6 @@ float3 _Origin;
 int _DataSize;
 int _Resolution;
 
-float Epsilon = 1e-10;
-
-float4 sampleColor(float4 gradient[8], float intervals[8], int size, float banding, float ratio) {
-    return gradient[0];
-    if (ratio < 0) {
-        ratio = 0;
-    }
-    if (ratio > 1.0) {
-        ratio = 1.0;
-    }
-
-    if (banding > 0) {
-        ratio = floor(ratio * banding) / banding;
-    }
-
-    for (int i = 0; i < size - 1; i++) {
-        float ra = intervals[i];
-        float rb = intervals[i + 1];
-
-        if (ratio >= ra && ratio <= rb) {
-            float r = (ratio - ra) / (rb - ra);
-            return lerp(gradient[i], gradient[i + 1], r);
-        }
-    }
-
-    return float4(0, 0, 0, 0);
-}
-
-float sampleValue(float values[8], float keys[8], int size, float ratio) {
-    if (ratio < keys[0]) {
-        ratio = keys[0];
-    }
-    if (ratio > keys[size - 1]) {
-        ratio = keys[size - 1];
-    }
-
-    for (int i = 0; i < size - 1; i++) {
-        float ra = keys[i];
-        float rb = keys[i + 1];
-
-        if (ratio >= ra && ratio <= rb) {
-            float r = (ratio - ra) / (rb - ra);
-            float va = values[i];
-            float vb = values[i + 1];
-            return va + (vb - va) * r;
-        }
-    }
-    return 0;
-}
-
 int getIndex(int3 coord) {
     int dataSize = _DataSize;
     return (coord.x * dataSize * dataSize) + (coord.y * dataSize) + coord.z;
@@ -115,38 +67,6 @@ int getIndex(int3 coord) {
 float readBuffer(StructuredBuffer<float> buffer, int3 coord) {
     int index = coord.x * _DataSize * _DataSize + coord.y * _DataSize + coord.z;
     return buffer[index];
-}
-
-float sampleNoise(StructuredBuffer<float> buffer, int3 coord) {
-    float x = coord.x / _Resolution;
-    float y = coord.y / _Resolution;
-    float z = coord.z / _Resolution;
-
-    int minx = floor(x);
-    int miny = float(y);
-    int minz = float(z);
-
-    int maxx = minx + 1;
-    int maxy = miny + 1;
-    int maxz = minz + 1;
-
-    float a = readBuffer(buffer, int3(coord.x, coord.y, coord.z));
-    float b = readBuffer(buffer, int3(coord.x + 1, coord.y, coord.z));
-    float c = readBuffer(buffer, int3(coord.x, coord.y + 1, coord.z));
-    float d = readBuffer(buffer, int3(coord.x + 1, coord.y + 1, coord.z));
-    float e = readBuffer(buffer, int3(coord.x, coord.y, coord.z + 1));
-    float f = readBuffer(buffer, int3(coord.x + 1, coord.y, coord.z + 1));
-    float g = readBuffer(buffer, int3(coord.x, coord.y + 1, coord.z + 1));
-    float h = readBuffer(buffer, int3(coord.x + 1, coord.y + 1, coord.z + 1));
-
-    float rx = maxx - x;
-    float ry = maxy - y;
-    float rz = maxz - z;
-
-    float v = ((a * rx + b * (1 - rx)) * ry + (c * rx + d * (1 - rx)) * (1 - ry)) * rz +
-    ((e * rx + f * (1 - rx)) * ry + (g * rx + h * (1 - rx)) * (1 - ry)) * (1 - rz);
-
-    return v;
 }
 
 float getVoxel(int3 coord) {
@@ -188,26 +108,17 @@ float getGrass(int3 coord, float heightRatio, int absY, GenTerrianNoise noise) {
     if (absY < _WaterLevel + _GroundHeight) {
         return 0;
     }
+    
     float normal = getGrassDot(coord.x, coord.y, coord.z);
     if (normal == 99) {
         return 0;
     }
+    
     float normalValue = sampleValue(_GrassNormalValues, _GrassNormalKeys, _GrassNormalSize, normal);
-    if (normalValue <= 0) {
-        return 0;
-    }
-
+    
     float heightValue = sampleValue(_GrassHeightValues, _GrassHeightKeys, _GrassHeightSize, heightRatio);
 
-    if (heightValue <= 0) {
-        return 0;
-    }
-
-    float value = normalValue * heightValue * 1.2;
-
-    if (value <= 0.2) {
-        return 0;
-    }
+    float value = normalValue + heightValue - 1.2;
 
     return value;
 }
@@ -234,25 +145,26 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
     float heightRatio = relY / _MaxHeight;
     float4 rockColor = sampleColor(_RockGradient, _RockGradientIntervals, _RockGradientSize, _RockGradientBanding, heightRatio + noise.rockColor);
-    // float grass = getGrass(coord, heightRatio, absY, noise);
-    // float4 grassColor = sampleColor(_GrassGradient, _GrassGradientIntervals, _GrassGradientSize, _GrassGradientBanding, grass);
+    float grass = getGrass(coord, heightRatio, absY, noise);
+    float4 grassColor = sampleColor(_GrassGradient, _GrassGradientIntervals, _GrassGradientSize, _GrassGradientBanding, grass);
     
-    int typeAir = 0;
-    int typeRock = 1;
-    int typeGrass = 2;
-    int type = typeAir;
-    
-    //if (grass > 0) {
+    //
       //  type = typeGrass;
     //} else {
       //  type = typeRock;
     //}
-    type = typeRock;
+    // type = typeRock;
+    
+    if (grass > 0) {
+        _ColorBuffer[index] = grassColor;
+    } else {
+        _ColorBuffer[index] = rockColor;
+    }
     
     //if (type == typeGrass) {
-        //_ColorBuffer[index] = grassColor; 
+        // 
     //} else if (type == typeRock) {
-      //  _ColorBuffer[index] = rockColor;
+      //  
     //}
-    _ColorBuffer[index] = rockColor;
+    // _ColorBuffer[index] = rockColor;
 }
