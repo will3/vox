@@ -26,21 +26,9 @@ namespace FarmVox.Voxel
 
         public Color[] Colors { get; private set; }
         
-        private int[] Types { get; set; }
-        
         private bool _surfaceCoordsDirty = true;
         private bool _normalsNeedsUpdate = true;
         
-        public void SetTypes(int[] types) {
-            Types = types;
-        }
-
-        public VoxelType GetType(Vector3Int coord) {
-            var index = GetIndex(coord);
-            var value = Types[index];
-            return (VoxelType)value;
-        }
-
         public void SetColors(Color[] colors)
         {
             if (colors.Length != Colors.Length)

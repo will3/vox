@@ -59,11 +59,6 @@ namespace FarmVox.Workers
                     continue;
                 }
 
-                var type = chunk.GetType(localCoord);
-                if (type == VoxelType.Stone) {
-                    continue;
-                }
-
                 var relY = j + chunk.Origin.y - _config.GroundHeight;
 
                 if (relY <= _config.WaterLevel) {

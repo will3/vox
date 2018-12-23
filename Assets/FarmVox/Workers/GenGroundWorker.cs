@@ -33,27 +33,21 @@ namespace FarmVox.Workers
 
             var voxelBuffer = genTerrianGpu.CreateVoxelBuffer();
             var colorBuffer = genTerrianGpu.CreateColorBuffer();
-            var typeBuffer = genTerrianGpu.CreateTypeBuffer();
 
-            genTerrianGpu.Dispatch(voxelBuffer, colorBuffer, typeBuffer);
+            genTerrianGpu.Dispatch(voxelBuffer, colorBuffer);
 
             var voxelBufferData = new float[voxelBuffer.count];
             voxelBuffer.GetData(voxelBufferData);
-
-            var typeBufferData = new int[typeBuffer.count];
-            typeBuffer.GetData(typeBufferData);
 
             var colorBufferData = new Color[colorBuffer.count];
             colorBuffer.GetData(colorBufferData);
 
             chunk.SetColors(colorBufferData);
             chunk.SetData(voxelBufferData);
-            chunk.SetTypes(typeBufferData);
 
             _terrianChunk.RockNeedsUpdate = false;
 
             voxelBuffer.Dispose();
-            typeBuffer.Dispose();
             colorBuffer.Dispose();
         }
         

@@ -8,36 +8,7 @@ struct GenTerrianNoise {
 };
 
 struct Biome {
-    float hillHeight;
-    float groundHeight;
-    float4 waterColor;
     
-    // Rock color
-    float4 rockGradient[8];
-    float rockGradientIntervals[8];
-    float rockGradientBanding;
-    int rockGradientSize;
-    
-    // Grass color
-    float4 grassGradient[8];
-    float grassGradientIntervals[8];
-    float grassGradientBanding;
-    int grassGradientSize;
-    
-    // Grass Normal Filter
-    float grassNormalValues[8];
-    float grassNormalKeys[8];
-    int grassNormalSize;
-    
-    // Grass Height Filter
-    float grassHeightValues[8];
-    float grassHeightKeys[8];
-    int grassHeightSize;
-    
-    // Height filter
-    float heightValues[8];
-    float heightKeys[8];
-    int heightSize;
 };
 
 StructuredBuffer<GenTerrianNoise> _NoiseBuffer;
@@ -80,7 +51,6 @@ int _HeightSize;
 // Output
 RWStructuredBuffer<float> _VoxelBuffer;
 RWStructuredBuffer<float4> _ColorBuffer;
-RWStructuredBuffer<int> _TypeBuffer;
 
 int _Size;
 float3 _Origin;
@@ -264,25 +234,25 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
     float heightRatio = relY / _MaxHeight;
     float4 rockColor = sampleColor(_RockGradient, _RockGradientIntervals, _RockGradientSize, _RockGradientBanding, heightRatio + noise.rockColor);
-    float grass = getGrass(coord, heightRatio, absY, noise);
-    float4 grassColor = sampleColor(_GrassGradient, _GrassGradientIntervals, _GrassGradientSize, _GrassGradientBanding, grass);
+    // float grass = getGrass(coord, heightRatio, absY, noise);
+    // float4 grassColor = sampleColor(_GrassGradient, _GrassGradientIntervals, _GrassGradientSize, _GrassGradientBanding, grass);
     
     int typeAir = 0;
     int typeRock = 1;
     int typeGrass = 2;
     int type = typeAir;
     
-    if (grass > 0) {
-        type = typeGrass;
-    } else {
-        type = typeRock;
-    }
+    //if (grass > 0) {
+      //  type = typeGrass;
+    //} else {
+      //  type = typeRock;
+    //}
+    type = typeRock;
     
-    _TypeBuffer[index] = type;
-    
-    if (type == typeGrass) {
-        _ColorBuffer[index] = grassColor; 
-    } else if (type == typeRock) {
-        _ColorBuffer[index] = rockColor;
-    }
+    //if (type == typeGrass) {
+        //_ColorBuffer[index] = grassColor; 
+    //} else if (type == typeRock) {
+      //  _ColorBuffer[index] = rockColor;
+    //}
+    _ColorBuffer[index] = rockColor;
 }

@@ -141,7 +141,7 @@ namespace FarmVox.Terrain
                 {
                     queue.Enqueue(new GenGroundWorker(chunk, DefaultLayer, Config));
                     queue.Enqueue(new GenWaterWorker(chunk, DefaultLayer, WaterLayer, Config));
-                    queue.Enqueue(new GenTreesWorker(Config, chunk, DefaultLayer, TreeLayer, this, TreeMap));
+                    // queue.Enqueue(new GenTreesWorker(Config, chunk, DefaultLayer, TreeLayer, this, TreeMap));
                 }
             }
             
@@ -149,7 +149,7 @@ namespace FarmVox.Terrain
             {
                 foreach (var chunk in column.TerrianChunks)
                 {
-                    queue.Enqueue(new GenWaterfallWorker(chunk, DefaultLayer, Config));
+                    // queue.Enqueue(new GenWaterfallWorker(chunk, DefaultLayer, Config));
                 }
             }
             

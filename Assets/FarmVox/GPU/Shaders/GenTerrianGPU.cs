@@ -30,18 +30,13 @@ namespace FarmVox.GPU.Shaders
             return new ComputeBuffer(_dataSize * _dataSize * _dataSize, sizeof(float) * 4);
         }
 
-        public ComputeBuffer CreateTypeBuffer() {
-            return new ComputeBuffer(_dataSize * _dataSize * _dataSize, sizeof(int));
-        }
-
-        public void Dispatch(ComputeBuffer voxelBuffer, ComputeBuffer colorBuffer, ComputeBuffer typeBuffer) {
+        public void Dispatch(ComputeBuffer voxelBuffer, ComputeBuffer colorBuffer) {
             using (var noises = new GenTerrianNoiseGpu(_dataSize, _origin, _config))
             {
                 _shader.SetBuffer(0, "_NoiseBuffer", noises.Results);
 
                 _shader.SetBuffer(0, "_VoxelBuffer", voxelBuffer);
                 _shader.SetBuffer(0, "_ColorBuffer", colorBuffer);
-                _shader.SetBuffer(0, "_TypeBuffer", typeBuffer);
 
                 _shader.SetFloat("_MaxHeight", _config.MaxHeight);
 
