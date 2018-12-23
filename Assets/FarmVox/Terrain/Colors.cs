@@ -11,9 +11,6 @@ namespace FarmVox.Terrain
         public ColorGradient RockColorGradient;
 
         public int RockColorBanding;
-
-        [ColorHtmlProperty] 
-        public Color StoneColor;
         
         [ColorHtmlProperty]
         public Color TrunkColor;
@@ -30,7 +27,6 @@ namespace FarmVox.Terrain
 
         public Colors()
         {        
-            StoneColor = ColorUtils.GetColor("#676767");
             TrunkColor = ColorUtils.GetColor("#4f402a");
             LeafColor = ColorUtils.GetColor("#2f510c");
             WaterColor = ColorUtils.GetColor("#297eb6");
