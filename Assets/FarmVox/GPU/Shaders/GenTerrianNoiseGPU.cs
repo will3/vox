@@ -1,4 +1,5 @@
-﻿using FarmVox.Terrain;
+﻿using FarmVox.GPU.Structs;
+using FarmVox.Terrain;
 using TMPro.EditorUtilities;
 using UnityEngine;
 using IDisposable = System.IDisposable;
@@ -40,8 +41,6 @@ namespace FarmVox.GPU.Shaders
                 Shader.SetBuffer(0, "_NoiseBuffer", Results);
 
                 Shader.SetInt("_DataSize", DataSize);
-
-                Shader.SetValueGradient(Config.Biome.HeightFilter, "_Height");
                 
                 var dispatchNum = Mathf.CeilToInt(DataSize / (float)WorkGroups);
                 Shader.Dispatch(0, dispatchNum, dispatchNum, dispatchNum);

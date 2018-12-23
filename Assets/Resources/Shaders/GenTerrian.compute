@@ -7,15 +7,48 @@ struct GenTerrianNoise {
     float grass;
 };
 
+struct Biome {
+    float hillHeight;
+    float groundHeight;
+    float4 waterColor;
+    
+    // Rock color
+    float4 rockGradient[8];
+    float rockGradientIntervals[8];
+    float rockGradientBanding;
+    int rockGradientSize;
+    
+    // Grass color
+    float4 grassGradient[8];
+    float grassGradientIntervals[8];
+    float grassGradientBanding;
+    int grassGradientSize;
+    
+    // Grass Normal Filter
+    float grassNormalValues[8];
+    float grassNormalKeys[8];
+    int grassNormalSize;
+    
+    // Grass Height Filter
+    float grassHeightValues[8];
+    float grassHeightKeys[8];
+    int grassHeightSize;
+    
+    // Height filter
+    float heightValues[8];
+    float heightKeys[8];
+    int heightSize;
+};
+
 StructuredBuffer<GenTerrianNoise> _NoiseBuffer;
 
-float _HillHeight;
-float _PlainHeight;
-float _GroundHeight;
-
-float4 _WaterColor;
 float _MaxHeight;
 int _WaterLevel;
+
+
+float _HillHeight;
+float _GroundHeight;
+float4 _WaterColor;
 
 // Rock color
 float4 _RockGradient[8];
@@ -38,6 +71,11 @@ int _GrassNormalSize;
 float _GrassHeightValues[8];
 float _GrassHeightKeys[8];
 int _GrassHeightSize;
+
+// Height
+float _HeightValues[8];
+float _HeightKeys[8];
+int _HeightSize;
 
 // Output
 RWStructuredBuffer<float> _VoxelBuffer;
@@ -219,7 +257,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     float absY = coord.y + _Origin.y;
     float relY = absY - _GroundHeight;
     float gradient = -relY / _HillHeight;
-    float height = noise.height;
+    float height = sampleValue(_HeightValues, _HeightKeys, _HeightSize, noise.height);
     
     float value = height + gradient;
     _VoxelBuffer[index] = value;

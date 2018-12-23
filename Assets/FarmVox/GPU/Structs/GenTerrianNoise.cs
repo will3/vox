@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace FarmVox.GPU.Shaders
+﻿namespace FarmVox.GPU.Structs
 {
     public struct GenTerrianNoise
     {

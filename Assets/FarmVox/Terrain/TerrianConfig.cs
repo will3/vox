@@ -15,7 +15,6 @@ namespace FarmVox.Terrain
         public int Size;
         public int MaxChunksY;
         public float MaxHeight;
-        public float HillHeight;
         public float PlainHeight;
         public int WaterLevel;
         public int GroundHeight;
@@ -31,7 +30,6 @@ namespace FarmVox.Terrain
             Size = 32;
             MaxChunksY = 2;
             MaxHeight = 64;
-            HillHeight = 48;
             PlainHeight = 4;
             WaterLevel = 0;
             GroundHeight = 12;

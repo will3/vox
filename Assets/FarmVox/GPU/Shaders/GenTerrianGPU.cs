@@ -49,7 +49,7 @@ namespace FarmVox.GPU.Shaders
 
                 _shader.SetInt("_Size", _size);
                 _shader.SetVector("_Origin", (Vector3)_origin);
-                _shader.SetFloat("_HillHeight", _config.HillHeight);
+                _shader.SetFloat("_HillHeight", _config.Biome.HillHeight);
                 _shader.SetFloat("_PlainHeight", _config.PlainHeight);
                 _shader.SetFloat("_GroundHeight", _config.GroundHeight);
                 _shader.SetInt("_WaterLevel", _config.WaterLevel);
@@ -63,6 +63,10 @@ namespace FarmVox.GPU.Shaders
                 
                 _shader.SetColorGradient(_config.Biome.Colors.RockColorGradient, "_Rock");
                 _shader.SetColorGradient(_config.Biome.Colors.GrassColor, "_Grass");
+                
+                _shader.SetValueGradient(_config.Biome.HeightFilter, "" +
+                                                                     "_Height" +
+                                                                     "");
 
                 var dispatchNum = Mathf.CeilToInt(_dataSize / (float)_workGroups);
                 _shader.Dispatch(0, dispatchNum, dispatchNum, dispatchNum);

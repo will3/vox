@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace FarmVox.GPU
+namespace FarmVox
 {
     public class ColorGradient
     {

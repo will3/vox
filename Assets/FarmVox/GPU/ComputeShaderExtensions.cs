@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace FarmVox.GPU.Shaders
+namespace FarmVox.GPU
 {
     public static class ComputeShaderExtensions {
         public static void SetColorGradient(this ComputeShader computeShader, ColorGradient colorGradient, string prefix)

@@ -9,6 +9,8 @@ namespace FarmVox.Terrain
     [Serializable]
     public class BiomeConfig
     {
+        public float HillHeight;
+        
         public Colors Colors;
         
         #region ground
@@ -44,6 +46,8 @@ namespace FarmVox.Terrain
         
         public BiomeConfig(int seed = 1337)
         {
+            HillHeight = 48;
+            
             _r = new Random(seed);
             HeightNoise = NextNoise();
             HeightNoise.Frequency = 0.015f;
