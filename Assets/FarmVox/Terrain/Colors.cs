@@ -8,7 +8,7 @@ namespace FarmVox.Terrain
     [Serializable]
     public class Colors
     {
-        public ColorGradient2 RockColorGradient;
+        public ColorGradient RockColorGradient;
 
         public int RockColorBanding;
 
@@ -24,7 +24,7 @@ namespace FarmVox.Terrain
         [ColorHtmlProperty]
         public Color WaterColor;
         
-        public ColorGradient2 GrassColor;
+        public ColorGradient GrassColor;
         
         public int GrassColorBanding;
 
@@ -36,8 +36,8 @@ namespace FarmVox.Terrain
             WaterColor = ColorUtils.GetColor("#297eb6");
             WaterColor.a = 0.4f;
 
-            RockColorGradient = new ColorGradient2(ColorUtils.GetColor("#654d1f"));
-            GrassColor = new ColorGradient2(ColorUtils.GetColor("#597420"));
+            RockColorGradient = new ColorGradient(ColorUtils.GetColor("#654d1f"));
+            GrassColor = new ColorGradient(ColorUtils.GetColor("#597420"));
         }
     }
 }
