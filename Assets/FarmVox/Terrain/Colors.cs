@@ -24,7 +24,7 @@ namespace FarmVox.Terrain
         [ColorHtmlProperty]
         public Color WaterColor;
         
-        public Gradient GrassColor;
+        public ColorGradient2 GrassColor;
         
         public int GrassColorBanding;
 
@@ -37,17 +37,7 @@ namespace FarmVox.Terrain
             WaterColor.a = 0.4f;
 
             RockColorGradient = new ColorGradient2(ColorUtils.GetColor("#654d1f"));
-            
-            GrassColor = new Gradient();
-            GrassColor.SetKeys(
-                new[]
-                {
-                    new GradientColorKey(ColorUtils.GetColor("#597420"), 0)
-                }, 
-                new []
-                {
-                    new GradientAlphaKey(1.0f, 0.0f), 
-                });
+            GrassColor = new ColorGradient2(ColorUtils.GetColor("#597420"));
         }
     }
 }

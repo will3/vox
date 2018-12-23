@@ -2,7 +2,7 @@
 
 struct GenTerrianNoise {
     float height;
-    float4 rockColor;
+    float rockColor;
     float grass;
     float stone;
     float stone2;
@@ -40,16 +40,6 @@ StructuredBuffer<float> _StoneBuffer2;
 float _HeightValues[8];
 float _HeightKeys[8];
 int _HeightSize;
-
-// Rock color
-float4 _RockGradient[8];
-float _RockGradientIntervals[8];
-float _RockGradientBanding;
-int _RockGradientSize;
-
-float3 _Origin;
-float _GroundHeight;
-float _MaxHeight;
 
 RWStructuredBuffer<GenTerrianNoise> _NoiseBuffer;
 
@@ -118,20 +108,12 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     
     int index = getIndex(id.x, id.y, id.z);
     
-    int3 coord = int3(id.x, id.y, id.z);
-    float absY = coord.y + _Origin.y;
-    float relY = absY - _GroundHeight;
-    float heightRatio = relY / _MaxHeight;
-    float rockColorValue = _RockColorBuffer[index];
-    float colorRatio = heightRatio + rockColorValue;
-    float4 rockColor = sampleColor(_RockGradient, _RockGradientIntervals, _RockGradientSize, _RockGradientBanding, colorRatio);
-    
     GenTerrianNoise t;
 
     float height = _HeightBuffer[index];
     height = sampleValue(_HeightValues, _HeightKeys, _HeightSize, height);
     t.height = height;
-    t.rockColor = rockColor;
+    t.rockColor = _RockColorBuffer[index];
     t.grass = _GrassBuffer[index];
     t.stone = _StoneBuffer[index];
     t.stone2 = _StoneBuffer2[index];

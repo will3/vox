@@ -44,14 +44,6 @@ namespace FarmVox.GPU.Shaders
                 Shader.SetBuffer(0, "_NoiseBuffer", Results);
 
                 Shader.SetInt("_DataSize", DataSize);
-                
-                Shader.SetFloat("_GroundHeight", Config.GroundHeight);
-                
-                Shader.SetFloat("_MaxHeight", Config.MaxHeight);
-                
-                Shader.SetVector("_Origin", (Vector3)Origin);
-                
-                Shader.SetColorGradient2(Config.Biome.Colors.RockColorGradient, "_Rock");
 
                 Shader.SetValueGradient(Config.Biome.HeightFilter, "_Height");
                 

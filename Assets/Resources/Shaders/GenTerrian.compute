@@ -3,7 +3,7 @@
 
 struct GenTerrianNoise {
     float height;
-    float4 rockColor;
+    float rockColor;
     float grass;
     float stone;
     float stone2;
@@ -19,9 +19,15 @@ float4 _WaterColor;
 float _MaxHeight;
 int _WaterLevel;
 
+// Rock color
+float4 _RockGradient[8];
+float _RockGradientIntervals[8];
+float _RockGradientBanding;
+int _RockGradientSize;
+
 // Grass color
-StructuredBuffer<float4> _GrassGradient;
-StructuredBuffer<float> _GrassGradientIntervals;
+float4 _GrassGradient[8];
+float _GrassGradientIntervals[8];
 float _GrassGradientBanding;
 int _GrassGradientSize;
 
@@ -54,7 +60,7 @@ int _Resolution;
 
 float Epsilon = 1e-10;
 
-float4 sampleColor(StructuredBuffer<float4> gradient, StructuredBuffer<float> intervals, int size, float banding, float ratio) {
+float4 sampleColor(float4 gradient[8], float intervals[8], int size, float banding, float ratio) {
     return gradient[0];
     if (ratio < 0) {
         ratio = 0;
@@ -239,8 +245,8 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     _VoxelBuffer[index] = value;
 
     float heightRatio = relY / _MaxHeight;
-    
-    float4 rockColor = noise.rockColor;
+    float colorRatio = heightRatio + noise.rockColor;
+    float4 rockColor = sampleColor(_RockGradient, _RockGradientIntervals, _RockGradientSize, _RockGradientBanding, colorRatio);
 
     int typeAir = 0;
     int typeRock = 1;
