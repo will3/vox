@@ -41,11 +41,47 @@ StructuredBuffer<float> _StoneBuffer2;
 // Height
 StructuredBuffer<float> _HeightValues;
 StructuredBuffer<float> _HeightKeys;
+
+// Rock color
+StructuredBuffer<float4> _RockGradient;
+StructuredBuffer<float> _RockGradientIntervals;
+float _RockGradientBanding;
+int _RockGradientSize;
+
 int _HeightSize;
+float3 _Origin;
+float _GroundHeight;
+float _MaxHeight;
 
 RWStructuredBuffer<GenTerrianNoise> _NoiseBuffer;
 
 int _DataSize;
+
+float4 sampleColor(StructuredBuffer<float4> gradient, StructuredBuffer<float> intervals, int size, float banding, float ratio) {
+    return gradient[0];
+    if (ratio < 0) {
+        ratio = 0;
+    }
+    if (ratio > 1.0) {
+        ratio = 1.0;
+    }
+
+    if (banding > 0) {
+        ratio = floor(ratio * banding) / banding;
+    }
+
+    for (int i = 0; i < size - 1; i++) {
+        float ra = intervals[i];
+        float rb = intervals[i + 1];
+
+        if (ratio >= ra && ratio <= rb) {
+            float r = (ratio - ra) / (rb - ra);
+            return lerp(gradient[i], gradient[i + 1], r);
+        }
+    }
+
+    return float4(0, 0, 0, 0);
+}
 
 int getIndex(int x, int y, int z) {
     int dataSize = _DataSize;
@@ -62,12 +98,19 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     
     int index = getIndex(id.x, id.y, id.z);
     
+    int3 coord = int3(id.x, id.y, id.z);
+    float absY = coord.y + _Origin.y;
+    float relY = absY - _GroundHeight;
+    float heightRatio = relY / _MaxHeight;
+    float rockColorValue = _RockColorBuffer[index];
+    float colorRatio = heightRatio + rockColorValue;
+    float4 rockColor = sampleColor(_RockGradient, _RockGradientIntervals, _RockGradientSize, _RockGradientBanding, colorRatio);
+    
     GenTerrianNoise t;
 
     float height = _HeightBuffer[index];
     height = sampleValue(_HeightValues, _HeightKeys, _HeightSize, height);
     t.height = height;
-    
     t.rockColor = _RockColorBuffer[index];
     t.river = _RiverBuffer[index];
     t.grass = _GrassBuffer[index];

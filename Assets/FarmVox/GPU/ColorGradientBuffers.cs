@@ -2,7 +2,7 @@
 
 namespace FarmVox.GPU
 {
-    internal class ColorGradientBuffers : System.IDisposable
+    public class ColorGradientBuffers : System.IDisposable
     {
         private readonly ComputeBuffer _intervalsBuffer;
         private readonly ComputeBuffer _colorsBuffer;
