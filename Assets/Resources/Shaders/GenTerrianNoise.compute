@@ -2,7 +2,7 @@
 
 struct GenTerrianNoise {
     float height;
-    float rockColor;
+    float4 rockColor;
     float grass;
     float river;
     float stone;
@@ -111,7 +111,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     float height = _HeightBuffer[index];
     height = sampleValue(_HeightValues, _HeightKeys, _HeightSize, height);
     t.height = height;
-    t.rockColor = _RockColorBuffer[index];
+    t.rockColor = rockColor;
     t.river = _RiverBuffer[index];
     t.grass = _GrassBuffer[index];
     t.stone = _StoneBuffer[index];
