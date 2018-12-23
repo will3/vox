@@ -9,6 +9,13 @@ struct GenTerrianNoise {
     float stone2;
 };
 
+struct Output {
+    float grass;
+    float4 grassColor;
+    float4 rockColor;
+    float height;
+};
+
 StructuredBuffer<GenTerrianNoise> _NoiseBuffer;
 
 float _HillHeight;
@@ -251,7 +258,6 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     int typeAir = 0;
     int typeRock = 1;
     int typeGrass = 2;
-    int typeStone = 3;
     int type = typeAir;
     
     float stone = getStone(coord, heightRatio, noise);
@@ -259,21 +265,17 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     // Color
     float grass = getGrass(coord, heightRatio, absY, stone, noise);
     
-    if (stone > _StoneThreshold) {
-        type = typeStone;
-    } else if (grass > 0) {
+    if (grass > 0) {
         type = typeGrass;
     } else {
         type = typeRock;
     }
+    
     _TypeBuffer[index] = type;
     
-    if (type == typeStone) {
-        _ColorBuffer[index] = _StoneColor;
-    } else if (type == typeGrass) {
-        float4 grassColor = sampleColor(_GrassGradient, _GrassGradientIntervals, 
-            _GrassGradientSize, _GrassGradientBanding, grass);
-        _ColorBuffer[index] = grassColor;
+    if (type == typeGrass) {
+        _ColorBuffer[index] = sampleColor(_GrassGradient, _GrassGradientIntervals, 
+            _GrassGradientSize, _GrassGradientBanding, grass);;
     } else if (type == typeRock) {
         _ColorBuffer[index] = rockColor;
     }
