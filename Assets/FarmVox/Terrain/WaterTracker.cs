@@ -6,29 +6,31 @@ namespace FarmVox.Terrain
 {
     class WaterTracker
     {
-        private float speed = 0.0f;
-        private bool freefall = false;
-        private float freefallFriction = 0f;
-        private float friction = 0.9f;
-        private float lastCost = 0.0f;
-        private float maxSpeed = 5;
-        private bool didReachedWater = false;
-        private List<Vector3Int> coords = new List<Vector3Int>();
-        private List<Vector3Int> emptyCoords = new List<Vector3Int>();
-        private List<float> costs = new List<float>();
+        private const float Friction = 0.9f;
+        private const float FreefallFriction = 0f;
+        private const float MaxSpeed = 5;
+        
+        private float _speed;
+        private bool _freefall;
+        private float _lastCost;
+        private bool _didReachedWater;
+        
+        private readonly List<Vector3Int> _coords = new List<Vector3Int>();
+        private readonly List<Vector3Int> _emptyCoords = new List<Vector3Int>();
+        private readonly List<float> _costs = new List<float>();
 
-        TerrianConfig config;
+        readonly TerrianConfig _config;
 
         public WaterTracker(TerrianConfig config)
         {
-            this.config = config;
+            _config = config;
         }
 
         public bool DidReachedWater
         {
             get
             {
-                return didReachedWater;
+                return _didReachedWater;
             }
         }
 
@@ -36,68 +38,68 @@ namespace FarmVox.Terrain
         {
             get
             {
-                return lastCost;
+                return _lastCost;
             }
         }
 
         public void Start(Vector3Int coord)
         {
-            coords.Add(coord);
-            costs.Add(1.0f);
+            _coords.Add(coord);
+            _costs.Add(1.0f);
         }
 
         public void Freefall(Vector3Int coord)
         {
-            speed += 1f;
-            freefall = true;
-            lastCost = 1 / speed;
+            _speed += 1f;
+            _freefall = true;
+            _lastCost = 1 / _speed;
 
-            speed *= friction;
+            _speed *= Friction;
 
-            if (speed > maxSpeed)
+            if (_speed > MaxSpeed)
             {
-                speed = maxSpeed;
+                _speed = MaxSpeed;
             }
 
-            coords.Add(coord);
-            costs.Add(costs[costs.Count - 1] + lastCost);
+            _coords.Add(coord);
+            _costs.Add(_costs[_costs.Count - 1] + _lastCost);
 
-            emptyCoords.Add(coord);
+            _emptyCoords.Add(coord);
         }
 
         public void Flow(Vector3Int from, Vector3Int to)
         {
-            if (freefall)
+            if (_freefall)
             {
-                speed *= freefallFriction;
-                freefall = false;
+                _speed *= FreefallFriction;
+                _freefall = false;
             }
 
-            speed += 0.5f;
+            _speed += 0.5f;
 
-            speed *= friction;
+            _speed *= Friction;
 
-            lastCost = (from - to).magnitude / speed;
+            _lastCost = (from - to).magnitude / _speed;
 
-            coords.Add(to);
-            costs.Add(costs[costs.Count - 1] + lastCost);
+            _coords.Add(to);
+            _costs.Add(_costs[_costs.Count - 1] + _lastCost);
         }
 
         public void ReachedWater()
         {
-            didReachedWater = true;
+            _didReachedWater = true;
         }
 
         public void Apply(Chunks chunks)
         {
-            for (var i = 0; i < coords.Count; i++)
+            for (var i = 0; i < _coords.Count; i++)
             {
-                var coord = coords[i];
-                var cost = costs[i];
-                chunks.SetColor(coord.x, coord.y, coord.z, config.Biome.Colors.WaterColor);
+                var coord = _coords[i];
+                var cost = _costs[i];
+                chunks.SetColor(coord.x, coord.y, coord.z, _config.Biome.Colors.WaterColor);
                 chunks.SetWaterfall(coord, cost);
             }
-            foreach (var coord in emptyCoords)
+            foreach (var coord in _emptyCoords)
             {
                 chunks.Set(coord, 1);
             }

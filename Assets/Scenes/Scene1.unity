@@ -144,7 +144,6 @@ MonoBehaviour:
     Size: 32
     MaxChunksY: 2
     MaxHeight: 64
-    HillHeight: 48
     PlainHeight: 4
     WaterLevel: 0
     GroundHeight: 12
@@ -153,70 +152,12 @@ MonoBehaviour:
     ShadowStrength: 0.5
     TreeMinDis: 3
     Biome:
+      HillHeight: 48
       Colors:
-        RockColorGradient:
-          serializedVersion: 2
-          key0: {r: 0.39607844, g: 0.3019608, b: 0.12156863, a: 1}
-          key1: {r: 0.39607844, g: 0.3019608, b: 0.12156863, a: 1}
-          key2: {r: 0, g: 0, b: 0, a: 0}
-          key3: {r: 0, g: 0, b: 0, a: 0}
-          key4: {r: 0, g: 0, b: 0, a: 0}
-          key5: {r: 0, g: 0, b: 0, a: 0}
-          key6: {r: 0, g: 0, b: 0, a: 0}
-          key7: {r: 0, g: 0, b: 0, a: 0}
-          ctime0: 0
-          ctime1: 65535
-          ctime2: 0
-          ctime3: 0
-          ctime4: 0
-          ctime5: 0
-          ctime6: 0
-          ctime7: 0
-          atime0: 0
-          atime1: 65535
-          atime2: 0
-          atime3: 0
-          atime4: 0
-          atime5: 0
-          atime6: 0
-          atime7: 0
-          m_Mode: 0
-          m_NumColorKeys: 2
-          m_NumAlphaKeys: 2
         RockColorBanding: 0
-        StoneColor: {r: 0.40392157, g: 0.40392157, b: 0.40392157, a: 1}
         TrunkColor: {r: 0.30980393, g: 0.2509804, b: 0.16470589, a: 1}
         LeafColor: {r: 0.18431373, g: 0.31764707, b: 0.047058824, a: 1}
         WaterColor: {r: 0.16078432, g: 0.49411765, b: 0.7137255, a: 0.4}
-        GrassColor:
-          serializedVersion: 2
-          key0: {r: 0.34901962, g: 0.45490196, b: 0.1254902, a: 1}
-          key1: {r: 0.34901962, g: 0.45490196, b: 0.1254902, a: 1}
-          key2: {r: 0, g: 0, b: 0, a: 0}
-          key3: {r: 0, g: 0, b: 0, a: 0}
-          key4: {r: 0, g: 0, b: 0, a: 0}
-          key5: {r: 0, g: 0, b: 0, a: 0}
-          key6: {r: 0, g: 0, b: 0, a: 0}
-          key7: {r: 0, g: 0, b: 0, a: 0}
-          ctime0: 0
-          ctime1: 65535
-          ctime2: 0
-          ctime3: 0
-          ctime4: 0
-          ctime5: 0
-          ctime6: 0
-          ctime7: 0
-          atime0: 0
-          atime1: 65535
-          atime2: 0
-          atime3: 0
-          atime4: 0
-          atime5: 0
-          atime6: 0
-          atime7: 0
-          m_Mode: 0
-          m_NumColorKeys: 2
-          m_NumAlphaKeys: 2
         GrassColorBanding: 0
       HeightNoise:
         Frequency: 0.015
@@ -267,21 +208,15 @@ MonoBehaviour:
         - 0.5
         - 0
         - 0
-        Banding: 0
       GrassNormalFilter:
         Keys:
         - -1
         - 0
-        - 0.49
-        - 0.5
         - 1
         Values:
-        - 0
-        - 0
-        - 0
         - 1
         - 1
-        Banding: 0
+        - 1
       TreeHeightGradient:
         Keys:
         - 0
@@ -289,7 +224,6 @@ MonoBehaviour:
         Values:
         - 1
         - 0
-        Banding: 0
       TreeAmount: 2
       TreeDensityFilter:
         Keys:
@@ -298,7 +232,6 @@ MonoBehaviour:
         Values:
         - 0
         - 1
-        Banding: 0
       WaterfallNoise:
         Frequency: 0.005
         Amplitude: 1
@@ -320,55 +253,7 @@ MonoBehaviour:
         - 0
         - 1
         - 1
-        Banding: 0
       WaterfallChance: 0.01
-      RiverNoise:
-        Frequency: 0.05
-        Amplitude: 4
-        Seed: 1574398402
-        Lacunarity: 2
-        Persistence: 0.5
-        Octaves: 7
-        YScale: 0.2
-        XzScale: 1
-        Type: 0
-      RiverNoiseFilter:
-        Keys:
-        - 0
-        Values:
-        - 0
-        Banding: 0
-      StoneNoise:
-        Frequency: 0.01
-        Amplitude: 0.5
-        Seed: 1691295375
-        Lacunarity: 2
-        Persistence: 0.5
-        Octaves: 5
-        YScale: 1
-        XzScale: 1
-        Type: 0
-      StoneNoise2:
-        Frequency: 0.005
-        Amplitude: 1.2
-        Seed: 942591449
-        Lacunarity: 2
-        Persistence: 0.5
-        Octaves: 5
-        YScale: 4
-        XzScale: 1
-        Type: 0
-      StoneThreshold: 0.5
-      StoneHeightFilter:
-        Keys:
-        - -1
-        - 0
-        - 1
-        Values:
-        - 1
-        - 1
-        - 0
-        Banding: 0
       HeightFilter:
         Keys:
         - -1
@@ -382,7 +267,6 @@ MonoBehaviour:
         - 0.1
         - 1
         - 1.2
-        Banding: 0
 --- !u!4 &108989302
 Transform:
   m_ObjectHideFlags: 0

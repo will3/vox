@@ -116,8 +116,6 @@ namespace FarmVox.Terrain
                 new Dictionary<float, float>{
                     { -1, 0 },
                     { 0, 0 },
-                    { 0.49f, 0},
-                    { 0.5f, 1 },
                     { 1, 1 } });
         }
         
