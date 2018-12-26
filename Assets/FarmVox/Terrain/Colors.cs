@@ -2,15 +2,14 @@
 using FarmVox.Editor;
 using FarmVox.GPU;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace FarmVox.Terrain
 {
     [Serializable]
     public class Colors
     {
-        public ColorGradient RockColorGradient;
-
-        public int RockColorBanding;
+        [FormerlySerializedAs("RockColorGradient")] public ColorGradient RockColor;
         
         [ColorHtmlProperty]
         public Color TrunkColor;
@@ -22,8 +21,6 @@ namespace FarmVox.Terrain
         public Color WaterColor;
         
         public ColorGradient GrassColor;
-        
-        public int GrassColorBanding;
 
         public Colors()
         {        
@@ -32,7 +29,7 @@ namespace FarmVox.Terrain
             WaterColor = ColorUtils.GetColor("#297eb6");
             WaterColor.a = 0.4f;
 
-            RockColorGradient = new ColorGradient(ColorUtils.GetColor("#654d1f"));
+            RockColor = new ColorGradient(ColorUtils.GetColor("#654d1f"));
             GrassColor = new ColorGradient(ColorUtils.GetColor("#597420"));
         }
     }

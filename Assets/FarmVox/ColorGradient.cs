@@ -1,17 +1,19 @@
+using System;
 using UnityEngine;
 
 namespace FarmVox
 {
+    [Serializable]
     public class ColorGradient
     {
         public float[] Keys;
-        public Vector4[] Colors;
+        public Color[] Colors;
         public int Banding;
 
         public ColorGradient(Color color)
         {
             Keys = new[] {0.0f};
-            Colors = new[] {(Vector4) color};
+            Colors = new[] { color};
         }
     }
 }

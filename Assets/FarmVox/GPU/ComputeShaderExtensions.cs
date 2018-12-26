@@ -1,11 +1,12 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 
 namespace FarmVox.GPU
 {
     public static class ComputeShaderExtensions {
         public static void SetColorGradient(this ComputeShader computeShader, ColorGradient colorGradient, string prefix)
         {
-            computeShader.SetVectorArray(prefix + "Gradient", colorGradient.Colors);
+            computeShader.SetVectorArray(prefix + "Gradient", colorGradient.Colors.Select(u => u.ToVector4()).ToArray());
             computeShader.SetFloats(prefix + "GradientIntervals", colorGradient.Keys);
             computeShader.SetInt(prefix + "GradientSize", colorGradient.Keys.Length);
             computeShader.SetFloat(prefix + "GradientBanding", colorGradient.Banding);
