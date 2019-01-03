@@ -290,36 +290,40 @@ namespace FarmVox.Terrain
             }
         }
 
+        private delegate void VisitChunk(TerrianChunk chunk);
+        
+        private void VisitChunks(VisitChunk visit)
+        {
+            foreach (var column in _columnList)
+            {
+                foreach (var chunk in column.TerrianChunks)
+                {
+                    visit(chunk);
+                }
+            }
+        } 
+        
         private void Reload()
         {
             var queue = GameController.Instance.Queue;
 
             queue.RemoveAll();
             
-            foreach (var column in _columnList)
+            VisitChunks(chunk =>
             {
-                foreach (var chunk in column.TerrianChunks)
-                {
-                    queue.Enqueue(new GenGroundWorker(chunk, DefaultLayer, Config));
-                }
-            }
+                queue.Enqueue(new GenGroundWorker(chunk, DefaultLayer, Config));
+            });
             
-            foreach (var column in _columnList)
+            VisitChunks(chunk =>
             {
-                foreach (var chunk in column.TerrianChunks)
-                {
-                    queue.Enqueue(new GenWaterWorker(chunk, DefaultLayer, WaterLayer, Config));
-                }
-            }
+                queue.Enqueue(new GenWaterWorker(chunk, DefaultLayer, WaterLayer, Config));
+            });
             
-            foreach (var column in _columnList)
+            VisitChunks(chunk =>
             {
-                foreach (var chunk in column.TerrianChunks)
-                {
-                    queue.Enqueue(new GenTreesWorker(Config, chunk, DefaultLayer, TreeLayer, this, _treeMap));
-                }
-            }
-            
+                queue.Enqueue(new GenTreesWorker(Config, chunk, DefaultLayer, TreeLayer, this, _treeMap));
+            });
+                        
             TreeLayer.Clear();
             WaterLayer.Clear();
 
