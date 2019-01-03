@@ -36,6 +36,7 @@ namespace FarmVox.Workers
             var origin = _terrianChunk.Origin;
             var chunk = _defaultLayer.GetChunk(origin);
             chunk.UpdateNormals();
+            chunk.UpdateSurfaceCoords();
 
             foreach (var kv in chunk.Normals)
             {

@@ -27,7 +27,7 @@ namespace FarmVox.Voxel
         public Color[] Colors { get; private set; }
         
         private bool _surfaceCoordsDirty = true;
-        private bool _normalsNeedsUpdate = true;
+        private bool _normalsDirty = true;
         
         public void SetColors(Color[] colors)
         {
@@ -48,7 +48,7 @@ namespace FarmVox.Voxel
             Data = data;
             Dirty = true;
             _surfaceCoordsDirty = true;
-            _normalsNeedsUpdate = true;
+            _normalsDirty = true;
         }
 
         private readonly Dictionary<Vector3Int, float> _waterfalls = new Dictionary<Vector3Int, float>();
@@ -181,7 +181,7 @@ namespace FarmVox.Voxel
             Data[index] = v;
             Dirty = true;
             _surfaceCoordsDirty = true;
-            _normalsNeedsUpdate = true;
+            _normalsDirty = true;
         }
 
         public void SetColor(int i, int j, int k, Color v)
@@ -210,7 +210,7 @@ namespace FarmVox.Voxel
 
         public void UpdateNormals()
         {
-            if (!_normalsNeedsUpdate)
+            if (!_normalsDirty)
             {
                 return;
             }
@@ -228,7 +228,7 @@ namespace FarmVox.Voxel
                 Normals[coord] = normal;
             }
 
-            _normalsNeedsUpdate = false;
+            _normalsDirty = false;
         }
 
         private Vector3 CalcNormal(Vector3Int coord)
@@ -278,9 +278,8 @@ namespace FarmVox.Voxel
 
         public void Clear()
         {
-            Data = new float[DataSize * DataSize * DataSize];
-            Colors = new Color[DataSize * DataSize * DataSize];
-            Dirty = true; 
+            SetData(new float[DataSize * DataSize * DataSize]);
+            SetColors(new Color[DataSize * DataSize * DataSize]);
         }
     }
 }
