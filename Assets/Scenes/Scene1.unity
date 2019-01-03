@@ -147,7 +147,7 @@ MonoBehaviour:
     PlainHeight: 4
     WaterLevel: 0
     GroundHeight: 12
-    MaxChunksX: 5
+    MaxChunksX: 2
     AoStrength: 0.15
     ShadowStrength: 0.5
     TreeMinDis: 3
@@ -229,6 +229,7 @@ MonoBehaviour:
         - 0
         - 0
         - 1
+      GrassValue: 1
       TreeHeightGradient:
         Keys:
         - 0
@@ -301,6 +302,7 @@ GameObject:
   m_Component:
   - component: {fileID: 362043728}
   - component: {fileID: 362043727}
+  - component: {fileID: 362043729}
   m_Layer: 0
   m_Name: Game
   m_TagString: GameController
@@ -333,6 +335,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &362043729
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 362043726}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1b224724dc1a465ab3e8eb921e9d902, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &534669902
 GameObject:
   m_ObjectHideFlags: 0
