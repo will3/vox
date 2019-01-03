@@ -23,6 +23,7 @@ namespace FarmVox.Terrain
         public Noise GrassNoise;
         public ValueGradient GrassHeightFilter;
         public ValueGradient GrassNormalFilter;
+        public float GrassValue;
         #endregion
 
         #region tree
@@ -108,15 +109,17 @@ namespace FarmVox.Terrain
             });
 
             GrassHeightFilter = new ValueGradient(new Dictionary<float, float>{
-                { 0, 0.5f },
-                { 0.5f, 0},
-                { 1, 0 } });
+                { 0, 0.2f },
+                { 0.5f, -0.5f},
+                { 1, -1 } });
 
             GrassNormalFilter = new ValueGradient(
                 new Dictionary<float, float>{
                     { -1, 0 },
-                    { 0, 0 },
+                    { -0.5f, 0 },
                     { 1, 1 } });
+
+            GrassValue = 1.0f;
         }
         
         Perlin NextPerlin()
