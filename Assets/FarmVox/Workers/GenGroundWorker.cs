@@ -21,11 +21,6 @@ namespace FarmVox.Workers
         
         public void Start()
         {
-            if (!_terrianChunk.RockNeedsUpdate)
-            {
-                return;
-            }
-
             var origin = _terrianChunk.Origin;
             var chunk = _layer.GetOrCreateChunk(origin);
 
@@ -44,8 +39,6 @@ namespace FarmVox.Workers
 
             chunk.SetColors(colorBufferData);
             chunk.SetData(voxelBufferData);
-
-            _terrianChunk.RockNeedsUpdate = false;
 
             voxelBuffer.Dispose();
             colorBuffer.Dispose();

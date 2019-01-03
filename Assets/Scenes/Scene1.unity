@@ -346,6 +346,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1b224724dc1a465ab3e8eb921e9d902, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Skin: {fileID: 11400000, guid: 06eea7ce3778246b0b12fefb6a58c715, type: 2}
+  LineHeight: 40
+  TotalLines: 5
+  ConsoleMargin:
+    m_Left: 4
+    m_Right: 4
+    m_Top: 4
+    m_Bottom: 4
+  ConsolePadding:
+    m_Left: 4
+    m_Right: 4
+    m_Top: 6
+    m_Bottom: 0
 --- !u!1 &534669902
 GameObject:
   m_ObjectHideFlags: 0

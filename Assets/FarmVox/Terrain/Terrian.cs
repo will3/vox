@@ -251,10 +251,36 @@ namespace FarmVox.Terrain
 
         private void OnDestroy()
         {
-            ShadowMap.Dispose();
+            if (ShadowMap != null)
+            {
+                ShadowMap.Dispose();    
+            }
+            
             foreach (var tc in _map.Values) {
                 tc.Dispose();
             }
+        }
+
+        public void ReloadConfig(TerrianConfig config = null)
+        {
+            if (config != null)
+            {
+                Config = config;    
+            }
+            
+            var queue = GameController.Instance.Queue;
+
+            foreach (var column in _columnList)
+            {
+                foreach (var chunk in column.TerrianChunks)
+                {
+                    queue.Enqueue(new GenGroundWorker(chunk, DefaultLayer, Config));
+                    queue.Enqueue(new GenWaterWorker(chunk, DefaultLayer, WaterLayer, Config));
+                    queue.Enqueue(new GenTreesWorker(Config, chunk, DefaultLayer, TreeLayer, this, TreeMap));
+                }
+            }
+            
+            TreeLayer.Clear();
         }
     }
 }

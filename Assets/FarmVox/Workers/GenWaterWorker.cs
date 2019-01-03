@@ -21,11 +21,6 @@ namespace FarmVox.Workers
         
         public void Start()
         {
-            if (!_terrianChunk.WaterNeedsUpdate)
-            {
-                return;
-            }
-
             var origin = _terrianChunk.Origin;
             var chunk = _defaultLayer.GetChunk(origin);
             var waterChunk = _waterLayer.GetOrCreateChunk(_terrianChunk.Origin);
@@ -52,8 +47,6 @@ namespace FarmVox.Workers
                     }
                 }
             }
-
-            _terrianChunk.WaterNeedsUpdate = false;
         }
         
         public float Priority

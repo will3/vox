@@ -199,5 +199,13 @@ namespace FarmVox.Voxel
                 chunk.SetWaterfall(i - origin.x, j - origin.y, k - origin.z, value);
             }
         }
+
+        public void Clear()
+        {
+            foreach (var chunk in Map.Values)
+            {
+                chunk.Clear();
+            }
+        }
     }
 }

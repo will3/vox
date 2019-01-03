@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace FarmVox
@@ -13,8 +14,16 @@ namespace FarmVox
                 return TextureMap[name];
             }
 
-            TextureMap[name] = Resources.Load<Texture2D>("Textures/" + name);
-            return TextureMap[name];
+            var texture = Resources.Load<Texture2D>("Textures/" + name);
+
+            if (texture == null)
+            {
+                throw new Exception("Cannot load texture " + name);
+            }
+
+            TextureMap[name] = texture;
+
+            return texture;
         }
     }
 }

@@ -21,11 +21,6 @@ namespace FarmVox.Workers
             
         public void Start()
         {
-            if (!_terrianChunk.WaterfallsNeedsUpdate)
-            {
-                return;
-            }
-
             var origin = _terrianChunk.Origin;
 
             var chunk = _defaultLayer.GetChunk(origin);
@@ -53,8 +48,6 @@ namespace FarmVox.Workers
 
                 GenerateWaterfall(coord + origin);
             }
-
-            _terrianChunk.WaterfallsNeedsUpdate = false;
         }
             
         private void GenerateWaterfall(Vector3Int coord)

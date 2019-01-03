@@ -7,10 +7,10 @@ namespace FarmVox.Terrain
     {
         private readonly HashSet<int> _waters = new HashSet<int>();
 
-        public bool RockNeedsUpdate = true;
-        public bool WaterNeedsUpdate = true;
-        public bool TreesNeedsUpdate = true;
-        public bool WaterfallsNeedsUpdate = true;
+//        public bool RockNeedsUpdate = true;
+//        public bool WaterNeedsUpdate = true;
+//        public bool TreesNeedsUpdate = true;
+//        public bool WaterfallsNeedsUpdate = true;
 
         public readonly Vector3Int Origin;
 

@@ -275,5 +275,12 @@ namespace FarmVox.Voxel
         public bool IsSurfaceCoordUp(Vector3Int coord) {
             return SurfaceCoordsUp.Contains(coord);
         }
+
+        public void Clear()
+        {
+            Data = new float[DataSize * DataSize * DataSize];
+            Colors = new Color[DataSize * DataSize * DataSize];
+            Dirty = true; 
+        }
     }
 }

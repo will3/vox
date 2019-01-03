@@ -30,11 +30,6 @@ namespace FarmVox.Workers
         {
             var treeNoise = _config.Biome.TreeNoise;
 
-            if (!_terrianChunk.TreesNeedsUpdate)
-            {
-                return;
-            }
-
             var pine = new Pine(3.0f, 10, 2);
             //var pine = new Maple(7.0f, 2);
 
@@ -97,8 +92,6 @@ namespace FarmVox.Workers
             {
                 treeChunk.UpdateSurfaceCoords();
             }
-
-            _terrianChunk.TreesNeedsUpdate = false;
         }
         
         public float Priority
