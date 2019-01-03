@@ -9,9 +9,6 @@ Shader "Unlit/voxeltrans"
     }
     SubShader
     {
-        //Tags { "RenderType"="Opaque" }
-        //LOD 100
-        
         Tags { "Queue" = "Transparent" "RenderType" = "Transparent" }
         LOD 100
         Blend SrcAlpha OneMinusSrcAlpha
@@ -169,15 +166,6 @@ Shader "Unlit/voxeltrans"
 
                 // apply fog
                 UNITY_APPLY_FOG(i.fogCoord, col);
-
-                if (worldCoord.x % 3 == 0 || worldCoord.z % 3 == 0) {
-                    // col *= float4(1.0,0.5,0.5, 1.0);
-                    // col *= float4(1.2, 1.2, 1.2, 1.0);
-                    // col *= float4(0.5, 0.5, 0.5, 1.0);
-                } else {
-                    // col = float4(103 / 255.0, 234 / 255.0, 19 / 255.0, 1.0) * 0.5 + col * 0.5;
-                    // col *= float4(1.0, 1.0, 1.0, 1.0);
-                }
                 
                 return col;
             }
