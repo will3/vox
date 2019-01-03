@@ -25,28 +25,33 @@ namespace FarmVox.Workers
             _terrian = terrian;
             _treeMap = treeMap;
         }
-
+        
         public void Start()
         {
             var treeNoise = _config.Biome.TreeNoise;
 
             var pine = new Pine(3.0f, 10, 2);
-            //var pine = new Maple(7.0f, 2);
 
             var origin = _terrianChunk.Origin;
             var chunk = _defaultLayer.GetChunk(origin);
             chunk.UpdateNormals();
-            chunk.UpdateSurfaceCoords();
 
             foreach (var kv in chunk.Normals)
             {
                 var localCoord = kv.Key;
                 var normal = kv.Value;
+                
+                // Cannot be stored in tree map
+                if (localCoord.x >= _config.Size || localCoord.y >= _config.Size || localCoord.z >= _config.Size)
+                {
+                    continue;
+                }
+                
                 var i = localCoord.x;
                 var j = localCoord.y;
                 var k = localCoord.z;
 
-                Vector3Int globalCoord = localCoord + chunk.Origin;
+                var globalCoord = localCoord + chunk.Origin;
                 var noise = (float)treeNoise.GetValue(globalCoord);
                 var treeDensity = _config.Biome.TreeDensityFilter.GetValue(noise);
 

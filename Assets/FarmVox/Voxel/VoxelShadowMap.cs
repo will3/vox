@@ -137,6 +137,7 @@ namespace FarmVox.Voxel
             {
                 buffer.Dispose();
             }
+            
             if (_defaultBuffer != null)
             {
                 _defaultBuffer.Dispose();

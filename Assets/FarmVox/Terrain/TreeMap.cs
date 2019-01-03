@@ -5,21 +5,16 @@ namespace FarmVox.Terrain
 {
     public class TreeMap
     {
-        BoundsInt _bounds;
         private readonly Octree<Tree> _map;
 
         public TreeMap(BoundsInt bounds)
         {
-            _bounds = bounds;
             _map = new Octree<Tree>(bounds);
         }
 
         public void AddTree(Tree tree)
         {
-            if (!_map.Set(tree.Pivot, tree))
-            {   
-                Debug.LogWarning("Failed to add tree at " + tree.Pivot);
-            }
+            _map.Set(tree.Pivot, tree);
         }
 
         public void RemoveTree(Tree tree)
@@ -35,6 +30,11 @@ namespace FarmVox.Terrain
         public List<Tree> Search(BoundsInt b)
         {
             return _map.Search(b);
+        }
+
+        public void Clear()
+        {
+            _map.Clear();
         }
     }
 }

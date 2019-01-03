@@ -12,8 +12,8 @@ namespace FarmVox
         private const int MinSize = 4;
         private const int MaxValues = 32;
 
-        readonly List<Octree<T>> children = new List<Octree<T>>();
-        readonly Dictionary<Vector3Int, T> values = new Dictionary<Vector3Int, T>();
+        private readonly List<Octree<T>> _children = new List<Octree<T>>();
+        private readonly Dictionary<Vector3Int, T> _values = new Dictionary<Vector3Int, T>();
 
         public Octree(Vector3Int start, Vector3Int size)
         {
@@ -41,17 +41,17 @@ namespace FarmVox
                 return false;
             }
 
-            var leaf = values.Count < MaxValues || Size.x <= MinSize;
+            var leaf = _values.Count < MaxValues || Size.x <= MinSize;
 
             if (leaf)
             {
-                values[pos] = value;
+                _values[pos] = value;
                 return true;
             }
 
             Divide();
 
-            foreach (var child in children)
+            foreach (var child in _children)
             {
                 if (child.Set(pos, value))
                 {
@@ -64,7 +64,7 @@ namespace FarmVox
 
         private void Divide()
         {
-            if (children.Count > 0)
+            if (_children.Count > 0)
             {
                 return;
             }
@@ -75,14 +75,14 @@ namespace FarmVox
 
             var halfSize = new Vector3Int(halfX, halfY, halfZ);
 
-            children.Add(new Octree<T>(new Vector3Int(Start.x, Start.y, Start.z), halfSize));
-            children.Add(new Octree<T>(new Vector3Int(Start.x + halfX, Start.y, Start.z), halfSize));
-            children.Add(new Octree<T>(new Vector3Int(Start.x, Start.y + halfY, Start.z), halfSize));
-            children.Add(new Octree<T>(new Vector3Int(Start.x + halfX, Start.y + halfY, Start.z), halfSize));
-            children.Add(new Octree<T>(new Vector3Int(Start.x, Start.y, Start.z + halfZ), halfSize));
-            children.Add(new Octree<T>(new Vector3Int(Start.x + halfX, Start.y, Start.z + halfZ), halfSize));
-            children.Add(new Octree<T>(new Vector3Int(Start.x, Start.y + halfY, Start.z + halfZ), halfSize));
-            children.Add(new Octree<T>(new Vector3Int(Start.x + halfX, Start.y + halfY, Start.z + halfZ), halfSize));
+            _children.Add(new Octree<T>(new Vector3Int(Start.x, Start.y, Start.z), halfSize));
+            _children.Add(new Octree<T>(new Vector3Int(Start.x + halfX, Start.y, Start.z), halfSize));
+            _children.Add(new Octree<T>(new Vector3Int(Start.x, Start.y + halfY, Start.z), halfSize));
+            _children.Add(new Octree<T>(new Vector3Int(Start.x + halfX, Start.y + halfY, Start.z), halfSize));
+            _children.Add(new Octree<T>(new Vector3Int(Start.x, Start.y, Start.z + halfZ), halfSize));
+            _children.Add(new Octree<T>(new Vector3Int(Start.x + halfX, Start.y, Start.z + halfZ), halfSize));
+            _children.Add(new Octree<T>(new Vector3Int(Start.x, Start.y + halfY, Start.z + halfZ), halfSize));
+            _children.Add(new Octree<T>(new Vector3Int(Start.x + halfX, Start.y + halfY, Start.z + halfZ), halfSize));
         }
 
         public bool Any(BoundsInt bounds)
@@ -92,7 +92,7 @@ namespace FarmVox
                 return false;
             }
 
-            foreach (var kv in values)
+            foreach (var kv in _values)
             {
                 if (bounds.Contains(kv.Key))
                 {
@@ -100,7 +100,7 @@ namespace FarmVox
                 }
             }
 
-            foreach (var child in children)
+            foreach (var child in _children)
             {
                 if (child.Any(bounds))
                 {
@@ -140,7 +140,7 @@ namespace FarmVox
                 return;
             }
 
-            foreach (var kv in values)
+            foreach (var kv in _values)
             {
                 if (bounds.Contains(kv.Key))
                 {
@@ -148,9 +148,9 @@ namespace FarmVox
                 }
             }
 
-            if (children.Count <= 0) return;
+            if (_children.Count <= 0) return;
             
-            foreach (var child in children)
+            foreach (var child in _children)
             {
                 child.Search(bounds, results);
             }
@@ -163,13 +163,13 @@ namespace FarmVox
                 return false;
             }
 
-            if (values.ContainsKey(coord))
+            if (_values.ContainsKey(coord))
             {
-                values.Remove(coord);
+                _values.Remove(coord);
                 return true;
             }
 
-            foreach (var child in children)
+            foreach (var child in _children)
             {
                 if (child.Remove(coord))
                 {
@@ -178,6 +178,12 @@ namespace FarmVox
             }
 
             return false;
+        }
+
+        public void Clear()
+        {
+            _children.Clear();
+            _values.Clear();
         }
     }
 }

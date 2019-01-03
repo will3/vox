@@ -36,11 +36,11 @@ namespace FarmVox.Terrain
         
         private readonly List<TerrianColumn> _columnList = new List<TerrianColumn>();
 
-        Chunks[] _chunksToDraw;
+        private Chunks[] _chunksToDraw;
 
-        private TreeMap TreeMap { get; set; }
+        private TreeMap _treeMap;
 
-        private VoxelShadowMap ShadowMap { get; set; }
+        private VoxelShadowMap _shadowMap;
 
         private Bounds _bounds;
 
@@ -98,7 +98,7 @@ namespace FarmVox.Terrain
             WaterLayer = new Chunks(size) {Transparent = true, UseNormals = false};
             BuildingLayer = new Chunks(size);
 
-            TreeMap = new TreeMap(boundsInt);
+            _treeMap = new TreeMap(boundsInt);
 
             DefaultLayer.GetGameObject().layer = LayerMask.NameToLayer("terrian");
             TreeLayer.GetGameObject().layer = LayerMask.NameToLayer("trees");
@@ -117,7 +117,7 @@ namespace FarmVox.Terrain
 
             _chunksToDraw = new[] { DefaultLayer, TreeLayer, WaterLayer, BuildingLayer };
 
-            ShadowMap = new VoxelShadowMap(size, Config);
+            _shadowMap = new VoxelShadowMap(size, Config);
 
             heightMap = new HeightMap();
 
@@ -137,7 +137,7 @@ namespace FarmVox.Terrain
 
             if (LastConfig != null && config != LastConfig)
             {
-                ReloadConfig();
+                Reload();
                 Debug.Log("Reload");
             }
             
@@ -156,7 +156,7 @@ namespace FarmVox.Terrain
                 {
                     queue.Enqueue(new GenGroundWorker(chunk, DefaultLayer, Config));
                     queue.Enqueue(new GenWaterWorker(chunk, DefaultLayer, WaterLayer, Config));
-                    queue.Enqueue(new GenTreesWorker(Config, chunk, DefaultLayer, TreeLayer, this, TreeMap));
+                    queue.Enqueue(new GenTreesWorker(Config, chunk, DefaultLayer, TreeLayer, this, _treeMap));
                 }
             }
             
@@ -176,13 +176,13 @@ namespace FarmVox.Terrain
                 foreach (var column in _columnList)
                 {
                     UpdateMaterial();
-                    ShadowMap.Update();
+                    _shadowMap.Update();
 
                     foreach (var chunks in _chunksToDraw)
                     {
                         foreach (var terrianChunk in column.TerrianChunks)
                         {
-                            var worker = new DrawChunkWorker(Config, ShadowMap, chunks, terrianChunk);    
+                            var worker = new DrawChunkWorker(Config, _shadowMap, chunks, terrianChunk);    
                             worker.Start();
                         }
                     }
@@ -201,7 +201,7 @@ namespace FarmVox.Terrain
                     material.SetVector("_Origin", (Vector3)origin);
                     material.SetInt("_Size", Size);
 
-                    ShadowMap.UpdateMaterial(material, origin);
+                    _shadowMap.UpdateMaterial(material, origin);
                 }
             }
         }
@@ -266,9 +266,9 @@ namespace FarmVox.Terrain
 
         private void OnDestroy()
         {
-            if (ShadowMap != null)
+            if (_shadowMap != null)
             {
-                ShadowMap.Dispose();    
+                _shadowMap.Dispose();    
             }
             
             foreach (var tc in _map.Values) {
@@ -276,7 +276,7 @@ namespace FarmVox.Terrain
             }
         }
 
-        private void ReloadConfig()
+        private void Reload()
         {
             var queue = GameController.Instance.Queue;
 
@@ -288,11 +288,14 @@ namespace FarmVox.Terrain
                 {
                     queue.Enqueue(new GenGroundWorker(chunk, DefaultLayer, Config));
                     queue.Enqueue(new GenWaterWorker(chunk, DefaultLayer, WaterLayer, Config));
-                    queue.Enqueue(new GenTreesWorker(Config, chunk, DefaultLayer, TreeLayer, this, TreeMap));
+                    queue.Enqueue(new GenTreesWorker(Config, chunk, DefaultLayer, TreeLayer, this, _treeMap));
                 }
             }
             
             TreeLayer.Clear();
+            WaterLayer.Clear();
+
+            _treeMap.Clear();
         }
     }
 }

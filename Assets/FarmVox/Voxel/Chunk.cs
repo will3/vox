@@ -217,6 +217,8 @@ namespace FarmVox.Voxel
 
             UpdateSurfaceCoords();
 
+            Normals.Clear();
+            
             foreach (var coord in SurfaceCoords)
             {
                 if (coord.x >= DataSize - 1 || coord.y >= DataSize - 1 || coord.z >= DataSize - 1)

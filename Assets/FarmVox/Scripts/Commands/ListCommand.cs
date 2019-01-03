@@ -17,7 +17,7 @@ namespace FarmVox.Scripts.Commands
 
             foreach (var name in names)
             {
-                DevConsole.Instance.AddLine(name);
+                DevConsole.Instance.AddLine("  " + name);
             }
         }
     }

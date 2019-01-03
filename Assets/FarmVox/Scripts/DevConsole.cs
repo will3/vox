@@ -53,7 +53,7 @@ namespace FarmVox.Scripts
 		}
 
 		public float LineHeight = 40;
-		public float TotalLines = 10;
+		public int TotalLines = 10;
 		public RectOffset ConsoleMargin;
 		public RectOffset ConsolePadding;
 		
