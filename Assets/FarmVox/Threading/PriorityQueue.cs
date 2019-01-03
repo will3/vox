@@ -39,5 +39,10 @@ namespace FarmVox.Threading
         {
             get { return _list.Count; }
         }
+
+        public void RemoveAll()
+        {
+            _list.Clear();
+        }
     }
 }

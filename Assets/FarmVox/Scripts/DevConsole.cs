@@ -26,8 +26,7 @@ namespace FarmVox.Scripts
 				new SaveCommand(),
 				new ListCommand(),
 				new LoadCommand(),
-				new RemoveCommand(),
-				new ReloadCommand()
+				new RemoveCommand()
 			};
 		}
 	

@@ -16,7 +16,7 @@ namespace FarmVox.Scripts.Commands
         {
             var name = args[1];
             var config = _saveManager.LoadBiome(name);
-            Terrian.Instance.ReloadConfig(config);
+            Terrian.Instance.Config = config;
         }
     }
 }

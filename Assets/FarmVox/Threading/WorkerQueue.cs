@@ -29,5 +29,10 @@ namespace FarmVox.Threading
                 yield return null;
             }
         }
+
+        public void RemoveAll()
+        {
+            _workers.RemoveAll();
+        }
     }
 }

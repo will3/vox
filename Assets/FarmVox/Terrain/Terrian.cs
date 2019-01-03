@@ -46,6 +46,8 @@ namespace FarmVox.Terrain
 
         public HeightMap heightMap;
 
+        private string LastConfig;
+
         private void GenerateColumn(Vector3Int columnOrigin) {
             var maxChunksY = Config.MaxChunksY;
             var list = new List<TerrianChunk>();
@@ -129,7 +131,20 @@ namespace FarmVox.Terrain
             }
         }
 
-        public void Start()
+        private void Update()
+        {
+            var config = JsonUtility.ToJson(Config);
+
+            if (LastConfig != null && config != LastConfig)
+            {
+                ReloadConfig();
+                Debug.Log("Reload");
+            }
+            
+            LastConfig = JsonUtility.ToJson(Config);
+        }
+
+        private void Start()
         {
             InitColumns();
 
@@ -261,15 +276,12 @@ namespace FarmVox.Terrain
             }
         }
 
-        public void ReloadConfig(TerrianConfig config = null)
+        private void ReloadConfig()
         {
-            if (config != null)
-            {
-                Config = config;    
-            }
-            
             var queue = GameController.Instance.Queue;
 
+            queue.RemoveAll();
+            
             foreach (var column in _columnList)
             {
                 foreach (var chunk in column.TerrianChunks)

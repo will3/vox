@@ -9,17 +9,4 @@ namespace FarmVox.Scripts.Commands
 
         void Execute(string[] args);
     }
-
-    public class ReloadCommand : IDevCommand
-    {
-        public IEnumerable<string> Names
-        {
-            get { return new[] {"re", "reload"}; }
-        }
-        
-        public void Execute(string[] args)
-        {
-            Terrian.Instance.ReloadConfig();    
-        }
-    }
 }
