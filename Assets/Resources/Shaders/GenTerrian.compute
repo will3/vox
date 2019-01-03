@@ -3,17 +3,9 @@
 
 #include "common.cginc"
 
-struct GenTerrianNoise {
-    float height;
-    float rockColor;
-    float grass;
-};
-
-struct Biome {
-    
-};
-
-StructuredBuffer<GenTerrianNoise> _NoiseBuffer;
+StructuredBuffer<float> _HeightBuffer;
+StructuredBuffer<float> _RockColorBuffer;
+StructuredBuffer<float> _GrassBuffer;
 
 float _MaxHeight;
 int _WaterLevel;
@@ -104,7 +96,7 @@ float getGrassDot(int i, int j, int k) {
     return dot(-normalize(d), up);
 }
 
-float getGrass(int3 coord, float heightRatio, int absY, GenTerrianNoise noise) {
+float getGrass(int3 coord, float heightRatio, int absY) {
     if (absY < _WaterLevel + _GroundHeight - 1) {
         return 0;
     }
@@ -132,19 +124,18 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
     int3 coord = int3(id.x, id.y, id.z);
     int index = getIndex(coord);
-    GenTerrianNoise noise = _NoiseBuffer[index];
     
     float absY = coord.y + _Origin.y;
     float relY = absY - _GroundHeight;
     float gradient = -relY / _HillHeight;
-    float height = sampleValue(_HeightValues, _HeightKeys, _HeightSize, noise.height);
+    float height = sampleValue(_HeightValues, _HeightKeys, _HeightSize, _HeightBuffer[index]);
     
     float value = height + gradient;
     _VoxelBuffer[index] = value;
 
     float heightRatio = relY / _MaxHeight;
-    float4 rockColor = sampleColor(_RockGradient, _RockGradientIntervals, _RockGradientSize, _RockGradientBanding, heightRatio + noise.rockColor);
-    float grass = getGrass(coord, heightRatio, absY, noise);
+    float4 rockColor = sampleColor(_RockGradient, _RockGradientIntervals, _RockGradientSize, _RockGradientBanding, heightRatio + _RockColorBuffer[index]);
+    float grass = getGrass(coord, heightRatio, absY);
     float4 grassColor = sampleColor(_GrassGradient, _GrassGradientIntervals, _GrassGradientSize, _GrassGradientBanding, grass);
     
     if (grass > 0) {

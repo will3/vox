@@ -31,10 +31,14 @@ namespace FarmVox.GPU.Shaders
         }
 
         public void Dispatch(ComputeBuffer voxelBuffer, ComputeBuffer colorBuffer) {
-            using (var noises = new GenTerrianNoiseGpu(_dataSize, _origin, _config))
+            using (var rockColorBuffer = new Perlin3DGpu(_config.Biome.RockColorNoise, _dataSize, _origin))
+            using (var heightBuffer = new Perlin3DGpu(_config.Biome.HeightNoise, _dataSize, _origin))
+            using (var grassBuffer = new Perlin3DGpu(_config.Biome.GrassNoise, _dataSize, _origin))
             {
-                _shader.SetBuffer(0, "_NoiseBuffer", noises.Results);
-
+                _shader.SetBuffer(0, "_RockColorBuffer", rockColorBuffer.Results);
+                _shader.SetBuffer(0, "_HeightBuffer", heightBuffer.Results);
+                _shader.SetBuffer(0, "_GrassBuffer", grassBuffer.Results);
+                
                 _shader.SetBuffer(0, "_VoxelBuffer", voxelBuffer);
                 _shader.SetBuffer(0, "_ColorBuffer", colorBuffer);
 
