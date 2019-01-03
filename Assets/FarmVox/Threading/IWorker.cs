@@ -1,6 +1,6 @@
 namespace FarmVox.Threading
 {
-    public interface IWorker : IPriorityQueueItem
+    public interface IWorker
     {
         void Start();
     }

@@ -5,16 +5,16 @@ namespace FarmVox.Threading
 {
     public class WorkerQueue
     {
-        private readonly PriorityQueue _workers = new PriorityQueue();
+        private readonly Queue<IWorker> _workers = new Queue<IWorker>();
 
         public void Enqueue(IWorker worker)
         {
-            _workers.Add(worker);
+            _workers.Enqueue(worker);
         }
 
         private IWorker Pop()
         {
-            return _workers.Pop() as IWorker;
+            return _workers.Dequeue();
         }
 
         public IEnumerator DoWork()
@@ -32,7 +32,7 @@ namespace FarmVox.Threading
 
         public void RemoveAll()
         {
-            _workers.RemoveAll();
+            _workers.Clear();
         }
     }
 }

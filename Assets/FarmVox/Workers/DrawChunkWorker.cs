@@ -80,10 +80,5 @@ namespace FarmVox.Workers
                 return mesh;
             }
         }
-
-        public float Priority
-        {
-            get { return Priorities.GenTrees; }
-        }
     }
 }

@@ -184,10 +184,5 @@ namespace FarmVox.Workers
 
             return minCoord;
         }
-        
-        public float Priority
-        {
-            get { return Priorities.GenWaterfall - _terrianChunk.Distance / 1024f; }
-        }
     }
 }

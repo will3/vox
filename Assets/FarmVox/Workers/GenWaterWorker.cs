@@ -48,10 +48,5 @@ namespace FarmVox.Workers
                 }
             }
         }
-        
-        public float Priority
-        {
-            get { return Priorities.GenWater - _terrianChunk.Distance / 1024f; }
-        }
     }
 }

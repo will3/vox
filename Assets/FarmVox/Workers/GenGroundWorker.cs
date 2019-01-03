@@ -43,10 +43,5 @@ namespace FarmVox.Workers
             voxelBuffer.Dispose();
             colorBuffer.Dispose();
         }
-        
-        public float Priority
-        {
-            get { return Priorities.GenGround - _terrianChunk.Distance / 1024f; }
-        }
     }
 }

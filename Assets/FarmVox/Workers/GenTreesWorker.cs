@@ -99,10 +99,5 @@ namespace FarmVox.Workers
                 treeChunk.UpdateSurfaceCoords();
             }
         }
-        
-        public float Priority
-        {
-            get { return Priorities.GenTrees - _terrianChunk.Distance / 1024f; }
-        }
     }
 }
