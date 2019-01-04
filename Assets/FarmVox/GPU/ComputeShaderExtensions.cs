@@ -10,7 +10,7 @@ namespace FarmVox.GPU
             var colors = colorGradient.Gradient.colorKeys.Select(u => u.color.ToVector4()).ToArray();
             var keys = colorGradient.Gradient.colorKeys.Select(u => u.time).ToArray();
             computeShader.SetVectorArray(prefix + "Gradient", colors);
-            computeShader.SetFloats(prefix + "GradientIntervals", keys);
+            computeShader.SetFloats(prefix + "GradientIntervals", PackFloats(keys));
             computeShader.SetInt(prefix + "GradientSize", keys.Length);
             computeShader.SetFloat(prefix + "GradientBanding", colorGradient.Banding);
         }

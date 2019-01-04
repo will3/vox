@@ -1,5 +1,7 @@
 float4 sampleColor(float4 gradient[8], float intervals[8], int size, float banding, float ratio) {
-    return gradient[0];
+    if (size == 1) {
+        return gradient[0];
+    }
     if (ratio < 0) {
         ratio = 0;
     }
