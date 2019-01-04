@@ -153,8 +153,6 @@ MonoBehaviour:
     TreeMinDis: 3
     Biome:
       HillHeight: 48
-      TrunkColor: {r: 0.30980393, g: 0.2509804, b: 0.16470589, a: 1}
-      LeafColor: {r: 0.18431373, g: 0.31764707, b: 0.047058824, a: 1}
       WaterColor: {r: 0.16078432, g: 0.49411765, b: 0.7137255, a: 0.4}
       RockColor:
         Gradient:
@@ -218,6 +216,60 @@ MonoBehaviour:
           m_NumColorKeys: 2
           m_NumAlphaKeys: 2
         Banding: 0
+      Tree:
+        TrunkColor: {r: 0.30980393, g: 0.2509804, b: 0.16470589, a: 1}
+        LeafColor: {r: 0.18431373, g: 0.31764707, b: 0.047058824, a: 1}
+        TreeHeightGradient:
+          Curve:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 1
+              inSlope: -1
+              outSlope: -1
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0.33333334
+            - serializedVersion: 3
+              time: 1
+              value: 0
+              inSlope: -1
+              outSlope: -1
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0.33333334
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+        TreeAmount: 2
+        TreeDensityFilter:
+          Curve:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: -1
+              value: 0
+              inSlope: 0.5
+              outSlope: 0.5
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0.33333334
+            - serializedVersion: 3
+              time: 1
+              value: 1
+              inSlope: 0.5
+              outSlope: 0.5
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0.33333334
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
       HeightNoise:
         Frequency: 0.015
         Amplitude: 1
@@ -327,57 +379,6 @@ MonoBehaviour:
           m_PostInfinity: 2
           m_RotationOrder: 4
       GrassValue: 1
-      TreeHeightGradient:
-        Curve:
-          serializedVersion: 2
-          m_Curve:
-          - serializedVersion: 3
-            time: 0
-            value: 1
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: 1
-            value: 0
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          m_PreInfinity: 2
-          m_PostInfinity: 2
-          m_RotationOrder: 4
-      TreeAmount: 2
-      TreeDensityFilter:
-        Curve:
-          serializedVersion: 2
-          m_Curve:
-          - serializedVersion: 3
-            time: -1
-            value: 0
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: 1
-            value: 1
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          m_PreInfinity: 2
-          m_PostInfinity: 2
-          m_RotationOrder: 4
       WaterfallNoise:
         Frequency: 0.005
         Amplitude: 1
@@ -507,6 +508,7 @@ GameObject:
   - component: {fileID: 362043728}
   - component: {fileID: 362043727}
   - component: {fileID: 362043729}
+  - component: {fileID: 362043730}
   m_Layer: 0
   m_Name: Game
   m_TagString: GameController
@@ -563,6 +565,17 @@ MonoBehaviour:
     m_Right: 4
     m_Top: 6
     m_Bottom: 0
+--- !u!114 &362043730
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 362043726}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 076ce7340f76d415daa0b53b8622fdaa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &534669902
 GameObject:
   m_ObjectHideFlags: 0
@@ -663,6 +676,7 @@ MonoBehaviour:
   RotateX: 45
   Rotation: {x: 45, y: 45, z: 0}
   Distance: 400
+  orthographicSize: 50
 --- !u!114 &534669907
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -728,7 +742,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 076ce7340f76d415daa0b53b8622fdaa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Terrian: {fileID: 0}
 --- !u!114 &2020566688
 MonoBehaviour:
   m_ObjectHideFlags: 0

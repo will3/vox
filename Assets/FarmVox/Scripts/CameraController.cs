@@ -18,6 +18,7 @@ namespace FarmVox.Scripts
 
         private Vector3 _lastDragPosition;
         private bool _dragging;
+        public float orthographicSize = 100; 
 
         public Vector3 GetVector()
         {
@@ -82,6 +83,12 @@ namespace FarmVox.Scripts
             var position = Target - Quaternion.Euler(Rotation) * Vector3.forward * Distance;
             transform.position = position;
             transform.LookAt(Target, Vector3.up);
+
+            var c = GetComponent<Camera>();
+            if (c.orthographic)
+            {
+                c.orthographicSize = Screen.height / 800f * orthographicSize;
+            }
         }
     }
 }
