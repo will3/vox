@@ -44,7 +44,7 @@ namespace FarmVox.GPU.Shaders
 
                 _shader.SetFloat("_MaxHeight", _config.MaxHeight);
 
-                _shader.SetVector("_WaterColor", _config.Biome.Colors.WaterColor);
+                _shader.SetVector("_WaterColor", _config.Biome.WaterColor);
 
                 _shader.SetInt("_Size", _size);
                 _shader.SetVector("_Origin", (Vector3)_origin);
@@ -58,8 +58,8 @@ namespace FarmVox.GPU.Shaders
                 _shader.SetValueGradient(_config.Biome.GrassNormalFilter, "_GrassNormal");
                 _shader.SetValueGradient(_config.Biome.GrassHeightFilter, "_GrassHeight");
                 
-                _shader.SetColorGradient(_config.Biome.Colors.RockColor, "_Rock");
-                _shader.SetColorGradient(_config.Biome.Colors.GrassColor, "_Grass");
+                _shader.SetColorGradient(_config.Biome.RockColor, "_Rock");
+                _shader.SetColorGradient(_config.Biome.GrassColor, "_Grass");
                 
                 _shader.SetValueGradient(_config.Biome.HeightFilter, "_Height");
                 

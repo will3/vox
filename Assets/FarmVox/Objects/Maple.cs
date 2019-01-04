@@ -28,7 +28,7 @@ namespace FarmVox.Objects
                         if (j <= trunkHeight) {
                             if (i == centerX && k == centerX) {
                                 layer.Set(coord, 1.0f);
-                                layer.SetColor(coord, config.Biome.Colors.TrunkColor);
+                                layer.SetColor(coord, config.Biome.TrunkColor);
                             }
                         } else {
                             var dis = (c - center).magnitude;
@@ -36,7 +36,7 @@ namespace FarmVox.Objects
                             density -= (float)config.Biome.TreeRandom.NextDouble() * 1.0f;
 
                             layer.Set(coord, density);
-                            layer.SetColor(coord, config.Biome.Colors.LeafColor);
+                            layer.SetColor(coord, config.Biome.LeafColor);
                         }
                     }
                 }

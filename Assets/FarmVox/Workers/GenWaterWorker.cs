@@ -40,7 +40,7 @@ namespace FarmVox.Workers
                             if (chunk.Get(i, j, k) <= 0)
                             {
                                 waterChunk.Set(i, j, k, 1);
-                                waterChunk.SetColor(i, j, k, _config.Biome.Colors.WaterColor);
+                                waterChunk.SetColor(i, j, k, _config.Biome.WaterColor);
                                 _terrianChunk.SetWater(i, j, k, true);
                             }
                         }
