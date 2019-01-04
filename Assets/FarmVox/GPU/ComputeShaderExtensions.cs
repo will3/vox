@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace FarmVox.GPU
@@ -6,24 +7,29 @@ namespace FarmVox.GPU
     public static class ComputeShaderExtensions {
         public static void SetColorGradient(this ComputeShader computeShader, ColorGradient colorGradient, string prefix)
         {
-            computeShader.SetVectorArray(prefix + "Gradient", colorGradient.Colors.Select(u => u.ToVector4()).ToArray());
-            computeShader.SetFloats(prefix + "GradientIntervals", colorGradient.Keys);
-            computeShader.SetInt(prefix + "GradientSize", colorGradient.Keys.Length);
+            var colors = colorGradient.Gradient.colorKeys.Select(u => u.color.ToVector4()).ToArray();
+            var keys = colorGradient.Gradient.colorKeys.Select(u => u.time).ToArray();
+            computeShader.SetVectorArray(prefix + "Gradient", colors);
+            computeShader.SetFloats(prefix + "GradientIntervals", keys);
+            computeShader.SetInt(prefix + "GradientSize", keys.Length);
             computeShader.SetFloat(prefix + "GradientBanding", colorGradient.Banding);
         }
 
         public static void SetValueGradient(this ComputeShader computeShader, ValueGradient valueGradient, string prefix)
-        {            
-            computeShader.SetFloats(prefix + "Keys", PackFloats(valueGradient.Keys));
-            computeShader.SetFloats(prefix + "Values", PackFloats(valueGradient.Values));
-            computeShader.SetInt(prefix + "Size", valueGradient.Keys.Length);
+        {
+            var keys = valueGradient.Curve.keys.Select(u => u.time).ToArray();
+            var values = valueGradient.Curve.keys.Select(u => u.value).ToArray();
+            
+            computeShader.SetFloats(prefix + "Keys", PackFloats(keys));
+            computeShader.SetFloats(prefix + "Values", PackFloats(values));
+            computeShader.SetInt(prefix + "Size", keys.Length);
         }
         
-        private static float[] PackFloats(float[] floats)
+        private static float[] PackFloats(IList<float> floats)
         {
-            var array = new float[floats.Length * 4];
+            var array = new float[floats.Count * 4];
 
-            for (var i = 0; i < floats.Length; i++)
+            for (var i = 0; i < floats.Count; i++)
             {
                 array[i * 4] = floats[i];
             }

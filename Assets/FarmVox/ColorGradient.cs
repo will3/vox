@@ -1,4 +1,5 @@
 using System;
+using FarmVox.Terrain;
 using UnityEngine;
 
 namespace FarmVox
@@ -6,14 +7,12 @@ namespace FarmVox
     [Serializable]
     public class ColorGradient
     {
-        public float[] Keys;
-        public Color[] Colors;
+        public Gradient Gradient;
         public int Banding;
 
         public ColorGradient(Color color)
         {
-            Keys = new[] {0.0f};
-            Colors = new[] { color};
+            Gradient = GradientUtils.CreateGradient(color);
         }
     }
 }

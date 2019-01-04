@@ -9,38 +9,32 @@ namespace FarmVox
     [Serializable]
     public class ValueGradient
     {
-        public float[] Keys;
-        public float[] Values;
+        public AnimationCurve Curve;
 
         public ValueGradient(float min, float max)
         {
-            Keys = new[] {0.0f, 1.0f};
-            Values = new[] {min, max};
+            Curve = new AnimationCurve(new Keyframe(0.0f, min), new Keyframe(1.0f, max));
+            
+            for (var i = 0; i < Curve.keys.Length; i++)
+            {
+                Curve.SmoothTangents(i, 0);    
+            }
         }
 
         public ValueGradient(Dictionary<float, float> map)
         {
-            Keys = map.Keys.ToArray();
-            Values = map.Values.ToArray();
+            var keyframes = map.Select(u => new Keyframe(u.Key, u.Value)).ToArray();
+            Curve = new AnimationCurve(keyframes);
+            
+            for (var i = 0; i < keyframes.Length; i++)
+            {
+                Curve.SmoothTangents(i, 0);    
+            }
         }
 
         public float GetValue(float ratio)
         {
-            for (var i = 0; i < Keys.Length - 1; i++)
-            {
-                var min = Keys[i];
-                var max = Keys[i + 1];
-
-                if (!(max > ratio)) continue;
-                
-                var minV = Values[i];
-                var maxV = Values[i + 1];
-                var r = (ratio - min) / (max - min);
-
-                return minV + (maxV - minV) * r;
-            }
-
-            return 0.0f;
+            return Curve.Evaluate(ratio);
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using FarmVox.Editor;
 using LibNoise.Generator;
 using UnityEngine;
 using Random = System.Random;
@@ -75,7 +74,7 @@ namespace FarmVox.Terrain
                 {0.5f, 1.0f},
                 {1, 1.2f}
             });
-
+            
             RockNoise = NextNoise();
 
             RockColorNoise = NextNoise();
