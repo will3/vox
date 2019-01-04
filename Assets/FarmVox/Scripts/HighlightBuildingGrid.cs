@@ -31,7 +31,7 @@ namespace FarmVox.Scripts
             
             var coord = result.GetCoord();
 
-            HoveredTile = Terrian.Instance.heightMap.GetTile(coord);
+            HoveredTile = Terrian.Instance.HeightMap.GetTile(coord);
 
             if (HoveredTile == null)
             {

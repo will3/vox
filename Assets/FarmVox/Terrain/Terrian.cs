@@ -44,11 +44,16 @@ namespace FarmVox.Terrain
 
         private Bounds _bounds;
 
-        public HeightMap heightMap;
+        public HeightMap HeightMap;
 
-        private string LastConfig;
+        private string _lastConfig;
 
         private void GenerateColumn(Vector3Int columnOrigin) {
+            if (_columns.ContainsKey(columnOrigin))
+            {
+                return;
+            }
+            
             var maxChunksY = Config.MaxChunksY;
             var list = new List<TerrianChunk>();
             for (var j = 0; j < maxChunksY; j++)
@@ -57,16 +62,20 @@ namespace FarmVox.Terrain
                 var terrianChunk = GetOrCreateTerrianChunk(origin);
                 list.Add(terrianChunk);
             }
+                
+            var terrianColumn = new TerrianColumn(Size, columnOrigin, list);
+            _columns[columnOrigin] = terrianColumn;
 
-            if (!_columns.ContainsKey(columnOrigin))
+            var index = _columnList.BinarySearch(0, _columnList.Count, terrianColumn, new TerrianColumnDistanceComparer());
+
+            if (index < 0)
             {
-                var terrianColumn = new TerrianColumn(Size, columnOrigin, list);
-                _columns[columnOrigin] = terrianColumn;
-
-                _columnList.Add(terrianColumn);
+                _columnList.Insert(~index, terrianColumn);
             }
-
-            _columnList.Sort(new TerrianColumnDistanceComparer());
+            else
+            {
+                _columnList.Insert(index, terrianColumn);
+            }
         }
 
         private void InitColumns() {
@@ -119,7 +128,7 @@ namespace FarmVox.Terrain
 
             _shadowMap = new VoxelShadowMap(size, Config);
 
-            heightMap = new HeightMap();
+            HeightMap = new HeightMap();
 
             if (Instance == null)
             {
@@ -135,13 +144,13 @@ namespace FarmVox.Terrain
         {
             var config = JsonUtility.ToJson(Config);
 
-            if (LastConfig != null && config != LastConfig)
+            if (_lastConfig != null && config != _lastConfig)
             {
                 Reload();
                 Debug.Log("Reload");
             }
             
-            LastConfig = JsonUtility.ToJson(Config);
+            _lastConfig = JsonUtility.ToJson(Config);
         }
 
         private void Start()

@@ -47,7 +47,6 @@ namespace FarmVox.GPU.Shaders
         }
 
         private readonly ComputeShader _shader;
-        private readonly int _size;
         private readonly int _dataSize;
         private readonly TerrianConfig _config;
         private readonly int _workGroups = 8;
@@ -56,32 +55,31 @@ namespace FarmVox.GPU.Shaders
         public bool UseNormals = true;
         public bool IsWater = false;
 
-        private ComputeBuffer voxelBuffer;
-        private ComputeBuffer colorsBuffer;
-        private ComputeBuffer trianglesBuffer;
+        private readonly ComputeBuffer _voxelBuffer;
+        private readonly ComputeBuffer _colorsBuffer;
+        private readonly ComputeBuffer _trianglesBuffer;
 
         public float NormalStrength = 0.0f;
         
-        public MesherGpu(int size, int dataSize, TerrianConfig config)
+        public MesherGpu(int dataSize, TerrianConfig config)
         {
-            _size = size;
             _dataSize = dataSize;
             _config = config;
             _shader = Resources.Load<ComputeShader>("Shaders/Mesher");
 
-            trianglesBuffer =
+            _trianglesBuffer =
                 new ComputeBuffer(_dataSize * _dataSize * _dataSize, Triangle.Size, ComputeBufferType.Append);
-            voxelBuffer = new ComputeBuffer(_dataSize * _dataSize * _dataSize, sizeof(float) * 3);
-            colorsBuffer = new ComputeBuffer(_dataSize * _dataSize * _dataSize, sizeof(float) * 4);
+            _voxelBuffer = new ComputeBuffer(_dataSize * _dataSize * _dataSize, sizeof(float) * 3);
+            _colorsBuffer = new ComputeBuffer(_dataSize * _dataSize * _dataSize, sizeof(float) * 4);
         }
 
         public void Dispatch()
         {
             _shader.SetInt("_DataSize", _dataSize);
-            _shader.SetBuffer(0, "_VoxelBuffer", voxelBuffer);
-            _shader.SetBuffer(0, "_TrianglesBuffer", trianglesBuffer);
+            _shader.SetBuffer(0, "_VoxelBuffer", _voxelBuffer);
+            _shader.SetBuffer(0, "_TrianglesBuffer", _trianglesBuffer);
 
-            _shader.SetBuffer(0, "_ColorsBuffer", colorsBuffer);
+            _shader.SetBuffer(0, "_ColorsBuffer", _colorsBuffer);
 
             _shader.SetFloat("_NormalBanding", NormalBanding);
             _shader.SetInt("_UseNormals", UseNormals ? 1 : 0);
@@ -94,29 +92,29 @@ namespace FarmVox.GPU.Shaders
         }
 
         public Triangle[] ReadTriangles() {
-            var count = AppendBufferCounter.Count(trianglesBuffer);
+            var count = AppendBufferCounter.Count(_trianglesBuffer);
             var triangles = new Triangle[count];
 
-            trianglesBuffer.GetData(triangles);
+            _trianglesBuffer.GetData(triangles);
 
             return triangles;
         }
 
         public void SetData(float[] data)
         {
-            voxelBuffer.SetData(data);
+            _voxelBuffer.SetData(data);
         }
 
         public void SetColors(Color[] colors)
         {
-            colorsBuffer.SetData(colors);
+            _colorsBuffer.SetData(colors);
         }
 
         public void Dispose()
         {
-            if (voxelBuffer != null) voxelBuffer.Dispose();
-            if (colorsBuffer != null) colorsBuffer.Dispose();
-            if (trianglesBuffer != null) trianglesBuffer.Dispose();
+            if (_voxelBuffer != null) _voxelBuffer.Dispose();
+            if (_colorsBuffer != null) _colorsBuffer.Dispose();
+            if (_trianglesBuffer != null) _trianglesBuffer.Dispose();
         }
     }
 }

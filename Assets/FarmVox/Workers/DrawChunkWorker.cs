@@ -62,7 +62,7 @@ namespace FarmVox.Workers
         {
             var chunks = chunk.Chunks;
             
-            using (var mesher = new MesherGpu(_config.Size, chunk.DataSize, _config))
+            using (var mesher = new MesherGpu(chunk.DataSize, _config))
             {
                 mesher.UseNormals = chunks.UseNormals;
                 mesher.IsWater = chunks.IsWater;
