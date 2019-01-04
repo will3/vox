@@ -12,17 +12,13 @@ namespace FarmVox.Terrain
         public float HillHeight;
         
         [ColorHtmlProperty]
-        public Color TrunkColor;
-        
-        [ColorHtmlProperty]
-        public Color LeafColor;
-        
-        [ColorHtmlProperty]
         public Color WaterColor;
         
         public ColorGradient RockColor;
         
         public ColorGradient GrassColor;
+
+        public TreeConfig Tree;
         
         #region ground
         public Noise HeightNoise;
@@ -37,22 +33,12 @@ namespace FarmVox.Terrain
         public float GrassValue;
         #endregion
 
-        #region tree
-        public Perlin TreeNoise;
-        public Random TreeRandom;
-        public ValueGradient TreeHeightGradient;
-        public float TreeAmount;
-        public ValueGradient TreeDensityFilter;
-        #endregion
-
         #region waterfall
         public Random WaterfallRandom;
         public Noise WaterfallNoise;
         public ValueGradient WaterfallHeightFilter;
         public float WaterfallChance;
         #endregion
-        
-        private readonly Random _r;
 
         public ValueGradient HeightFilter;
         
@@ -60,8 +46,8 @@ namespace FarmVox.Terrain
         {
             HillHeight = 48;
             
-            _r = new Random(seed);
-            HeightNoise = NextNoise();
+            NoiseUtils.SetSeed(seed);
+            HeightNoise = NoiseUtils.NextNoise();
             HeightNoise.Frequency = 0.015f;
             HeightNoise.YScale = 0.4f;
             HeightNoise.Octaves = 5;
@@ -75,22 +61,19 @@ namespace FarmVox.Terrain
                 {1, 1.2f}
             });
             
-            RockNoise = NextNoise();
+            RockNoise = NoiseUtils.NextNoise();
 
-            RockColorNoise = NextNoise();
+            RockColorNoise = NoiseUtils.NextNoise();
             RockColorNoise.Frequency = 0.05f;
             RockColorNoise.YScale = 4.0f;
             RockColorNoise.Amplitude = 1.0f;
 
-            GrassNoise = NextNoise();
+            GrassNoise = NoiseUtils.NextNoise();
 
-            TreeNoise = NextPerlin();
+            
+            WaterfallRandom = NoiseUtils.NextRandom();
 
-            TreeRandom = NextRandom();
-            TreeAmount = 2.0f;
-            WaterfallRandom = NextRandom();
-
-            WaterfallNoise = NextNoise();
+            WaterfallNoise = NoiseUtils.NextNoise();
             WaterfallNoise.Frequency = 0.005f;
             WaterfallChance = 0.01f;
 
@@ -108,17 +91,6 @@ namespace FarmVox.Terrain
             RockNoise.Frequency = 0.02f;
             RockNoise.Amplitude = 1.5f;
 
-            TreeNoise.Frequency = 0.05f;
-            TreeNoise.OctaveCount = 5;
-
-            TreeHeightGradient = new ValueGradient(1, 0);
-
-            TreeDensityFilter = new ValueGradient(new Dictionary<float, float>
-            {
-                {-1, 0},
-                {1, 1}
-            });
-
             GrassHeightFilter = new ValueGradient(new Dictionary<float, float>{
                 { 0, 0.2f },
                 { 0.5f, -0.5f},
@@ -132,30 +104,13 @@ namespace FarmVox.Terrain
 
             GrassValue = 1.0f;
             
-            TrunkColor = ColorUtils.GetColor("#4f402a");
-            LeafColor = ColorUtils.GetColor("#2f510c");
             WaterColor = ColorUtils.GetColor("#297eb6");
             WaterColor.a = 0.4f;
 
             RockColor = new ColorGradient(ColorUtils.GetColor("#654d1f"));
             GrassColor = new ColorGradient(ColorUtils.GetColor("#597420"));
-        }
-        
-        Perlin NextPerlin()
-        {
-            var noise = new Perlin {Seed = _r.Next()};
-            return noise;
-        }
 
-        Noise NextNoise() {
-            var noise = new Noise {Seed = _r.Next()};
-            return noise;
-        }
-
-        Random NextRandom() {
-            var seed = _r.Next();
-            var random = new Random(seed);
-            return random;
+            Tree = new TreeConfig();
         }
     }
 }

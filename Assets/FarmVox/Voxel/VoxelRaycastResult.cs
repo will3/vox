@@ -4,15 +4,15 @@ namespace FarmVox.Voxel
 {
     public class VoxelRaycastResult
     {
-        private readonly RaycastHit _hit;
+        public readonly RaycastHit Hit;
 
         public VoxelRaycastResult(RaycastHit hit) {
-            _hit = hit;
+            Hit = hit;
         }
 
         public Vector3Int GetCoord()
         {
-            var point = _hit.point - _hit.normal * 0.1f;
+            var point = Hit.point - Hit.normal * 0.1f;
             return new Vector3Int(Mathf.FloorToInt(point.x),
                                   Mathf.FloorToInt(point.y),
                                   Mathf.FloorToInt(point.z));
@@ -26,20 +26,20 @@ namespace FarmVox.Voxel
         {
             var d = Axis.X;
             var front = false;
-            if (Mathf.Abs(_hit.normal.x) > Mathf.Epsilon)
+            if (Mathf.Abs(Hit.normal.x) > Mathf.Epsilon)
             {
                 d = Axis.X;
-                front = _hit.normal.x > 0;
+                front = Hit.normal.x > 0;
             }
-            else if (Mathf.Abs(_hit.normal.y) > Mathf.Epsilon)
+            else if (Mathf.Abs(Hit.normal.y) > Mathf.Epsilon)
             {
                 d = Axis.Y;
-                front = _hit.normal.y > 0;
+                front = Hit.normal.y > 0;
             }
-            else if (Mathf.Abs(_hit.normal.z) > Mathf.Epsilon)
+            else if (Mathf.Abs(Hit.normal.z) > Mathf.Epsilon)
             {
                 d = Axis.Z;
-                front = _hit.normal.z > 0;
+                front = Hit.normal.z > 0;
             }
 
             return new CubeMeshBuilder().AddQuad(d, front, new Vector3()).Build();

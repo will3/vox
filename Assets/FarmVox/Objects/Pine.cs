@@ -23,7 +23,7 @@ namespace FarmVox.Objects
             offset = new Vector3Int(-radius, 0, -radius);
         }
 
-        public Tree Place(Terrain.Terrian terrian, Chunks layer, Vector3Int position, TerrianConfig config)
+        public Tree Place(Terrain.Terrian terrian, Chunks layer, Vector3Int position, TreeConfig config)
         {
             int radius = Mathf.CeilToInt(r);
             int mid = radius + 1;
@@ -45,7 +45,7 @@ namespace FarmVox.Objects
                         if (j < trunkHeight + 2 && i == mid && k == mid)
                         {
                             layer.Set(coord, 1);
-                            layer.SetColor(coord, config.Biome.TrunkColor);
+                            layer.SetColor(coord, config.TrunkColor);
 
                             //if (j == 1) {
                             //    var stump1 = coord + new Vector3Int(0, 0, 1);
@@ -84,9 +84,9 @@ namespace FarmVox.Objects
 
                             if (density > 0)
                             {
-                                var value = density - (float)config.Biome.TreeRandom.NextDouble() * 1.0f;
+                                var value = density - (float)config.TreeRandom.NextDouble() * 1.0f;
                                 layer.Set(coord, value);
-                                layer.SetColor(coord, config.Biome.LeafColor);
+                                layer.SetColor(coord, config.LeafColor);
                                 treeCoords.Add(coord);
                             }
                         }

@@ -28,7 +28,8 @@ namespace FarmVox.Workers
         
         public void Start()
         {
-            var treeNoise = _config.Biome.TreeNoise;
+            var treeConfig = _config.Biome.Tree;
+            var treeNoise = treeConfig.TreeNoise;
 
             var pine = new Pine(3.0f, 10, 2);
 
@@ -53,9 +54,9 @@ namespace FarmVox.Workers
 
                 var globalCoord = localCoord + chunk.Origin;
                 var noise = (float)treeNoise.GetValue(globalCoord);
-                var treeDensity = _config.Biome.TreeDensityFilter.GetValue(noise);
+                var treeDensity = treeConfig.TreeDensityFilter.GetValue(noise);
 
-                if (_config.Biome.TreeRandom.NextDouble() * treeDensity > 0.02)
+                if (treeConfig.TreeRandom.NextDouble() * treeDensity > 0.02)
                 {
                     continue;
                 }
@@ -74,9 +75,9 @@ namespace FarmVox.Workers
                 }
 
                 var height = relY / _config.MaxHeight;
-                var treeHeightValue = _config.Biome.TreeHeightGradient.GetValue(height);
+                var treeHeightValue = treeConfig.TreeHeightGradient.GetValue(height);
 
-                var value = noise * treeHeightValue * _config.Biome.TreeAmount;
+                var value = noise * treeHeightValue * treeConfig.TreeAmount;
 
                 if (value < 0.5f) { continue; }
 
@@ -88,7 +89,7 @@ namespace FarmVox.Workers
                     continue;
                 }
 
-                var tree = pine.Place(_terrian, _treeLayer, globalCoord, _config);
+                var tree = pine.Place(_terrian, _treeLayer, globalCoord, treeConfig);
 
                 _treeMap.AddTree(tree);
             }
