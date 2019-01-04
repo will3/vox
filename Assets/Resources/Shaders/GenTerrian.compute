@@ -38,7 +38,7 @@ float _GrassHeightKeys[8];
 int _GrassHeightSize;
 float _GrassValue;
 
-// Height
+// Height Filter
 float _HeightValues[8];
 float _HeightKeys[8];
 int _HeightSize;
