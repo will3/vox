@@ -22,7 +22,9 @@ namespace FarmVox.Terrain
         public float AoStrength;
         public float ShadowStrength;
         public int TreeMinDis;
-
+        public float NormalStrength;
+        public float TreesNormalStrength;
+        
         public BiomeConfig Biome;
 
         public TerrianConfig()
@@ -37,6 +39,8 @@ namespace FarmVox.Terrain
             AoStrength = 0.15f;
             ShadowStrength = 0.5f;
             TreeMinDis = 3;
+            NormalStrength = 0.4f;
+            TreesNormalStrength = 0.2f;
             
             Biome = new BiomeConfig();
         }

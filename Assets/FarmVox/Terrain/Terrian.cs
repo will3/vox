@@ -102,8 +102,8 @@ namespace FarmVox.Terrain
 
             var boundsInt = Config.BoundsInt;
 
-            DefaultLayer = new Chunks(size) {NormalStrength = 0.4f};
-            TreeLayer = new Chunks(size) {NormalStrength = 0.2f};
+            DefaultLayer = new Chunks(size) {NormalStrength = Config.NormalStrength};
+            TreeLayer = new Chunks(size) {NormalStrength = Config.TreesNormalStrength};
             WaterLayer = new Chunks(size) {Transparent = true, UseNormals = false};
             BuildingLayer = new Chunks(size);
 
@@ -314,6 +314,9 @@ namespace FarmVox.Terrain
         
         private void Reload()
         {
+            DefaultLayer.NormalStrength = Config.NormalStrength;
+            TreeLayer.NormalStrength = Config.TreesNormalStrength;
+            
             var queue = GameController.Instance.Queue;
 
             queue.RemoveAll();
