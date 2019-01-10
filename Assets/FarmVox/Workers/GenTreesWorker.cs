@@ -89,7 +89,7 @@ namespace FarmVox.Workers
                     continue;
                 }
 
-                var tree = pine.Place(_terrian, _treeLayer, globalCoord, treeConfig);
+                var tree = pine.Place(_treeLayer, globalCoord, treeConfig);
 
                 _treeMap.AddTree(tree);
             }

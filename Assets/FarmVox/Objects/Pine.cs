@@ -8,93 +8,62 @@ namespace FarmVox.Objects
 {
     public class Pine
     {
-        readonly float r;
-        readonly float h;
-        readonly Vector3Int offset;
-        readonly int trunkHeight;
-
+        private readonly float _r;
+        private readonly float _h;
+        private readonly Vector3Int _offset;
+        private readonly int _trunkHeight;
+        
         public Pine(float r, float h, int trunkHeight)
         {
-            this.r = r;
-            this.h = h;
-            this.trunkHeight = trunkHeight;
+            _r = r;
+            _h = h;
+            _trunkHeight = trunkHeight;
 
-            int radius = Mathf.CeilToInt(r);
-            offset = new Vector3Int(-radius, 0, -radius);
+            var radius = Mathf.CeilToInt(r);
+            _offset = new Vector3Int(-radius, 0, -radius);
         }
 
-        public Tree Place(Terrain.Terrian terrian, Chunks layer, Vector3Int position, TreeConfig config)
+        public Tree Place(Chunks layer, Vector3Int position, TreeConfig config)
         {
-            int radius = Mathf.CeilToInt(r);
-            int mid = radius + 1;
+            var radius = Mathf.CeilToInt(_r);
+            var mid = radius + 1;
             var width = radius * 2 + 1;
-            var height = Mathf.CeilToInt(h) + trunkHeight;
-
-            var treeCoords = new HashSet<Vector3Int>();
-            var stumpCoords = new HashSet<Vector3Int>();
+            var height = Mathf.CeilToInt(_h) + _trunkHeight;
 
             for (var j = 0; j < height; j++)
             {
-                var currentR = r * (1 - (j - trunkHeight) / h);
+                var currentR = _r * (1 - (j - _trunkHeight) / _h);
 
                 for (var i = 0; i < width; i++)
                 {
                     for (var k = 0; k < width; k++)
                     {
-                        var coord = new Vector3Int(i, j, k) + position + offset;
-                        if (j < trunkHeight + 2 && i == mid && k == mid)
+                        var coord = new Vector3Int(i, j, k) + position + _offset;
+                        if (j < _trunkHeight + 2 && i == mid && k == mid)
                         {
                             layer.Set(coord, 1);
                             layer.SetColor(coord, config.TrunkColor);
-
-                            //if (j == 1) {
-                            //    var stump1 = coord + new Vector3Int(0, 0, 1);
-                            //    var stump2 = coord + new Vector3Int(0, 0, -1);
-                            //    var stump3 = coord + new Vector3Int(1, 0, 0);
-                            //    var stump4 = coord + new Vector3Int(-1, 0, 0);
-
-                            //    layer.Set(stump1, 1);
-                            //    layer.SetColor(stump1, Colors.trunk);
-
-                            //    layer.Set(stump2, 1);
-                            //    layer.SetColor(stump2, Colors.trunk);
-
-                            //    layer.Set(stump3, 1);
-                            //    layer.SetColor(stump3, Colors.trunk);
-
-                            //    layer.Set(stump4, 1);
-                            //    layer.SetColor(stump4, Colors.trunk);
-                            //}
-
-                            if (j == 0) {
-                                stumpCoords.Add(coord);
-                            } else {
-                                treeCoords.Add(coord);    
-                            }
-                        } else if (j >= trunkHeight) {
-                            float diffI = Mathf.Abs(mid - i);
-                            float diffK = Mathf.Abs(mid - k);
-                            float distance = Mathf.Sqrt(diffI * diffI + diffK * diffK);
-                            float density = currentR - distance;
+                        } else if (j >= _trunkHeight) {
+                            var diffI = Mathf.Abs(mid - i);
+                            var diffK = Mathf.Abs(mid - k);
+                            var distance = Mathf.Sqrt(diffI * diffI + diffK * diffK);
+                            var density = currentR - distance;
 
                             if (j == height - 1)
                             {
                                 density = 0f;
                             }
 
-                            if (density > 0)
-                            {
-                                var value = density - (float)config.TreeRandom.NextDouble() * 1.0f;
-                                layer.Set(coord, value);
-                                layer.SetColor(coord, config.LeafColor);
-                                treeCoords.Add(coord);
-                            }
+                            if (!(density > 0)) continue;
+                            var value = density - (float)config.TreeRandom.NextDouble() * 1.0f;
+                            layer.Set(coord, value);
+                            layer.SetColor(coord, config.LeafColor);
                         }
                     }
                 }
             }
 
-            var tree = new Tree(stumpCoords, treeCoords, position);
+            var tree = new Tree(position);
             return tree;
         }
     }
