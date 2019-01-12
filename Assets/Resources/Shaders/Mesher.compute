@@ -11,7 +11,7 @@ struct Triangle {
     int index;
 };
 
-int _DataSize;
+int _Size;
 StructuredBuffer<float> _VoxelBuffer;
 StructuredBuffer<float4> _ColorsBuffer;
 AppendStructuredBuffer<Triangle> _TrianglesBuffer;
@@ -43,7 +43,7 @@ float3 getVector(int i, int j, int k, int d) {
 }
 
 int getIndex(int3 coord) {
-    return coord.x * _DataSize * _DataSize + coord.y * _DataSize + coord.z;
+    return coord.x * _Size * _Size + coord.y * _Size + coord.z;
 }
 
 float getVoxel(int3 coord) {
@@ -152,7 +152,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     int k = id.z;
     int d = id.x % 3;
 
-    int size = _DataSize;
+    int size = _Size;
 
     if (i == 0 || j == 0 || k == 0 ||
         i >= size - 2 || j >= size - 2 || k >= size - 2) {

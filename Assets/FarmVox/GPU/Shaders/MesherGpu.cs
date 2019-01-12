@@ -47,7 +47,7 @@ namespace FarmVox.GPU.Shaders
         }
 
         private readonly ComputeShader _shader;
-        private readonly int _dataSize;
+        private readonly int _size;
         private readonly TerrianConfig _config;
         private readonly int[] _workGroups = {8, 8, 4};
         
@@ -61,21 +61,21 @@ namespace FarmVox.GPU.Shaders
 
         public float NormalStrength = 0.0f;
         
-        public MesherGpu(int dataSize, TerrianConfig config)
+        public MesherGpu(int size, TerrianConfig config)
         {
-            _dataSize = dataSize;
+            _size = size;
             _config = config;
             _shader = Resources.Load<ComputeShader>("Shaders/Mesher");
 
             _trianglesBuffer =
-                new ComputeBuffer(_dataSize * _dataSize * _dataSize, Triangle.Size, ComputeBufferType.Append);
-            _voxelBuffer = new ComputeBuffer(_dataSize * _dataSize * _dataSize, sizeof(float) * 3);
-            _colorsBuffer = new ComputeBuffer(_dataSize * _dataSize * _dataSize, sizeof(float) * 4);
+                new ComputeBuffer(_size * _size * _size, Triangle.Size, ComputeBufferType.Append);
+            _voxelBuffer = new ComputeBuffer(_size * _size * _size, sizeof(float) * 3);
+            _colorsBuffer = new ComputeBuffer(_size * _size * _size, sizeof(float) * 4);
         }
 
         public void Dispatch()
         {
-            _shader.SetInt("_DataSize", _dataSize);
+            _shader.SetInt("_Size", _size);
             _shader.SetBuffer(0, "_VoxelBuffer", _voxelBuffer);
             _shader.SetBuffer(0, "_TrianglesBuffer", _trianglesBuffer);
 
@@ -88,9 +88,9 @@ namespace FarmVox.GPU.Shaders
             _shader.SetFloat("_AoStrength", _config.AoStrength);
 
             _shader.Dispatch(0, 
-                3 * Mathf.CeilToInt(_dataSize / (float) _workGroups[0]),
-                Mathf.CeilToInt(_dataSize / (float) _workGroups[1]),
-                Mathf.CeilToInt(_dataSize / (float) _workGroups[2]));
+                3 * Mathf.CeilToInt(_size / (float) _workGroups[0]),
+                Mathf.CeilToInt(_size / (float) _workGroups[1]),
+                Mathf.CeilToInt(_size / (float) _workGroups[2]));
         }
 
         public Triangle[] ReadTriangles() {
