@@ -7,11 +7,6 @@ namespace FarmVox.Terrain
     {
         private readonly HashSet<int> _waters = new HashSet<int>();
 
-//        public bool RockNeedsUpdate = true;
-//        public bool WaterNeedsUpdate = true;
-//        public bool TreesNeedsUpdate = true;
-//        public bool WaterfallsNeedsUpdate = true;
-
         public readonly Vector3Int Origin;
 
         private readonly int _size;
@@ -59,14 +54,6 @@ namespace FarmVox.Terrain
             return index;
         }
 
-        public float Distance {
-            get {
-                var xDiff = Mathf.Abs(Origin.x + _size / 2);
-                var yDiff = Mathf.Abs(Origin.z + _size / 2);
-                return xDiff + yDiff;
-            }
-        }
-        
         public void Dispose() {
             
         }

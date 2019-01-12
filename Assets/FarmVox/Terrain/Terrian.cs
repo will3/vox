@@ -159,37 +159,20 @@ namespace FarmVox.Terrain
 
             var queue = GameController.Instance.Queue;
 
-            foreach (var column in _columnList)
+            VisitChunks(chunk =>
             {
-                foreach (var chunk in column.TerrianChunks)
-                {
-                    queue.Enqueue(new GenGroundWorker(chunk, DefaultLayer, Config));
-                }
-            }
+                queue.Enqueue(new GenGroundWorker(chunk, DefaultLayer, Config));
+            });
             
-            foreach (var column in _columnList)
+            VisitChunks(chunk =>
             {
-                foreach (var chunk in column.TerrianChunks)
-                {
-                    queue.Enqueue(new GenWaterWorker(chunk, DefaultLayer, WaterLayer, Config));
-                }
-            }
+                queue.Enqueue(new GenWaterWorker(chunk, DefaultLayer, WaterLayer, Config));
+            });
             
-            foreach (var column in _columnList)
+            VisitChunks(chunk =>
             {
-                foreach (var chunk in column.TerrianChunks)
-                {
-                    queue.Enqueue(new GenTreesWorker(Config, chunk, DefaultLayer, TreeLayer, this, _treeMap));
-                }
-            }
-            
-            foreach (var column in _columnList)
-            {
-                foreach (var chunk in column.TerrianChunks)
-                {
-                    // queue.Enqueue(new GenWaterfallWorker(chunk, DefaultLayer, Config));
-                }
-            }
+                queue.Enqueue(new GenTreesWorker(Config, chunk, DefaultLayer, TreeLayer, _treeMap));
+            });            
             
             StartCoroutine(UpdateMeshesLoop());
         }
@@ -333,7 +316,7 @@ namespace FarmVox.Terrain
             
             VisitChunks(chunk =>
             {
-                queue.Enqueue(new GenTreesWorker(Config, chunk, DefaultLayer, TreeLayer, this, _treeMap));
+                queue.Enqueue(new GenTreesWorker(Config, chunk, DefaultLayer, TreeLayer, _treeMap));
             });
                         
             TreeLayer.Clear();
