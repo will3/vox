@@ -318,7 +318,7 @@ namespace FarmVox.Terrain
             {
                 queue.Enqueue(new GenTreesWorker(Config, chunk, DefaultLayer, TreeLayer, _treeMap));
             });
-                        
+            
             TreeLayer.Clear();
             WaterLayer.Clear();
 

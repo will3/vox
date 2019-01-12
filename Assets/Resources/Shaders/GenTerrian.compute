@@ -10,7 +10,6 @@ StructuredBuffer<float> _GrassBuffer;
 float _MaxHeight;
 int _WaterLevel;
 
-
 float _HillHeight;
 float _GroundHeight;
 float4 _WaterColor;
@@ -115,7 +114,7 @@ float getGrass(int3 coord, float heightRatio, int absY) {
     return _GrassValue - (1.0 - normalValue) - (1.0 - heightValue);
 }
 
-[numthreads(8, 8, 8)]
+[numthreads(8, 8, 4)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
     int dataSize = _DataSize;

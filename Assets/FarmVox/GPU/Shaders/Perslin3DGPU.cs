@@ -5,7 +5,7 @@ namespace FarmVox.GPU.Shaders
 {
     public class Perlin3DGpu : IDisposable
     {
-        private const int WorkGroups = 8;
+        private readonly int[] _workGroups = {8, 8, 4};
         private readonly Noise _noise;
         private readonly ComputeShader _shader;
         private readonly Vector3 _origin;
@@ -47,8 +47,10 @@ namespace FarmVox.GPU.Shaders
             _shader.SetInt("_DataSize", _dataSize);
             _shader.SetInt("_Type", (int)_noise.Type);
 
-            var dispatchNum = Mathf.CeilToInt(_dataSize / (float)WorkGroups);
-            _shader.Dispatch(0, dispatchNum, dispatchNum, dispatchNum);
+            _shader.Dispatch(0, 
+                Mathf.CeilToInt(_dataSize / (float) _workGroups[0]),
+                Mathf.CeilToInt(_dataSize / (float) _workGroups[1]),
+                Mathf.CeilToInt(_dataSize / (float) _workGroups[2]));
         }
 
         public void Dispose()

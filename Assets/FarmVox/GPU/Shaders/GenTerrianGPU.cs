@@ -7,7 +7,7 @@ namespace FarmVox.GPU.Shaders
     {
         private readonly int _size;
         private readonly int _dataSize;
-        private readonly int _workGroups = 8;
+        private readonly int[] _workGroups = {8, 8, 4};
         private readonly ComputeShader _shader;
         private readonly TerrianConfig _config;
         private readonly Vector3Int _origin;
@@ -65,8 +65,10 @@ namespace FarmVox.GPU.Shaders
                 
                 _shader.SetFloat("_GrassValue", _config.Biome.GrassValue);
 
-                var dispatchNum = Mathf.CeilToInt(_dataSize / (float)_workGroups);
-                _shader.Dispatch(0, dispatchNum, dispatchNum, dispatchNum);
+                _shader.Dispatch(0,
+                    Mathf.CeilToInt(_dataSize / (float) _workGroups[0]),
+                    Mathf.CeilToInt(_dataSize / (float) _workGroups[1]),
+                    Mathf.CeilToInt(_dataSize / (float) _workGroups[2]));
             }
         }
     }

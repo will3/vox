@@ -49,7 +49,7 @@ namespace FarmVox.GPU.Shaders
         private readonly ComputeShader _shader;
         private readonly int _dataSize;
         private readonly TerrianConfig _config;
-        private readonly int _workGroups = 8;
+        private readonly int[] _workGroups = {8, 8, 4};
         
         public int NormalBanding = 6;
         public bool UseNormals = true;
@@ -87,8 +87,10 @@ namespace FarmVox.GPU.Shaders
             _shader.SetFloat("_NormalStrength", NormalStrength);
             _shader.SetFloat("_AoStrength", _config.AoStrength);
 
-            var dispatchNumber = Mathf.CeilToInt(_dataSize / (float)_workGroups);
-            _shader.Dispatch(0, 3 * dispatchNumber, dispatchNumber, dispatchNumber);
+            _shader.Dispatch(0, 
+                3 * Mathf.CeilToInt(_dataSize / (float) _workGroups[0]),
+                Mathf.CeilToInt(_dataSize / (float) _workGroups[1]),
+                Mathf.CeilToInt(_dataSize / (float) _workGroups[2]));
         }
 
         public Triangle[] ReadTriangles() {

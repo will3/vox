@@ -144,7 +144,7 @@ float getAO(float s1f, float s2f, float cf) {
     return 1.0 - (_getAO(s1f, s2f, cf) * _AoStrength);
 }
        
-[numthreads(8, 8, 8)]
+[numthreads(8, 8, 4)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
     int i = id.x / 3;
