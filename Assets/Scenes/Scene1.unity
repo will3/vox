@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.3731196, g: 0.38074002, b: 0.35872713, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311918, g: 0.3807398, b: 0.35872716, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -147,7 +147,7 @@ MonoBehaviour:
     PlainHeight: 4
     WaterLevel: 0
     GroundHeight: 12
-    MaxChunksX: 2
+    MaxChunksX: 1
     AoStrength: 0.15
     ShadowStrength: 0.5
     TreeMinDis: 3
@@ -678,7 +678,7 @@ MonoBehaviour:
   RotateX: 45
   Rotation: {x: 45, y: 45, z: 0}
   Distance: 400
-  orthographicSize: 50
+  orthographicSize: 100
 --- !u!114 &534669907
 MonoBehaviour:
   m_ObjectHideFlags: 0
