@@ -1,5 +1,4 @@
 ﻿using System;
-using FarmVox.Terrain;
 using JetBrains.Annotations;
 using UnityEngine;
 
@@ -48,6 +47,7 @@ namespace FarmVox.GPU.Shaders
 
         private readonly ComputeShader _shader;
         private readonly int _size;
+        private readonly MesherSettings _settings;
         private readonly int[] _workGroups = {8, 8, 4};
         
         public int NormalBanding = 6;
@@ -57,14 +57,13 @@ namespace FarmVox.GPU.Shaders
         private readonly ComputeBuffer _voxelBuffer;
         private readonly ComputeBuffer _colorsBuffer;
         private readonly ComputeBuffer _trianglesBuffer;
-        private readonly float _aoStrength;
-        
+
         public float NormalStrength = 0.0f;
         
-        public MesherGpu(int size, float aoStrength)
+        public MesherGpu(int size, MesherSettings settings)
         {
             _size = size;
-            _aoStrength = aoStrength;
+            _settings = settings;
             _shader = Resources.Load<ComputeShader>("Shaders/Mesher");
 
             _trianglesBuffer =
@@ -85,7 +84,7 @@ namespace FarmVox.GPU.Shaders
             _shader.SetInt("_UseNormals", UseNormals ? 1 : 0);
             _shader.SetInt("_IsWater", IsWater ? 1 : 0);
             _shader.SetFloat("_NormalStrength", NormalStrength);
-            _shader.SetFloat("_AoStrength", _aoStrength);
+            _shader.SetFloat("_AoStrength", _settings.AoStrength);
 
             _shader.Dispatch(0, 
                 3 * Mathf.CeilToInt(_size / (float) _workGroups[0]),

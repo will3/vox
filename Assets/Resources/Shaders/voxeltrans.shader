@@ -1,7 +1,4 @@
-﻿// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
-
-//Shader "Unlit/voxelunlit"
-Shader "Unlit/voxeltrans"
+﻿Shader "Unlit/voxeltrans"
 {
     Properties
     {

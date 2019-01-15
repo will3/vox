@@ -12,5 +12,9 @@ namespace FarmVox
         public static Material GetVoxelMaterialTrans() {
             return new Material(Shader.Find("Unlit/voxeltrans"));
         }
+        
+        public static Material GetVoxelMaterialModel() {
+            return new Material(Shader.Find("Unlit/voxelmodel"));
+        }
     }
 }

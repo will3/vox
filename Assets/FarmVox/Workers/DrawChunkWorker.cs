@@ -61,9 +61,13 @@ namespace FarmVox.Workers
         private Mesh MeshGpu(Chunk chunk)
         {
             var chunks = chunk.Chunks;
-            
-            using (var mesher = new MesherGpu(chunk.DataSize, _config.AoStrength))
+
+            var mesherSettings = new MesherSettings
             {
+                AoStrength = _config.AoStrength
+            };
+            
+            using (var mesher = new MesherGpu(chunk.DataSize, mesherSettings)) {
                 mesher.UseNormals = chunks.UseNormals;
                 mesher.IsWater = chunks.IsWater;
                 mesher.NormalStrength = chunk.Chunks.NormalStrength;

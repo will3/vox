@@ -7,7 +7,9 @@ namespace FarmVox.Models
     {
         public static Model Load(string name)
         {
-            var json = Resources.Load<TextAsset>(Path.Combine("models", name)).text;
+            var path = Path.Combine("models", name);
+            var asset = Resources.Load<TextAsset>(path);
+            var json = asset.text;
 
             return JsonUtility.FromJson<Model>(json);
         }

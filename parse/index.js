@@ -36,10 +36,10 @@ function readChunk(childChunk, voxels, colors) {
 			for (var i in childChunk.chunkContent.voxels) {
 				var voxel = childChunk.chunkContent.voxels[i];
 				voxels.push({
-					x: voxel.x, 
-					y: voxel.y, 
-					z: voxel.z, 
-					colorIndex: voxel.colorIndex
+					X: voxel.x, 
+					Z: voxel.y, 
+					Y: voxel.z, 
+					ColorIndex: voxel.colorIndex
 				});
 			}
 			break;
@@ -50,10 +50,10 @@ function readChunk(childChunk, voxels, colors) {
 			for (var i in childChunk.chunkContent.colors) {
 				var color = childChunk.chunkContent.colors[i];
 				colors.push({
-					r: color.r, 
-					g: color.g, 
-					b: color.b, 
-					a: color.a
+					r: color.r / 255.0, 
+					g: color.g / 255.0, 
+					b: color.b / 255.0, 
+					a: color.a / 255.0
 				});
 			}
 			break;
@@ -72,7 +72,7 @@ function readModel(name) {
 		readChunk(childChunk, voxels, colors);
 	}
 
-	var output = { voxels, colors };
+	var output = { Voxels: voxels, Palette: colors, Size: 32 };
 
-	fs.writeFileSync(path.join(outPath, name), JSON.stringify(output));
+	fs.writeFileSync(path.join(outPath, name) + '.json', JSON.stringify(output));
 };
