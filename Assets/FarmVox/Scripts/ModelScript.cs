@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace FarmVox.Scripts
 {
-    public class ModelMesh : MonoBehaviour
+    public class ModelScript : MonoBehaviour
     {
         public string Model;
         private Model _model;
