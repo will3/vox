@@ -78,7 +78,7 @@ int getIndex(int i, int j, int k) {
     return i * _DataSize * _DataSize + j * _DataSize + k;
 }
 
-[numthreads(8,8,8)]
+[numthreads(8, 8, 4)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
     if (id.x >= _DataSize || id.y >= _DataSize || id.z >= _DataSize) {

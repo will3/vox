@@ -12,20 +12,18 @@ namespace FarmVox.Workers
         private readonly TerrianChunk _terrianChunk;
         private readonly Chunks _defaultLayer;
         private readonly Chunks _treeLayer;
-        private readonly Terrian _terrian;
         private readonly TreeMap _treeMap;
 
         public GenTreesWorker(TerrianConfig config, TerrianChunk terrianChunk, Chunks defaultLayer, Chunks treeLayer,
-            Terrian terrian, TreeMap treeMap)
+            TreeMap treeMap)
         {
             _config = config;
             _terrianChunk = terrianChunk;
             _defaultLayer = defaultLayer;
             _treeLayer = treeLayer;
-            _terrian = terrian;
             _treeMap = treeMap;
         }
-        
+
         public void Start()
         {
             var treeConfig = _config.Biome.Tree;
