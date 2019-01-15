@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.3731196, g: 0.38074002, b: 0.35872713, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074, b: 0.35872698, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -154,7 +154,7 @@ MonoBehaviour:
     NormalStrength: 0.4
     TreesNormalStrength: 0.2
     Biome:
-      HillHeight: 48
+      HillHeight: 64
       WaterColor: {r: 0.16078432, g: 0.49411765, b: 0.7137255, a: 0.4}
       RockColor:
         Gradient:
@@ -440,8 +440,8 @@ MonoBehaviour:
           serializedVersion: 2
           m_Curve:
           - serializedVersion: 3
-            time: -1
-            value: -0.4
+            time: -1.0333328
+            value: -0.26999512
             inSlope: 0
             outSlope: 0
             tangentMode: 0
@@ -678,7 +678,7 @@ MonoBehaviour:
   RotateX: 45
   Rotation: {x: 45, y: 45, z: 0}
   Distance: 400
-  orthographicSize: 50
+  orthographicSize: 100
 --- !u!114 &534669907
 MonoBehaviour:
   m_ObjectHideFlags: 0
