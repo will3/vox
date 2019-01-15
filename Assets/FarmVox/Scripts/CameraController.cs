@@ -16,6 +16,8 @@ namespace FarmVox.Scripts
         public Vector3 Rotation = new Vector3(45, 45, 0);
         public float Distance = 300;
 
+        public bool InputEnabled = true;
+
         private Vector3 _lastDragPosition;
         private bool _dragging;
         public float orthographicSize = 100; 
@@ -25,18 +27,19 @@ namespace FarmVox.Scripts
             return (Target - transform.position).normalized;
         }
 
-        // Update is called once per frame
-        void Update()
+        private float _forward;
+        private float _right;
+        private float _rotate;
+        
+        private void UpdateInput()
         {
-            var f = Mathf.Pow(Friction, Time.deltaTime);
+            _forward = 0.0f;
+            if (Input.GetKey(KeyCode.W)) _forward += 1.0f;
+            if (Input.GetKey(KeyCode.S)) _forward -= 1.0f;
 
-            var forward = 0.0f;
-            if (Input.GetKey(KeyCode.W)) forward += 1.0f;
-            if (Input.GetKey(KeyCode.S)) forward -= 1.0f;
-
-            var right = 0.0f;
-            if (Input.GetKey(KeyCode.A)) right -= 1.0f;
-            if (Input.GetKey(KeyCode.D)) right += 1.0f;
+            _right = 0.0f;
+            if (Input.GetKey(KeyCode.A)) _right -= 1.0f;
+            if (Input.GetKey(KeyCode.D)) _right += 1.0f;
 
             var rotate = 0.0f;
             if (Input.GetKey(KeyCode.Q)) rotate -= 1.0f;
@@ -71,12 +74,22 @@ namespace FarmVox.Scripts
                 Rotation.y -= diff.x * MouseRotateSpeed;
                 _lastDragPosition = Input.mousePosition;
             }
+        }
+        
+        private void Update()
+        {
+            if (InputEnabled)
+            {
+                UpdateInput();    
+            }
+            
+            var f = Mathf.Pow(Friction, Time.deltaTime);
 
             var forwardVector = (Target - transform.position).normalized;
             forwardVector = Vector3.ProjectOnPlane(forwardVector, Vector3.up);
             var rightVector = Vector3.Cross(Vector3.up, forwardVector);
-            Velocity += forwardVector * forward * Speed * Time.deltaTime;
-            Velocity += rightVector * right * Speed * Time.deltaTime;
+            Velocity += forwardVector * _forward * Speed * Time.deltaTime;
+            Velocity += rightVector * _right * Speed * Time.deltaTime;
             Target += Velocity;
             Velocity *= f;
 

@@ -678,6 +678,7 @@ MonoBehaviour:
   RotateX: 45
   Rotation: {x: 45, y: 45, z: 0}
   Distance: 400
+  InputEnabled: 0
   orthographicSize: 100
 --- !u!114 &534669907
 MonoBehaviour:
@@ -701,7 +702,6 @@ GameObject:
   - component: {fileID: 741202529}
   - component: {fileID: 741202528}
   - component: {fileID: 741202530}
-  - component: {fileID: 741202531}
   m_Layer: 0
   m_Name: Ship
   m_TagString: Untagged
@@ -717,11 +717,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 741202527}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 56ee212d698f4644baa2aa907e6d43a5, type: 3}
+  m_Script: {fileID: 11500000, guid: 74e913df150b40a29b314b9d2ed7b2f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Model: frigate
-  MeshFilter: {fileID: 741202530}
+  ModelName: frigate
 --- !u!4 &741202529
 Transform:
   m_ObjectHideFlags: 0
@@ -729,54 +728,28 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 741202527}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 32, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &741202530
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 741202527}
-  m_Mesh: {fileID: 0}
---- !u!23 &741202531
-MeshRenderer:
+--- !u!114 &741202530
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 741202527}
   m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RenderingLayerMask: 4294967295
-  m_Materials:
-  - {fileID: 0}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 0
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c31364cd33440c795e8c63c76a9dcef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Power: 4
+  Friction: 0.001
+  Yaw: 0
+  Pitch: 0
+  Roll: 0
 --- !u!1 &2020566684
 GameObject:
   m_ObjectHideFlags: 0

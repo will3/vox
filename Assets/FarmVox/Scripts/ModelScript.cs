@@ -7,10 +7,18 @@ namespace FarmVox.Scripts
 {
     public class ModelScript : MonoBehaviour
     {
-        public string Model;
-        private Model _model;
+        public string ModelName;
+        public Model Model { get; private set; }
         private MeshFilter _meshFilter;
         private MeshRenderer _meshRenderer;
+
+        public void LoadModel()
+        {
+            if (Model == null)
+            {
+                Model = ModelLoader.Load(ModelName);    
+            }
+        }
         
         private void Start()
         {
@@ -18,11 +26,9 @@ namespace FarmVox.Scripts
             _meshRenderer = gameObject.AddComponent<MeshRenderer>();
             _meshRenderer.material = Materials.GetVoxelMaterialModel();
             
-            _model = ModelLoader.Load(Model);
-
-            _model.InitData();
+            Model.InitData();
             
-            Debug.Log(JsonUtility.ToJson(_model));
+            Debug.Log(JsonUtility.ToJson(Model));
 
             var mesherSettings = new MesherSettings
             {
@@ -31,8 +37,8 @@ namespace FarmVox.Scripts
             
             using (var mesher = new MesherGpu(32, mesherSettings))
             {
-                mesher.SetColors(_model.Colors);
-                mesher.SetData(_model.Data);
+                mesher.SetColors(Model.Colors);
+                mesher.SetData(Model.Data);
                 mesher.Dispatch();
                 var triangles = mesher.ReadTriangles();
                 var mesh = new MeshBuilder().AddTriangles(triangles).Build();
