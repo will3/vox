@@ -39,10 +39,7 @@ namespace FarmVox.Scripts
 
             if (right != 0.0f)
             {
-                if (forward < 0.5f)
-                {
-                    forward = 0.5f;    
-                }
+                forward = 1.0f;
             }
 
             var maxRoll = 45;
