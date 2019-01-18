@@ -179,17 +179,21 @@ namespace FarmVox.Terrain
 
         private IEnumerator UpdateMeshesLoop() {
             while (true) {
+                _shadowMap.Update();
+                UpdateMaterial();
                 foreach (var column in _columnList)
                 {
-                    UpdateMaterial();
-                    _shadowMap.Update();
-
                     foreach (var chunks in _chunksToDraw)
                     {
                         foreach (var terrianChunk in column.TerrianChunks)
                         {
                             var chunk = chunks.GetChunk(terrianChunk.Origin);
                             if (chunk == null)
+                            {
+                                continue;
+                            }
+
+                            if (!chunk.Dirty)
                             {
                                 continue;
                             }
