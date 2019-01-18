@@ -172,7 +172,7 @@ namespace FarmVox.Terrain
             VisitChunks(chunk =>
             {
                 queue.Enqueue(new GenTreesWorker(Config, chunk, DefaultLayer, TreeLayer, _treeMap));
-            });            
+            });
             
             StartCoroutine(UpdateMeshesLoop());
         }

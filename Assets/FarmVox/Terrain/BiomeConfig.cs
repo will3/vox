@@ -11,7 +11,6 @@ namespace FarmVox.Terrain
     {
         public float HillHeight;
         
-        [ColorHtmlProperty]
         public Color WaterColor;
         
         public ColorGradient RockColor;

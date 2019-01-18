@@ -9,10 +9,8 @@ namespace FarmVox.Terrain
     [Serializable]
     public class TreeConfig
     {
-        [ColorHtmlProperty]
         public Color TrunkColor;
         
-        [ColorHtmlProperty]
         public Color LeafColor;
         
         public Perlin TreeNoise;

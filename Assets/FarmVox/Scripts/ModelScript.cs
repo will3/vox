@@ -27,8 +27,6 @@ namespace FarmVox.Scripts
             _meshRenderer.material = Materials.GetVoxelMaterialModel();
             
             Model.InitData();
-            
-            Debug.Log(JsonUtility.ToJson(Model));
 
             var mesherSettings = new MesherSettings
             {
