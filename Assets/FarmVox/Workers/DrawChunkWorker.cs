@@ -11,51 +11,35 @@ namespace FarmVox.Workers
     {
         private readonly TerrianConfig _config;
         private readonly VoxelShadowMap _shadowMap;
-        private readonly Chunks _chunks;
-        private readonly TerrianChunk _terrianChunk;
+        private readonly Chunk _chunk;
         
-        public DrawChunkWorker(TerrianConfig config, VoxelShadowMap shadowMap, Chunks chunks, TerrianChunk terrianChunk)
+        public DrawChunkWorker(TerrianConfig config, VoxelShadowMap shadowMap, Chunk chunk)
         {
             _config = config;
             _shadowMap = shadowMap;
-            _chunks = chunks;
-            _terrianChunk = terrianChunk;
+            _chunk = chunk;
         }
         
         public void Start()
         {
-            GenerateMesh(_chunks, _terrianChunk);
-        }
-        
-        private void GenerateMesh(Chunks chunks, TerrianChunk terrianChunk)
-        {
-            var origin = terrianChunk.Origin;
-            
-            if (!chunks.HasChunk(origin))
+            if (!_chunk.Dirty)
             {
                 return;
             }
 
-            var chunk = chunks.GetChunk(origin);
-
-            if (!chunk.Dirty)
+            if (_chunk.Mesh != null)
             {
-                return;
+                Object.Destroy(_chunk.Mesh);
             }
 
-            if (chunk.Mesh != null)
-            {
-                Object.Destroy(chunk.Mesh);
-            }
+            _chunk.Mesh = MeshGpu(_chunk);
+            _chunk.GetMeshRenderer().material = _chunk.Material;
+            _chunk.GetMeshFilter().sharedMesh = _chunk.Mesh;
+            _chunk.GetMeshCollider().sharedMesh = _chunk.Mesh;
 
-            chunk.Mesh = MeshGpu(chunk);
-            chunk.GetMeshRenderer().material = chunk.Material;
-            chunk.GetMeshFilter().sharedMesh = chunk.Mesh;
-            chunk.GetMeshCollider().sharedMesh = chunk.Mesh;
+            _chunk.Dirty = false;
 
-            chunk.Dirty = false;
-
-            _shadowMap.ChunkDrawn(origin);
+            _shadowMap.ChunkDrawn(_chunk.Origin);
         }
 
         private Mesh MeshGpu(Chunk chunk)

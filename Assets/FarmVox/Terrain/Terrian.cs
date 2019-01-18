@@ -188,7 +188,12 @@ namespace FarmVox.Terrain
                     {
                         foreach (var terrianChunk in column.TerrianChunks)
                         {
-                            var worker = new DrawChunkWorker(Config, _shadowMap, chunks, terrianChunk);    
+                            var chunk = chunks.GetChunk(terrianChunk.Origin);
+                            if (chunk == null)
+                            {
+                                continue;
+                            }
+                            var worker = new DrawChunkWorker(Config, _shadowMap, chunk);    
                             worker.Start();
                         }
                     }
