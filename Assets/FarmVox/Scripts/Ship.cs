@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace FarmVox.Scripts
@@ -6,26 +7,16 @@ namespace FarmVox.Scripts
     {
         private Vector3 _velocity;
         public float Power = 1;
-        public float Friction = 0.001f;
+        public float Friction = 0.99f;
 
         public float Yaw;
         public float Pitch;
         public float Roll;
-        
+
         private void Update()
         {
-            var forward = 0.0f;
+            var forward = 1.0f;
             var right = 0.0f;
-            
-            if (Input.GetKey(KeyCode.W))
-            {
-                forward += 1.0f;
-            }
-
-            if (Input.GetKey(KeyCode.S))
-            {
-                forward -= 1.0f;
-            }
 
             if (Input.GetKey(KeyCode.D))
             {
@@ -51,9 +42,7 @@ namespace FarmVox.Scripts
             
             _velocity += transform.rotation * Vector3.forward * forward * Power * Time.deltaTime;
 
-            var f = Mathf.Pow(Friction, Time.deltaTime);
-
-            _velocity *= f;
+            _velocity *= Friction;
             
             transform.position += _velocity;
 
