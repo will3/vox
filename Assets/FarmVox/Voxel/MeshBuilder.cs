@@ -23,9 +23,27 @@ namespace FarmVox.Voxel
             _indices.Add(i * 3 + 1);
             _indices.Add(i * 3 + 2);
 
-            _colors.Add(triangle.ColorA);
-            _colors.Add(triangle.ColorB);
-            _colors.Add(triangle.ColorC);
+            _colors.Add(triangle.Color * triangle.AO[0]);
+            _colors.Add(triangle.Color * triangle.AO[1]);
+            _colors.Add(triangle.Color * triangle.AO[2]);
+
+            _uvs.Add(new Vector2(0, triangle.Index));
+            _uvs.Add(new Vector2(0, triangle.Index));
+            _uvs.Add(new Vector2(0, triangle.Index));
+            
+            i = _vertices.Count / 3;
+            
+            _vertices.Add(triangle.A);
+            _vertices.Add(triangle.C);
+            _vertices.Add(triangle.D);
+
+            _indices.Add(i * 3);
+            _indices.Add(i * 3 + 1);
+            _indices.Add(i * 3 + 2);
+
+            _colors.Add(triangle.Color * triangle.AO[0]);
+            _colors.Add(triangle.Color * triangle.AO[2]);
+            _colors.Add(triangle.Color * triangle.AO[3]);
 
             _uvs.Add(new Vector2(0, triangle.Index));
             _uvs.Add(new Vector2(0, triangle.Index));

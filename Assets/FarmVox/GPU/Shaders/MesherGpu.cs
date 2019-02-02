@@ -8,25 +8,18 @@ namespace FarmVox.GPU.Shaders
     {
         public struct Triangle
         {
-            [UsedImplicitly]
             public Vector3 A;
             
-            [UsedImplicitly]
             public Vector3 B;
             
-            [UsedImplicitly]
             public Vector3 C;
+
+            public Vector3 D;
             
-            [UsedImplicitly]
-            public Color ColorA;
+            public Color Color;
+
+            public Vector4 AO;
             
-            [UsedImplicitly]
-            public Color ColorB;
-            
-            [UsedImplicitly]
-            public Color ColorC;
-            
-            [UsedImplicitly]
             public int Index;
 
             public static int Size
@@ -34,10 +27,7 @@ namespace FarmVox.GPU.Shaders
                 get
                 {
                     return
-                        sizeof(float) * 3 +
-                        sizeof(float) * 3 +
-                        sizeof(float) * 3 +
-                        sizeof(float) * 4 +
+                        sizeof(float) * 3 * 4 +
                         sizeof(float) * 4 +
                         sizeof(float) * 4 +
                         sizeof(int);

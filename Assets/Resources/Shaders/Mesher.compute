@@ -5,9 +5,9 @@ struct Triangle {
     float3 a;
     float3 b;
     float3 c;
-    float4 colorA;
-    float4 colorB;
-    float4 colorC;
+    float3 d;
+    float4 color;
+    float4 ao;
     int index;
 };
 
@@ -75,44 +75,25 @@ float getDot(int i, int j, int k) {
 
 void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, float ab, float ac, float ad, bool order, bool flipped, int index) {
     Triangle t1;
-    Triangle t2;
 
     if (order) {
         t1.a = a;
         t1.b = b;
         t1.c = c;
-        t1.colorA = color * aa;
-        t1.colorB = color * ab;
-        t1.colorC = color * ac;
+        t1.d = d;
+        t1.color = color;
+        t1.ao = float4(aa, ab, ac, ad);
         t1.index = index;
         _TrianglesBuffer.Append(t1);
-
-        t2.a = a;
-        t2.b = c;
-        t2.c = d;
-        t2.colorA = color * aa;
-        t2.colorB = color * ac;
-        t2.colorC = color * ad;
-        t2.index = index;
-        _TrianglesBuffer.Append(t2);
     } else {
         t1.a = c;
         t1.b = b;
         t1.c = a;
-        t1.colorA = color * ac;
-        t1.colorB = color * ab;
-        t1.colorC = color * aa;
+        t1.d = d;
+        t1.color = color;
+        t1.ao = float4(aa, ab, ac, ad);
         t1.index = index;
         _TrianglesBuffer.Append(t1);
-
-        t2.a = d;
-        t2.b = c;
-        t2.c = a;
-        t2.colorA = color * ad;
-        t2.colorB = color * ac;
-        t2.colorC = color * aa;
-        t2.index = index;
-        _TrianglesBuffer.Append(t2);
     }
 }
 
