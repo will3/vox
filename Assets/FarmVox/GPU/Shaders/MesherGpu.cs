@@ -19,7 +19,16 @@ namespace FarmVox.GPU.Shaders
 
             public Vector4 AO;
             
-            public int Index;
+            public int X;
+            
+            public int Y;
+            
+            public int Z;
+
+            public int GetIndex(int size)
+            {
+                return X * size * size + Y * size + Z;
+            }
 
             public static int Size
             {
@@ -29,7 +38,7 @@ namespace FarmVox.GPU.Shaders
                         sizeof(float) * 3 * 4 +
                         sizeof(float) * 4 +
                         sizeof(float) * 4 +
-                        sizeof(int);
+                        sizeof(int) * 3;
                 }
             }
         }

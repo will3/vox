@@ -63,7 +63,7 @@ namespace FarmVox.Workers
             
                 var triangles = mesher.ReadTriangles();
 
-                var builder = new MeshBuilder();
+                var builder = new MeshBuilder(_config.DataSize);
                 var mesh = builder.AddTriangles(triangles).Build();
                 return mesh;
             }

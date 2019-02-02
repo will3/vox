@@ -13,6 +13,15 @@ namespace FarmVox.Terrain
         }
 
         public int Size;
+
+        public int DataSize
+        {
+            get
+            {
+                return Size + 3;
+            }
+        }
+        
         public int MaxChunksY;
         public float MaxHeight;
         public float PlainHeight;

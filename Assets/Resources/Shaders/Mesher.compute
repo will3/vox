@@ -8,7 +8,9 @@ struct Triangle {
     float3 d;
     float4 color;
     float4 ao;
-    int index;
+    int x;
+    int y;
+    int z;
 };
 
 int _Size;
@@ -73,7 +75,7 @@ float getDot(int i, int j, int k) {
     return dt;
 }
 
-void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, float ab, float ac, float ad, bool order, bool flipped, int index) {
+void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, float ab, float ac, float ad, bool order, bool flipped, int x, int y, int z) {
     Triangle t1;
 
     if (order) {
@@ -83,7 +85,9 @@ void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, flo
         t1.d = d;
         t1.color = color;
         t1.ao = float4(aa, ab, ac, ad);
-        t1.index = index;
+        t1.x = x;
+        t1.y = y;
+        t1.z = z;
         _TrianglesBuffer.Append(t1);
     } else {
         t1.a = c;
@@ -92,7 +96,9 @@ void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, flo
         t1.d = d;
         t1.color = color;
         t1.ao = float4(aa, ab, ac, ad);
-        t1.index = index;
+        t1.x = x;
+        t1.y = y;
+        t1.z = z;
         _TrianglesBuffer.Append(t1);
     }
 }
@@ -203,8 +209,6 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
     bool flipped = ao00 + ao11 > ao01 + ao10;
 
-    int index = getIndex(c);
-
     addQuad(
         getVector(i + 1, j, k, d),
         getVector(i + 1, j + 1, k, d),
@@ -217,6 +221,6 @@ void CSMain (uint3 id : SV_DispatchThreadID)
         ao10,
         front,
         flipped,
-        index
+        c.x, c.y, c.z
     );
 }

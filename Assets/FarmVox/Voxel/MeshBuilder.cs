@@ -6,10 +6,16 @@ namespace FarmVox.Voxel
 {
     internal class MeshBuilder
     {
+        private readonly int _size;
         private readonly List<Vector3> _vertices = new List<Vector3>();
         private readonly List<Color> _colors = new List<Color>();
         private readonly List<Vector2> _uvs = new List<Vector2>();
         private readonly List<int> _indices = new List<int>();
+
+        public MeshBuilder(int size)
+        {
+            _size = size;
+        }
 
         private void AddTriangle(MesherGpu.Triangle triangle)
         {
@@ -27,9 +33,9 @@ namespace FarmVox.Voxel
             _colors.Add(triangle.Color * triangle.AO[1]);
             _colors.Add(triangle.Color * triangle.AO[2]);
 
-            _uvs.Add(new Vector2(0, triangle.Index));
-            _uvs.Add(new Vector2(0, triangle.Index));
-            _uvs.Add(new Vector2(0, triangle.Index));
+            _uvs.Add(new Vector2(0, triangle.GetIndex(_size)));
+            _uvs.Add(new Vector2(0, triangle.GetIndex(_size)));
+            _uvs.Add(new Vector2(0, triangle.GetIndex(_size)));
             
             i = _vertices.Count / 3;
             
@@ -45,9 +51,9 @@ namespace FarmVox.Voxel
             _colors.Add(triangle.Color * triangle.AO[2]);
             _colors.Add(triangle.Color * triangle.AO[3]);
 
-            _uvs.Add(new Vector2(0, triangle.Index));
-            _uvs.Add(new Vector2(0, triangle.Index));
-            _uvs.Add(new Vector2(0, triangle.Index));
+            _uvs.Add(new Vector2(0, triangle.GetIndex(_size)));
+            _uvs.Add(new Vector2(0, triangle.GetIndex(_size)));
+            _uvs.Add(new Vector2(0, triangle.GetIndex(_size)));
         }
 
         public MeshBuilder AddTriangles(IEnumerable<MesherGpu.Triangle> triangles)
