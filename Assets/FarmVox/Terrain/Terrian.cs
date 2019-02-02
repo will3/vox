@@ -174,6 +174,11 @@ namespace FarmVox.Terrain
                 queue.Enqueue(new GenTreesWorker(Config, chunk, DefaultLayer, TreeLayer, _treeMap));
             });
             
+            VisitChunks(chunk =>
+            {
+                queue.Enqueue(new GenWaterfallWorker(chunk, DefaultLayer, Config));
+            });
+            
             StartCoroutine(UpdateMeshesLoop());
         }
 
@@ -324,6 +329,11 @@ namespace FarmVox.Terrain
             VisitChunks(chunk =>
             {
                 queue.Enqueue(new GenTreesWorker(Config, chunk, DefaultLayer, TreeLayer, _treeMap));
+            });
+            
+            VisitChunks(chunk =>
+            {
+                queue.Enqueue(new GenWaterfallWorker(chunk, DefaultLayer, Config));
             });
             
             TreeLayer.Clear();
