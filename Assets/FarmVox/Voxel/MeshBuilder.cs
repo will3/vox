@@ -11,7 +11,7 @@ namespace FarmVox.Voxel
         private readonly List<Vector2> _uvs = new List<Vector2>();
         private readonly List<int> _indices = new List<int>();
 
-        public MeshBuilder AddTriangle(MesherGpu.Triangle triangle)
+        private void AddTriangle(MesherGpu.Triangle triangle)
         {
             var i = _vertices.Count / 3;
 
@@ -30,8 +30,6 @@ namespace FarmVox.Voxel
             _uvs.Add(new Vector2(0, triangle.Index));
             _uvs.Add(new Vector2(0, triangle.Index));
             _uvs.Add(new Vector2(0, triangle.Index));
-            
-            return this;
         }
 
         public MeshBuilder AddTriangles(IEnumerable<MesherGpu.Triangle> triangles)

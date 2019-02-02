@@ -144,14 +144,14 @@ namespace FarmVox.Voxel
             }
         }
 
-        private ComputeBuffer _defaultBuffer;
+        private static ComputeBuffer _defaultBuffer;
 
         private ComputeBuffer GetDefaultBuffer()
         {
             return _defaultBuffer ?? (_defaultBuffer = new ComputeBuffer(DataSize * DataSize, sizeof(int)));
         }
 
-        public ComputeBuffer GetBuffer(Vector3Int origin, Vector2Int offset)
+        private ComputeBuffer GetBuffer(Vector3Int origin, Vector2Int offset)
         {
             if (offset.x >= 2 || offset.y >= 2 || offset.x < 0 || offset.y < 0)
             {

@@ -180,7 +180,6 @@ namespace FarmVox.Terrain
         private IEnumerator UpdateMeshesLoop() {
             while (true) {
                 _shadowMap.Update();
-                UpdateMaterial();
                 foreach (var column in _columnList)
                 {
                     foreach (var chunks in _chunksToDraw)
@@ -192,11 +191,14 @@ namespace FarmVox.Terrain
                             {
                                 continue;
                             }
+                            
+                            UpdateMaterial(chunk);
 
                             if (!chunk.Dirty)
                             {
                                 continue;
                             }
+                            
                             var worker = new DrawChunkWorker(Config, _shadowMap, chunk);    
                             worker.Start();
                         }
@@ -207,18 +209,14 @@ namespace FarmVox.Terrain
             }            
         }
 
-        private void UpdateMaterial() {
-            foreach (var chunks in _chunksToDraw) {
-                foreach (var chunk in chunks.Map.Values) {
-                    var material = chunk.Material;
+        private void UpdateMaterial(Chunk chunk) {
+            var material = chunk.Material;
 
-                    var origin = chunk.Origin;
-                    material.SetVector("_Origin", (Vector3)origin);
-                    material.SetInt("_Size", Size);
+            var origin = chunk.Origin;
+            material.SetVector("_Origin", (Vector3)origin);
+            material.SetInt("_Size", Size);
 
-                    _shadowMap.UpdateMaterial(material, origin);
-                }
-            }
+            _shadowMap.UpdateMaterial(material, origin);
         }
 
         private TerrianChunk GetTerrianChunk(Vector3Int origin) {
