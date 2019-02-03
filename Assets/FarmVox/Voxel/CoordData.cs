@@ -8,10 +8,7 @@ namespace FarmVox.Voxel
 
         public static int Size
         {
-            get
-            {
-                return sizeof(int) * 3 + sizeof(float);    
-            }
+            get { return sizeof(int) * 3; }
         }
     }
 }
