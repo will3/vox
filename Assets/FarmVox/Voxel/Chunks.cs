@@ -179,7 +179,7 @@ namespace FarmVox.Voxel
         {
             var origin = GetOrigin(coord.x, coord.y, coord.z);
             var terrianChunk = GetChunk(origin);
-            return terrianChunk != null && terrianChunk.GetWaterfall(coord - terrianChunk.Origin);
+            return terrianChunk != null && terrianChunk.GetWaterfall(coord - terrianChunk.Origin) > 0;
         }
 
         public void SetWaterfall(Vector3Int coord, float value)

@@ -5,13 +5,13 @@ namespace FarmVox.Voxel
 {
     public class MeshResult
     {
-        public MeshResult(List<VoxelData> voxelData, Mesh mesh)
+        public MeshResult(List<CoordData> voxelData, Mesh mesh)
         {
             VoxelData = voxelData;
             Mesh = mesh;
         }
 
-        public List<VoxelData> VoxelData { get; private set; }
+        public List<CoordData> VoxelData { get; private set; }
         public Mesh Mesh { get; private set; }
     }
 }

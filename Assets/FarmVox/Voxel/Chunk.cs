@@ -31,14 +31,14 @@ namespace FarmVox.Voxel
 
         public ComputeBuffer VoxelDataBuffer { get; private set; }
 
-        public void UpdateVoxelData(List<VoxelData> voxelData)
+        public void UpdateVoxelData(List<CoordData> voxelData)
         {
             if (VoxelDataBuffer != null)
             {
                 VoxelDataBuffer.Dispose();
             }
             
-            VoxelDataBuffer = new ComputeBuffer(voxelData.Count, VoxelData.Size);
+            VoxelDataBuffer = new ComputeBuffer(voxelData.Count, CoordData.Size);
             
             VoxelDataBuffer.SetData(voxelData);
         }
@@ -282,15 +282,11 @@ namespace FarmVox.Voxel
         /// </summary>
         /// <param name="coord"></param>
         /// <returns></returns>
-        public bool GetWaterfall(Vector3Int coord)
+        public float GetWaterfall(Vector3Int coord)
         {
-            return GetWaterfall(coord.x, coord.y, coord.z);
-        }
-
-        private bool GetWaterfall(int i, int j, int k)
-        {
-            var coord = new Vector3Int(i, j, k);
-            return _waterfalls.ContainsKey(coord);
+            float value;
+            _waterfalls.TryGetValue(coord, out value);
+            return value;
         }
 
         public bool IsSurfaceCoord(Vector3Int coord) {

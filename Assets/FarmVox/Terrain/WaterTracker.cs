@@ -7,11 +7,11 @@ namespace FarmVox.Terrain
     class WaterTracker
     {
         private const float Friction = 0.9f;
-        private const float FreefallFriction = 0f;
+        private const float FreeFallFriction = 0f;
         private const float MaxSpeed = 5;
         
         private float _speed;
-        private bool _freefall;
+        private bool _freeFall;
         private float _lastCost;
         public bool ReachedWater { get; set; }
 
@@ -43,7 +43,7 @@ namespace FarmVox.Terrain
         public void FreeFall(Vector3Int coord)
         {
             _speed += 1f;
-            _freefall = true;
+            _freeFall = true;
             _lastCost = 1 / _speed;
 
             _speed *= Friction;
@@ -61,10 +61,10 @@ namespace FarmVox.Terrain
 
         public void Flow(Vector3Int from, Vector3Int to)
         {
-            if (_freefall)
+            if (_freeFall)
             {
-                _speed *= FreefallFriction;
-                _freefall = false;
+                _speed *= FreeFallFriction;
+                _freeFall = false;
             }
 
             _speed += 0.5f;

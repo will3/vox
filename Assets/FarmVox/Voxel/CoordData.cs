@@ -2,7 +2,7 @@
 
 namespace FarmVox.Voxel
 {
-    public struct VoxelData
+    public struct CoordData
     {
         public Vector3Int Coord;
 
@@ -10,7 +10,7 @@ namespace FarmVox.Voxel
         {
             get
             {
-                return sizeof(int) * 3;    
+                return sizeof(int) * 3 + sizeof(float);    
             }
         }
     }

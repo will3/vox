@@ -10,7 +10,7 @@ namespace FarmVox.Voxel
         private readonly List<Color> _colors = new List<Color>();
         private readonly List<Vector2> _uvs = new List<Vector2>();
         private readonly List<int> _indices = new List<int>();
-        private readonly List<VoxelData> _voxelData = new List<VoxelData>();
+        private readonly List<CoordData> _voxelData = new List<CoordData>();
         
         private void AddTriangle(MesherGpu.Triangle triangle)
         {
@@ -28,7 +28,7 @@ namespace FarmVox.Voxel
             _colors.Add(triangle.Color * triangle.AO[1]);
             _colors.Add(triangle.Color * triangle.AO[2]);
 
-            _voxelData.Add(new VoxelData
+            _voxelData.Add(new CoordData
             {
                 Coord = triangle.Coord
             });
