@@ -4,18 +4,38 @@ using UnityEngine;
 
 namespace FarmVox.Voxel
 {
+    public struct VoxelData
+    {
+        public Vector3Int Coord;
+
+        public static int Size
+        {
+            get
+            {
+                return sizeof(int) * 3;    
+            }
+        }
+    }
+
+    public class MeshResult
+    {
+        public MeshResult(List<VoxelData> voxelData, Mesh mesh)
+        {
+            VoxelData = voxelData;
+            Mesh = mesh;
+        }
+
+        public List<VoxelData> VoxelData { get; private set; }
+        public Mesh Mesh { get; private set; }
+    }
+    
     internal class MeshBuilder
     {
-        private readonly int _size;
         private readonly List<Vector3> _vertices = new List<Vector3>();
         private readonly List<Color> _colors = new List<Color>();
         private readonly List<Vector2> _uvs = new List<Vector2>();
         private readonly List<int> _indices = new List<int>();
-
-        public MeshBuilder(int size)
-        {
-            _size = size;
-        }
+        private readonly List<VoxelData> _voxelData = new List<VoxelData>();
 
         private void AddTriangle(MesherGpu.Triangle triangle)
         {
@@ -33,9 +53,15 @@ namespace FarmVox.Voxel
             _colors.Add(triangle.Color * triangle.AO[1]);
             _colors.Add(triangle.Color * triangle.AO[2]);
 
-            _uvs.Add(new Vector2(0, triangle.GetIndex(_size)));
-            _uvs.Add(new Vector2(0, triangle.GetIndex(_size)));
-            _uvs.Add(new Vector2(0, triangle.GetIndex(_size)));
+            _voxelData.Add(new VoxelData
+            {
+                Coord = triangle.Coord
+            });
+            var index = _voxelData.Count - 1;
+            
+            _uvs.Add(new Vector2(index, 0));
+            _uvs.Add(new Vector2(index, 0));
+            _uvs.Add(new Vector2(index, 0));
             
             i = _vertices.Count / 3;
             
@@ -51,9 +77,9 @@ namespace FarmVox.Voxel
             _colors.Add(triangle.Color * triangle.AO[2]);
             _colors.Add(triangle.Color * triangle.AO[3]);
 
-            _uvs.Add(new Vector2(0, triangle.GetIndex(_size)));
-            _uvs.Add(new Vector2(0, triangle.GetIndex(_size)));
-            _uvs.Add(new Vector2(0, triangle.GetIndex(_size)));
+            _uvs.Add(new Vector2(index, 0));
+            _uvs.Add(new Vector2(index, 0));
+            _uvs.Add(new Vector2(index, 0));
         }
 
         public MeshBuilder AddTriangles(IEnumerable<MesherGpu.Triangle> triangles)
@@ -66,14 +92,15 @@ namespace FarmVox.Voxel
             return this;
         }
 
-        public Mesh Build()
+        public MeshResult Build()
         {
             var mesh = new Mesh();
             mesh.SetVertices(_vertices);
             mesh.SetTriangles(_indices, 0);
             mesh.SetColors(_colors);
             mesh.uv = _uvs.ToArray();
-            return mesh;
+            
+            return new MeshResult(_voxelData, mesh);
         }
     }
 }

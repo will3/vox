@@ -1,9 +1,10 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace FarmVox.Voxel
 {
-    public class Chunk
+    public class Chunk : IDisposable
     {
         public readonly int Size;
         public readonly Vector3Int Origin;
@@ -27,7 +28,21 @@ namespace FarmVox.Voxel
         
         private bool _surfaceCoordsDirty = true;
         private bool _normalsDirty = true;
-        
+
+        public ComputeBuffer VoxelDataBuffer { get; private set; }
+
+        public void UpdateVoxelData(List<VoxelData> voxelData)
+        {
+            if (VoxelDataBuffer != null)
+            {
+                VoxelDataBuffer.Dispose();
+            }
+            
+            VoxelDataBuffer = new ComputeBuffer(voxelData.Count, VoxelData.Size);
+            
+            VoxelDataBuffer.SetData(voxelData);
+        }
+
         public void SetColors(Color[] colors)
         {
             if (colors.Length != Colors.Length)
@@ -281,6 +296,14 @@ namespace FarmVox.Voxel
         {
             SetData(new float[DataSize * DataSize * DataSize]);
             SetColors(new Color[DataSize * DataSize * DataSize]);
+        }
+
+        public void Dispose()
+        {
+            if (VoxelDataBuffer != null)
+            {
+                VoxelDataBuffer.Dispose();    
+            }
         }
     }
 }

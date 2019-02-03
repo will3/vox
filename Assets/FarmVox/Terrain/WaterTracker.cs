@@ -3,7 +3,7 @@ using FarmVox.Voxel;
 using UnityEngine;
 
 namespace FarmVox.Terrain
-{
+{   
     class WaterTracker
     {
         private const float Friction = 0.9f;
@@ -13,8 +13,8 @@ namespace FarmVox.Terrain
         private float _speed;
         private bool _freefall;
         private float _lastCost;
-        private bool _didReachedWater;
-        
+        public bool ReachedWater { get; set; }
+
         private readonly List<Vector3Int> _coords = new List<Vector3Int>();
         private readonly List<Vector3Int> _emptyCoords = new List<Vector3Int>();
         private readonly List<float> _costs = new List<float>();
@@ -24,14 +24,6 @@ namespace FarmVox.Terrain
         public WaterTracker(TerrianConfig config)
         {
             _config = config;
-        }
-
-        public bool DidReachedWater
-        {
-            get
-            {
-                return _didReachedWater;
-            }
         }
 
         public float LastCost
@@ -48,7 +40,7 @@ namespace FarmVox.Terrain
             _costs.Add(1.0f);
         }
 
-        public void Freefall(Vector3Int coord)
+        public void FreeFall(Vector3Int coord)
         {
             _speed += 1f;
             _freefall = true;
@@ -83,11 +75,6 @@ namespace FarmVox.Terrain
 
             _coords.Add(to);
             _costs.Add(_costs[_costs.Count - 1] + _lastCost);
-        }
-
-        public void ReachedWater()
-        {
-            _didReachedWater = true;
         }
 
         public void Apply(Chunks chunks)

@@ -28,8 +28,6 @@ namespace FarmVox.Terrain
 
         public Chunks WaterLayer { get; private set; }
 
-        public Chunks BuildingLayer { get; private set; }
-
         private readonly Dictionary<Vector3Int, TerrianChunk> _map = new Dictionary<Vector3Int, TerrianChunk>();
         
         private readonly Dictionary<Vector3Int, TerrianColumn> _columns = new Dictionary<Vector3Int, TerrianColumn>();
@@ -105,7 +103,6 @@ namespace FarmVox.Terrain
             DefaultLayer = new Chunks(size) {NormalStrength = Config.NormalStrength};
             TreeLayer = new Chunks(size) {NormalStrength = Config.TreesNormalStrength};
             WaterLayer = new Chunks(size) {Transparent = true, UseNormals = false};
-            BuildingLayer = new Chunks(size);
 
             _treeMap = new TreeMap(boundsInt);
 
@@ -124,7 +121,7 @@ namespace FarmVox.Terrain
             WaterLayer.UseNormals = false;
             WaterLayer.IsWater = true;
 
-            _chunksToDraw = new[] { DefaultLayer, TreeLayer, WaterLayer, BuildingLayer };
+            _chunksToDraw = new[] { DefaultLayer, TreeLayer, WaterLayer };
 
             _shadowMap = new VoxelShadowMap(size, Config);
 
@@ -292,6 +289,10 @@ namespace FarmVox.Terrain
             foreach (var tc in _map.Values) {
                 tc.Dispose();
             }
+            
+            DefaultLayer.Dispose();
+            TreeLayer.Dispose();
+            WaterLayer.Dispose();
         }
 
         private delegate void VisitChunk(TerrianChunk chunk);

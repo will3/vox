@@ -1,9 +1,10 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace FarmVox.Voxel
 {
-    public class Chunks
+    public class Chunks : IDisposable
     {
         GameObject _gameObject;
         
@@ -178,11 +179,7 @@ namespace FarmVox.Voxel
         {
             var origin = GetOrigin(coord.x, coord.y, coord.z);
             var terrianChunk = GetChunk(origin);
-            if (terrianChunk == null)
-            {
-                return false;
-            }
-            return terrianChunk.GetWaterfall(coord - terrianChunk.Origin);
+            return terrianChunk != null && terrianChunk.GetWaterfall(coord - terrianChunk.Origin);
         }
 
         public void SetWaterfall(Vector3Int coord, float value)
@@ -205,6 +202,14 @@ namespace FarmVox.Voxel
             foreach (var chunk in Map.Values)
             {
                 chunk.Clear();
+            }
+        }
+
+        public void Dispose()
+        {
+            foreach (var chunk in Map.Values)
+            {
+                chunk.Dispose();
             }
         }
     }

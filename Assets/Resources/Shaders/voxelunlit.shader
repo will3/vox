@@ -23,6 +23,12 @@
             int _Size;
             float _ShadowStrength;
 
+            struct VoxelData {
+                int3 coord;
+            };
+            
+            StructuredBuffer<VoxelData> _VoxelData;
+            
             // 11 10 
             // 01 00 <- chunk
             StructuredBuffer<int> _ShadowMap00;
@@ -92,12 +98,8 @@
             };
 
             int3 getCoord(int index) {
-                int x = floor(index / 35.0 / 35.0);
-                index -= x * 35 * 35;
-                int y = floor(index / 35);
-                int z = index % 35;
-
-                return int3(x, y, z);
+                VoxelData data = _VoxelData[index];
+                return data.coord;
             }
 
             v2f vert (appdata v)
@@ -108,15 +110,10 @@
                 o.normal = v.normal;
                 o.uv = v.uv;
 
-                int index = floor(v.uv.y);
+                int index = floor(v.uv.x);
                 int3 coord = getCoord(index);
 
                 float4 c = v.color;
-
-                if (coord.y < 16) {
-                    // o.color = float4(0.4, 0, 0, 1.0);
-                    // return o;
-                }
 
                 int3 worldCoord = coord + floor(_Origin);
                 
@@ -135,11 +132,7 @@
             }
 
             fixed4 frag (v2f i) : SV_Target
-            {         
-                int index = floor(i.uv.y);
-                int3 coord = getCoord(index);
-                int3 worldCoord = coord + floor(_Origin);
-
+            {
                 float4 color = i.color;
                 float4 lightColor = float4(255 / 255.0, 244 / 255.0, 214 / 255.0, 1.0);
                 float4 diffuse;

@@ -30,6 +30,11 @@ namespace FarmVox.GPU.Shaders
                 return X * size * size + Y * size + Z;
             }
 
+            public Vector3Int Coord
+            {
+                get { return new Vector3Int(X, Y, Z); }
+            }
+
             public static int Size
             {
                 get

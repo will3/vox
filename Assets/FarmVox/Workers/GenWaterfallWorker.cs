@@ -24,14 +24,11 @@ namespace FarmVox.Workers
             var origin = _terrianChunk.Origin;
 
             var chunk = _defaultLayer.GetChunk(origin);
-            var dataSize = chunk.DataSize;
             chunk.UpdateSurfaceCoords();
 
             foreach (var coord in chunk.SurfaceCoords)
             {
                 var r = _config.Biome.WaterfallRandom.NextDouble();
-
-                var index = coord.x * dataSize * dataSize + coord.y * dataSize + coord.z;
 
                 var absY = coord.y + origin.y;
 
@@ -53,46 +50,50 @@ namespace FarmVox.Workers
         private void GenerateWaterfall(Vector3Int coord)
         {
 
-            Vector3Int? nextPoint = coord;
+            Vector3Int nextPoint = coord;
 
             var cost = (float)_config.Biome.WaterfallRandom.NextDouble() * 1000.0f;
 
             var waterTracker = new WaterTracker(_config);
             waterTracker.Start(coord);
 
+            var count = 0;
             while (true)
             {
-                if (nextPoint == null)
+                var point = ProcessNextWater(nextPoint, waterTracker);
+
+                if (point == null)
                 {
                     break;
                 }
 
-                nextPoint = ProcessNextWater(nextPoint.Value, waterTracker);
-
-                if (nextPoint == null)
+                if (nextPoint == point.Value)
                 {
                     break;
                 }
+                
+                nextPoint = point.Value;
 
                 cost += waterTracker.LastCost;
 
-                if (cost > 1000)
+                count++;
+                if (count > 128)
                 {
                     break;
                 }
             }
 
-            //if (waterTracker.DidReachedWater)
-            //{
-            waterTracker.Apply(_defaultLayer);
-            //}
+            if (waterTracker.ReachedWater)
+            {
+                waterTracker.Apply(_defaultLayer);
+            }
         }
             
         private Vector3Int? ProcessNextWater(Vector3Int coord, WaterTracker waterTracker)
         {
             if (coord.y < _config.WaterLevel + _config.GroundHeight)
             {
-                waterTracker.ReachedWater();
+                waterTracker.ReachedWater = true;
                 return null;
             }
 
@@ -100,7 +101,7 @@ namespace FarmVox.Workers
 
             if (_defaultLayer.Get(down) < 0)
             {
-                waterTracker.Freefall(down);
+                waterTracker.FreeFall(down);
                 return down;
             }
 

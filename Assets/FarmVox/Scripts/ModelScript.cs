@@ -40,9 +40,8 @@ namespace FarmVox.Scripts
                 mesher.SetData(Model.Data);
                 mesher.Dispatch();
                 var triangles = mesher.ReadTriangles();
-                var size = Terrian.Instance.Config.Size;
-                var mesh = new MeshBuilder(size).AddTriangles(triangles).Build();
-                _meshFilter.mesh = mesh;
+                var meshResult = new MeshBuilder().AddTriangles(triangles).Build();
+                _meshFilter.mesh = meshResult.Mesh;
             }
         }
     }
