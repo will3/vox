@@ -4,31 +4,6 @@ using UnityEngine;
 
 namespace FarmVox.Voxel
 {
-    public struct VoxelData
-    {
-        public Vector3Int Coord;
-
-        public static int Size
-        {
-            get
-            {
-                return sizeof(int) * 3;    
-            }
-        }
-    }
-
-    public class MeshResult
-    {
-        public MeshResult(List<VoxelData> voxelData, Mesh mesh)
-        {
-            VoxelData = voxelData;
-            Mesh = mesh;
-        }
-
-        public List<VoxelData> VoxelData { get; private set; }
-        public Mesh Mesh { get; private set; }
-    }
-    
     internal class MeshBuilder
     {
         private readonly List<Vector3> _vertices = new List<Vector3>();
@@ -36,7 +11,7 @@ namespace FarmVox.Voxel
         private readonly List<Vector2> _uvs = new List<Vector2>();
         private readonly List<int> _indices = new List<int>();
         private readonly List<VoxelData> _voxelData = new List<VoxelData>();
-
+        
         private void AddTriangle(MesherGpu.Triangle triangle)
         {
             var i = _vertices.Count / 3;

@@ -193,7 +193,7 @@ namespace FarmVox.Voxel
             {
                 var origin = key * Size;
                 var chunk = GetOrCreateChunk(origin);
-                chunk.SetWaterfall(i - origin.x, j - origin.y, k - origin.z, value);
+                chunk.SetWaterfall(coord - origin, value);
             }
         }
 

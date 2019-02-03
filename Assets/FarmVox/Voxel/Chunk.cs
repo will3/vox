@@ -267,12 +267,21 @@ namespace FarmVox.Voxel
             return Get(coord.x, coord.y, coord.z);
         }
 
-        public void SetWaterfall(int i, int j, int k, float v)
+        /// <summary>
+        /// Set water fall, with local coord
+        /// </summary>
+        /// <param name="coord"></param>
+        /// <param name="v"></param>
+        public void SetWaterfall(Vector3Int coord, float v)
         {
-            var coord = new Vector3Int(i, j, k);
             _waterfalls[coord] = v;
         }
 
+        /// <summary>
+        /// Get water fall, with local coord
+        /// </summary>
+        /// <param name="coord"></param>
+        /// <returns></returns>
         public bool GetWaterfall(Vector3Int coord)
         {
             return GetWaterfall(coord.x, coord.y, coord.z);
