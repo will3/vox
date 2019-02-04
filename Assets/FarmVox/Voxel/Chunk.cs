@@ -16,7 +16,7 @@ namespace FarmVox.Voxel
         public bool Dirty { get; set; }
         
         private Material _material;
-        private bool _waterfallDirty = false;
+        private bool _waterfallDirty;
 
         public Material Material {
             get {
@@ -75,44 +75,39 @@ namespace FarmVox.Voxel
                 _waterfallBuffer.Dispose();
             }
             
-            _waterfallBuffer = new ComputeBuffer(CoordData.Count, sizeof(float));
+            _waterfallBuffer = new ComputeBuffer(_coordData.Count, sizeof(float));
 
-            var data = new float[CoordData.Count];
+            var data = new float[_coordData.Count];
 
             for (var i = 0; i < data.Length; i++)
             {
-                var coord = CoordData[i].Coord;
-                data[i] = GetWaterfall(coord);
+                var coord = _coordData[i].Coord;
+                var waterfall = GetWaterfall(coord);
+                data[i] = waterfall;
+
+                data[i] = 1;
             }
             
             _waterfallBuffer.SetData(data);
         }
-        
-        public List<CoordData> CoordData { get; private set; }
 
-        private readonly Dictionary<Vector3Int, int> _voxelDataLookUp = new Dictionary<Vector3Int, int>();
+        private List<CoordData> _coordData = new List<CoordData>();
         
-        public void SetVoxelData(List<CoordData> voxelData)
+        public void SetVoxelData(List<CoordData> coordData)
         {
-            CoordData = voxelData;
-
-            for (var i = 0; i < voxelData.Count; i++)
-            {
-                _voxelDataLookUp[voxelData[i].Coord] = i;
-            }
-            
-            UpdateVoxelData();
+            _coordData = coordData;
+            UpdateVoxelDataBuffer();
         }
 
-        public void UpdateVoxelData()
+        private void UpdateVoxelDataBuffer()
         {
             if (VoxelDataBuffer != null)
             {
                 VoxelDataBuffer.Dispose();
             }
             
-            VoxelDataBuffer = new ComputeBuffer(CoordData.Count, Voxel.CoordData.Size);
-            VoxelDataBuffer.SetData(CoordData);
+            VoxelDataBuffer = new ComputeBuffer(_coordData.Count, CoordData.Size);
+            VoxelDataBuffer.SetData(_coordData);
         }
         
         public void SetColors(Color[] colors)

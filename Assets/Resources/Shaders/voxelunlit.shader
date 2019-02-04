@@ -98,11 +98,6 @@
                 float3 normal : NORMAL;
             };
 
-            int3 getCoord(int index) {
-                VoxelData data = _VoxelData[index];
-                return data.coord;
-            }
-
             v2f vert (appdata v)
             {
                 v2f o;
@@ -112,7 +107,7 @@
                 o.uv = v.uv;
 
                 int index = floor(v.uv.x);
-                int3 coord = getCoord(index);
+                int3 coord = _VoxelData[index].coord;
 
                 float4 c = v.color;
 
