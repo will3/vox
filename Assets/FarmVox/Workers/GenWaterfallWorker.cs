@@ -144,37 +144,28 @@ namespace FarmVox.Workers
                 }
             }
 
-            Vector3Int[] listToUse;
-            if (coordsBelow.Count > 0)
-            {
-                listToUse = coordsBelow.ToArray();
-            }
-            else
-            {
-                listToUse = coords;
-            }
+            var listToUse = coordsBelow.Count > 0 ? coordsBelow.ToArray() : coords;
 
             var minValue = Mathf.Infinity;
             Vector3Int? minCoord = null;
 
-            for (var i = 0; i < listToUse.Length; i++)
+            foreach (var t in listToUse)
             {
-                var value = _defaultLayer.Get(listToUse[i]);
+                var value = _defaultLayer.Get(t);
                 if (value < 0)
                 {
                     continue;
                 }
 
-                if (_defaultLayer.GetWaterfall(listToUse[i]) > 0)
+                if (_defaultLayer.GetWaterfall(t) > 0)
                 {
                     continue;
                 }
 
-                if (value < minValue)
-                {
-                    minValue = value;
-                    minCoord = listToUse[i];
-                }
+                if (value >= minValue) continue;
+                
+                minValue = value;
+                minCoord = t;
             }
 
             if (minCoord.HasValue)
