@@ -85,6 +85,8 @@ namespace FarmVox.Terrain
                 var cost = _costs[i];
                 chunks.SetColor(coord.x, coord.y, coord.z, _config.Biome.WaterColor);
                 chunks.SetWaterfall(coord, cost);
+                
+                Debug.Assert(chunks.GetWaterfall(coord) == cost, "Waterfall cost different");
             }
             foreach (var coord in _emptyCoords)
             {

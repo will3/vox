@@ -16,6 +16,16 @@ namespace FarmVox.Voxel
         public bool Dirty { get; set; }
         
         private Material _material;
+        private bool _waterfallDirty = false;
+
+        public Material Material {
+            get {
+                if (_material != null) return _material;
+                _material = Chunks.Transparent ? Materials.GetVoxelMaterialTrans() : Materials.GetVoxelMaterial();
+                return _material;
+            }
+        }
+        
         private GameObject _gameObject;
         
         public Mesh Mesh { get; set; }
@@ -31,23 +41,85 @@ namespace FarmVox.Voxel
 
         public ComputeBuffer VoxelDataBuffer { get; private set; }
 
-        public void UpdateVoxelData(List<CoordData> voxelData)
+        private ComputeBuffer _waterfallBuffer;
+
+        private static ComputeBuffer _defaultWaterfallBuffer;
+
+        public static void Cleanup()
+        {
+            if (_defaultWaterfallBuffer != null)
+            {
+                _defaultWaterfallBuffer.Dispose();
+            }
+        }
+        public ComputeBuffer GetWaterfallBuffer()
+        {
+            if (_waterfalls.Count == 0)
+            {
+                return _defaultWaterfallBuffer ?? (_defaultWaterfallBuffer = new ComputeBuffer(1, sizeof(float)));
+            }
+            
+            if (_waterfallDirty)
+            {
+                UpdateWaterfallBuffer();
+                _waterfallDirty = false;
+            }
+
+            return _waterfallBuffer;
+        }
+
+        private void UpdateWaterfallBuffer()
+        {
+            if (_waterfallBuffer != null)
+            {
+                _waterfallBuffer.Dispose();
+            }
+            
+            _waterfallBuffer = new ComputeBuffer(CoordData.Count, sizeof(float));
+
+            var data = new float[CoordData.Count];
+
+            for (var i = 0; i < data.Length; i++)
+            {
+                var coord = CoordData[i].Coord;
+                data[i] = GetWaterfall(coord);
+            }
+            
+            _waterfallBuffer.SetData(data);
+        }
+        
+        public List<CoordData> CoordData { get; private set; }
+
+        private readonly Dictionary<Vector3Int, int> _voxelDataLookUp = new Dictionary<Vector3Int, int>();
+        
+        public void SetVoxelData(List<CoordData> voxelData)
+        {
+            CoordData = voxelData;
+
+            for (var i = 0; i < voxelData.Count; i++)
+            {
+                _voxelDataLookUp[voxelData[i].Coord] = i;
+            }
+            
+            UpdateVoxelData();
+        }
+
+        public void UpdateVoxelData()
         {
             if (VoxelDataBuffer != null)
             {
                 VoxelDataBuffer.Dispose();
             }
             
-            VoxelDataBuffer = new ComputeBuffer(voxelData.Count, CoordData.Size);
-            
-            VoxelDataBuffer.SetData(voxelData);
+            VoxelDataBuffer = new ComputeBuffer(CoordData.Count, Voxel.CoordData.Size);
+            VoxelDataBuffer.SetData(CoordData);
         }
-
+        
         public void SetColors(Color[] colors)
         {
             if (colors.Length != Colors.Length)
             {
-                throw new System.ArgumentException("invalid length");
+                throw new ArgumentException("invalid length");
             }
             Colors = colors;
             Dirty = true;
@@ -57,7 +129,7 @@ namespace FarmVox.Voxel
         {
             if (data.Length != Data.Length)
             {
-                throw new System.ArgumentException("invalid length");
+                throw new ArgumentException("invalid length");
             }
             Data = data;
             Dirty = true;
@@ -154,14 +226,6 @@ namespace FarmVox.Voxel
             _surfaceCoordsDirty = false;
         }
 
-        public Material Material {
-            get {
-                if (_material != null) return _material;
-                _material = Chunks.Transparent ? Materials.GetVoxelMaterialTrans() : Materials.GetVoxelMaterial();
-                return _material;
-            }
-        }
-
         public Chunk(int size, Vector3Int origin)
         {
             Size = size;
@@ -177,7 +241,7 @@ namespace FarmVox.Voxel
                 j < 0 || j >= DataSize ||
                 k < 0 || k >= DataSize)
             {
-                throw new System.Exception("out of bounds:" + new Vector3Int(i, j, k).ToString());
+                throw new Exception("out of bounds:" + new Vector3Int(i, j, k));
             }
             var index = GetIndex(i, j, k);
             return Data[index];
@@ -189,7 +253,7 @@ namespace FarmVox.Voxel
                 j < 0 || j >= DataSize ||
                 k < 0 || k >= DataSize)
             {
-                throw new System.Exception("out of bounds:" + new Vector3Int(i, j, k).ToString());
+                throw new Exception("out of bounds:" + new Vector3Int(i, j, k));
             }
             var index = GetIndex(i, j, k);
             Data[index] = v;
@@ -209,11 +273,6 @@ namespace FarmVox.Voxel
         {
             var index = GetIndex(i, j, k);
             return Colors[index];
-        }
-
-        private int GetIndex(Vector3Int coord)
-        {
-            return GetIndex(coord.x, coord.y, coord.z);
         }
 
         private int GetIndex(int i, int j, int k)
@@ -274,6 +333,7 @@ namespace FarmVox.Voxel
         /// <param name="v"></param>
         public void SetWaterfall(Vector3Int coord, float v)
         {
+            _waterfallDirty = true;
             _waterfalls[coord] = v;
         }
 
@@ -289,14 +349,6 @@ namespace FarmVox.Voxel
             return value;
         }
 
-        public bool IsSurfaceCoord(Vector3Int coord) {
-            return SurfaceCoords.Contains(coord);
-        }
-
-        public bool IsSurfaceCoordUp(Vector3Int coord) {
-            return SurfaceCoordsUp.Contains(coord);
-        }
-
         public void Clear()
         {
             SetData(new float[DataSize * DataSize * DataSize]);
@@ -308,6 +360,11 @@ namespace FarmVox.Voxel
             if (VoxelDataBuffer != null)
             {
                 VoxelDataBuffer.Dispose();    
+            }
+
+            if (_waterfallBuffer != null)
+            {
+                _waterfallBuffer.Dispose();
             }
         }
     }

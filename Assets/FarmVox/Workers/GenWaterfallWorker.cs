@@ -45,14 +45,15 @@ namespace FarmVox.Workers
 
                 GenerateWaterfall(coord + origin);
             }
+
+//            chunk.UpdateWaterfallBuffer();
+//            chunk.Material.SetBuffer("_WaterfallData", chunk.GetWaterfallBuffer());
         }
             
         private void GenerateWaterfall(Vector3Int coord)
         {
 
-            Vector3Int nextPoint = coord;
-
-            var cost = (float)_config.Biome.WaterfallRandom.NextDouble() * 1000.0f;
+            var nextPoint = coord;
 
             var waterTracker = new WaterTracker(_config);
             waterTracker.Start(coord);
@@ -73,8 +74,6 @@ namespace FarmVox.Workers
                 }
                 
                 nextPoint = point.Value;
-
-                cost += waterTracker.LastCost;
 
                 count++;
                 if (count > 128)
@@ -166,7 +165,7 @@ namespace FarmVox.Workers
                     continue;
                 }
 
-                if (_defaultLayer.GetWaterfall(listToUse[i]))
+                if (_defaultLayer.GetWaterfall(listToUse[i]) > 0)
                 {
                     continue;
                 }

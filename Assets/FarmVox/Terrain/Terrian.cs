@@ -219,6 +219,11 @@ namespace FarmVox.Terrain
             material.SetInt("_Size", Size);
 
             _shadowMap.UpdateMaterial(material, origin);
+
+            if (!chunk.Chunks.Transparent)
+            {
+                material.SetBuffer("_WaterfallData", chunk.GetWaterfallBuffer());
+            }
         }
 
         private TerrianChunk GetTerrianChunk(Vector3Int origin) {
