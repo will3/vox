@@ -50,9 +50,7 @@ namespace FarmVox.Workers
         private void GenerateWaterfall(Vector3Int coord)
         {
 
-            Vector3Int nextPoint = coord;
-
-            var cost = (float)_config.Biome.WaterfallRandom.NextDouble() * 1000.0f;
+            var nextPoint = coord;
 
             var waterTracker = new WaterTracker(_config);
             waterTracker.Start(coord);
@@ -73,8 +71,6 @@ namespace FarmVox.Workers
                 }
                 
                 nextPoint = point.Value;
-
-                cost += waterTracker.LastCost;
 
                 count++;
                 if (count > 128)
@@ -145,37 +141,28 @@ namespace FarmVox.Workers
                 }
             }
 
-            Vector3Int[] listToUse;
-            if (coordsBelow.Count > 0)
-            {
-                listToUse = coordsBelow.ToArray();
-            }
-            else
-            {
-                listToUse = coords;
-            }
+            var listToUse = coordsBelow.Count > 0 ? coordsBelow.ToArray() : coords;
 
             var minValue = Mathf.Infinity;
             Vector3Int? minCoord = null;
 
-            for (var i = 0; i < listToUse.Length; i++)
+            foreach (var t in listToUse)
             {
-                var value = _defaultLayer.Get(listToUse[i]);
+                var value = _defaultLayer.Get(t);
                 if (value < 0)
                 {
                     continue;
                 }
 
-                if (_defaultLayer.GetWaterfall(listToUse[i]))
+                if (_defaultLayer.GetWaterfall(t))
                 {
                     continue;
                 }
 
-                if (value < minValue)
-                {
-                    minValue = value;
-                    minCoord = listToUse[i];
-                }
+                if (value >= minValue) continue;
+                
+                minValue = value;
+                minCoord = t;
             }
 
             if (minCoord.HasValue)
