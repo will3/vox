@@ -39,7 +39,7 @@ namespace FarmVox.Voxel
         private bool _surfaceCoordsDirty = true;
         private bool _normalsDirty = true;
 
-        public ComputeBuffer VoxelDataBuffer { get; private set; }
+        private ComputeBuffer _voxelDataBuffer;
 
         private List<CoordData> _coordData = new List<CoordData>();
         
@@ -51,13 +51,30 @@ namespace FarmVox.Voxel
 
         private void UpdateVoxelDataBuffer()
         {
-            if (VoxelDataBuffer != null)
+            if (_voxelDataBuffer != null)
             {
-                VoxelDataBuffer.Dispose();
+                _voxelDataBuffer.Dispose();
+            }
+
+            if (_coordData.Count == 0)
+            {
+                return;
             }
             
-            VoxelDataBuffer = new ComputeBuffer(_coordData.Count, CoordData.Size);
-            VoxelDataBuffer.SetData(_coordData);
+            _voxelDataBuffer = new ComputeBuffer(_coordData.Count, CoordData.Size);
+            _voxelDataBuffer.SetData(_coordData);
+        }
+
+        private ComputeBuffer _defaultVoxelDataBuffer;
+        
+        public ComputeBuffer GetVoxelDataBuffer()
+        {
+            if (_coordData.Count == 0)
+            {
+                return _defaultVoxelDataBuffer ?? (_defaultVoxelDataBuffer = new ComputeBuffer(1, CoordData.Size));
+            }
+
+            return _voxelDataBuffer;
         }
         
         public void SetColors(Color[] colors)
@@ -302,9 +319,14 @@ namespace FarmVox.Voxel
 
         public void Dispose()
         {
-            if (VoxelDataBuffer != null)
+            if (_voxelDataBuffer != null)
             {
-                VoxelDataBuffer.Dispose();    
+                _voxelDataBuffer.Dispose();    
+            }
+
+            if (_defaultVoxelDataBuffer != null)
+            {
+                _defaultVoxelDataBuffer.Dispose();
             }
         }
     }

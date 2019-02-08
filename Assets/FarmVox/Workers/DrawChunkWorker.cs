@@ -68,7 +68,7 @@ namespace FarmVox.Workers
                 chunk.SetVoxelData(meshResult.VoxelData);
                 
                 // Update voxel data buffer
-                chunk.Material.SetBuffer("_VoxelData", chunk.VoxelDataBuffer);
+                chunk.Material.SetBuffer("_VoxelData", chunk.GetVoxelDataBuffer());
                 
                 return meshResult.Mesh;
             }

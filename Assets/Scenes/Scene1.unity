@@ -195,17 +195,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Config:
     Size: 32
-    MaxChunksY: 2
+    MaxChunksY: 4
     MaxHeight: 64
     PlainHeight: 4
     WaterLevel: 0
     GroundHeight: 12
-    MaxChunksX: 1
+    MaxChunksX: 4
     AoStrength: 0.15
     ShadowStrength: 0.5
     TreeMinDis: 3
     NormalStrength: 0.4
     TreesNormalStrength: 0.2
+    WaterfallShadowStrength: 0.2
+    WaterfallSpeed: 2
+    WaterfallWidth: 10
+    WaterfallMin: 0.9
+    WaterfallVariance: 0.7
     Biome:
       HillHeight: 64
       WaterColor: {r: 0.16078432, g: 0.49411765, b: 0.7137255, a: 0.4}
@@ -521,7 +526,7 @@ MonoBehaviour:
             outWeight: 0
           - serializedVersion: 3
             time: 0.5
-            value: 1
+            value: 0.75193787
             inSlope: 0
             outSlope: 0
             tangentMode: 0
@@ -530,7 +535,7 @@ MonoBehaviour:
             outWeight: 0
           - serializedVersion: 3
             time: 1
-            value: 1.2
+            value: 1.0070641
             inSlope: 0
             outSlope: 0
             tangentMode: 0
