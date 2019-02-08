@@ -200,7 +200,7 @@ MonoBehaviour:
     PlainHeight: 4
     WaterLevel: 0
     GroundHeight: 12
-    MaxChunksX: 4
+    MaxChunksX: 1
     AoStrength: 0.15
     ShadowStrength: 0.5
     TreeMinDis: 3
