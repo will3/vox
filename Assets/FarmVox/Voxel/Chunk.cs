@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace FarmVox.Voxel
 {
-    public class Chunk : IDisposable
+    public class Chunk : IDisposable, IWaterfallChunk
     {
         public readonly int Size;
         public readonly Vector3Int Origin;
@@ -40,56 +40,6 @@ namespace FarmVox.Voxel
         private bool _normalsDirty = true;
 
         public ComputeBuffer VoxelDataBuffer { get; private set; }
-
-        private ComputeBuffer _waterfallBuffer;
-
-        private static ComputeBuffer _defaultWaterfallBuffer;
-
-        public static void Cleanup()
-        {
-            if (_defaultWaterfallBuffer != null)
-            {
-                _defaultWaterfallBuffer.Dispose();
-            }
-        }
-        public ComputeBuffer GetWaterfallBuffer()
-        {
-            if (_waterfalls.Count == 0)
-            {
-                return _defaultWaterfallBuffer ?? (_defaultWaterfallBuffer = new ComputeBuffer(1, sizeof(float)));
-            }
-            
-            if (_waterfallDirty)
-            {
-                UpdateWaterfallBuffer();
-                _waterfallDirty = false;
-            }
-
-            return _waterfallBuffer;
-        }
-
-        private void UpdateWaterfallBuffer()
-        {
-            if (_waterfallBuffer != null)
-            {
-                _waterfallBuffer.Dispose();
-            }
-            
-            _waterfallBuffer = new ComputeBuffer(_coordData.Count, sizeof(float));
-
-            var data = new float[_coordData.Count];
-
-            for (var i = 0; i < data.Length; i++)
-            {
-                var coord = _coordData[i].Coord;
-                var waterfall = GetWaterfall(coord);
-                data[i] = waterfall;
-
-                data[i] = 1;
-            }
-            
-            _waterfallBuffer.SetData(data);
-        }
 
         private List<CoordData> _coordData = new List<CoordData>();
         
@@ -355,11 +305,6 @@ namespace FarmVox.Voxel
             if (VoxelDataBuffer != null)
             {
                 VoxelDataBuffer.Dispose();    
-            }
-
-            if (_waterfallBuffer != null)
-            {
-                _waterfallBuffer.Dispose();
             }
         }
     }

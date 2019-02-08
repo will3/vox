@@ -9,6 +9,7 @@ namespace FarmVox.Terrain
         private const float Friction = 0.9f;
         private const float FreeFallFriction = 0f;
         private const float MaxSpeed = 5;
+        private const float Gravity = 0.5f;
         
         private float _speed;
         private bool _freeFall;
@@ -42,7 +43,7 @@ namespace FarmVox.Terrain
 
         public void FreeFall(Vector3Int coord)
         {
-            _speed += 1f;
+            _speed += Gravity;
             _freeFall = true;
             _lastCost = 1 / _speed;
 
@@ -85,8 +86,6 @@ namespace FarmVox.Terrain
                 var cost = _costs[i];
                 chunks.SetColor(coord.x, coord.y, coord.z, _config.Biome.WaterColor);
                 chunks.SetWaterfall(coord, cost);
-                
-                Debug.Assert(chunks.GetWaterfall(coord) == cost, "Waterfall cost different");
             }
             foreach (var coord in _emptyCoords)
             {

@@ -218,12 +218,13 @@ namespace FarmVox.Terrain
             material.SetVector("_Origin", (Vector3)origin);
             material.SetInt("_Size", Size);
 
+            material.SetFloat("_WaterfallShadowStrength", Config.WaterfallShadowStrength);
+            material.SetFloat("_WaterfallSpeed", Config.WaterfallSpeed);
+            material.SetFloat("_WaterfallWidth", Config.WaterfallWidth);
+            material.SetFloat("_WaterfallMin", Config.WaterfallMin);
+            material.SetFloat("_WaterfallVariance", Config.WaterfallVariance);
+            
             _shadowMap.UpdateMaterial(material, origin);
-
-            if (!chunk.Chunks.Transparent)
-            {
-                material.SetBuffer("_WaterfallData", chunk.GetWaterfallBuffer());
-            }
         }
 
         private TerrianChunk GetTerrianChunk(Vector3Int origin) {

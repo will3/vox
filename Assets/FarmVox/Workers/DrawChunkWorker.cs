@@ -64,7 +64,7 @@ namespace FarmVox.Workers
                 var triangles = mesher.ReadTriangles();
 
                 var builder = new MeshBuilder();
-                var meshResult = builder.AddTriangles(triangles).Build();
+                var meshResult = builder.AddTriangles(triangles, chunk).Build();
                 chunk.SetVoxelData(meshResult.VoxelData);
                 
                 // Update voxel data buffer

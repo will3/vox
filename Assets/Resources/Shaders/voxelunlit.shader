@@ -22,13 +22,17 @@
             float3 _Origin;
             int _Size;
             float _ShadowStrength;
+            float _WaterfallShadowStrength;
+            float _WaterfallSpeed;
+            float _WaterfallWidth;
+            float _WaterfallMin;
+            float _WaterfallVariance;
 
             struct VoxelData {
                 int3 coord;
             };
             
             StructuredBuffer<VoxelData> _VoxelData;
-            StructuredBuffer<float> _WaterfallData;
             
             // 11 10 
             // 01 00 <- chunk
@@ -107,7 +111,10 @@
                 o.uv = v.uv;
 
                 int index = floor(v.uv.x);
-                int3 coord = _VoxelData[index].coord;
+                float waterfall = v.uv.y;
+                
+                VoxelData voxelData = _VoxelData[index]; 
+                int3 coord = voxelData.coord;
 
                 float4 c = v.color;
 
@@ -117,11 +124,26 @@
 
                 float shadowHeight = getShadow(coord);
                 float shadow = shadowHeight > worldCoord.y ? 1.0 : 0;
-                o.color.xyz *= 1 - shadow * _ShadowStrength;
                 
-                float waterfall = _WaterfallData[index];
                 if (waterfall > 0) {
-                    o.color = float4(1.0, 0, 0, 1.0);
+                    o.color.xyz *= 1 - shadow * _WaterfallShadowStrength;
+                } else {
+                    o.color.xyz *= 1 - shadow * _ShadowStrength;
+                }
+                
+                float time = _Time;
+                
+                if (waterfall > 0) {
+                    float waterfallRatio = (waterfall / _WaterfallWidth - time * _WaterfallSpeed) % 1.0;
+                    
+                    if (waterfallRatio < 0.0) {
+                        waterfallRatio += 1.0;
+                    }
+                    
+                    waterfallRatio *= _WaterfallVariance;
+                    waterfallRatio += _WaterfallMin;
+                    
+                    o.color *= waterfallRatio;
                 }
 
                 if (shadowHeight == 99) {

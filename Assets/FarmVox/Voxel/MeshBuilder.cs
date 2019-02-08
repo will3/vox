@@ -12,7 +12,7 @@ namespace FarmVox.Voxel
         private readonly List<int> _indices = new List<int>();
         private readonly List<CoordData> _voxelData = new List<CoordData>();
         
-        private void AddTriangle(MesherGpu.Triangle triangle)
+        private void AddTriangle(MesherGpu.Triangle triangle, IWaterfallChunk waterfallChunk)
         {
             var i = _vertices.Count / 3;
 
@@ -33,10 +33,12 @@ namespace FarmVox.Voxel
                 Coord = triangle.Coord
             });
             var index = _voxelData.Count - 1;
+
+            var waterfall = waterfallChunk == null ? 0 : waterfallChunk.GetWaterfall(triangle.Coord);
             
-            _uvs.Add(new Vector2(index, 0));
-            _uvs.Add(new Vector2(index, 0));
-            _uvs.Add(new Vector2(index, 0));
+            _uvs.Add(new Vector2(index, waterfall));
+            _uvs.Add(new Vector2(index, waterfall));
+            _uvs.Add(new Vector2(index, waterfall));
             
             i = _vertices.Count / 3;
             
@@ -52,16 +54,16 @@ namespace FarmVox.Voxel
             _colors.Add(triangle.Color * triangle.AO[2]);
             _colors.Add(triangle.Color * triangle.AO[3]);
 
-            _uvs.Add(new Vector2(index, 0));
-            _uvs.Add(new Vector2(index, 0));
-            _uvs.Add(new Vector2(index, 0));
+            _uvs.Add(new Vector2(index, waterfall));
+            _uvs.Add(new Vector2(index, waterfall));
+            _uvs.Add(new Vector2(index, waterfall));
         }
 
-        public MeshBuilder AddTriangles(IEnumerable<MesherGpu.Triangle> triangles)
+        public MeshBuilder AddTriangles(IEnumerable<MesherGpu.Triangle> triangles, IWaterfallChunk waterfallChunk = null)
         {
             foreach (var triangle in triangles)
             {
-                AddTriangle(triangle);
+                AddTriangle(triangle, waterfallChunk);
             }
 
             return this;

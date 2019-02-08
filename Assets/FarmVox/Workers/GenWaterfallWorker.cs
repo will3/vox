@@ -45,9 +45,6 @@ namespace FarmVox.Workers
 
                 GenerateWaterfall(coord + origin);
             }
-
-//            chunk.UpdateWaterfallBuffer();
-//            chunk.Material.SetBuffer("_WaterfallData", chunk.GetWaterfallBuffer());
         }
             
         private void GenerateWaterfall(Vector3Int coord)

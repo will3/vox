@@ -34,6 +34,12 @@ namespace FarmVox.Terrain
         public float NormalStrength;
         public float TreesNormalStrength;
         
+        public float WaterfallShadowStrength;
+        public float WaterfallSpeed;
+        public float WaterfallWidth;
+        public float WaterfallMin;
+        public float WaterfallVariance;
+        
         public BiomeConfig Biome;
 
         public TerrianConfig()
@@ -47,10 +53,16 @@ namespace FarmVox.Terrain
             MaxChunksX = 3;
             AoStrength = 0.15f;
             ShadowStrength = 0.5f;
+            WaterfallShadowStrength = 0.2f;
             TreeMinDis = 3;
             NormalStrength = 0.4f;
             TreesNormalStrength = 0.2f;
-            
+
+            WaterfallSpeed = 2.0f;
+            WaterfallWidth = 10.0f;
+            WaterfallMin = 0.9f;
+            WaterfallVariance = 0.7f;
+        
             Biome = new BiomeConfig();
         }
 
