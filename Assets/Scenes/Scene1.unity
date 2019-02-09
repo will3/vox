@@ -775,3 +775,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SearchDistance: 8
+  Number: 7
