@@ -11,8 +11,8 @@ namespace FarmVox.Scripts
         public string SpriteSheetName = "blue";
         private ActorSpriteSheet _spriteSheet;
         
-        private float _frameCount = 0;
-        private int _frame = 0;
+        private float _frameCount;
+        private int _frame;
         
         private void Start()
         {
