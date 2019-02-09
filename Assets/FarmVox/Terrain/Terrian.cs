@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using FarmVox.Scripts;
+using FarmVox.Terrain.Routing;
 using FarmVox.Voxel;
 using FarmVox.Workers;
 using UnityEngine;
@@ -28,6 +29,8 @@ namespace FarmVox.Terrain
 
         public Chunks WaterLayer { get; private set; }
 
+        public RouteChunks Routes { get; private set; }
+
         private readonly Dictionary<Vector3Int, TerrianChunk> _map = new Dictionary<Vector3Int, TerrianChunk>();
         
         private readonly Dictionary<Vector3Int, TerrianColumn> _columns = new Dictionary<Vector3Int, TerrianColumn>();
@@ -39,8 +42,6 @@ namespace FarmVox.Terrain
         private TreeMap _treeMap;
 
         private VoxelShadowMap _shadowMap;
-
-        private Bounds _bounds;
 
         public HeightMap HeightMap;
 
@@ -87,12 +88,11 @@ namespace FarmVox.Terrain
             }
         }
 
-        private void Awake()
-        {
+        private void Awake() {
             var size = Config.Size;
             _sizeF = size;
 
-            _bounds = new Bounds
+            new Bounds
             {
                 min = new Vector3(-Config.MaxChunksX, 0, -Config.MaxChunksX) * size,
                 max = new Vector3(Config.MaxChunksX, Config.MaxChunksY, Config.MaxChunksX) * size
@@ -135,19 +135,8 @@ namespace FarmVox.Terrain
             {
                 throw new Exception("Only one instance of Terrian is allowed");
             }
-        }
-
-        private void Update()
-        {
-            var config = JsonUtility.ToJson(Config);
-
-            if (_lastConfig != null && config != _lastConfig)
-            {
-                Reload();
-                Debug.Log("Reload");
-            }
             
-            _lastConfig = JsonUtility.ToJson(Config);
+            Routes = new RouteChunks(Config.Size);
         }
 
         private void Start()
@@ -174,6 +163,11 @@ namespace FarmVox.Terrain
             VisitChunks(chunk =>
             {
                 queue.Enqueue(new GenWaterfallWorker(chunk, DefaultLayer, Config));
+            });
+            
+            VisitChunks(chunk =>
+            {
+                queue.Enqueue(new GenRoutesWorker(chunk.Origin, Routes, DefaultLayer));
             });
             
             StartCoroutine(UpdateMeshesLoop());
@@ -313,40 +307,5 @@ namespace FarmVox.Terrain
                 }
             }
         } 
-        
-        private void Reload()
-        {
-            DefaultLayer.NormalStrength = Config.NormalStrength;
-            TreeLayer.NormalStrength = Config.TreesNormalStrength;
-            
-            var queue = GameController.Instance.Queue;
-
-            queue.RemoveAll();
-            
-            VisitChunks(chunk =>
-            {
-                queue.Enqueue(new GenGroundWorker(chunk, DefaultLayer, Config));
-            });
-            
-            VisitChunks(chunk =>
-            {
-                queue.Enqueue(new GenWaterWorker(chunk, DefaultLayer, WaterLayer, Config));
-            });
-            
-            VisitChunks(chunk =>
-            {
-                queue.Enqueue(new GenTreesWorker(Config, chunk, DefaultLayer, TreeLayer, _treeMap));
-            });
-            
-            VisitChunks(chunk =>
-            {
-                queue.Enqueue(new GenWaterfallWorker(chunk, DefaultLayer, Config));
-            });
-            
-            TreeLayer.Clear();
-            WaterLayer.Clear();
-
-            _treeMap.Clear();
-        }
     }
 }
