@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace FarmVox.Voxel
 {
-    public class Chunk : IDisposable, IWaterfallChunk
+    public class Chunk : IDisposable
     {
         public readonly int Size;
         public readonly Vector3Int Origin;
@@ -97,8 +97,6 @@ namespace FarmVox.Voxel
             _surfaceCoordsDirty = true;
             _normalsDirty = true;
         }
-
-        private readonly Dictionary<Vector3Int, float> _waterfalls = new Dictionary<Vector3Int, float>();
 
         private GameObject GetGameObject() {
             if (_gameObject == null) {
@@ -285,28 +283,6 @@ namespace FarmVox.Voxel
         private float Get(Vector3Int coord)
         {
             return Get(coord.x, coord.y, coord.z);
-        }
-
-        /// <summary>
-        /// Set water fall, with local coord
-        /// </summary>
-        /// <param name="coord"></param>
-        /// <param name="v"></param>
-        public void SetWaterfall(Vector3Int coord, float v)
-        {
-            _waterfalls[coord] = v;
-        }
-
-        /// <summary>
-        /// Get water fall, with local coord
-        /// </summary>
-        /// <param name="coord"></param>
-        /// <returns></returns>
-        public float GetWaterfall(Vector3Int coord)
-        {
-            float value;
-            _waterfalls.TryGetValue(coord, out value);
-            return value;
         }
 
         public void Clear()

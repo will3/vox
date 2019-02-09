@@ -162,7 +162,7 @@ namespace FarmVox.Terrain
             
             VisitChunks(chunk =>
             {
-                queue.Enqueue(new GenWaterfallWorker(chunk, DefaultLayer, Config));
+                queue.Enqueue(new GenWaterfallWorker(chunk, DefaultLayer, Config, this));
             });
             
             VisitChunks(chunk =>
@@ -195,7 +195,7 @@ namespace FarmVox.Terrain
                                 continue;
                             }
                             
-                            var worker = new DrawChunkWorker(Config, _shadowMap, chunk);    
+                            var worker = new DrawChunkWorker(Config, _shadowMap, chunk, terrianChunk);    
                             worker.Start();
                         }
                     }
@@ -306,6 +306,26 @@ namespace FarmVox.Terrain
                     visit(chunk);
                 }
             }
+        }
+        
+        public float GetWaterfall(Vector3Int coord)
+        {
+            var origin = GetOrigin(coord.x, coord.y, coord.z);
+            var terrianChunk = GetTerrianChunk(origin);
+
+            if (terrianChunk == null)
+            {
+                return 0;
+            }
+
+            return terrianChunk.GetWaterfall(coord - terrianChunk.Origin);
+        }
+
+        public void SetWaterfall(Vector3Int coord, float value)
+        {
+            var origin = GetOrigin(coord.x, coord.y, coord.z);
+            var chunk = GetOrCreateTerrianChunk(origin);
+            chunk.SetWaterfall(coord - origin, value);
         }
     }
 }

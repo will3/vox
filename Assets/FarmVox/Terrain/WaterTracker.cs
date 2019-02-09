@@ -85,7 +85,7 @@ namespace FarmVox.Terrain
                 var coord = _coords[i];
                 var cost = _costs[i];
                 chunks.SetColor(coord.x, coord.y, coord.z, _config.Biome.WaterColor);
-                chunks.SetWaterfall(coord, cost);
+                Terrian.Instance.SetWaterfall(coord, cost);
             }
             foreach (var coord in _emptyCoords)
             {

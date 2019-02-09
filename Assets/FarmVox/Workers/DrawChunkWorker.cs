@@ -12,12 +12,14 @@ namespace FarmVox.Workers
         private readonly TerrianConfig _config;
         private readonly VoxelShadowMap _shadowMap;
         private readonly Chunk _chunk;
+        private readonly TerrianChunk _terrianChunk;
         
-        public DrawChunkWorker(TerrianConfig config, VoxelShadowMap shadowMap, Chunk chunk)
+        public DrawChunkWorker(TerrianConfig config, VoxelShadowMap shadowMap, Chunk chunk, TerrianChunk terrianChunk)
         {
             _config = config;
             _shadowMap = shadowMap;
             _chunk = chunk;
+            _terrianChunk = terrianChunk;
         }
         
         public void Start()
@@ -64,7 +66,7 @@ namespace FarmVox.Workers
                 var triangles = mesher.ReadTriangles();
 
                 var builder = new MeshBuilder();
-                var meshResult = builder.AddTriangles(triangles, chunk).Build();
+                var meshResult = builder.AddTriangles(triangles, _terrianChunk).Build();
                 chunk.SetVoxelData(meshResult.VoxelData);
                 
                 // Update voxel data buffer

@@ -175,34 +175,6 @@ namespace FarmVox.Voxel
             SetColor(coord.x, coord.y, coord.z, v);
         }
 
-        public float GetWaterfall(Vector3Int coord)
-        {
-            var origin = GetOrigin(coord.x, coord.y, coord.z);
-            var terrianChunk = GetChunk(origin);
-
-            if (terrianChunk == null)
-            {
-                return 0;
-            }
-
-            return terrianChunk.GetWaterfall(coord - terrianChunk.Origin);
-        }
-
-        public void SetWaterfall(Vector3Int coord, float value)
-        {
-            var i = coord.x;
-            var j = coord.y;
-            var k = coord.z;
-
-            var keys = GetKeys(i, j, k);
-            foreach (var key in keys)
-            {
-                var origin = key * Size;
-                var chunk = GetOrCreateChunk(origin);
-                chunk.SetWaterfall(coord - origin, value);
-            }
-        }
-
         public void Clear()
         {
             foreach (var chunk in Map.Values)
