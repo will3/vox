@@ -5,74 +5,107 @@ namespace FarmVox.Scripts
     public class CameraController : MonoBehaviour
     {
         public Vector3 Target = new Vector3(0, 32, 0);
-        public float Speed = 20f;
-        public float RotateSpeed = 80f;
-        public Vector3 Velocity;
-        public float Friction = 0.001f;
         public float ZoomRate = 1.1f;
         public float MouseRotateSpeed = 0.2f;
+        public float MouseMoveSpeed = 1.0f;
 
-        public float RotateX = 45;
         public Vector3 Rotation = new Vector3(45, 45, 0);
         public float Distance = 300;
 
         public bool InputEnabled = true;
 
-        private Vector3 _lastDragPosition;
-        private bool _dragging;
-        public float orthographicSize = 100; 
+        private Vector3 _lastRightDragPosition;
+        private bool _rightDragging;
+        
+        private Vector3 _lastLeftDragPosition;
+        private bool _leftDragging;
+        
+        public float OrthographicSize = 100; 
 
         public Vector3 GetVector()
         {
             return (Target - transform.position).normalized;
         }
 
-        private float _forward;
-        private float _right;
         private float _rotate;
         
         private void UpdateInput()
         {
-            _forward = 0.0f;
-            if (Input.GetKey(KeyCode.W)) _forward += 1.0f;
-            if (Input.GetKey(KeyCode.S)) _forward -= 1.0f;
+            ProcessRightDrag();
+            ProcessLeftDrag();
 
-            _right = 0.0f;
-            if (Input.GetKey(KeyCode.A)) _right -= 1.0f;
-            if (Input.GetKey(KeyCode.D)) _right += 1.0f;
+            var scroll = Input.GetAxis("Mouse ScrollWheel");
 
-            var rotate = 0.0f;
-            if (Input.GetKey(KeyCode.Q)) rotate -= 1.0f;
-            if (Input.GetKey(KeyCode.E)) rotate += 1.0f;
-            Rotation.x = RotateX;
-            Rotation.y += rotate * Time.deltaTime * RotateSpeed;
-
-            if (Input.GetKeyDown(KeyCode.Equals))
+            var c = GetComponent<Camera>();
+            if (c.orthographic)
             {
-                Distance /= ZoomRate;
+                if (scroll > 0)
+                {
+                    OrthographicSize *= ZoomRate;    
+                }
+                else if (scroll < 0)
+                {
+                    OrthographicSize /= ZoomRate;
+                }
+            }
+            else
+            {
+                if (scroll > 0)
+                {
+                    Distance *= ZoomRate;    
+                }
+                else if (scroll < 0)
+                {
+                    Distance /= ZoomRate;
+                }
+            }
+        }
+
+        private void ProcessRightDrag()
+        {
+            if (!_rightDragging && Input.GetKey(KeyCode.Mouse1))
+            {
+                _rightDragging = true;
+                _lastRightDragPosition = Input.mousePosition;
             }
 
-            if (Input.GetKeyDown(KeyCode.Minus))
+            if (_rightDragging && !Input.GetKey(KeyCode.Mouse1))
             {
-                Distance *= ZoomRate;
+                _rightDragging = false;
             }
 
-            if (!_dragging && Input.GetKey(KeyCode.Mouse1))
+            if (_rightDragging)
             {
-                _dragging = true;
-                _lastDragPosition = Input.mousePosition;
+                var diff = Input.mousePosition - _lastRightDragPosition;
+                Rotation.y += diff.x * MouseRotateSpeed;
+                _lastRightDragPosition = Input.mousePosition;
+            }
+        }
+        
+        private void ProcessLeftDrag()
+        {
+            if (!_leftDragging && Input.GetKey(KeyCode.Mouse0))
+            {
+                _leftDragging = true;
+                _lastLeftDragPosition = Input.mousePosition;
             }
 
-            if (_dragging && !Input.GetKey(KeyCode.Mouse1))
+            if (_leftDragging && !Input.GetKey(KeyCode.Mouse0))
             {
-                _dragging = false;
+                _leftDragging = false;
             }
 
-            if (_dragging)
+            if (_leftDragging)
             {
-                var diff = Input.mousePosition - _lastDragPosition;
-                Rotation.y -= diff.x * MouseRotateSpeed;
-                _lastDragPosition = Input.mousePosition;
+                var forward = (transform.rotation * Vector3.forward).normalized;
+                var up = Vector3.up;
+                var right = Vector3.Cross(forward, up);
+                var top = Vector3.Cross(right, up);
+                
+                var diff = Input.mousePosition - _lastLeftDragPosition;
+                Target += diff.x * right * MouseMoveSpeed;
+                Target += diff.y * top * MouseMoveSpeed;
+                _lastLeftDragPosition = Input.mousePosition;
             }
         }
         
@@ -82,16 +115,6 @@ namespace FarmVox.Scripts
             {
                 UpdateInput();    
             }
-            
-            var f = Mathf.Pow(Friction, Time.deltaTime);
-
-            var forwardVector = (Target - transform.position).normalized;
-            forwardVector = Vector3.ProjectOnPlane(forwardVector, Vector3.up);
-            var rightVector = Vector3.Cross(Vector3.up, forwardVector);
-            Velocity += forwardVector * _forward * Speed * Time.deltaTime;
-            Velocity += rightVector * _right * Speed * Time.deltaTime;
-            Target += Velocity;
-            Velocity *= f;
 
             var position = Target - Quaternion.Euler(Rotation) * Vector3.forward * Distance;
             transform.position = position;
@@ -100,7 +123,7 @@ namespace FarmVox.Scripts
             var c = GetComponent<Camera>();
             if (c.orthographic)
             {
-                c.orthographicSize = Screen.height / 800f * orthographicSize;
+                c.orthographicSize = Screen.height / 800f * OrthographicSize;
             }
         }
     }
