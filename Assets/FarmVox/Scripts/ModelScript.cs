@@ -15,19 +15,17 @@ namespace FarmVox.Scripts
 
         public void LoadModel()
         {
-            if (Model == null)
-            {
-                Model = ModelLoader.Load(ModelName);    
-            }
+            Model = ModelLoader.Load(ModelName);
+            Model.InitData();
         }
         
         private void Start()
         {
+            LoadModel();
+            
             _meshFilter = gameObject.AddComponent<MeshFilter>();
             _meshRenderer = gameObject.AddComponent<MeshRenderer>();
             _meshRenderer.material = Materials.GetVoxelMaterialModel();
-            
-            Model.InitData();
 
             var mesherSettings = new MesherSettings
             {
