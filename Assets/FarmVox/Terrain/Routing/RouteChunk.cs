@@ -14,6 +14,11 @@ namespace FarmVox.Terrain.Routing
         private readonly Dictionary<Vector3Int, HashSet<Vector3Int>> _connections =
             new Dictionary<Vector3Int, HashSet<Vector3Int>>();
 
+        public Dictionary<Vector3Int, HashSet<Vector3Int>> Connections
+        {
+            get { return _connections; }
+        }
+
         public RouteChunk(int size, Vector3Int origin)
         {
             _size = size;
@@ -55,10 +60,6 @@ namespace FarmVox.Terrain.Routing
                     }   
                 }
             }
-            
-            Debug.Log(string.Format("Total points {0}", _connections.Count));
-            var connectionCount = _connections.Values.Aggregate(0, (count, connections) => count + connections.Count);
-            Debug.Log(string.Format("Total connections {0}", connectionCount));
         }
 
         private static IEnumerable<Vector3Int> GetCoordsAround(Vector3Int coord)

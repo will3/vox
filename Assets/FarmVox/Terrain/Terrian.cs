@@ -306,6 +306,6 @@ namespace FarmVox.Terrain
                     visit(chunk);
                 }
             }
-        } 
+        }
     }
 }

@@ -16,7 +16,6 @@ namespace FarmVox.Voxel
         public bool Dirty { get; set; }
         
         private Material _material;
-        private bool _waterfallDirty;
 
         public Material Material {
             get {
@@ -295,7 +294,6 @@ namespace FarmVox.Voxel
         /// <param name="v"></param>
         public void SetWaterfall(Vector3Int coord, float v)
         {
-            _waterfallDirty = true;
             _waterfalls[coord] = v;
         }
 
