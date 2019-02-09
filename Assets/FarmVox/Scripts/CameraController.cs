@@ -11,6 +11,7 @@ namespace FarmVox.Scripts
         public Vector3 Rotation = new Vector3(45, 45, 0);
         public float Distance = 300;
         public bool InputEnabled = true;
+        public bool KeysEnabled = true;
         public float OrthographicSize = 100;
         public float Speed = 20f;
         public float RotateSpeed = 80f;
@@ -36,7 +37,12 @@ namespace FarmVox.Scripts
         {
             UpdateRightDrag();
             UpdateLeftDrag();
-            UpdateKeys();
+            
+            if (KeysEnabled)
+            {
+                UpdateKeys();    
+            }
+            
             UpdateScroll();
         }
 

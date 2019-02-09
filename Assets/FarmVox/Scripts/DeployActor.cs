@@ -3,26 +3,28 @@ using UnityEngine;
 
 namespace FarmVox.Scripts
 {
-    public class DeployActors : MonoBehaviour
+    public class DeployActor : MonoBehaviour
     {
         public int SearchDistance = 8;
-        private HighlightHoveredSurface _highlight;
-        private int _deployed;
+        public HighlightHoveredSurface Highlight;
         public int Number = 1;
+        public string GameObjectName;
+        
+        private int _deployed;
         
         private void Start()
         {
-            _highlight = gameObject.AddComponent<HighlightHoveredSurface>();
+            Debug.Assert(Highlight != null, "Highlight cannot be null");
         }
 
         private void Update()
         {
-            if (_deployed >= Number)
+            if (_deployed > Number)
             {
                 return;
             }
             
-            var result = _highlight.Result;
+            var result = Highlight.Result;
 
             if (result == null || !Input.GetKeyDown(KeyCode.Mouse0)) return;
 
@@ -42,7 +44,7 @@ namespace FarmVox.Scripts
         {
             Debug.Log(string.Format("Found landing spot at {0}", coord));
             
-            var go = new GameObject("Dawg");
+            var go = new GameObject(GameObjectName);
 
             var actor = go.AddComponent<Actor>();
             actor.Coord = coord;
