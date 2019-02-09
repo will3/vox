@@ -16,5 +16,10 @@ namespace FarmVox
         public static Material GetVoxelMaterialModel() {
             return new Material(Shader.Find("Unlit/voxelmodel"));
         }
+
+        public static Material GetSpriteMaterial()
+        {
+            return new Material(Shader.Find("Unlit/Transparent"));
+        }
     }
 }

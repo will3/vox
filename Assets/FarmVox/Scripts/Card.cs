@@ -1,46 +1,37 @@
 using UnityEngine;
-using System.Collections;
-using System.IO;
-using FarmVox;
+using Debug = System.Diagnostics.Debug;
 
 namespace FarmVox.Scripts
 {
-    public partial class Card : MonoBehaviour
+    public class Card : MonoBehaviour
     {
+        private Material _material;
+        private MeshFilter _meshFilter;
+        private readonly Vector3 _up = Vector3.up;
+        private CameraController _cameraController;
+        public Vector3 Scale = new Vector3(1.0f, 1.0f, 1.0f);
 
-        Material material;
-        MeshFilter meshFilter;
-        Vector3 up = Vector3.up;
-        CameraController cameraController;
-        public Vector3 scale = new Vector3(1.0f, 1.0f, 1.0f);
+        public Texture2D Texture;
 
+        private Texture2D _lastTexture;
+        
         // Use this for initialization
-        void Start()
+        private void Start()
         {
-            material = material ?? new Material(Shader.Find("Unlit/Transparent"));
+            _material = _material ? _material : Materials.GetSpriteMaterial();
 
-            var mesh = getQuad();
+            var mesh = GetQuad();
 
             gameObject.AddComponent<MeshFilter>();
             gameObject.AddComponent<MeshRenderer>();
-            gameObject.GetComponent<Renderer>().material = material;
+            gameObject.GetComponent<Renderer>().material = _material;
             gameObject.GetComponent<MeshFilter>().mesh = mesh;
 
-            cameraController = Camera.main.GetComponent<CameraController>();
+            Debug.Assert(Camera.main != null, "Camera.main != null");
+            _cameraController = Camera.main.GetComponent<CameraController>();
         }
 
-        public void SetTexture(Texture2D texture)
-        {
-            material = material ?? new Material(Shader.Find("Unlit/Transparent"));
-            material.SetTexture("_MainTex", texture);
-        }
-
-        public void SetTexture(string textureName)
-        {
-            SetTexture(Textures.Load(textureName));
-        }
-
-        private Mesh getQuad()
+        private static Mesh GetQuad()
         {
             var mesh = new Mesh();
 
@@ -82,28 +73,23 @@ namespace FarmVox.Scripts
 
             return mesh;
         }
-
+        
         // Update is called once per frame
-        void Update()
+        private void Update()
         {
+            // Update material
+            _material.SetTexture("_MainTex", Texture);
+            
             // Linear billboard
-            var forward = cameraController.GetVector();
-            var right = Vector3.Cross(up, forward);
-            var face = Vector3.Cross(right, up);
+            var forward = _cameraController.GetVector();
+            var right = Vector3.Cross(_up, forward);
+            var face = Vector3.Cross(right, _up);
 
             transform.LookAt(transform.position + face, Vector3.up);
 
-            var flip = false;
-            var localScale = scale;
-            if (flip)
-            {
-                localScale.x *= -1;
-            }
+            var localScale = Scale;
 
             transform.localScale = localScale;
-
-            // Billboard
-            //transform.LookAt(cameraController.transform.position, Vector3.up);
         }
     }
 }
