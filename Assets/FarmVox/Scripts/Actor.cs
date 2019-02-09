@@ -10,7 +10,7 @@ namespace FarmVox.Scripts
         public Vector3 Scale;
         public string SpriteSheetName = "blue";
         private ActorSpriteSheet _spriteSheet;
-        
+
         private float _frameCount;
         private int _frame;
         
@@ -18,6 +18,7 @@ namespace FarmVox.Scripts
         {
             _card = gameObject.AddComponent<Card>();
             _spriteSheet = ActorSpriteSheetLoader.Load(SpriteSheetName);
+            _frameCount = Random.Range(0.0f, 1.0f);
         }
 
         private void Update()
