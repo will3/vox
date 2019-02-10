@@ -1,48 +1,15 @@
-using FarmVox.Terrain;
+using FarmVox.Scripts;
 using FarmVox.Voxel;
 using UnityEngine;
 
-namespace FarmVox.Scripts
+namespace FarmVox.Commands
 {
-    public abstract class Command
-    {
-        public CommandType CommandType { get; protected set; }
-        public DeployItem DeployItem { get; protected set; }
-
-        public abstract void Run(Vector3Int coord);
-    }
-
-    public class BuildWallCommand : Command
-    {
-        public BuildWallCommand()
-        {
-            CommandType = CommandType.DragAndDrop;
-            DeployItem = DeployItem.Wall;
-        }
-
-        public override void Run(Vector3Int coord)
-        {
-            Terrian.Instance.AddWall(coord);
-        }
-    }
-
-    public enum CommandType
-    {
-        Click,
-        DragAndDrop
-    }
-
-    public enum DeployItem
-    {
-        Wall
-    }
-    
-    public class TestDeploy : MonoBehaviour
+    public class Commander : MonoBehaviour
     {
         public HighlightHoveredSurface Highlight;
         public CameraController CameraController;
         
-        private Command _currentCommand;
+        private CommandBase _currentCommandBase;
         
         private bool _isDragging;
         private Vector3 _lastDragPosition;
@@ -57,28 +24,28 @@ namespace FarmVox.Scripts
         {
             if (Input.GetKeyDown(KeyCode.W))
             {
-                _currentCommand = new BuildWallCommand();
+                _currentCommandBase = new BuildWallCommandBase();
             }
 
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                _currentCommand = null;
+                _currentCommandBase = null;
             }
             
             CameraController.InputEnabled =
-                _currentCommand == null || _currentCommand.CommandType != CommandType.DragAndDrop;
+                _currentCommandBase == null || _currentCommandBase.CommandType != CommandType.DragAndDrop;
             
             UpdateCurrentCommand();
         }
 
         private void UpdateCurrentCommand()
         {
-            if (_currentCommand == null)
+            if (_currentCommandBase == null)
             {
                 return;
             }
 
-            if (_currentCommand.CommandType == CommandType.DragAndDrop)
+            if (_currentCommandBase.CommandType == CommandType.DragAndDrop)
             {
                 if (Input.GetKeyDown(KeyCode.Mouse0))
                 {
@@ -96,8 +63,7 @@ namespace FarmVox.Scripts
                     var result = VoxelRaycast.TraceMouse(Input.mousePosition, 1 << UserLayers.Terrian);
                     if (result != null)
                     {
-                        var coord = result.GetCoord();
-                        _currentCommand.Run(coord);
+                        Debug.Log(result.GetCoord());
                     }
                 }
 
