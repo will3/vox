@@ -95,7 +95,7 @@ void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, flo
         t1.c = a;
         t1.d = d;
         t1.color = color;
-        t1.ao = float4(aa, ab, ac, ad);
+        t1.ao = float4(ac, ab, aa, ad);
         t1.x = x;
         t1.y = y;
         t1.z = z;

@@ -4,6 +4,8 @@ namespace FarmVox.Voxel
 {
     public static class VoxelRaycast
     {
+        private const int MaxDistance = 10000;
+
         public static VoxelRaycastResult TraceMouse(int layerMask)
         {
             Debug.Assert(Camera.main != null, "Camera.main != null");
@@ -17,15 +19,10 @@ namespace FarmVox.Voxel
             var ray = Camera.main.ScreenPointToRay(mousePosition);
             return TraceRay(ray, layerMask);
         }
-        
-        public static VoxelRaycastResult TraceRay(Ray ray, int layerMask) {
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, layerMask))
-            {
-                return new VoxelRaycastResult(hit);
-            }
 
-            return null;
+        private static VoxelRaycastResult TraceRay(Ray ray, int layerMask) {
+            RaycastHit hit;
+            return Physics.Raycast(ray, out hit, MaxDistance, layerMask) ? new VoxelRaycastResult(hit) : null;
         }
     }
 }

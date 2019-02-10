@@ -99,12 +99,13 @@ namespace FarmVox.Voxel
         }
 
         private GameObject GetGameObject() {
-            if (_gameObject == null) {
-                var name = "Chunk" + Origin.ToString();
-                _gameObject = new GameObject(name);
-                _gameObject.transform.localPosition = Origin;
-                _gameObject.transform.parent = Chunks.GetGameObject().transform;
-            }
+            if (_gameObject != null) return _gameObject;
+            
+            var name = "Chunk" + Origin;
+            _gameObject = new GameObject(name);
+            _gameObject.transform.localPosition = Origin;
+            _gameObject.transform.parent = Chunks.GetGameObject().transform;
+            _gameObject.layer = Chunks.Layer;
             return _gameObject;
         }
 

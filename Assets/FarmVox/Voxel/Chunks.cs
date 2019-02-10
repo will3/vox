@@ -13,9 +13,21 @@ namespace FarmVox.Voxel
         public bool IsWater = false;
         private readonly string _groupName = "chunks";
         public float NormalStrength = 0.0f;
+        public float ShadowStrength = 0.0f;
 
         public bool Transparent;
 
+        public int Layer
+        {
+            get { return GetGameObject().layer; }
+            set { GetGameObject().layer = value; }
+        }
+
+        public string Name
+        {
+            set { GetGameObject().name = value; }
+        }
+        
         public GameObject GetGameObject() {
             if (_gameObject == null) {
                 _gameObject = new GameObject(_groupName);

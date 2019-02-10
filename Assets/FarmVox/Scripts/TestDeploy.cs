@@ -1,3 +1,4 @@
+using FarmVox.Terrain;
 using FarmVox.Voxel;
 using UnityEngine;
 
@@ -7,6 +8,8 @@ namespace FarmVox.Scripts
     {
         public CommandType CommandType { get; protected set; }
         public DeployItem DeployItem { get; protected set; }
+
+        public abstract void Run(Vector3Int coord);
     }
 
     public class BuildWallCommand : Command
@@ -15,6 +18,11 @@ namespace FarmVox.Scripts
         {
             CommandType = CommandType.DragAndDrop;
             DeployItem = DeployItem.Wall;
+        }
+
+        public override void Run(Vector3Int coord)
+        {
+            Terrian.Instance.AddWall(coord);
         }
     }
 
@@ -88,7 +96,8 @@ namespace FarmVox.Scripts
                     var result = VoxelRaycast.TraceMouse(Input.mousePosition, 1 << UserLayers.Terrian);
                     if (result != null)
                     {
-                        Debug.Log(result.GetCoord());
+                        var coord = result.GetCoord();
+                        _currentCommand.Run(coord);
                     }
                 }
 

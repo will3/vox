@@ -29,6 +29,8 @@ namespace FarmVox.Terrain
 
         public Chunks WaterLayer { get; private set; }
 
+        public Chunks WallLayer { get; private set; }
+
         public RouteChunks Routes { get; private set; }
 
         private readonly Dictionary<Vector3Int, TerrianChunk> _map = new Dictionary<Vector3Int, TerrianChunk>();
@@ -92,38 +94,52 @@ namespace FarmVox.Terrain
             var size = Config.Size;
             _sizeF = size;
 
-            new Bounds
-            {
-                min = new Vector3(-Config.MaxChunksX, 0, -Config.MaxChunksX) * size,
-                max = new Vector3(Config.MaxChunksX, Config.MaxChunksY, Config.MaxChunksX) * size
-            };
-
             var boundsInt = Config.BoundsInt;
 
-            DefaultLayer = new Chunks(size) {NormalStrength = Config.NormalStrength};
-            TreeLayer = new Chunks(size) {NormalStrength = Config.TreesNormalStrength};
-            WaterLayer = new Chunks(size) {Transparent = true, UseNormals = false};
+            DefaultLayer = new Chunks(size)
+            {
+                NormalStrength = Config.NormalStrength,
+                ShadowStrength = Config.ShadowStrength,
+                Layer = UserLayers.Terrian,
+                Name = "default"
+            };
+
+            TreeLayer = new Chunks(size)
+            {
+                NormalStrength = Config.TreesNormalStrength,
+                ShadowStrength = Config.ShadowStrength,
+                Layer = UserLayers.Trees,
+                Name = "trees"
+            };
+
+            WaterLayer = new Chunks(size)
+            {
+                Transparent = true,
+                UseNormals = false,
+                IsWater = true,
+                ShadowStrength = Config.ShadowStrength,
+                Layer = UserLayers.Water,
+                Name = "water"
+            };
+
+            WallLayer = new Chunks(size)
+            {
+                NormalStrength = Config.WallNormalStrength, 
+                ShadowStrength = Config.WallShadowStrength, 
+                Layer = UserLayers.Wall,
+                Name = "walls"
+            };
 
             _treeMap = new TreeMap(boundsInt);
-
-            DefaultLayer.GetGameObject().layer = LayerMask.NameToLayer("terrian");
-            TreeLayer.GetGameObject().layer = LayerMask.NameToLayer("trees");
-            WaterLayer.GetGameObject().layer = LayerMask.NameToLayer("water");
-             
-            DefaultLayer.GetGameObject().name = "default";
-            TreeLayer.GetGameObject().name = "trees";
-            WaterLayer.GetGameObject().name = "water";
 
             DefaultLayer.GetGameObject().transform.parent = transform;
             TreeLayer.GetGameObject().transform.parent = transform;
             WaterLayer.GetGameObject().transform.parent = transform;
+            WallLayer.GetGameObject().transform.parent = transform;
 
-            WaterLayer.UseNormals = false;
-            WaterLayer.IsWater = true;
+            _chunksToDraw = new[] { DefaultLayer, TreeLayer, WaterLayer, WallLayer };
 
-            _chunksToDraw = new[] { DefaultLayer, TreeLayer, WaterLayer };
-
-            _shadowMap = new VoxelShadowMap(size, Config);
+            _shadowMap = new VoxelShadowMap(size);
 
             HeightMap = new HeightMap();
 
@@ -217,8 +233,10 @@ namespace FarmVox.Terrain
             material.SetFloat("_WaterfallWidth", Config.WaterfallWidth);
             material.SetFloat("_WaterfallMin", Config.WaterfallMin);
             material.SetFloat("_WaterfallVariance", Config.WaterfallVariance);
+
+            var shadowStrength = chunk.Chunks.ShadowStrength;
             
-            _shadowMap.UpdateMaterial(material, origin);
+            _shadowMap.UpdateMaterial(material, origin, shadowStrength);
         }
 
         private TerrianChunk GetTerrianChunk(Vector3Int origin) {
@@ -326,6 +344,18 @@ namespace FarmVox.Terrain
             var origin = GetOrigin(coord.x, coord.y, coord.z);
             var chunk = GetOrCreateTerrianChunk(origin);
             chunk.SetWaterfall(coord - origin, value);
+        }
+
+        public void AddWall(Vector3Int coord)
+        {
+            const int height = 3;
+            const int yOffset = 1;
+            
+            for (var i = 0; i < height; i++)
+            {
+                WallLayer.Set(coord + new Vector3Int(0, i + yOffset, 0), 1.0f);
+                WallLayer.SetColor(coord + new Vector3Int(0, i + yOffset, 0), Color.red);    
+            }
         }
     }
 }
