@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
 
 namespace FarmVox
-{
-
+{   
     public static class Materials
     {
         public static Material GetVoxelMaterial() {

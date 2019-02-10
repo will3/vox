@@ -11,12 +11,14 @@ namespace FarmVox.Workers
         private readonly TerrianChunk _terrianChunk;
         private readonly Chunks _defaultLayer;
         private readonly TerrianConfig _config;
+        private readonly Terrian _terrian;
 
-        public GenWaterfallWorker(TerrianChunk terrianChunk, Chunks defaultLayer, TerrianConfig config)
+        public GenWaterfallWorker(TerrianChunk terrianChunk, Chunks defaultLayer, TerrianConfig config, Terrian terrian)
         {
             _terrianChunk = terrianChunk;
             _defaultLayer = defaultLayer;
             _config = config;
+            _terrian = terrian;
         }
             
         public void Start()
@@ -154,7 +156,7 @@ namespace FarmVox.Workers
                     continue;
                 }
 
-                if (_defaultLayer.GetWaterfall(t) > 0)
+                if (_terrian.GetWaterfall(t) > 0)
                 {
                     continue;
                 }

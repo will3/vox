@@ -13,9 +13,21 @@ namespace FarmVox.Voxel
         public bool IsWater = false;
         private readonly string _groupName = "chunks";
         public float NormalStrength = 0.0f;
+        public float ShadowStrength = 0.0f;
 
         public bool Transparent;
 
+        public int Layer
+        {
+            get { return GetGameObject().layer; }
+            set { GetGameObject().layer = value; }
+        }
+
+        public string Name
+        {
+            set { GetGameObject().name = value; }
+        }
+        
         public GameObject GetGameObject() {
             if (_gameObject == null) {
                 _gameObject = new GameObject(_groupName);
@@ -173,34 +185,6 @@ namespace FarmVox.Voxel
 
         public void SetColor(Vector3Int coord, Color v) {
             SetColor(coord.x, coord.y, coord.z, v);
-        }
-
-        public float GetWaterfall(Vector3Int coord)
-        {
-            var origin = GetOrigin(coord.x, coord.y, coord.z);
-            var terrianChunk = GetChunk(origin);
-
-            if (terrianChunk == null)
-            {
-                return 0;
-            }
-
-            return terrianChunk.GetWaterfall(coord - terrianChunk.Origin);
-        }
-
-        public void SetWaterfall(Vector3Int coord, float value)
-        {
-            var i = coord.x;
-            var j = coord.y;
-            var k = coord.z;
-
-            var keys = GetKeys(i, j, k);
-            foreach (var key in keys)
-            {
-                var origin = key * Size;
-                var chunk = GetOrCreateChunk(origin);
-                chunk.SetWaterfall(coord - origin, value);
-            }
         }
 
         public void Clear()

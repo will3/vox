@@ -74,5 +74,8 @@ function readModel(name) {
 
 	var output = { Voxels: voxels, Palette: colors, Size: 32 };
 
-	fs.writeFileSync(path.join(outPath, name) + '.json', JSON.stringify(output));
+	const outputPath = path.join(outPath, name) + '.json';
+	fs.writeFileSync(outputPath, JSON.stringify(output));
+
+	console.log(`Exported model ${outputPath}`);
 };

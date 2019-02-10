@@ -26,59 +26,6 @@
             struct VoxelData {
                 int3 coord;
             };
-            
-            StructuredBuffer<VoxelData> _VoxelData;
-            
-            // 11 10 
-            // 01 00 <- chunk
-            StructuredBuffer<int> _ShadowMap00;
-            StructuredBuffer<int> _ShadowMap01;
-            StructuredBuffer<int> _ShadowMap10;
-            StructuredBuffer<int> _ShadowMap11;
-            int _ShadowMapSize;
-
-            int getShadow(int3 coord) {
-                int x = coord.x - coord.y;
-                int z = coord.z - coord.y;
-
-                int i = 0;
-                int j = 0;
-                int u = x;
-                int v = z;
-                int size = _ShadowMapSize;
-
-                if (x < 0) {
-                    i = 1;
-                    u += size;
-                } 
-
-                if (z < 0) {
-                    j = 1;
-                    v += size;
-                }
-
-                if (u < 0 || u >= size || v < 0 || v >= size) {
-                    //return 99;
-                }
-
-                int index = u * size + v;
-
-                if (i == 0) {
-                    if (j == 0) {
-                        return _ShadowMap00[index];
-                    } else if (j == 1) {
-                        return _ShadowMap01[index];
-                    }
-                } else if (i == 1) {
-                    if (j == 0) {
-                        return _ShadowMap10[index];
-                    } else if (j == 1) {
-                        return _ShadowMap11[index];
-                    }
-                }
-
-                return 99;
-            }
 
             struct appdata
             {
@@ -97,11 +44,6 @@
                 float3 normal : NORMAL;
             };
 
-            int3 getCoord(int index) {
-                VoxelData data = _VoxelData[index];
-                return data.coord;
-            }
-
             v2f vert (appdata v)
             {
                 v2f o;
@@ -111,22 +53,13 @@
                 o.uv = v.uv;
 
                 int index = floor(v.uv.x);
-                int3 coord = getCoord(index);
+                int3 coord = int3(0,0,0);
 
                 float4 c = v.color;
 
                 int3 worldCoord = coord + floor(_Origin);
                 
                 o.color = c;
-
-                float shadowHeight = getShadow(coord);
-                float shadow = shadowHeight > worldCoord.y ? 1.0 : 0;
-                o.color.xyz *= 1 - shadow * _ShadowStrength;
-
-                if (shadowHeight == 99) {
-                    o.color = float4(1.0, 0, 0, 1.0);
-                    return o;
-                }
 
                 return o;
             }

@@ -71,7 +71,7 @@ namespace FarmVox.GPU.Shaders
 
             _trianglesBuffer =
                 new ComputeBuffer(_size * _size * _size, Triangle.Size, ComputeBufferType.Append);
-            _voxelBuffer = new ComputeBuffer(_size * _size * _size, sizeof(float) * 3);
+            _voxelBuffer = new ComputeBuffer(_size * _size * _size, sizeof(float));
             _colorsBuffer = new ComputeBuffer(_size * _size * _size, sizeof(float) * 4);
         }
 

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using FarmVox.Terrain;
 using UnityEngine;
 
 namespace FarmVox.Voxel
@@ -16,13 +15,10 @@ namespace FarmVox.Voxel
 
         public int Size { get; private set; }
 
-        readonly TerrianConfig _config;
-        
-        public VoxelShadowMap(int size, TerrianConfig config)
+        public VoxelShadowMap(int size)
         {
             Size = size;
             DataSize = size + 1;
-            _config = config;
         }
 
         readonly Dictionary<Vector2Int, ShadowMapState> _states = new Dictionary<Vector2Int, ShadowMapState>();
@@ -46,18 +42,18 @@ namespace FarmVox.Voxel
 
             foreach (var origin in keys)
             {
-                var state = _states[origin];
+                var state = GetState(origin);
                 if (state != ShadowMapState.Pending) continue;
                 Update(origin);
                 SetState(origin, ShadowMapState.Ready);
             }
         }
 
-        void SetState(Vector2Int origin, ShadowMapState state) {
+        private void SetState(Vector2Int origin, ShadowMapState state) {
             _states[origin] = state;
         }
 
-        ShadowMapState GetState(Vector2Int origin) {
+        private ShadowMapState GetState(Vector2Int origin) {
             ShadowMapState state;
             _states.TryGetValue(origin, out state);
             return state;
@@ -78,16 +74,16 @@ namespace FarmVox.Voxel
             }
         }
 
-        void Update(Vector2Int origin)
+        private void Update(Vector2Int origin)
         {
-            PerformanceLogger.Push("Shadowmap");
+            PerformanceLogger.Push("Shadow Map");
             // Clear
             var texture = new int[DataSize * DataSize];
             for (var i = 0; i < DataSize; i++)
             {
                 for (var j = 0; j < DataSize; j++)
                 {
-                    int index = i * DataSize + j;
+                    var index = i * DataSize + j;
                     var v = CalcShadow(new Vector3Int(i + origin.x, 0, j + origin.y));
                     texture[index] = v;
                 }
@@ -102,22 +98,17 @@ namespace FarmVox.Voxel
             PerformanceLogger.Pop();
         }
 
-        int CalcShadow(Vector3Int coord)
+        private static int CalcShadow(Vector3Int coord)
         {
             var start = LiftVector(coord, LightY);
             
             var dir = new Vector3(-1, -1, -1).normalized;
             var ray = new Ray(start, dir);
             RaycastHit hit;
-            if (Physics.Raycast(ray, out hit))
-            {
-                return GetCoord(hit, dir).y;
-            }
-
-            return MinY;
+            return Physics.Raycast(ray, out hit) ? GetCoord(hit, dir).y : MinY;
         }
 
-        static Vector3Int LiftVector(Vector3Int coord, int height)
+        private static Vector3Int LiftVector(Vector3Int coord, int height)
         {
             var diff = height - coord.y;
             return new Vector3Int(coord.x + diff, coord.y + diff, coord.z + diff);
@@ -181,14 +172,14 @@ namespace FarmVox.Voxel
             Update();
         }
 
-        public void UpdateMaterial(Material material, Vector3Int origin)
+        public void UpdateMaterial(Material material, Vector3Int origin, float shadowStrength)
         {
             material.SetBuffer("_ShadowMap00", GetBuffer(origin, new Vector2Int(0, 0)));
             material.SetBuffer("_ShadowMap01", GetBuffer(origin, new Vector2Int(0, 1)));
             material.SetBuffer("_ShadowMap10", GetBuffer(origin, new Vector2Int(1, 0)));
             material.SetBuffer("_ShadowMap11", GetBuffer(origin, new Vector2Int(1, 1)));
             material.SetInt("_ShadowMapSize", DataSize);
-            material.SetFloat("_ShadowStrength", _config.ShadowStrength);
+            material.SetFloat("_ShadowStrength", shadowStrength);
         }
     }
 }

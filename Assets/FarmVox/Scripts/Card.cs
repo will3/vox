@@ -1,5 +1,4 @@
 using UnityEngine;
-using Debug = System.Diagnostics.Debug;
 
 namespace FarmVox.Scripts
 {
