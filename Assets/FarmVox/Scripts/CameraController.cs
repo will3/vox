@@ -162,7 +162,7 @@ namespace FarmVox.Scripts
             var c = GetComponent<Camera>();
             if (c.orthographic)
             {
-                c.orthographicSize = Screen.height / 800f * OrthographicSize;
+                c.orthographicSize = OrthographicSize;
             }
         }
     }
