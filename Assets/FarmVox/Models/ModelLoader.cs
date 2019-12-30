@@ -1,16 +1,12 @@
-using System.IO;
 using UnityEngine;
 
 namespace FarmVox.Models
 {
     public static class ModelLoader
     {
-        public static Model Load(string name)
+        public static Model Load(TextAsset text)
         {
-            var path = Path.Combine("models", name);
-            var asset = Resources.Load<TextAsset>(path);
-            var json = asset.text;
-
+            var json = text.text;
             return JsonUtility.FromJson<Model>(json);
         }
     }

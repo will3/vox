@@ -40,9 +40,6 @@ namespace FarmVox.Terrain
         public float WaterfallMin;
         public float WaterfallVariance;
 
-        public float WallShadowStrength;
-        public float WallNormalStrength;
-        
         public BiomeConfig Biome;
 
         public TerrianConfig()

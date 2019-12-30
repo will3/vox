@@ -1,3 +1,6 @@
+using FarmVox.Models;
+using FarmVox.Objects;
+using FarmVox.Voxel;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -7,6 +10,9 @@ namespace FarmVox.Scripts
     {
         public NavMeshAgent agent;
         public Camera targetCamera;
+        public GameObject walls;
+        public TextAsset sawmill;
+        public TextAsset house;
 
         private void Start()
         {
@@ -17,6 +23,31 @@ namespace FarmVox.Scripts
         }
 
         private void Update()
+        {
+            UpdateMovement();
+
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                PlaceBuilding(house);
+            }
+        }
+
+        private void PlaceBuilding(TextAsset asset)
+        {
+            var model = ModelLoader.Load(asset);
+            var modelObject = new ModelObject(model);
+            var coord = GetCoord();
+
+            ObjectPlacer.Place(walls.GetComponent<Chunks>(), modelObject, coord, Time.frameCount % 4);
+        }
+
+        private Vector3Int GetCoord()
+        {
+            var position = transform.position;
+            return new Vector3Int((int) position.x, (int) position.y, (int) position.z);
+        }
+
+        private void UpdateMovement()
         {
             var right = Input.GetAxisRaw("Horizontal");
             var forward = Input.GetAxisRaw("Vertical");

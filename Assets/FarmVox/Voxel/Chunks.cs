@@ -4,58 +4,33 @@ using UnityEngine;
 
 namespace FarmVox.Voxel
 {
-    public class Chunks : IDisposable
+    public class Chunks : MonoBehaviour
     {
-        GameObject _gameObject;
-        
-        public readonly int Size;
-        public bool UseNormals = true;
-        public bool IsWater = false;
-        private readonly string _groupName = "chunks";
-        public float NormalStrength = 0.0f;
-        public float ShadowStrength = 0.0f;
+        public int size = 32;
+        public bool useNormals = true;
+        public bool isWater;
+        public float normalStrength = 0.4f;
+        public float shadowStrength = 0.5f;
+        public bool transparent;
 
-        public bool Transparent;
+        private Dictionary<Vector3Int, Chunk> _map;
 
-        public int Layer
-        {
-            get { return GetGameObject().layer; }
-            set { GetGameObject().layer = value; }
-        }
-
-        public string Name
-        {
-            set { GetGameObject().name = value; }
-        }
-        
-        public GameObject GetGameObject() {
-            if (_gameObject == null) {
-                _gameObject = new GameObject(_groupName);
-            }
-            return _gameObject;
-        }
-
-        public readonly Dictionary<Vector3Int, Chunk> Map = new Dictionary<Vector3Int, Chunk>();
-
-        public Chunks(int size)
-        {
-            Size = size;
-        }
+        private Dictionary<Vector3Int, Chunk> Map => _map ?? (_map = new Dictionary<Vector3Int, Chunk>());
 
         private Vector3Int GetKey(int i, int j, int k) {
             return new Vector3Int(
-                Mathf.FloorToInt(i / (float)Size),
-                Mathf.FloorToInt(j / (float)Size),
-                Mathf.FloorToInt(k / (float)Size)
+                Mathf.FloorToInt(i / (float)size),
+                Mathf.FloorToInt(j / (float)size),
+                Mathf.FloorToInt(k / (float)size)
             );
         }
 
         private Vector3Int GetOrigin(int i, int j, int k)
         {
             return new Vector3Int(
-                Mathf.FloorToInt(i / (float)Size) * Size,
-                Mathf.FloorToInt(j / (float)Size) * Size,
-                Mathf.FloorToInt(k / (float)Size) * Size
+                Mathf.FloorToInt(i / (float)size) * size,
+                Mathf.FloorToInt(j / (float)size) * size,
+                Mathf.FloorToInt(k / (float)size) * size
             );
         }
 
@@ -93,27 +68,20 @@ namespace FarmVox.Voxel
                 return Map[origin];
             }
 
-            Map[origin] = new Chunk(Size, origin) {Chunks = this};
+            Map[origin] = new Chunk(size, origin) {Chunks = this};
             return Map[origin];
         }
 
         public Chunk GetChunk(Vector3Int origin)
         {
-            Chunk chunk;
-            Map.TryGetValue(origin, out chunk);
-            return chunk;
-        }
-
-        public bool HasChunk(Vector3Int origin)
-        {
-            return Map.ContainsKey(origin);
+            return Map.TryGetValue(origin, out var chunk) ? chunk : null;
         }
 
         private IEnumerable<Vector3Int> GetKeys(int i, int j, int k) {
             var key = GetKey(i, j, k);
             var list = new List<Vector3Int>();
 
-            var origin = key * Size;
+            var origin = key * size;
             var ri = i - origin.x;
             var rj = j - origin.y;
             var rk = k - origin.z;
@@ -135,16 +103,16 @@ namespace FarmVox.Voxel
                 kList.Add(-1);
             }
 
-            if (ri >= Size) {
+            if (ri >= size) {
                 iList.Add(1);
             }
 
-            if (rj >= Size)
+            if (rj >= size)
             {
                 jList.Add(1);
             }
 
-            if (rk >= Size) {
+            if (rk >= size) {
                 kList.Add(1);
             }
 
@@ -167,7 +135,7 @@ namespace FarmVox.Voxel
         {
             var keys = GetKeys(i, j, k);
             foreach(var key in keys) {
-                var origin = key * Size;
+                var origin = key * size;
                 var chunk = GetOrCreateChunk(origin);
                 chunk.Set(i - origin.x, j - origin.y, k - origin.z, v);
             }
@@ -177,7 +145,7 @@ namespace FarmVox.Voxel
         {
             var keys = GetKeys(i, j, k);
             foreach(var key in keys) {
-                var origin = key * Size;
+                var origin = key * size;
                 var chunk = GetOrCreateChunk(origin);
                 chunk.SetColor(i - origin.x, j - origin.y, k - origin.z, v);
             }
@@ -187,15 +155,7 @@ namespace FarmVox.Voxel
             SetColor(coord.x, coord.y, coord.z, v);
         }
 
-        public void Clear()
-        {
-            foreach (var chunk in Map.Values)
-            {
-                chunk.Clear();
-            }
-        }
-
-        public void Dispose()
+        public void OnDestroy()
         {
             foreach (var chunk in Map.Values)
             {

@@ -20,7 +20,7 @@ namespace FarmVox.Voxel
         public Material Material {
             get {
                 if (_material != null) return _material;
-                _material = Chunks.Transparent ? Materials.GetVoxelMaterialTrans() : Materials.GetVoxelMaterial();
+                _material = Chunks.transparent ? Materials.GetVoxelMaterialTrans() : Materials.GetVoxelMaterial();
                 return _material;
             }
         }
@@ -104,8 +104,9 @@ namespace FarmVox.Voxel
             var name = "Chunk" + Origin;
             _gameObject = new GameObject(name);
             _gameObject.transform.localPosition = Origin;
-            _gameObject.transform.parent = Chunks.GetGameObject().transform;
-            _gameObject.layer = Chunks.Layer;
+            var parentGo = Chunks.gameObject;
+            _gameObject.transform.parent = parentGo.transform;
+            _gameObject.layer = parentGo.layer;
             return _gameObject;
         }
 

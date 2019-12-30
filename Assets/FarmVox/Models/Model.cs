@@ -16,23 +16,6 @@ namespace FarmVox.Models
         
         public Color[] Palette;
         public Voxel[] Voxels;
-        public int Size;
-
-        public float[] Data { get; private set; }
-        public Color[] Colors { get; private set; }
-
-        public void InitData()
-        {
-            Data = new float[Size * Size * Size];
-            Colors = new Color[Size * Size * Size];
-            
-            foreach (var voxel in Voxels)
-            {
-                var index = voxel.X * Size * Size + voxel.Y * Size + voxel.Z;
-
-                Data[index] = 1;
-                Colors[index] = Palette[voxel.ColorIndex - 1];
-            }
-        }
+        public int[] Size;
     }
 }

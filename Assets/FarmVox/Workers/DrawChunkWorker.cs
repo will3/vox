@@ -54,9 +54,9 @@ namespace FarmVox.Workers
             };
             
             using (var mesher = new MesherGpu(chunk.DataSize, mesherSettings)) {
-                mesher.UseNormals = chunks.UseNormals;
-                mesher.IsWater = chunks.IsWater;
-                mesher.NormalStrength = chunk.Chunks.NormalStrength;
+                mesher.UseNormals = chunks.useNormals;
+                mesher.IsWater = chunks.isWater;
+                mesher.NormalStrength = chunk.Chunks.normalStrength;
                 
                 mesher.SetData(chunk.Data);
                 mesher.SetColors(chunk.Colors);

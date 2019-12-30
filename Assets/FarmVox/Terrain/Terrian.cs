@@ -6,7 +6,6 @@ using FarmVox.Terrain.Routing;
 using FarmVox.Voxel;
 using FarmVox.Workers;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace FarmVox.Terrain
 {
@@ -23,13 +22,10 @@ namespace FarmVox.Terrain
 
         float _sizeF;
 
-        public Chunks DefaultLayer { get; private set; }
-
-        public Chunks TreeLayer { get; private set; }
-
-        public Chunks WaterLayer { get; private set; }
-
-        public Chunks WallLayer { get; private set; }
+        public Chunks defaultLayer;
+        public Chunks treeLayer;
+        public Chunks waterLayer;
+        public Chunks wallLayer;
 
         public RouteChunks Routes { get; private set; }
 
@@ -96,48 +92,17 @@ namespace FarmVox.Terrain
 
             var boundsInt = Config.BoundsInt;
 
-            DefaultLayer = new Chunks(size)
-            {
-                NormalStrength = Config.NormalStrength,
-                ShadowStrength = Config.ShadowStrength,
-                Layer = UserLayers.Terrian,
-                Name = "default"
-            };
+            defaultLayer.normalStrength = Config.NormalStrength;
+            defaultLayer.shadowStrength = Config.ShadowStrength;
 
-            TreeLayer = new Chunks(size)
-            {
-                NormalStrength = Config.TreesNormalStrength,
-                ShadowStrength = Config.ShadowStrength,
-                Layer = UserLayers.Trees,
-                Name = "trees"
-            };
-
-            WaterLayer = new Chunks(size)
-            {
-                Transparent = true,
-                UseNormals = false,
-                IsWater = true,
-                ShadowStrength = Config.ShadowStrength,
-                Layer = UserLayers.Water,
-                Name = "water"
-            };
-
-            WallLayer = new Chunks(size)
-            {
-                NormalStrength = Config.WallNormalStrength, 
-                ShadowStrength = Config.WallShadowStrength, 
-                Layer = UserLayers.Wall,
-                Name = "walls"
-            };
+            treeLayer.normalStrength = Config.TreesNormalStrength;
+            treeLayer.shadowStrength = Config.ShadowStrength;
+            
+            waterLayer.shadowStrength = Config.ShadowStrength;
 
             _treeMap = new TreeMap(boundsInt);
 
-            DefaultLayer.GetGameObject().transform.parent = transform;
-            TreeLayer.GetGameObject().transform.parent = transform;
-            WaterLayer.GetGameObject().transform.parent = transform;
-            WallLayer.GetGameObject().transform.parent = transform;
-
-            _chunksToDraw = new[] { DefaultLayer, TreeLayer, WaterLayer, WallLayer };
+            _chunksToDraw = new[] { defaultLayer, treeLayer, waterLayer, wallLayer };
 
             _shadowMap = new VoxelShadowMap(size);
 
@@ -163,27 +128,27 @@ namespace FarmVox.Terrain
 
             VisitChunks(chunk =>
             {
-                queue.Enqueue(new GenGroundWorker(chunk, DefaultLayer, Config));
+                queue.Enqueue(new GenGroundWorker(chunk, defaultLayer, Config));
             });
             
             VisitChunks(chunk =>
             {
-                queue.Enqueue(new GenWaterWorker(chunk, DefaultLayer, WaterLayer, Config));
+                queue.Enqueue(new GenWaterWorker(chunk, defaultLayer, waterLayer, Config));
             });
             
             VisitChunks(chunk =>
             {
-                queue.Enqueue(new GenTreesWorker(Config, chunk, DefaultLayer, TreeLayer, _treeMap));
+                queue.Enqueue(new GenTreesWorker(Config, chunk, defaultLayer, treeLayer, _treeMap));
             });
             
             VisitChunks(chunk =>
             {
-                queue.Enqueue(new GenWaterfallWorker(chunk, DefaultLayer, Config, this));
+                queue.Enqueue(new GenWaterfallWorker(chunk, defaultLayer, Config, this));
             });
             
             VisitChunks(chunk =>
             {
-                queue.Enqueue(new GenRoutesWorker(chunk.Origin, Routes, DefaultLayer));
+                queue.Enqueue(new GenRoutesWorker(chunk.Origin, Routes, defaultLayer));
             });
             
             StartCoroutine(UpdateMeshesLoop());
@@ -234,7 +199,7 @@ namespace FarmVox.Terrain
             material.SetFloat("_WaterfallMin", Config.WaterfallMin);
             material.SetFloat("_WaterfallVariance", Config.WaterfallVariance);
 
-            var shadowStrength = chunk.Chunks.ShadowStrength;
+            var shadowStrength = chunk.Chunks.shadowStrength;
             
             _shadowMap.UpdateMaterial(material, origin, shadowStrength);
         }
@@ -243,12 +208,6 @@ namespace FarmVox.Terrain
             TerrianChunk terrianChunk;
             _map.TryGetValue(origin, out terrianChunk);
             return terrianChunk;
-        }
-
-        public TerrianColumn GetTerrianColumn(Vector3Int origin) {
-            TerrianColumn terrianColumn;
-            _columns.TryGetValue(origin, out terrianColumn);
-            return terrianColumn;
         }
 
         private TerrianChunk GetOrCreateTerrianChunk(Vector3Int origin)
@@ -307,10 +266,6 @@ namespace FarmVox.Terrain
             foreach (var tc in _map.Values) {
                 tc.Dispose();
             }
-            
-            DefaultLayer.Dispose();
-            TreeLayer.Dispose();
-            WaterLayer.Dispose();
         }
 
         private delegate void VisitChunk(TerrianChunk chunk);
@@ -353,8 +308,8 @@ namespace FarmVox.Terrain
             
             for (var i = 0; i < height; i++)
             {
-                WallLayer.Set(coord + new Vector3Int(0, i + yOffset, 0), 1.0f);
-                WallLayer.SetColor(coord + new Vector3Int(0, i + yOffset, 0), Color.red);    
+                wallLayer.Set(coord + new Vector3Int(0, i + yOffset, 0), 1.0f);
+                wallLayer.SetColor(coord + new Vector3Int(0, i + yOffset, 0), Color.red);    
             }
         }
     }

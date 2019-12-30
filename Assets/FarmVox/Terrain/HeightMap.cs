@@ -9,7 +9,7 @@ namespace FarmVox.Terrain
         
         public void LoadChunk(Terrian terrian, TerrianChunk terrianChunk)
         {
-            var chunk = terrian.DefaultLayer.GetChunk(terrianChunk.Origin);
+            var chunk = terrian.defaultLayer.GetChunk(terrianChunk.Origin);
 
             chunk.UpdateSurfaceCoords();
 
