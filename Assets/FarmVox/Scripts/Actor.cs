@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.AI;
 using Random = UnityEngine.Random;
 
 namespace FarmVox.Scripts
@@ -12,8 +11,6 @@ namespace FarmVox.Scripts
         public MeshRenderer meshRenderer;
         public MeshFilter meshFilter;
         public TextAsset spriteSheet;
-        public NavMeshAgent agent;
-        public Camera targetCamera;
 
         private ActorSpriteSheet _spriteSheet;
         private Texture2D _texture;
@@ -26,10 +23,6 @@ namespace FarmVox.Scripts
             _spriteSheet = ActorSpriteSheetLoader.Load(spriteSheet);
             _frameCount = Random.Range(0.0f, 1.0f);
             meshFilter.mesh = BuildQuad();
-            if (targetCamera == null)
-            {
-                targetCamera = Camera.main;
-            }
         }
 
         private void Update()
@@ -38,33 +31,6 @@ namespace FarmVox.Scripts
             var speed = _spriteSheet.IdleSpeed;
             
             ApplyFrame(textures, speed);
-
-            var right = Input.GetAxisRaw("Horizontal");
-            var forward = Input.GetAxisRaw("Vertical");
-
-            if (agent.isOnNavMesh)
-            {
-                if (Mathf.Abs(right) < Mathf.Epsilon && Mathf.Abs(forward) < Mathf.Epsilon)
-                {
-                    agent.isStopped = true;
-                    agent.ResetPath();
-                }
-                else
-                {
-                    agent.isStopped = false;
-                    var inVector = (transform.position - targetCamera.transform.position).normalized;
-                    var rightVector = Vector3.Cross(Vector3.up, inVector);
-                    var forwardVector = Vector3.Cross(rightVector, Vector3.up);
-
-                    var dir = rightVector * right + forwardVector * forward;
-
-                    var dest = agent.nextPosition + dir * 10;
-                    if (!agent.SetDestination(dest))
-                    {
-                        Debug.Log("Failed to set destination");
-                    }
-                }
-            }
         }
 
         private void ApplyFrame(string[] textures, float speed)

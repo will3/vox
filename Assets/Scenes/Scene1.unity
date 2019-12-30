@@ -148,7 +148,7 @@ MonoBehaviour:
     PlainHeight: 4
     WaterLevel: 0
     GroundHeight: 12
-    MaxChunksX: 1
+    MaxChunksX: 2
     AoStrength: 0.15
     ShadowStrength: 0.5
     TreeMinDis: 3
@@ -567,6 +567,7 @@ GameObject:
   - component: {fileID: 490495049}
   - component: {fileID: 490495051}
   - component: {fileID: 490495048}
+  - component: {fileID: 490495052}
   m_Layer: 0
   m_Name: Guy
   m_TagString: Untagged
@@ -589,8 +590,6 @@ MonoBehaviour:
   meshRenderer: {fileID: 490495050}
   meshFilter: {fileID: 490495049}
   spriteSheet: {fileID: 4900000, guid: 285a9e22ac4b147beb2afd8093ba2ba9, type: 3}
-  agent: {fileID: 490495048}
-  camera: {fileID: 0}
 --- !u!4 &490495047
 Transform:
   m_ObjectHideFlags: 0
@@ -684,6 +683,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 643c57e4806a4038bd3cbc5c4f4ea812, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  targetCamera: {fileID: 0}
+--- !u!114 &490495052
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 490495045}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5489513f7b244e6b71dd02e8045e9d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agent: {fileID: 490495048}
   targetCamera: {fileID: 0}
 --- !u!1 &534669902
 GameObject:
@@ -786,6 +799,7 @@ MonoBehaviour:
   distance: 300
   keysEnabled: 1
   orthographicSize: 50
+  playerControl: {fileID: 0}
 --- !u!1 &741202527
 GameObject:
   m_ObjectHideFlags: 0

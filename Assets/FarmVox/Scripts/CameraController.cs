@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace FarmVox.Scripts
@@ -10,6 +11,7 @@ namespace FarmVox.Scripts
         public float distance = 300;
         public bool keysEnabled = true;
         public float orthographicSize = 50;
+        public PlayerControl playerControl;
 
         private float _forward;
         private float _right;
@@ -29,12 +31,22 @@ namespace FarmVox.Scripts
             targetRotation.y += rotate * 90f;
         }
 
+        private void Start()
+        {
+            if (playerControl == null)
+            {
+                playerControl = FindObjectOfType<PlayerControl>();
+            }
+        }
+
         private void Update()
         {
             if (keysEnabled)
             {
                 UpdateKeys();
             }
+
+            target = playerControl.transform.position;
 
             rotation = Vector3.Lerp(rotation, targetRotation, 0.2f);
             var dir = Quaternion.Euler(rotation) * Vector3.forward;
