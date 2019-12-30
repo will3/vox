@@ -92,14 +92,6 @@ namespace FarmVox.Terrain
 
             var boundsInt = Config.BoundsInt;
 
-            defaultLayer.normalStrength = Config.NormalStrength;
-            defaultLayer.shadowStrength = Config.ShadowStrength;
-
-            treeLayer.normalStrength = Config.TreesNormalStrength;
-            treeLayer.shadowStrength = Config.ShadowStrength;
-            
-            waterLayer.shadowStrength = Config.ShadowStrength;
-
             _treeMap = new TreeMap(boundsInt);
 
             _chunksToDraw = new[] { defaultLayer, treeLayer, waterLayer, wallLayer };
@@ -313,4 +305,14 @@ namespace FarmVox.Terrain
             }
         }
     }
+
+//    [Serializable]
+//    public class WaterfallConfig
+//    {
+//        public float shadowStrength = 0.2f;
+//        public float speed = 2.0f;
+//        public float width = 10.0f;
+//        public float min = 0.9f;
+//        public float variance = 0.7f;
+//    }
 }

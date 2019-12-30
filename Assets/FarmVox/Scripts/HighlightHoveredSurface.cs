@@ -3,29 +3,41 @@ using FarmVox.Voxel;
 
 namespace FarmVox.Scripts
 {
+    [RequireComponent(typeof(MeshFilter))]
+    [RequireComponent(typeof(MeshRenderer))]
     public class HighlightHoveredSurface : MonoBehaviour
     {
-        public VoxelRaycastResult Result;
+        public VoxelRaycastResult result;
 
-        private GameObject _go;
+        public MeshFilter meshFilter;
+        public MeshRenderer meshRenderer;
+        
+        private Vector3Int _lastCoord;
+        private Mesh _mesh;
 
-        // Use this for initialization
-        private void Start()
-        {
-            _go = new GameObject("highlight");
-            _go.AddComponent<MeshFilter>();
-            _go.AddComponent<MeshRenderer>();
-        }
-
-        // Update is called once per frame
         private void Update()
         {
-            Result = VoxelRaycast.TraceMouse(1 << UserLayers.Terrian);
-            if (Result == null) return;
-            var mesh = Result.GetQuad();
-            var pos = Result.GetCoord();
-            _go.GetComponent<MeshFilter>().mesh = mesh;
-            _go.transform.position = pos + Result.Hit.normal * 0.1f;
+            result = VoxelRaycast.TraceMouse(1 << UserLayers.Terrian);
+            if (result == null)
+            {
+                return;
+            }
+
+            var coord = result.GetCoord();
+            if (_lastCoord == coord)
+            {
+                return;
+            }
+
+            if (_mesh != null)
+            {
+                Destroy(_mesh);
+            }
+
+            _mesh = result.GetQuad();
+            meshFilter.mesh = _mesh;
+            transform.position = coord + result.Hit.normal * 0.1f;
+            _lastCoord = coord;
         }
     }
 }

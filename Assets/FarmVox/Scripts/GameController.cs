@@ -12,8 +12,6 @@ namespace FarmVox.Scripts
 	public class GameController : MonoBehaviour
 	{
 		public static GameController Instance;
-		
-		public bool drawRoutes = false;
 
 		private readonly WorkerQueue _queue = new WorkerQueue();
 
