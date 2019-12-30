@@ -123,7 +123,9 @@ namespace FarmVox.Voxel
             {
                 return meshFilter;
             }
-            return GetGameObject().AddComponent<MeshFilter>();
+            meshFilter = GetGameObject().AddComponent<MeshFilter>();
+            _gameObject.AddComponent<NavMeshSourceTag>();
+            return meshFilter;
         }
 
         public MeshCollider GetMeshCollider() {

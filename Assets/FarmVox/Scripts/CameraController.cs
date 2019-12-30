@@ -18,11 +18,6 @@ namespace FarmVox.Scripts
         private Vector3 _lastLeftDragPosition;
         private bool _leftDragging;
 
-        public Vector3 GetVector()
-        {
-            return (target - transform.position).normalized;
-        }
-
         private float _rotate;
 
         private void UpdateKeys()
