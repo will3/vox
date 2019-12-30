@@ -28,8 +28,8 @@ function readChunk(childChunk, voxels, colors, size) {
 		case Vox.ChunkType.SIZE:
 			const chunkSize = childChunk.chunkContent;
 			size[0] = chunkSize.sizeX;
-			size[1] = chunkSize.sizeY;
-			size[2] = chunkSize.sizeZ;
+			size[1] = chunkSize.sizeZ;
+			size[2] = chunkSize.sizeY;
 			break;
 		case Vox.ChunkType.MATT:
 			break;
@@ -40,10 +40,10 @@ function readChunk(childChunk, voxels, colors, size) {
 					throw new Error("Unexpected 0 color index");
 				}
 				voxels.push({
-					X: voxel.x, 
-					Z: voxel.y, 
-					Y: voxel.z, 
-					ColorIndex: voxel.colorIndex - 1
+					x: voxel.x, 
+					z: voxel.y, 
+					y: voxel.z, 
+					colorIndex: voxel.colorIndex - 1
 				});
 			}
 			break;
@@ -76,7 +76,7 @@ function readModel(name) {
 		readChunk(childChunk, voxels, colors, size);
 	}
 
-	var output = { Voxels: voxels, Palette: colors, Size: size };
+	var output = { voxels: voxels, palette: colors, size };
 
 	const outputPath = path.join(outPath, name) + '.json';
 	fs.writeFileSync(outputPath, JSON.stringify(output));

@@ -3,19 +3,20 @@ using UnityEngine;
 
 namespace FarmVox.Models
 {
+    [Serializable]
     public class Model
     {
         [Serializable]
         public class Voxel
         {
-            public int X;
-            public int Y;
-            public int Z;
-            public int ColorIndex;
+            public int x;
+            public int y;
+            public int z;
+            public int colorIndex;
         }
         
-        public Color[] Palette;
-        public Voxel[] Voxels;
-        public int[] Size;
+        public Color[] palette;
+        public Voxel[] voxels;
+        public int[] size;
     }
 }

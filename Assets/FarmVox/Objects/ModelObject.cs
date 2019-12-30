@@ -12,15 +12,15 @@ namespace FarmVox.Objects
         public ModelObject(Model model)
         {
             _model = model;
-            foreach (var voxel in _model.Voxels)
+            foreach (var voxel in _model.voxels)
             {
-                _map[new Vector3Int(voxel.X, voxel.Y, voxel.Z)] = voxel;
+                _map[new Vector3Int(voxel.x, voxel.y, voxel.z)] = voxel;
             }
         }
 
         public Vector3Int GetSize()
         {
-            var size = _model.Size;
+            var size = _model.size;
             return new Vector3Int(size[0], size[1], size[2]);
         }
 
@@ -31,7 +31,7 @@ namespace FarmVox.Objects
 
         public Color GetColor(Vector3Int coord)
         {
-            return _map.TryGetValue(coord, out var voxel) ? _model.Palette[voxel.ColorIndex] : default;
+            return _map.TryGetValue(coord, out var voxel) ? _model.palette[voxel.colorIndex] : default;
         }
     }
 }

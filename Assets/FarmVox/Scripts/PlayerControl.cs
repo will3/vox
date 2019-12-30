@@ -32,11 +32,21 @@ namespace FarmVox.Scripts
             }
         }
 
+        private Vector3Int GetBuildingGrid()
+        {
+            var coord = GetCoord();
+            return
+                new Vector3Int(
+                    Mathf.FloorToInt(coord.x / 6.0f) * 6,
+                    coord.y,
+                    Mathf.FloorToInt(coord.z / 6.0f) * 6);
+        }
+
         private void PlaceBuilding(TextAsset asset)
         {
             var model = ModelLoader.Load(asset);
             var modelObject = new ModelObject(model);
-            var coord = GetCoord();
+            var coord = GetBuildingGrid();
 
             ObjectPlacer.Place(walls.GetComponent<Chunks>(), modelObject, coord, Time.frameCount % 4);
         }
