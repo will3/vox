@@ -694,20 +694,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d0a2114e5d4245bbb819c8a479f50cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Target: {x: 0, y: 32, z: 0}
-  ZoomRate: 1.1
-  MouseRotateSpeed: 0.2
-  MouseMoveSpeed: 0.5
-  Rotation: {x: 45, y: 45, z: 0}
-  Distance: 300
-  InputEnabled: 1
-  KeysEnabled: 0
-  OrthographicSize: 50
-  Speed: 20
-  RotateSpeed: 80
-  Velocity: {x: 0, y: 0, z: 0}
-  Friction: 0.001
-  RotateX: 45
+  target: {x: 0, y: 32, z: 0}
+  zoomRate: 1.1
+  mouseRotateSpeed: 0.2
+  mouseMoveSpeed: 1
+  rotation: {x: 45, y: 45, z: 0}
+  distance: 300
+  inputEnabled: 1
+  keysEnabled: 1
+  orthographicSize: 50
+  speed: 20
+  rotateSpeed: 80
+  velocity: {x: 0, y: 0, z: 0}
+  friction: 0.001
+  rotateX: 45
 --- !u!1 &741202527
 GameObject:
   m_ObjectHideFlags: 0
