@@ -63,11 +63,7 @@ namespace FarmVox.Scripts
 
             var dir = rightVector * right + forwardVector * forward;
 
-            var next = agent.nextPosition + dir * moveSeekDistance;
-            if (NavMesh.SamplePosition(next, out var hit, moveSeekRadius, NavMesh.AllAreas))
-            {
-                agent.SetDestination(hit.position);
-            }
+            agent.Move(dir * agent.speed * Time.deltaTime);
         }
     }
 }
