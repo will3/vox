@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace FarmVox.GPU.Shaders
 {
     public class MesherGpu : IDisposable
     {
-        public struct Triangle
+        public struct Quad
         {
             public Vector3 A;
             
@@ -70,7 +71,7 @@ namespace FarmVox.GPU.Shaders
             _shader = Resources.Load<ComputeShader>("Shaders/Mesher");
 
             _trianglesBuffer =
-                new ComputeBuffer(_size * _size * _size, Triangle.Size, ComputeBufferType.Append);
+                new ComputeBuffer(_size * _size * _size, Quad.Size, ComputeBufferType.Append);
             _voxelBuffer = new ComputeBuffer(_size * _size * _size, sizeof(float));
             _colorsBuffer = new ComputeBuffer(_size * _size * _size, sizeof(float) * 4);
         }
@@ -95,9 +96,9 @@ namespace FarmVox.GPU.Shaders
                 Mathf.CeilToInt(_size / (float) _workGroups[2]));
         }
 
-        public Triangle[] ReadTriangles() {
+        public IEnumerable<Quad> ReadTriangles() {
             var count = AppendBufferCounter.Count(_trianglesBuffer);
-            var triangles = new Triangle[count];
+            var triangles = new Quad[count];
 
             _trianglesBuffer.GetData(triangles);
 
