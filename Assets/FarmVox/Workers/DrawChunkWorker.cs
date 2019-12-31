@@ -1,5 +1,4 @@
-﻿using System.Security.Permissions;
-using FarmVox.GPU.Shaders;
+﻿using FarmVox.GPU.Shaders;
 using FarmVox.Terrain;
 using FarmVox.Threading;
 using FarmVox.Voxel;
@@ -35,13 +34,13 @@ namespace FarmVox.Workers
             }
 
             _chunk.Mesh = MeshGpu(_chunk);
-            _chunk.GetMeshRenderer().material = _chunk.Material;
-            _chunk.GetMeshFilter().sharedMesh = _chunk.Mesh;
-            _chunk.GetMeshCollider().sharedMesh = _chunk.Mesh;
+            _chunk.meshRenderer.material = _chunk.Material;
+            _chunk.meshFilter.sharedMesh = _chunk.Mesh;
+            _chunk.meshCollider.sharedMesh = _chunk.Mesh;
 
             _chunk.Dirty = false;
 
-            _shadowMap.ChunkDrawn(_chunk.Origin);
+            _shadowMap.ChunkDrawn(_chunk.origin);
         }
 
         private Mesh MeshGpu(Chunk chunk)

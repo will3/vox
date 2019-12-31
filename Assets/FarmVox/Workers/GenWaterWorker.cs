@@ -24,12 +24,12 @@ namespace FarmVox.Workers
             var origin = _terrianChunk.Origin;
             var chunk = _defaultLayer.GetChunk(origin);
             var waterChunk = _waterLayer.GetOrCreateChunk(_terrianChunk.Origin);
-            if (chunk.Origin.y < _config.ActualWaterLevel)
+            if (chunk.origin.y < _config.ActualWaterLevel)
             {
-                float maxJ = _config.WaterLevel + _config.GroundHeight - chunk.Origin.y;
-                if (maxJ > chunk.Size)
+                float maxJ = _config.WaterLevel + _config.GroundHeight - chunk.origin.y;
+                if (maxJ > chunk.size)
                 {
-                    maxJ = chunk.Size;
+                    maxJ = chunk.size;
                 }
                 for (var i = 0; i < chunk.DataSize; i++)
                 {

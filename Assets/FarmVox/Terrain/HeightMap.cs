@@ -17,7 +17,7 @@ namespace FarmVox.Terrain
             
             foreach (var coord in chunk.SurfaceCoordsUp)
             {
-                var worldCoord = coord + chunk.Origin;
+                var worldCoord = coord + chunk.origin;
                 var tile = GetOrCreateTile(worldCoord);
 
                 tile.AddCoord(worldCoord);

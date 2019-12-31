@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,6 +11,7 @@ namespace FarmVox.Voxel
         public float normalStrength = 0.4f;
         public float shadowStrength = 0.5f;
         public bool transparent;
+        public GameObject chunkPrefab;
 
         private Dictionary<Vector3Int, Chunk> _map;
 
@@ -68,8 +68,18 @@ namespace FarmVox.Voxel
                 return Map[origin];
             }
 
-            Map[origin] = new Chunk(size, origin) {Chunks = this};
-            return Map[origin];
+            var chunkGo = Instantiate(chunkPrefab, transform);
+
+            chunkGo.name = "Chunk" + origin;
+            chunkGo.transform.localPosition = origin;
+            chunkGo.layer = gameObject.layer;
+            var chunk = chunkGo.GetComponent<Chunk>();
+            chunk.Chunks = this;
+            chunk.origin = origin;
+            
+            Map[origin] = chunk;
+
+            return chunk;
         }
 
         public Chunk GetChunk(Vector3Int origin)
@@ -153,14 +163,6 @@ namespace FarmVox.Voxel
 
         public void SetColor(Vector3Int coord, Color v) {
             SetColor(coord.x, coord.y, coord.z, v);
-        }
-
-        public void OnDestroy()
-        {
-            foreach (var chunk in Map.Values)
-            {
-                chunk.Dispose();
-            }
         }
     }
 }

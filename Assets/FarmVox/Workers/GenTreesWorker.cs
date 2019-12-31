@@ -50,7 +50,7 @@ namespace FarmVox.Workers
                 var j = localCoord.y;
                 var k = localCoord.z;
 
-                var globalCoord = localCoord + chunk.Origin;
+                var globalCoord = localCoord + chunk.origin;
                 var noise = (float)treeNoise.GetValue(globalCoord);
                 var treeDensity = treeConfig.TreeDensityFilter.GetValue(noise);
 
@@ -59,7 +59,7 @@ namespace FarmVox.Workers
                     continue;
                 }
 
-                var relY = j + chunk.Origin.y - _config.GroundHeight;
+                var relY = j + chunk.origin.y - _config.GroundHeight;
 
                 if (relY <= _config.WaterLevel) {
                     continue;

@@ -26,6 +26,7 @@ namespace FarmVox.Terrain
         public Chunks treeLayer;
         public Chunks waterLayer;
         public Chunks wallLayer;
+        public VoxelShadowMap shadowMap;
 
         public RouteChunks Routes { get; private set; }
 
@@ -38,8 +39,6 @@ namespace FarmVox.Terrain
         private Chunks[] _chunksToDraw;
 
         private TreeMap _treeMap;
-
-        private VoxelShadowMap _shadowMap;
 
         public HeightMap HeightMap;
 
@@ -96,8 +95,6 @@ namespace FarmVox.Terrain
 
             _chunksToDraw = new[] { defaultLayer, treeLayer, waterLayer, wallLayer };
 
-            _shadowMap = new VoxelShadowMap(size);
-
             HeightMap = new HeightMap();
 
             if (Instance == null)
@@ -148,7 +145,6 @@ namespace FarmVox.Terrain
 
         private IEnumerator UpdateMeshesLoop() {
             while (true) {
-                _shadowMap.Update();
                 foreach (var column in _columnList)
                 {
                     foreach (var chunks in _chunksToDraw)
@@ -160,15 +156,13 @@ namespace FarmVox.Terrain
                             {
                                 continue;
                             }
-                            
-                            UpdateMaterial(chunk);
 
                             if (!chunk.Dirty)
                             {
                                 continue;
                             }
                             
-                            var worker = new DrawChunkWorker(Config, _shadowMap, chunk, terrianChunk);    
+                            var worker = new DrawChunkWorker(Config, shadowMap, chunk, terrianChunk);    
                             worker.Start();
                         }
                     }
@@ -176,24 +170,6 @@ namespace FarmVox.Terrain
                     yield return null;
                 }
             }            
-        }
-
-        private void UpdateMaterial(Chunk chunk) {
-            var material = chunk.Material;
-
-            var origin = chunk.Origin;
-            material.SetVector("_Origin", (Vector3)origin);
-            material.SetInt("_Size", Size);
-
-            material.SetFloat("_WaterfallShadowStrength", Config.WaterfallShadowStrength);
-            material.SetFloat("_WaterfallSpeed", Config.WaterfallSpeed);
-            material.SetFloat("_WaterfallWidth", Config.WaterfallWidth);
-            material.SetFloat("_WaterfallMin", Config.WaterfallMin);
-            material.SetFloat("_WaterfallVariance", Config.WaterfallVariance);
-
-            var shadowStrength = chunk.Chunks.shadowStrength;
-            
-            _shadowMap.UpdateMaterial(material, origin, shadowStrength);
         }
 
         private TerrianChunk GetTerrianChunk(Vector3Int origin) {
@@ -250,11 +226,6 @@ namespace FarmVox.Terrain
 
         private void OnDestroy()
         {
-            if (_shadowMap != null)
-            {
-                _shadowMap.Dispose();    
-            }
-            
             foreach (var tc in _map.Values) {
                 tc.Dispose();
             }
@@ -305,14 +276,4 @@ namespace FarmVox.Terrain
             }
         }
     }
-
-//    [Serializable]
-//    public class WaterfallConfig
-//    {
-//        public float shadowStrength = 0.2f;
-//        public float speed = 2.0f;
-//        public float width = 10.0f;
-//        public float min = 0.9f;
-//        public float variance = 0.7f;
-//    }
 }

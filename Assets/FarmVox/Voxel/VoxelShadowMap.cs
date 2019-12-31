@@ -3,78 +3,120 @@ using UnityEngine;
 
 namespace FarmVox.Voxel
 {
-    public class VoxelShadowMap
+    public class VoxelShadowMap : MonoBehaviour
     {
-        private enum ShadowMapState {
+        private enum ShadowMapState
+        {
             Pending,
-            Ready,
-            Drawn
+            Ready
         }
 
-        public int DataSize { get; private set; }
+        public int size = 32;
+        public int lightY = 100;
+        public int minY = -100;
+        public Chunks[] chunksToNotify;
+        public int maxChunksY = 4;
 
-        public int Size { get; private set; }
+        public int DataSize => size + 1;
+        private Dictionary<Vector2Int, ShadowMapState> _states;
+        private Dictionary<Vector2Int, ComputeBuffer> _buffers;
 
-        public VoxelShadowMap(int size)
+        private void Start()
         {
-            Size = size;
-            DataSize = size + 1;
+            _states = new Dictionary<Vector2Int, ShadowMapState>();
+            _buffers = new Dictionary<Vector2Int, ComputeBuffer>();
         }
 
-        readonly Dictionary<Vector2Int, ShadowMapState> _states = new Dictionary<Vector2Int, ShadowMapState>();
-        readonly Dictionary<Vector2Int, ComputeBuffer> _buffers = new Dictionary<Vector2Int, ComputeBuffer>();
-
-        private const int LightY = 100;
-        private const int MinY = -100;
-
-        private Vector2Int GetOrigin(Vector2Int coord)
-        {
-            return new Vector2Int(
-                Mathf.FloorToInt(coord.x / (float)Size),
-                Mathf.FloorToInt(coord.y / (float)Size)
-            ) * Size;
-        }
-
-        public void Update()
+        private void Update()
         {
             var keys = new Vector2Int[_states.Keys.Count];
             _states.Keys.CopyTo(keys, 0);
 
-            foreach (var origin in keys)
+            foreach (var key in keys)
             {
-                var state = GetState(origin);
+                var state = GetState(key);
                 if (state != ShadowMapState.Pending) continue;
-                Update(origin);
-                SetState(origin, ShadowMapState.Ready);
+                UpdateChunk(key);
+                var affectedOrigins = CalcAffectedOrigins(key);
+
+                foreach (var origin in affectedOrigins)
+                {
+                    foreach (var chunks in chunksToNotify)
+                    {
+                        var chunk = chunks.GetChunk(origin);
+                        if (chunk == null)
+                        {
+                            continue;
+                        }
+
+                        chunk.UpdateShadowBuffers(
+                            GetBuffer(origin, new Vector2Int(0, 0)),
+                            GetBuffer(origin, new Vector2Int(0, 1)),
+                            GetBuffer(origin, new Vector2Int(1, 0)),
+                            GetBuffer(origin, new Vector2Int(1, 1)));
+                    }    
+                }
+
+                SetState(key, ShadowMapState.Ready);
             }
         }
 
-        private void SetState(Vector2Int origin, ShadowMapState state) {
+        private void SetState(Vector2Int origin, ShadowMapState state)
+        {
             _states[origin] = state;
         }
 
-        private ShadowMapState GetState(Vector2Int origin) {
-            ShadowMapState state;
-            _states.TryGetValue(origin, out state);
-            return state;
+        private ShadowMapState GetState(Vector2Int origin)
+        {
+            return _states.TryGetValue(origin, out var state) ? state : ShadowMapState.Pending;
         }
 
         public void ChunkDrawn(Vector3Int origin)
         {
-            const int num = 2;
+            var origins = CalcAffectedKeys(origin);
+
+            foreach (var o in origins)
+            {
+                SetState(o, ShadowMapState.Pending);
+            }
+        }
+
+        private IEnumerable<Vector3Int> CalcAffectedOrigins(Vector2Int key)
+        {
+            for (var j = 0; j < maxChunksY; j++)
+            {
+                for (var i = 0; i < 2; i++)
+                {
+                    for (var k = 0; k < 2; k++)
+                    {
+                        var result = new Vector3Int(i + j, j, k + j) * size;
+                        result.x += key.x;
+                        result.z += key.y;
+                        yield return result;
+                    }
+                }
+            }           
+        }
+
+        private IEnumerable<Vector2Int> CalcAffectedKeys(Vector3Int origin)
+        {
             var from = new Vector2Int(origin.x - origin.y, origin.z - origin.y);
+            const int num = 2;
+            var list = new List<Vector2Int>();
 
             for (var i = 0; i < num; i++)
             {
                 for (var j = 0; j < num; j++)
                 {
-                    var uv = new Vector2Int(from.x - i * Size, from.y - j * Size);
-                    SetState(uv, ShadowMapState.Pending);
+                    var uv = new Vector2Int(from.x - i * size, from.y - j * size);
+                    list.Add(uv);
                 }
             }
+
+            return list;
         }
 
-        private void Update(Vector2Int origin)
+        private void UpdateChunk(Vector2Int origin)
         {
             PerformanceLogger.Push("Shadow Map");
             // Clear
@@ -98,14 +140,14 @@ namespace FarmVox.Voxel
             PerformanceLogger.Pop();
         }
 
-        private static int CalcShadow(Vector3Int coord)
+        private int CalcShadow(Vector3Int coord)
         {
-            var start = LiftVector(coord, LightY);
-            
+            var start = LiftVector(coord, lightY);
+
             var dir = new Vector3(-1, -1, -1).normalized;
             var ray = new Ray(start, dir);
-            RaycastHit hit;
-            return Physics.Raycast(ray, out hit) ? GetCoord(hit, dir).y : MinY;
+
+            return Physics.Raycast(ray, out var hit) ? GetCoord(hit, dir).y : minY;
         }
 
         private static Vector3Int LiftVector(Vector3Int coord, int height)
@@ -118,68 +160,38 @@ namespace FarmVox.Voxel
         {
             var point = hit.point + dir * 0.1f;
             return new Vector3Int(Mathf.FloorToInt(point.x),
-                                  Mathf.FloorToInt(point.y),
-                                  Mathf.FloorToInt(point.z));
+                Mathf.FloorToInt(point.y),
+                Mathf.FloorToInt(point.z));
         }
 
-        public void Dispose()
+        public void OnDestroy()
         {
             foreach (var buffer in _buffers.Values)
             {
                 buffer.Dispose();
             }
-            
-            if (_defaultBuffer != null)
-            {
-                _defaultBuffer.Dispose();
-            }
+
+            _defaultBuffer?.Dispose();
         }
 
         private static ComputeBuffer _defaultBuffer;
 
-        private ComputeBuffer GetDefaultBuffer()
+        public ComputeBuffer GetDefaultBuffer()
         {
             return _defaultBuffer ?? (_defaultBuffer = new ComputeBuffer(DataSize * DataSize, sizeof(int)));
         }
 
-        private ComputeBuffer GetBuffer(Vector3Int origin, Vector2Int offset)
+        public ComputeBuffer GetBuffer(Vector3Int origin, Vector2Int offset)
         {
             if (offset.x >= 2 || offset.y >= 2 || offset.x < 0 || offset.y < 0)
             {
                 throw new System.ArgumentException("offset must be within 0 - 2");
             }
+
             var y = origin.y;
-            var o = new Vector2Int(origin.x - y, origin.z - y) - offset * Size;
+            var o = new Vector2Int(origin.x - y, origin.z - y) - offset * size;
 
             return _buffers.ContainsKey(o) ? _buffers[o] : GetDefaultBuffer();
-        }
-
-        public int[] ReadShadowBuffer(ComputeBuffer buffer)
-        {
-            var data = new int[DataSize * DataSize];
-            buffer.GetData(data);
-            return data;
-        }
-
-        public void Rebuild() {
-            var keys = new Vector2Int[_states.Keys.Count];
-            _states.Keys.CopyTo(keys, 0);
-
-            foreach (var key in keys) {
-                _states[key] = ShadowMapState.Pending;
-            }
-
-            Update();
-        }
-
-        public void UpdateMaterial(Material material, Vector3Int origin, float shadowStrength)
-        {
-            material.SetBuffer("_ShadowMap00", GetBuffer(origin, new Vector2Int(0, 0)));
-            material.SetBuffer("_ShadowMap01", GetBuffer(origin, new Vector2Int(0, 1)));
-            material.SetBuffer("_ShadowMap10", GetBuffer(origin, new Vector2Int(1, 0)));
-            material.SetBuffer("_ShadowMap11", GetBuffer(origin, new Vector2Int(1, 1)));
-            material.SetInt("_ShadowMapSize", DataSize);
-            material.SetFloat("_ShadowStrength", shadowStrength);
         }
     }
 }

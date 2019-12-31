@@ -42,7 +42,7 @@ namespace FarmVox.Terrain.Routing
         public void LoadChunk([NotNull] Chunk chunk)
         {
             if (chunk == null) throw new ArgumentNullException("chunk");
-            var routeChunk = GetOrCreateChunk(chunk.Origin);
+            var routeChunk = GetOrCreateChunk(chunk.origin);
             routeChunk.LoadChunk(chunk);
         }
         

@@ -27,9 +27,9 @@ namespace FarmVox.Terrain.Routing
 
         public void LoadChunk(Chunk chunk)
         {
-            if (chunk.Origin != _origin)
+            if (chunk.origin != _origin)
             {
-                var message = string.Format("origin must match, expected {0}, but got {1}", _origin, chunk.Origin);
+                var message = string.Format("origin must match, expected {0}, but got {1}", _origin, chunk.origin);
                 throw new InvalidOperationException(message);    
             }
             
