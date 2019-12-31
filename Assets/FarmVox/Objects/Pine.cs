@@ -9,7 +9,7 @@ namespace FarmVox.Objects
     {
         private readonly float _r;
         private readonly float _h;
-        private readonly Vector3Int _offset;
+        private readonly Vector3Int _pivot;
         private readonly int _trunkHeight;
         
         public Pine(float r, float h, int trunkHeight)
@@ -19,10 +19,10 @@ namespace FarmVox.Objects
             _trunkHeight = trunkHeight;
 
             var radius = Mathf.CeilToInt(r);
-            _offset = new Vector3Int(-radius, 0, -radius);
+            _pivot = new Vector3Int(-radius, 0, -radius);
         }
 
-        public Tree Place(Chunks layer, Vector3Int position, TreeConfig config)
+        public Tree Place(Chunks layer, Vector3Int offset, TreeConfig config)
         {
             var radius = Mathf.CeilToInt(_r);
             var mid = radius + 1;
@@ -37,7 +37,7 @@ namespace FarmVox.Objects
                 {
                     for (var k = 0; k < width; k++)
                     {
-                        var coord = new Vector3Int(i, j, k) + position + _offset;
+                        var coord = new Vector3Int(i, j, k) + offset + _pivot;
                         if (j < _trunkHeight + 2 && i == mid && k == mid)
                         {
                             layer.Set(coord, 1);
@@ -62,7 +62,7 @@ namespace FarmVox.Objects
                 }
             }
 
-            var tree = new Tree(position);
+            var tree = new Tree(offset);
             return tree;
         }
     }

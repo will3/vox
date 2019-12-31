@@ -499,6 +499,7 @@ MonoBehaviour:
   waterLayer: {fileID: 1603196056}
   wallLayer: {fileID: 1223485162}
   shadowMap: {fileID: 108989303}
+  trees: {fileID: 1767922226}
 --- !u!4 &108989302
 Transform:
   m_ObjectHideFlags: 0
@@ -1113,6 +1114,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1767922224}
   - component: {fileID: 1767922225}
+  - component: {fileID: 1767922226}
   m_Layer: 10
   m_Name: Trees
   m_TagString: Untagged
@@ -1153,6 +1155,21 @@ MonoBehaviour:
   shadowStrength: 0.2
   transparent: 0
   chunkPrefab: {fileID: 7243905177124364530, guid: 8a77c3dcd2b9d4557aa70d485ff9442c,
+    type: 3}
+--- !u!114 &1767922226
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1767922223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4098663ec67a4d68a1aa933dca59689c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chunks: {fileID: 0}
+  treePrefab: {fileID: 1938742266042240935, guid: 71e8aed23ff004f169449469e00b718f,
     type: 3}
 --- !u!1 &1985934944
 GameObject:

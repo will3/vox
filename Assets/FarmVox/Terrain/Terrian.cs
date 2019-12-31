@@ -27,6 +27,7 @@ namespace FarmVox.Terrain
         public Chunks waterLayer;
         public Chunks wallLayer;
         public VoxelShadowMap shadowMap;
+        public Trees trees;
 
         public RouteChunks Routes { get; private set; }
 
@@ -37,8 +38,6 @@ namespace FarmVox.Terrain
         private readonly List<TerrianColumn> _columnList = new List<TerrianColumn>();
 
         private Chunks[] _chunksToDraw;
-
-        private TreeMap _treeMap;
 
         public HeightMap HeightMap;
 
@@ -89,10 +88,6 @@ namespace FarmVox.Terrain
             var size = Config.Size;
             _sizeF = size;
 
-            var boundsInt = Config.BoundsInt;
-
-            _treeMap = new TreeMap(boundsInt);
-
             _chunksToDraw = new[] { defaultLayer, treeLayer, waterLayer, wallLayer };
 
             HeightMap = new HeightMap();
@@ -125,12 +120,9 @@ namespace FarmVox.Terrain
             {
                 queue.Enqueue(new GenWaterWorker(chunk, defaultLayer, waterLayer, Config));
             });
-            
-            VisitChunks(chunk =>
-            {
-                queue.Enqueue(new GenTreesWorker(Config, chunk, defaultLayer, treeLayer, _treeMap));
-            });
-            
+
+            trees.GenerateTrees(this);
+
             VisitChunks(chunk =>
             {
                 queue.Enqueue(new GenWaterfallWorker(chunk, defaultLayer, Config, this));
@@ -232,9 +224,7 @@ namespace FarmVox.Terrain
             }
         }
 
-        private delegate void VisitChunk(TerrianChunk chunk);
-        
-        private void VisitChunks(VisitChunk visit)
+        public void VisitChunks(Action<TerrianChunk> visit)
         {
             foreach (var column in _columnList)
             {
