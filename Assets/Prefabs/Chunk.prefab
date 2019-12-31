@@ -108,6 +108,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   size: 32
   origin: {x: 0, y: 0, z: 0}
+  data: []
+  colors: []
   meshRenderer: {fileID: 7446087935828163646}
   meshFilter: {fileID: 6821821409969335156}
   meshCollider: {fileID: 1148501328769117203}
@@ -118,7 +120,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7243905177124364530}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6e038bf700cfa444fb16c6ef963be9f9, type: 3}
   m_Name: 

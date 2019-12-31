@@ -8,6 +8,7 @@ namespace FarmVox.Voxel
     [RequireComponent(typeof(MeshRenderer))]
     [RequireComponent(typeof(MeshFilter))]
     [RequireComponent(typeof(MeshCollider))]
+    [RequireComponent(typeof(NavMeshSourceTag))]
     public class Chunk : MonoBehaviour
     {
         public int size = 32;

@@ -11,6 +11,7 @@ namespace FarmVox.Voxel
         public float normalStrength = 0.4f;
         public float shadowStrength = 0.5f;
         public bool transparent;
+        public bool isWalkable;
         public GameObject chunkPrefab;
 
         private Dictionary<Vector3Int, Chunk> _map;
@@ -76,6 +77,11 @@ namespace FarmVox.Voxel
             var chunk = chunkGo.GetComponent<Chunk>();
             chunk.Chunks = this;
             chunk.origin = origin;
+
+            if (isWalkable)
+            {
+                chunkGo.GetComponent<NavMeshSourceTag>().enabled = true;
+            }
             
             Map[origin] = chunk;
 

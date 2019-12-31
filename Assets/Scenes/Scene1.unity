@@ -225,60 +225,6 @@ MonoBehaviour:
           m_NumColorKeys: 2
           m_NumAlphaKeys: 2
         Banding: 0
-      Tree:
-        TrunkColor: {r: 0.30980393, g: 0.2509804, b: 0.16470589, a: 1}
-        LeafColor: {r: 0.18431373, g: 0.31764707, b: 0.047058824, a: 1}
-        TreeHeightGradient:
-          Curve:
-            serializedVersion: 2
-            m_Curve:
-            - serializedVersion: 3
-              time: 0
-              value: 1
-              inSlope: -1
-              outSlope: -1
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0.33333334
-            - serializedVersion: 3
-              time: 1
-              value: 0
-              inSlope: -1
-              outSlope: -1
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0.33333334
-              outWeight: 0
-            m_PreInfinity: 2
-            m_PostInfinity: 2
-            m_RotationOrder: 4
-        TreeAmount: 2
-        TreeDensityFilter:
-          Curve:
-            serializedVersion: 2
-            m_Curve:
-            - serializedVersion: 3
-              time: -1
-              value: 0
-              inSlope: 0.5
-              outSlope: 0.5
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0.33333334
-            - serializedVersion: 3
-              time: 1
-              value: 1
-              inSlope: 0.5
-              outSlope: 0.5
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0.33333334
-              outWeight: 0
-            m_PreInfinity: 2
-            m_PostInfinity: 2
-            m_RotationOrder: 4
       HeightNoise:
         Frequency: 0.015
         Amplitude: 1
@@ -584,6 +530,7 @@ MonoBehaviour:
   normalStrength: 0.4
   shadowStrength: 0.5
   transparent: 0
+  isWalkable: 1
   chunkPrefab: {fileID: 7243905177124364530, guid: 8a77c3dcd2b9d4557aa70d485ff9442c,
     type: 3}
 --- !u!1 &362043726
@@ -774,7 +721,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   agent: {fileID: 490495048}
   targetCamera: {fileID: 0}
-  walls: {fileID: 1223485160}
+  walls: {fileID: 1223485163}
   sawmill: {fileID: 4900000, guid: e55e8866751c64896a1fbc5a5d1e0401, type: 3}
   house: {fileID: 4900000, guid: 43bba85ae24a041aca39ee5ff2208ace, type: 3}
 --- !u!1 &534669902
@@ -964,6 +911,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1223485161}
   - component: {fileID: 1223485162}
+  - component: {fileID: 1223485163}
   m_Layer: 11
   m_Name: Walls
   m_TagString: Untagged
@@ -1003,7 +951,23 @@ MonoBehaviour:
   normalStrength: 0.2
   shadowStrength: 0.2
   transparent: 0
+  isWalkable: 0
   chunkPrefab: {fileID: 7243905177124364530, guid: 8a77c3dcd2b9d4557aa70d485ff9442c,
+    type: 3}
+--- !u!114 &1223485163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1223485160}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 948db8535674462297b1a1d1a9c502d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chunks: {fileID: 1223485162}
+  structurePrefab: {fileID: 130463577449173113, guid: 3fd8efff5faaa4c1c985941c3f828b26,
     type: 3}
 --- !u!1 &1404610548
 GameObject:
@@ -1102,6 +1066,7 @@ MonoBehaviour:
   normalStrength: 0
   shadowStrength: 0.5
   transparent: 1
+  isWalkable: 1
   chunkPrefab: {fileID: 7243905177124364530, guid: 8a77c3dcd2b9d4557aa70d485ff9442c,
     type: 3}
 --- !u!1 &1767922223
@@ -1154,6 +1119,7 @@ MonoBehaviour:
   normalStrength: 0.2
   shadowStrength: 0.2
   transparent: 0
+  isWalkable: 0
   chunkPrefab: {fileID: 7243905177124364530, guid: 8a77c3dcd2b9d4557aa70d485ff9442c,
     type: 3}
 --- !u!114 &1767922226
@@ -1171,6 +1137,60 @@ MonoBehaviour:
   chunks: {fileID: 0}
   treePrefab: {fileID: 1938742266042240935, guid: 71e8aed23ff004f169449469e00b718f,
     type: 3}
+  config:
+    trunkColor: {r: 0.30980393, g: 0.2509804, b: 0.16470589, a: 1}
+    leafColor: {r: 0.18431373, g: 0.31764707, b: 0.047058824, a: 1}
+    heightGradient:
+      Curve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 1
+          inSlope: -1
+          outSlope: -1
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 1
+          value: 0
+          inSlope: -1
+          outSlope: -1
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+    densityFilter:
+      Curve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: -1
+          value: 0
+          inSlope: 0.5
+          outSlope: 0.5
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 0.5
+          outSlope: 0.5
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+    threshold: 0.4
 --- !u!1 &1985934944
 GameObject:
   m_ObjectHideFlags: 0
