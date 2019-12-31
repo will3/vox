@@ -41,7 +41,7 @@ namespace FarmVox.Objects
                         if (j < _trunkHeight + 2 && i == mid && k == mid)
                         {
                             layer.Set(coord, 1);
-                            layer.SetColor(coord, config.TrunkColor);
+                            layer.SetColor(coord, config.trunkColor);
                         } else if (j >= _trunkHeight) {
                             var diffI = Mathf.Abs(mid - i);
                             var diffK = Mathf.Abs(mid - k);
@@ -54,9 +54,9 @@ namespace FarmVox.Objects
                             }
 
                             if (!(density > 0)) continue;
-                            var value = density - (float)config.TreeRandom.NextDouble() * 1.0f;
+                            var value = density - (float)config.random.NextDouble() * 1.0f;
                             layer.Set(coord, value);
-                            layer.SetColor(coord, config.LeafColor);
+                            layer.SetColor(coord, config.leafColor);
                         }
                     }
                 }

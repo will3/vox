@@ -9,36 +9,34 @@ namespace FarmVox.Terrain
     [Serializable]
     public class TreeConfig
     {
-        public Color TrunkColor;
+        public Color trunkColor;
+        public Color leafColor;
         
-        public Color LeafColor;
-        
-        public Perlin TreeNoise;
-        public Random TreeRandom;
-        public ValueGradient TreeHeightGradient;
-        public float TreeAmount;
-        public ValueGradient TreeDensityFilter;
+        public Perlin noise;
+        public Random random;
+        public ValueGradient heightGradient;
+        public ValueGradient densityFilter;
+        public float threshold = 0.4f;
 
         public TreeConfig()
         {
-            TreeNoise = NoiseUtils.NextPerlin();
+            noise = NoiseUtils.NextPerlin();
 
-            TreeRandom = NoiseUtils.NextRandom();
-            TreeAmount = 2.0f;
-            
-            TreeNoise.Frequency = 0.05f;
-            TreeNoise.OctaveCount = 5;
+            random = NoiseUtils.NextRandom();
 
-            TreeHeightGradient = new ValueGradient(1, 0);
+            noise.Frequency = 0.005f;
+            noise.OctaveCount = 5;
 
-            TreeDensityFilter = new ValueGradient(new Dictionary<float, float>
+            heightGradient = new ValueGradient(1, 0);
+
+            densityFilter = new ValueGradient(new Dictionary<float, float>
             {
                 {-1, 0},
                 {1, 1}
             });
             
-            TrunkColor = ColorUtils.GetColor("#4f402a");
-            LeafColor = ColorUtils.GetColor("#2f510c");
+            trunkColor = ColorUtils.GetColor("#4f402a");
+            leafColor = ColorUtils.GetColor("#2f510c");
         }
     }
 }

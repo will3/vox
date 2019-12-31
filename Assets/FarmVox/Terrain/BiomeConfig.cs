@@ -17,8 +17,6 @@ namespace FarmVox.Terrain
         
         public ColorGradient GrassColor;
 
-        public TreeConfig Tree;
-        
         #region ground
         public Noise HeightNoise;
         public Noise RockNoise;
@@ -108,8 +106,6 @@ namespace FarmVox.Terrain
 
             RockColor = new ColorGradient(ColorUtils.GetColor("#654d1f"));
             GrassColor = new ColorGradient(ColorUtils.GetColor("#597420"));
-
-            Tree = new TreeConfig();
         }
     }
 }
