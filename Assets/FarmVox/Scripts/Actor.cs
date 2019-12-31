@@ -15,7 +15,7 @@ namespace FarmVox.Scripts
         public NavMeshAgent agent;
 
         public float speed = 15;
-        public float waterSpeedMultiplier = 0.2f;
+        public float waterSpeedMultiplier = 0.4f;
 
         private ActorSpriteSheet _spriteSheet;
         private Texture2D _texture;

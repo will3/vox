@@ -11,6 +11,9 @@ namespace FarmVox.Scripts
         public TextAsset sawmill;
         public TextAsset house;
 
+        public float moveSeekDistance = 10f;
+        public float moveSeekRadius = 10f;
+        
         private void Start()
         {
             if (targetCamera == null)
@@ -60,8 +63,8 @@ namespace FarmVox.Scripts
 
             var dir = rightVector * right + forwardVector * forward;
 
-            var next = agent.nextPosition + dir * 4;
-            if (NavMesh.SamplePosition(next, out var hit, 10, NavMesh.AllAreas))
+            var next = agent.nextPosition + dir * moveSeekDistance;
+            if (NavMesh.SamplePosition(next, out var hit, moveSeekRadius, NavMesh.AllAreas))
             {
                 agent.SetDestination(hit.position);
             }
