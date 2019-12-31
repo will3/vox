@@ -51,7 +51,7 @@ LightmapSettings:
     m_IndirectOutputScale: 1
     m_AlbedoBoost: 1
     m_EnvironmentLightingMode: 0
-    m_EnableBakedLightmaps: 1
+    m_EnableBakedLightmaps: 0
     m_EnableRealtimeLightmaps: 0
   m_LightmapEditorSettings:
     serializedVersion: 10
@@ -144,7 +144,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Config:
     Size: 32
-    MaxChunksY: 4
+    MaxChunksY: 2
     MaxHeight: 64
     PlainHeight: 4
     WaterLevel: 0
@@ -533,7 +533,7 @@ MonoBehaviour:
   - {fileID: 1767922225}
   - {fileID: 1223485162}
   - {fileID: 1603196056}
-  maxChunksY: 4
+  maxChunksY: 3
 --- !u!1 &316894771
 GameObject:
   m_ObjectHideFlags: 0

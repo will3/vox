@@ -57,8 +57,8 @@ namespace FarmVox.Workers
                 mesher.IsWater = chunks.isWater;
                 mesher.NormalStrength = chunk.Chunks.normalStrength;
                 
-                mesher.SetData(chunk.Data);
-                mesher.SetColors(chunk.Colors);
+                mesher.SetData(chunk.data);
+                mesher.SetColors(chunk.colors);
                 
                 mesher.Dispatch();
             

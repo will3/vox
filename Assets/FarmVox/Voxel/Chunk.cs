@@ -12,14 +12,14 @@ namespace FarmVox.Voxel
     {
         public int size = 32;
         public Vector3Int origin;
+        public float[] data;
+        public Color[] colors;
 
         public MeshRenderer meshRenderer;
         public MeshFilter meshFilter;
         public MeshCollider meshCollider;
 
         public int DataSize => size + 3;
-
-        public float[] Data { get; private set; }
 
         public Chunks Chunks { get; set; }
         public bool Dirty { get; set; }
@@ -30,8 +30,6 @@ namespace FarmVox.Voxel
         public readonly HashSet<Vector3Int> SurfaceCoords = new HashSet<Vector3Int>();
         public readonly HashSet<Vector3Int> SurfaceCoordsUp = new HashSet<Vector3Int>();
         public readonly Dictionary<Vector3Int, Vector3> Normals = new Dictionary<Vector3Int, Vector3>();
-
-        public Color[] Colors { get; private set; }
 
         private bool _surfaceCoordsDirty = true;
         private bool _normalsDirty = true;
@@ -122,15 +120,15 @@ namespace FarmVox.Voxel
             return _voxelDataBuffer;
         }
 
-        public void SetColors(Color[] colors)
+        public void SetColors(Color[] value)
         {
-            Colors = colors;
+            colors = value;
             Dirty = true;
         }
 
-        public void SetData(float[] data)
+        public void SetData(float[] value)
         {
-            Data = data;
+            data = value;
             Dirty = true;
             _surfaceCoordsDirty = true;
             _normalsDirty = true;
@@ -194,14 +192,14 @@ namespace FarmVox.Voxel
             }
 
             var index = GetIndex(i, j, k);
-            return Data[index];
+            return data[index];
         }
 
         public void Set(int i, int j, int k, float v)
         {
-            if (Data == null)
+            if (data == null || data.Length == 0)
             {
-                Data = new float[DataSize * DataSize * DataSize];
+                data = new float[DataSize * DataSize * DataSize];
             }
 
             if (i < 0 || i >= DataSize ||
@@ -212,7 +210,7 @@ namespace FarmVox.Voxel
             }
 
             var index = GetIndex(i, j, k);
-            Data[index] = v;
+            data[index] = v;
             Dirty = true;
             _surfaceCoordsDirty = true;
             _normalsDirty = true;
@@ -220,20 +218,20 @@ namespace FarmVox.Voxel
 
         public void SetColor(int i, int j, int k, Color v)
         {
-            if (Colors == null)
+            if (colors == null || colors.Length == 0)
             {
-                Colors = new Color[DataSize * DataSize * DataSize];
+                colors = new Color[DataSize * DataSize * DataSize];
             }
 
             var index = GetIndex(i, j, k);
-            Colors[index] = v;
+            colors[index] = v;
             Dirty = true;
         }
 
         public Color GetColor(int i, int j, int k)
         {
             var index = GetIndex(i, j, k);
-            return Colors[index];
+            return colors[index];
         }
 
         private int GetIndex(int i, int j, int k)
@@ -313,7 +311,8 @@ namespace FarmVox.Voxel
             Material.SetFloat(ShadowStrength, Chunks.shadowStrength);
         }
 
-        public void UpdateShadowBuffers(ComputeBuffer shadowMap00, ComputeBuffer shadowMap01, ComputeBuffer shadowMap10, ComputeBuffer shadowMap11)
+        public void UpdateShadowBuffers(ComputeBuffer shadowMap00, ComputeBuffer shadowMap01, ComputeBuffer shadowMap10,
+            ComputeBuffer shadowMap11)
         {
             Material.SetBuffer(ShadowMap00, shadowMap00);
             Material.SetBuffer(ShadowMap01, shadowMap01);
