@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6821821409969335156}
   - component: {fileID: 1148501328769117203}
   - component: {fileID: 2062953502646199916}
-  - component: {fileID: 1999096184341566347}
+  - component: {fileID: 7253562710433930508}
   m_Layer: 0
   m_Name: Chunk
   m_TagString: Untagged
@@ -113,7 +113,7 @@ MonoBehaviour:
   meshRenderer: {fileID: 7446087935828163646}
   meshFilter: {fileID: 6821821409969335156}
   meshCollider: {fileID: 1148501328769117203}
---- !u!114 &1999096184341566347
+--- !u!114 &7253562710433930508
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -122,6 +122,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7243905177124364530}
   m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e038bf700cfa444fb16c6ef963be9f9, type: 3}
+  m_Script: {fileID: 11500000, guid: 1eb368d1c83747a9a2b2b0af2cea79ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  area: 0
