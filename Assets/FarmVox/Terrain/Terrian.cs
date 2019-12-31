@@ -115,6 +115,7 @@ namespace FarmVox.Terrain
 
             var queue = GameController.Instance.Queue;
 
+            // TODO move gen to individual components
             VisitChunks(chunk =>
             {
                 queue.Enqueue(new GenGroundWorker(chunk, defaultLayer, Config));

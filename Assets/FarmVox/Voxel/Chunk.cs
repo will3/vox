@@ -309,10 +309,6 @@ namespace FarmVox.Voxel
             Material.SetBuffer(ShadowMap01, defaultBuffer);
             Material.SetBuffer(ShadowMap10, defaultBuffer);
             Material.SetBuffer(ShadowMap11, defaultBuffer);
-        }
-
-        private void Update()
-        {
             Material.SetInt(ShadowMapSize, _shadowMap.DataSize);
             Material.SetFloat(ShadowStrength, Chunks.shadowStrength);
         }
