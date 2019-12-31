@@ -1,5 +1,6 @@
-using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using Random = UnityEngine.Random;
 
 namespace FarmVox.Scripts
@@ -11,6 +12,10 @@ namespace FarmVox.Scripts
         public MeshRenderer meshRenderer;
         public MeshFilter meshFilter;
         public TextAsset spriteSheet;
+        public NavMeshAgent agent;
+
+        public float speed = 15;
+        public float waterSpeedMultiplier = 0.2f;
 
         private ActorSpriteSheet _spriteSheet;
         private Texture2D _texture;
@@ -23,17 +28,29 @@ namespace FarmVox.Scripts
             _spriteSheet = ActorSpriteSheetLoader.Load(spriteSheet);
             _frameCount = Random.Range(0.0f, 1.0f);
             meshFilter.mesh = BuildQuad();
+
+            agent.updatePosition = false;
         }
 
         private void Update()
         {
             var textures = _spriteSheet.Idle;
-            var speed = _spriteSheet.IdleSpeed;
-            
-            ApplyFrame(textures, speed);
+            ApplyFrame(textures, _spriteSheet.IdleSpeed);
+
+            transform.position = agent.nextPosition;
+
+            if (agent.enabled)
+            {
+                if (NavMesh.SamplePosition(agent.nextPosition, out var hit, 1f, NavMesh.AllAreas))
+                {
+                    var inWater = (hit.mask & 1 << 4) > 0;
+                    var speedMultiplier = inWater ? waterSpeedMultiplier : 1;
+                    agent.speed = speed * speedMultiplier;
+                }
+            }
         }
 
-        private void ApplyFrame(string[] textures, float speed)
+        private void ApplyFrame(IReadOnlyList<string> textures, float speed)
         {
             _frameCount += Time.deltaTime * speed;
             if (_frameCount > 1.0f)
@@ -42,7 +59,7 @@ namespace FarmVox.Scripts
                 _frameCount -= 1.0f;
                 
                 _frame += 1;
-                _frame %= textures.Length;
+                _frame %= textures.Count;
             }
 
             _texture = Textures.Load(textures[_frame]);

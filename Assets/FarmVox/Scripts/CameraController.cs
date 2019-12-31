@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace FarmVox.Scripts
@@ -12,7 +11,8 @@ namespace FarmVox.Scripts
         public bool keysEnabled = true;
         public float orthographicSize = 50;
         public PlayerControl playerControl;
-
+        public float playerPositionY = 20;
+        
         private float _forward;
         private float _right;
         private Vector3 _lastRightDragPosition;
@@ -46,7 +46,8 @@ namespace FarmVox.Scripts
                 UpdateKeys();
             }
 
-            target = playerControl.transform.position;
+            var playerPosition = playerControl.transform.position;
+            target = new Vector3(playerPosition.x, playerPositionY, playerPosition.z);
 
             rotation = Vector3.Lerp(rotation, targetRotation, 0.2f);
             var dir = Quaternion.Euler(rotation) * Vector3.forward;

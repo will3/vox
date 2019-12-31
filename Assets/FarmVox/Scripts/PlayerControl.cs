@@ -60,10 +60,10 @@ namespace FarmVox.Scripts
 
             var dir = rightVector * right + forwardVector * forward;
 
-            var dest = agent.nextPosition + dir * 10;
-            if (!agent.SetDestination(dest))
+            var next = agent.nextPosition + dir * 4;
+            if (NavMesh.SamplePosition(next, out var hit, 10, NavMesh.AllAreas))
             {
-                Debug.Log("Failed to set destination");
+                agent.SetDestination(hit.position);
             }
         }
     }
