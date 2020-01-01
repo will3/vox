@@ -5,23 +5,15 @@ using UnityEngine;
 
 namespace FarmVox.Scripts
 {
-    [RequireComponent(typeof(MeshFilter))]
-    [RequireComponent(typeof(MeshRenderer))]
     public class BuildingTileTracker : MonoBehaviour
     {
-        public Terrian terrian;
-
-        public int gridSize = 3;
-        public Actor actor;
-        public GameObject buildingTilePrefab;
         public float highlightDistance = 10.0f;
         public int searchRange = 3;
         public float maxOpacity = 0.2f;
         public float highlightPowCurve = 0.4f;
+        public BuildingTiles tiles;
 
         private Vector3Int _lastCoord;
-
-        private readonly QuadTree<BuildingTile> _tiles = new QuadTree<BuildingTile>(32);
 
         public BuildingTile CurrentBuildingTile { get; private set; }
 
@@ -70,7 +62,7 @@ namespace FarmVox.Scripts
 
         private Vector3Int GetCoord()
         {
-            var position = actor.transform.position;
+            var position = transform.position;
             return new Vector3Int(
                 Mathf.FloorToInt(position.x),
                 Mathf.FloorToInt(position.y),
@@ -79,7 +71,7 @@ namespace FarmVox.Scripts
 
         private void UpdateNearbyTiles(Vector3Int coord)
         {
-            CurrentBuildingTile = GetOrCreateBuildingTile(coord);
+            CurrentBuildingTile = tiles.GetOrCreateBuildingTile(coord);
 
             for (var i = -searchRange; i <= searchRange; i++)
             {
@@ -90,8 +82,8 @@ namespace FarmVox.Scripts
                         continue;
                     }
 
-                    var next = coord + new Vector3Int(i, 0, k) * gridSize;
-                    GetOrCreateBuildingTile(next);
+                    var next = coord + new Vector3Int(i, 0, k) * tiles.gridSize;
+                    tiles.GetOrCreateBuildingTile(next);
                 }
             }
         }
@@ -101,9 +93,9 @@ namespace FarmVox.Scripts
             var center = coord + new Vector3(0.5f, 0.5f, 0.5f);
             var size = new Vector3(20, 8, 20);
             var bounds = new Bounds(center, size);
-            var tiles = _tiles.Search(bounds);
+            var ts = tiles.Search(bounds);
 
-            foreach (var tile in tiles)
+            foreach (var tile in ts)
             {
                 var distance = (center - tile.bounds.center).magnitude;
                 var r = Mathf.Clamp01(1 - distance / highlightDistance);
@@ -111,109 +103,6 @@ namespace FarmVox.Scripts
                 var amount = r * maxOpacity;
                 tile.SetHighlightAmount(amount);
             }
-        }
-
-        private BuildingTile GetOrCreateBuildingTile(Vector3Int coord)
-        {
-            var coords = CalcBuildingTile(coord).ToArray();
-
-            if (!coords.Any())
-            {
-                return null;
-            }
-
-            var bounds = BoundsHelper.CalcBounds(coords);
-
-            var tile = _tiles.Search(bounds).FirstOrDefault();
-            if (tile != null)
-            {
-                return tile;
-            }
-
-            var tileGo = Instantiate(buildingTilePrefab, transform);
-            tile = tileGo.GetComponent<BuildingTile>();
-            // TODO maybe pass ground data in
-            var mesher = tileGo.GetComponent<BuildingTileMesher>();
-            mesher.terrian = terrian;
-            tile.coords = coords;
-            tile.bounds = bounds;
-
-            _tiles.Add(bounds, tile);
-
-            return tile;
-        }
-
-        private Vector2Int GetGridXZ(Vector3Int coord)
-        {
-            var startX = Mathf.FloorToInt(coord.x / (float) gridSize) * gridSize;
-            var startZ = Mathf.FloorToInt(coord.z / (float) gridSize) * gridSize;
-            return new Vector2Int(startX, startZ);
-        }
-
-        private IEnumerable<Vector3Int> CalcBuildingTile(Vector3Int coord)
-        {
-            var xz = GetGridXZ(coord);
-            var fromY = coord.y;
-
-            var tiles = new HashSet<Vector3Int>();
-
-            for (var i = 0; i < gridSize; i++)
-            {
-                for (var k = 0; k < gridSize; k++)
-                {
-                    var c = new Vector3Int(xz.x + i, fromY, xz.y + k);
-                    var result = SearchUp(c, 10) ??
-                                 SearchDown(c, 10);
-
-                    if (result == null)
-                    {
-                        continue;
-                    }
-
-                    tiles.Add(result.Value);
-                }
-            }
-
-            return tiles;
-        }
-
-        private Vector3Int? SearchDown(Vector3Int coord, int searchDistance)
-        {
-            for (var i = 0; i < searchDistance; i++)
-            {
-                var next = coord + Vector3Int.down * i;
-                var hasGround = terrian.IsGround(next);
-
-                if (hasGround)
-                {
-                    return next;
-                }
-            }
-
-            return null;
-        }
-
-        private Vector3Int? SearchUp(Vector3Int coord, int searchDistance)
-        {
-            for (var i = 0; i < searchDistance; i++)
-            {
-                var next = coord + Vector3Int.up * i;
-                var hasGround = terrian.IsGround(next);
-
-                if (i == 0 && !hasGround)
-                {
-                    return null;
-                }
-
-                if (hasGround)
-                {
-                    continue;
-                }
-
-                return next + Vector3Int.down;
-            }
-
-            return null;
         }
     }
 }
