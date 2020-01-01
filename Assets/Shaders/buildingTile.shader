@@ -4,7 +4,7 @@
     {
         _Color ("Color", Color) = (1,1,1,1)
         _Gap ("Gap", Float) = 0.4
-        _GridSize ("GridSize", Float) = 3
+        _GridSize ("GridSize", Float) = 3.0
     }
     SubShader
     {
@@ -50,8 +50,14 @@
             {
                 float x = i.worldPos.x;
                 float z = i.worldPos.z;
-                if (abs(floor(x / _GridSize) * _GridSize - x) < _Gap ||
-                    abs(floor(z / _GridSize) * _GridSize - z) < _Gap) {
+                float g = _Gap / 2.0;
+                
+                float gx = floor(x / _GridSize) * _GridSize;
+                float gz = floor(z / _GridSize) * _GridSize;
+                float xdis = abs(x - gx);
+                float zdis = abs(z - gz); 
+                if (xdis < g || xdis > _GridSize - g ||
+                    zdis < g || zdis > _GridSize - g) {
                     discard;
                 }
 

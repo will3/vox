@@ -720,6 +720,8 @@ MonoBehaviour:
   targetCamera: {fileID: 0}
   walls: {fileID: 1223485163}
   buildingTileTracker: {fileID: 490495054}
+  tiles: {fileID: 1556930457}
+  buildingHighlightAmount: 0.6
 --- !u!114 &490495053
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -746,10 +748,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf7bf035c3cdc45b0affaab691c15b57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  highlightDistance: 10
-  searchRange: 3
+  searchNumGrids: 3
+  highlightSearchDistance: 20
+  highlightDistance: 6
   maxOpacity: 0.2
   highlightPowCurve: 0.4
+  shouldHighlightCurrentTile: 0
+  currentTileHighlightAmount: 0.8
   tiles: {fileID: 1556930457}
 --- !u!1 &534669902
 GameObject:

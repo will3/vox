@@ -7,15 +7,19 @@ namespace FarmVox.Scripts
 {
     public class BuildingTileTracker : MonoBehaviour
     {
+        public int searchNumGrids = 3;
+        public float highlightSearchDistance = 20.0f;
         public float highlightDistance = 10.0f;
-        public int searchRange = 3;
         public float maxOpacity = 0.2f;
         public float highlightPowCurve = 0.4f;
+        public bool shouldHighlightCurrentTile = false;
+        public float currentTileHighlightAmount = 0.8f;
+
         public BuildingTiles tiles;
 
         private Vector3Int _lastCoord;
 
-        public BuildingTile CurrentBuildingTile { get; private set; }
+        public BuildingTile CurrentTile { get; private set; }
 
         private void Update()
         {
@@ -69,35 +73,42 @@ namespace FarmVox.Scripts
                 Mathf.FloorToInt(position.z));
         }
 
-        private void UpdateNearbyTiles(Vector3Int coord)
+        private void UpdateNearbyTiles(Vector3 coord)
         {
-            CurrentBuildingTile = tiles.GetOrCreateBuildingTile(coord);
+            CurrentTile = tiles.GetOrCreateBuildingTile(coord);
 
-            for (var i = -searchRange; i <= searchRange; i++)
+            if (CurrentTile == null)
             {
-                for (var k = -searchRange; k <= searchRange; k++)
+                return;
+            }
+
+            for (var i = -searchNumGrids; i <= searchNumGrids; i++)
+            {
+                for (var k = -searchNumGrids; k <= searchNumGrids; k++)
                 {
                     if (i == 0 && k == 0)
                     {
                         continue;
                     }
 
-                    var next = coord + new Vector3Int(i, 0, k) * tiles.gridSize;
-                    tiles.GetOrCreateBuildingTile(next);
+                    tiles.GetOrCreateBuildingTile(CurrentTile, i, k);
                 }
             }
         }
 
-        private void HighlightNearbyTiles(Vector3Int coord)
+        private void HighlightNearbyTiles(Vector3 coord)
         {
-            var center = coord + new Vector3(0.5f, 0.5f, 0.5f);
-            var size = new Vector3(20, 8, 20);
-            var bounds = new Bounds(center, size);
-            var ts = tiles.Search(bounds);
+            var ts = tiles.Search(coord, highlightSearchDistance);
 
             foreach (var tile in ts)
             {
-                var distance = (center - tile.bounds.center).magnitude;
+                if (shouldHighlightCurrentTile && tile == CurrentTile)
+                {
+                    tile.SetHighlightAmount(currentTileHighlightAmount);
+                    continue;
+                }
+
+                var distance = tile.CalcDistance(coord);
                 var r = Mathf.Clamp01(1 - distance / highlightDistance);
                 r = Mathf.Pow(r, highlightPowCurve);
                 var amount = r * maxOpacity;

@@ -28,6 +28,11 @@ namespace FarmVox.Voxel
                 Mathf.FloorToInt(vector.x),
                 Mathf.FloorToInt(vector.y),
                 Mathf.FloorToInt(vector.z));
-        } 
+        }
+
+        public static Vector2 GetXz(this Vector3 vector)
+        {
+            return new Vector2(vector.x, vector.z);
+        }
     }
 }

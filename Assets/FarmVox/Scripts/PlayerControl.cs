@@ -9,6 +9,8 @@ namespace FarmVox.Scripts
         public Camera targetCamera;
         public Walls walls;
         public BuildingTileTracker buildingTileTracker;
+        public BuildingTiles tiles;
+        public float buildingHighlightAmount = 0.6f;
 
         private void Start()
         {
@@ -23,25 +25,32 @@ namespace FarmVox.Scripts
         private void Update()
         {
             UpdateMovement();
-            
+
             transform.position = agent.nextPosition;
 
-            var buildingTile = buildingTileTracker.CurrentBuildingTile;
-            if (Input.GetKeyDown(KeyCode.Space) && buildingTile != null)
+            var buildingTile = buildingTileTracker.CurrentTile;
+            if (buildingTile != null)
             {
-                var structureType = StructureType.House;
-
-                if (walls.CanPlaceBuilding(buildingTile, structureType))
+                if (Input.GetKey(KeyCode.Space))
                 {
-                    walls.PlaceBuilding(buildingTile, structureType);
+                    if (tiles.TryFind2By2(transform.position, 0, out var ts))
+                    {
+                        foreach (var t in ts)
+                        {
+                            t.SetHighlightAmount(buildingHighlightAmount);
+                        }
+                    }
+                }
+
+                if (Input.GetKeyUp(KeyCode.Space))
+                {
+                    var structureType = StructureType.House;
+                    if (tiles.TryFind2By2(transform.position, 0, out var ts))
+                    {
+                        walls.TryPlaceBuilding(ts, structureType);
+                    }
                 }
             }
-        }
-
-        private Vector3Int GetCoord()
-        {
-            var position = transform.position;
-            return new Vector3Int((int) position.x, (int) position.y, (int) position.z);
         }
 
         private void UpdateMovement()
