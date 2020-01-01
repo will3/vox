@@ -5,14 +5,14 @@ using Tree = FarmVox.Terrain.Tree;
 
 namespace FarmVox.Objects
 {
-    public class Pine
+    public class PineObject
     {
         private readonly float _r;
         private readonly float _h;
         private readonly Vector3Int _pivot;
         private readonly int _trunkHeight;
         
-        public Pine(float r, float h, int trunkHeight)
+        public PineObject(float r, float h, int trunkHeight)
         {
             _r = r;
             _h = h;

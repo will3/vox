@@ -16,27 +16,30 @@ namespace FarmVox.Voxel
         public GameObject chunkPrefab;
 
         private Dictionary<Vector3Int, Chunk> _map;
+        private GameObject _root;
 
         private Dictionary<Vector3Int, Chunk> Map => _map ?? (_map = new Dictionary<Vector3Int, Chunk>());
 
-        private Vector3Int GetKey(int i, int j, int k) {
+        private Vector3Int GetKey(int i, int j, int k)
+        {
             return new Vector3Int(
-                Mathf.FloorToInt(i / (float)size),
-                Mathf.FloorToInt(j / (float)size),
-                Mathf.FloorToInt(k / (float)size)
+                Mathf.FloorToInt(i / (float) size),
+                Mathf.FloorToInt(j / (float) size),
+                Mathf.FloorToInt(k / (float) size)
             );
         }
 
         private Vector3Int GetOrigin(int i, int j, int k)
         {
             return new Vector3Int(
-                Mathf.FloorToInt(i / (float)size) * size,
-                Mathf.FloorToInt(j / (float)size) * size,
-                Mathf.FloorToInt(k / (float)size) * size
+                Mathf.FloorToInt(i / (float) size) * size,
+                Mathf.FloorToInt(j / (float) size) * size,
+                Mathf.FloorToInt(k / (float) size) * size
             );
         }
 
-        public float Get(Vector3Int coord) {
+        public float Get(Vector3Int coord)
+        {
             return Get(coord.x, coord.y, coord.z);
         }
 
@@ -51,26 +54,33 @@ namespace FarmVox.Voxel
             return Map[origin].Get(i - origin.x, j - origin.y, k - origin.z);
         }
 
-        public Color GetColor(Vector3Int coord) {
+        public Color GetColor(Vector3Int coord)
+        {
             return GetColor(coord.x, coord.y, coord.z);
         }
 
         public Color GetColor(int i, int j, int k)
         {
             var origin = GetOrigin(i, j, k);
-            return !Map.ContainsKey(origin) ? 
-                default(Color) : 
-                Map[origin].GetColor(i - origin.x, j - origin.y, k - origin.z);
+            return !Map.ContainsKey(origin)
+                ? default(Color)
+                : Map[origin].GetColor(i - origin.x, j - origin.y, k - origin.z);
         }
 
         public Chunk GetOrCreateChunk(Vector3Int origin)
         {
+            if (_root == null)
+            {
+                _root = new GameObject("Chunks");
+                _root.transform.parent = transform;
+            }
+
             if (Map.ContainsKey(origin))
             {
                 return Map[origin];
             }
 
-            var chunkGo = Instantiate(chunkPrefab, transform);
+            var chunkGo = Instantiate(chunkPrefab, _root.transform);
 
             chunkGo.name = "Chunk" + origin;
             chunkGo.transform.localPosition = origin;
@@ -83,7 +93,7 @@ namespace FarmVox.Voxel
             {
                 chunkGo.GetComponent<NavMeshSourceTag>().enabled = true;
             }
-            
+
             Map[origin] = chunk;
 
             return chunk;
@@ -94,7 +104,8 @@ namespace FarmVox.Voxel
             return Map.TryGetValue(origin, out var chunk) ? chunk : null;
         }
 
-        private IEnumerable<Vector3Int> GetKeys(int i, int j, int k) {
+        private IEnumerable<Vector3Int> GetKeys(int i, int j, int k)
+        {
             var key = GetKey(i, j, k);
             var list = new List<Vector3Int>();
 
@@ -107,11 +118,13 @@ namespace FarmVox.Voxel
             var jList = new List<int> {0};
             var kList = new List<int> {0};
 
-            if (ri == 0 || ri == 1) {
+            if (ri == 0 || ri == 1)
+            {
                 iList.Add(-1);
             }
 
-            if (rj == 0 || rj == 1) {
+            if (rj == 0 || rj == 1)
+            {
                 jList.Add(-1);
             }
 
@@ -120,7 +133,8 @@ namespace FarmVox.Voxel
                 kList.Add(-1);
             }
 
-            if (ri >= size) {
+            if (ri >= size)
+            {
                 iList.Add(1);
             }
 
@@ -129,13 +143,17 @@ namespace FarmVox.Voxel
                 jList.Add(1);
             }
 
-            if (rk >= size) {
+            if (rk >= size)
+            {
                 kList.Add(1);
             }
 
-            foreach(var di in iList) {
-                foreach(var dj in jList) {
-                    foreach(var dk in kList) {
+            foreach (var di in iList)
+            {
+                foreach (var dj in jList)
+                {
+                    foreach (var dk in kList)
+                    {
                         list.Add(new Vector3Int(key.x + di, key.y + dj, key.z + dk));
                     }
                 }
@@ -144,14 +162,16 @@ namespace FarmVox.Voxel
             return list;
         }
 
-        public void Set(Vector3Int coord, float v) {
+        public void Set(Vector3Int coord, float v)
+        {
             Set(coord.x, coord.y, coord.z, v);
         }
 
         public void Set(int i, int j, int k, float v)
         {
             var keys = GetKeys(i, j, k);
-            foreach(var key in keys) {
+            foreach (var key in keys)
+            {
                 var origin = key * size;
                 var chunk = GetOrCreateChunk(origin);
                 chunk.Set(i - origin.x, j - origin.y, k - origin.z, v);
@@ -161,14 +181,16 @@ namespace FarmVox.Voxel
         public void SetColor(int i, int j, int k, Color v)
         {
             var keys = GetKeys(i, j, k);
-            foreach(var key in keys) {
+            foreach (var key in keys)
+            {
                 var origin = key * size;
                 var chunk = GetOrCreateChunk(origin);
                 chunk.SetColor(i - origin.x, j - origin.y, k - origin.z, v);
             }
         }
 
-        public void SetColor(Vector3Int coord, Color v) {
+        public void SetColor(Vector3Int coord, Color v)
+        {
             SetColor(coord.x, coord.y, coord.z, v);
         }
     }

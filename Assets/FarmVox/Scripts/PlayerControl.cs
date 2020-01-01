@@ -9,9 +9,6 @@ namespace FarmVox.Scripts
         public Camera targetCamera;
         public Walls walls;
 
-        public float moveSeekDistance = 10f;
-        public float moveSeekRadius = 10f;
-        
         private void Start()
         {
             if (targetCamera == null)
@@ -26,8 +23,12 @@ namespace FarmVox.Scripts
 
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                var coord = walls.GetBuildingGrid(GetCoord());
-                walls.PlaceBuilding(StructureType.Wall, coord);
+                var coord = GetCoord();
+                var structureType = StructureType.House;
+                if (walls.CanPlaceBuilding(coord, structureType))
+                {
+                    walls.PlaceBuilding(structureType, coord);    
+                }
             }
         }
 
@@ -61,7 +62,7 @@ namespace FarmVox.Scripts
 
             var dir = rightVector * right + forwardVector * forward;
 
-            agent.Move(dir * agent.speed * Time.deltaTime);
+            agent.Move(Time.deltaTime * agent.speed * dir);
         }
     }
 }

@@ -43,7 +43,7 @@ namespace FarmVox.Scripts
 
             var treeNoise = config.noise;
 
-            var pine = new Pine(3.0f, 10, 2);
+            var pine = new PineObject(3.0f, 10, 2);
 
             var origin = terrianChunk.Origin;
             var chunk = defaultLayer.GetChunk(origin);

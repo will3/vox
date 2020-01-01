@@ -266,5 +266,10 @@ namespace FarmVox.Terrain
                 wallLayer.SetColor(coord + new Vector3Int(0, i + yOffset, 0), Color.red);    
             }
         }
+
+        public bool HasGround(Vector3Int coord)
+        {
+            return defaultLayer.Get(coord) > 0;
+        }
     }
 }

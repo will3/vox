@@ -1,62 +1,16 @@
-﻿using FarmVox.Terrain;
-using FarmVox.Voxel;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace FarmVox.Scripts
 {
+    [RequireComponent(typeof(MeshFilter))]
+    [RequireComponent(typeof(MeshRenderer))]
     public class HighlightBuildingGrid : MonoBehaviour
     {
-        public HeightMap.Tile HoveredTile;
-        private HeightMap.Tile _lastDrawnTile;
-        private MeshFilter _meshFilter;
-        private MeshRenderer _meshRenderer;
+        public Walls walls;
 
-        private void Start()
+        private void Update()
         {
             
-            _meshFilter = gameObject.AddComponent<MeshFilter>();
-            _meshRenderer = gameObject.AddComponent<MeshRenderer>();    
-        }
-        
-        // Update is called once per frame
-        public void Update()
-        {
-            var result = VoxelRaycast.TraceMouse(1 << UserLayers.Terrian);
-            if (result == null)
-            {
-                HoveredTile = null;
-                _meshRenderer.enabled = false;
-                return;
-            } 
-            
-            var coord = result.GetCoord();
-
-            HoveredTile = Terrian.Instance.HeightMap.GetTile(coord);
-
-            if (HoveredTile == null)
-            {
-                _meshRenderer.enabled = false;
-                return;
-            }
-            
-            if (!HoveredTile.CanBuild) {
-                _meshRenderer.enabled = false;
-                return;
-            } 
-            
-            // Update mesh
-            if (HoveredTile == _lastDrawnTile) return;
-            
-            Destroy(_meshFilter.mesh);
-            _meshRenderer.enabled = true;
-            var meshBuilder = new CubeMeshBuilder();
-            foreach (var tileCoord in HoveredTile.Coords)
-            {
-                meshBuilder.AddQuad(Axis.Y, true, tileCoord);
-            }
-
-            _meshFilter.mesh = meshBuilder.Build();
-            _lastDrawnTile = HoveredTile;
         }
     }
 }
