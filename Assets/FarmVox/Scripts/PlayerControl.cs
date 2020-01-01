@@ -8,6 +8,7 @@ namespace FarmVox.Scripts
         public NavMeshAgent agent;
         public Camera targetCamera;
         public Walls walls;
+        public BuildingTileTracker buildingTileTracker;
 
         private void Start()
         {
@@ -15,19 +16,24 @@ namespace FarmVox.Scripts
             {
                 targetCamera = Camera.main;
             }
+
+            agent.updatePosition = false;
         }
 
         private void Update()
         {
             UpdateMovement();
+            
+            transform.position = agent.nextPosition;
 
-            if (Input.GetKeyDown(KeyCode.Space))
+            var buildingTile = buildingTileTracker.CurrentBuildingTile;
+            if (Input.GetKeyDown(KeyCode.Space) && buildingTile != null)
             {
-                var coord = GetCoord();
                 var structureType = StructureType.House;
-                if (walls.CanPlaceBuilding(coord, structureType))
+
+                if (walls.CanPlaceBuilding(buildingTile, structureType))
                 {
-                    walls.PlaceBuilding(structureType, coord);    
+                    walls.PlaceBuilding(buildingTile, structureType);
                 }
             }
         }

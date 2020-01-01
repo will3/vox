@@ -5,18 +5,12 @@ using UnityEngine;
 
 namespace FarmVox
 {
-    public class CubeMeshBuilderOptions
-    {
-        public float DirOffset = 0.1f;
-    }
-    
     public class CubeMeshBuilder
     {
         private readonly List<Vector3> _vertices = new List<Vector3>();
         private readonly List<int> _indices = new List<int>();
         private readonly List<Vector2> _uvs = new List<Vector2>();
-        public readonly CubeMeshBuilderOptions Options = new CubeMeshBuilderOptions();
-        
+
         public Mesh Build()
         {
             var mesh = new Mesh();
@@ -25,15 +19,23 @@ namespace FarmVox
             return mesh;
         }
 
-        public CubeMeshBuilder AddQuad(Axis d, bool front, Vector3 offset) {
+        public CubeMeshBuilder AddQuad(
+            Axis d,
+            bool front,
+            Vector3 offset,
+            float dirOffset = 0.1f,
+            float sizeOffset = 0.0f)
+        {
             var diffI = front ? 1.0f : 0.0f;
 
-            var dirOffset = GetDir(d, front) * Options.DirOffset;
-            
-            var v0 = GetVector(diffI, 0, 0, d) + offset + dirOffset;
-            var v1 = GetVector(diffI, 1.0f, 0, d) + offset + dirOffset;
-            var v2 = GetVector(diffI, 1.0f, 1.0f, d) + offset + dirOffset;
-            var v3 = GetVector(diffI, 0, 1.0f, d) + offset + dirOffset;
+            var dirOffsetVector = GetDir(d, front) * dirOffset;
+
+            var min = 0 - sizeOffset;
+            var max = 1.0f + sizeOffset;
+            var v0 = GetVector(diffI, min, min, d) + offset + dirOffsetVector;
+            var v1 = GetVector(diffI, max, min, d) + offset + dirOffsetVector;
+            var v2 = GetVector(diffI, max, max, d) + offset + dirOffsetVector;
+            var v3 = GetVector(diffI, min, max, d) + offset + dirOffsetVector;
 
             var index = _vertices.Count;
 
@@ -47,14 +49,17 @@ namespace FarmVox
             _uvs.Add(new Vector2(1, 1));
             _uvs.Add(new Vector2(0, 1));
 
-            if (front) {
+            if (front)
+            {
                 _indices.Add(index + 0);
                 _indices.Add(index + 1);
                 _indices.Add(index + 2);
                 _indices.Add(index + 2);
                 _indices.Add(index + 3);
                 _indices.Add(index + 0);
-            } else {
+            }
+            else
+            {
                 _indices.Add(index + 2);
                 _indices.Add(index + 1);
                 _indices.Add(index + 0);
@@ -89,7 +94,7 @@ namespace FarmVox
                 case Axis.X:
                     return new Vector3(1, 0, 0) * multiplier;
                 case Axis.Y:
-                    return new Vector3(0, 1, 0)* multiplier;
+                    return new Vector3(0, 1, 0) * multiplier;
                 case Axis.Z:
                     return new Vector3(0, 0, 1) * multiplier;
                 default:

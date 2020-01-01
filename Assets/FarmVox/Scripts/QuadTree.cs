@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using FarmVox.Voxel;
 using UnityEngine;
 
 namespace FarmVox.Scripts
@@ -60,6 +61,15 @@ namespace FarmVox.Scripts
             chunk.Add(bounds, obj);
         }
 
+        public IEnumerable<T> Search(Bounds bounds)
+        {
+            var min = bounds.min.CeilToInt();
+            var max = bounds.max.FloorToInt();
+
+            var boundsInt = new BoundsInt(min, max - min + Vector3Int.one);
+            return Search(boundsInt);
+        }
+
         public IEnumerable<T> Search(BoundsInt bounds)
         {
             var origin = GetOrigin(bounds.position);
@@ -78,7 +88,7 @@ namespace FarmVox.Scripts
                         {
                             continue;
                         }
-                        
+
                         var results = chunk.Search(bounds);
                         foreach (var result in results)
                         {
@@ -120,16 +130,56 @@ namespace FarmVox.Scripts
     {
         public static bool Intersects(this BoundsInt a, BoundsInt b)
         {
-            if (a.x + a.size.x < b.x) return false;
-            if (a.y + a.size.y < b.y) return false;
-            if (a.z + a.size.z < b.z) return false;
+            if (a.x + a.size.x <= b.x) return false;
+            if (a.y + a.size.y <= b.y) return false;
+            if (a.z + a.size.z <= b.z) return false;
 
-            if (a.x > b.x + b.size.x) return false;
-            if (a.y > b.y + b.size.y) return false;
+            if (a.x >= b.x + b.size.x) return false;
+            if (a.y >= b.y + b.size.y) return false;
             // ReSharper disable once ConvertIfStatementToReturnStatement
-            if (a.z > b.z + b.size.z) return false;
+            if (a.z >= b.z + b.size.z) return false;
 
             return true;
+        }
+    }
+
+    public static class BoundsHelper
+    {
+        public static BoundsInt CalcBounds(IEnumerable<Vector3Int> coords)
+        {
+            var cs = coords.ToArray();
+            var minX = cs.Min(v => v.x);
+            var minY = cs.Min(v => v.y);
+            var minZ = cs.Min(v => v.z);
+            var maxX = cs.Max(v => v.x);
+            var maxY = cs.Max(v => v.y);
+            var maxZ = cs.Max(v => v.z);
+
+            var min = new Vector3Int(minX, minY, minZ);
+            var max = new Vector3Int(maxX, maxY, maxZ);
+
+            return new BoundsInt(min, max - min + new Vector3Int(1, 1, 1));
+        }
+
+        public static BoundsInt CalcBounds(Vector3Int a, Vector3Int b)
+        {
+            var ax = a.x < b.x;
+            var ay = a.y < b.y;
+            var az = a.z < b.z;
+
+            var min = new Vector3Int(
+                ax ? a.x : b.x,
+                ay ? a.y : b.y,
+                az ? a.z : b.z);
+
+            var max = new Vector3Int(
+                ax ? b.x : a.x,
+                ay ? b.y : a.y,
+                az ? b.z : a.z);
+
+            var size = max - min + Vector3Int.one;
+
+            return new BoundsInt(min, size);
         }
     }
 }

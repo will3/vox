@@ -267,7 +267,7 @@ namespace FarmVox.Terrain
             }
         }
 
-        public bool HasGround(Vector3Int coord)
+        public bool IsGround(Vector3Int coord)
         {
             return defaultLayer.Get(coord) > 0;
         }
