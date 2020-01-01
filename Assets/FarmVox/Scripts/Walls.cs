@@ -1,3 +1,4 @@
+using System;
 using FarmVox.Models;
 using FarmVox.Objects;
 using FarmVox.Voxel;
@@ -12,6 +13,10 @@ namespace FarmVox.Scripts
         public Chunks chunks;
         public GameObject structurePrefab;
 
+        public TextAsset sawmill;
+        public TextAsset house;
+        public TextAsset wall;
+
         public Vector3Int GetBuildingGrid(Vector3Int coord)
         {
             return
@@ -21,11 +26,9 @@ namespace FarmVox.Scripts
                     Mathf.FloorToInt(coord.z / 6.0f) * 6);
         }
 
-        public void PlaceBuilding(TextAsset asset, Vector3Int coord)
+        public void PlaceBuilding(StructureType structureType, Vector3Int coord)
         {
-            var model = ModelLoader.Load(asset);
-            var modelObject = new ModelObject(model);
-
+            var modelObject = LoadObject(structureType);
             var structureGo = Instantiate(structurePrefab, transform);
             var size = modelObject.GetSize();
             structureGo.transform.position = coord + new Vector3(size.x / 2f, 0, size.z / 2.0f);
@@ -35,5 +38,36 @@ namespace FarmVox.Scripts
 
             ObjectPlacer.Place(chunks, modelObject, coord, Time.frameCount % 4);
         }
+
+        private IPlaceableObject LoadObject(StructureType structureType)
+        {
+            if (structureType == StructureType.Wall)
+            {
+                return new Wall();
+            }
+            var asset = GetAsset(structureType);
+            var model = ModelLoader.Load(asset);
+            return new ModelObject(model);
+        }
+        
+        private TextAsset GetAsset(StructureType structureType)
+        {
+            switch (structureType)
+            {
+                case StructureType.House:
+                    return house;
+                case StructureType.Sawmill:
+                    return sawmill;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(structureType), structureType, null);
+            }
+        }
+    }
+    
+    public enum StructureType
+    {
+        House,
+        Sawmill,
+        Wall
     }
 }

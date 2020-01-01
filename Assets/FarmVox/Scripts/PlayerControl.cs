@@ -8,8 +8,6 @@ namespace FarmVox.Scripts
         public NavMeshAgent agent;
         public Camera targetCamera;
         public Walls walls;
-        public TextAsset sawmill;
-        public TextAsset house;
 
         public float moveSeekDistance = 10f;
         public float moveSeekRadius = 10f;
@@ -29,7 +27,7 @@ namespace FarmVox.Scripts
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 var coord = walls.GetBuildingGrid(GetCoord());
-                walls.PlaceBuilding(house, coord);
+                walls.PlaceBuilding(StructureType.Wall, coord);
             }
         }
 

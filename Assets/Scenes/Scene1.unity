@@ -817,8 +817,8 @@ MonoBehaviour:
   agent: {fileID: 490495048}
   targetCamera: {fileID: 0}
   walls: {fileID: 1223485163}
-  sawmill: {fileID: 4900000, guid: e55e8866751c64896a1fbc5a5d1e0401, type: 3}
-  house: {fileID: 4900000, guid: 43bba85ae24a041aca39ee5ff2208ace, type: 3}
+  moveSeekDistance: 10
+  moveSeekRadius: 10
 --- !u!114 &490495053
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1080,6 +1080,9 @@ MonoBehaviour:
   chunks: {fileID: 1223485162}
   structurePrefab: {fileID: 130463577449173113, guid: 3fd8efff5faaa4c1c985941c3f828b26,
     type: 3}
+  sawmill: {fileID: 4900000, guid: e55e8866751c64896a1fbc5a5d1e0401, type: 3}
+  house: {fileID: 4900000, guid: 43bba85ae24a041aca39ee5ff2208ace, type: 3}
+  wall: {fileID: 4900000, guid: 969941222880c40309addb1aadb90c03, type: 3}
 --- !u!1 &1404610548
 GameObject:
   m_ObjectHideFlags: 0
