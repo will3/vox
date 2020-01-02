@@ -435,7 +435,6 @@ MonoBehaviour:
   treeLayer: {fileID: 1767922225}
   waterLayer: {fileID: 1603196056}
   wallLayer: {fileID: 1223485162}
-  shadowMap: {fileID: 0}
   trees: {fileID: 1767922226}
 --- !u!4 &108989302
 Transform:
@@ -1166,7 +1165,7 @@ MonoBehaviour:
   - {fileID: 1223485162}
   - {fileID: 1767922225}
   - {fileID: 1603196056}
-  shadowMap: {fileID: 0}
+  shadowMap: {fileID: 1396963312}
   terrian: {fileID: 108989301}
 --- !u!4 &1396963311
 Transform:
