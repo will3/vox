@@ -12,6 +12,7 @@ namespace FarmVox.Scripts
         public float orthographicSize = 50;
         public GameObject playerObject;
         public float playerPositionY = 20;
+        public float rotateAmount = 90f;
         
         private float _forward;
         private float _right;
@@ -28,7 +29,7 @@ namespace FarmVox.Scripts
             if (Input.GetKeyUp(KeyCode.Q)) rotate += 1.0f;
             if (Input.GetKeyUp(KeyCode.E)) rotate -= 1.0f;
 
-            targetRotation.y += rotate * 90f;
+            targetRotation.y += rotate * rotateAmount;
         }
 
         private void Update()

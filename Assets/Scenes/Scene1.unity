@@ -701,8 +701,8 @@ MonoBehaviour:
   highlightDistance: 6
   maxOpacity: 0.2
   highlightPowCurve: 0.4
-  shouldHighlightCurrentTile: 0
-  currentTileHighlightAmount: 0.8
+  shouldHighlightCurrentTile: 1
+  currentTileHighlightAmount: 0.3
   tiles: {fileID: 1556930457}
 --- !u!114 &490495055
 MonoBehaviour:
@@ -721,7 +721,7 @@ MonoBehaviour:
   tiles: {fileID: 1556930457}
   buildingHighlightAmount: 0.6
   structuresText: {fileID: 4900000, guid: 4cd22626190014054b11aaaa2ffea0c1, type: 3}
-  structureType: 1
+  structureType: 2
 --- !u!1 &534669902
 GameObject:
   m_ObjectHideFlags: 0
@@ -1063,6 +1063,7 @@ MonoBehaviour:
   chunks: {fileID: 1223485162}
   structurePrefab: {fileID: 130463577449173113, guid: 3fd8efff5faaa4c1c985941c3f828b26,
     type: 3}
+  wallHeight: 24
 --- !u!1 &1404610548
 GameObject:
   m_ObjectHideFlags: 0
