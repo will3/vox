@@ -15,6 +15,7 @@ namespace FarmVox.Scripts
         public float variance = 0.7f;
         public Random random = NoiseUtils.NextRandom();
         public float chance = 0.01f;
+
         public ValueGradient heightFilter = new ValueGradient(new Dictionary<float, float>
         {
             {0, 0},
@@ -23,18 +24,41 @@ namespace FarmVox.Scripts
             {1.0f, 1}
         });
 
-        private readonly Dictionary<Vector3Int, float> _data = new Dictionary<Vector3Int, float>();
+        private readonly Dictionary<Vector3Int, Dictionary<Vector3Int, float>> _data =
+            new Dictionary<Vector3Int, Dictionary<Vector3Int, float>>();
+
         public Chunks groundChunks;
         public Terrian terrian;
+        public int size = 32;
 
         public float GetWaterfall(Vector3Int coord)
         {
-            return _data.TryGetValue(coord, out var waterfall) ? waterfall : 0;
+            var origin = coord.GetOrigin(size);
+
+            if (!_data.TryGetValue(origin, out var chunk))
+            {
+                return 0;
+            }
+
+            return chunk.TryGetValue(coord - origin, out var value) ? value : 0;
+        }
+
+        public Dictionary<Vector3Int, float> GetWaterfallChunk(Vector3Int origin)
+        {
+            return _data.TryGetValue(origin, out var chunk) ? chunk : null;
         }
 
         public void SetWaterfall(Vector3Int coord, float value)
         {
-            _data[coord] = value;
+            var origin = coord.GetOrigin(size);
+
+            if (!_data.TryGetValue(origin, out var chunk))
+            {
+                chunk = new Dictionary<Vector3Int, float>();
+                _data[origin] = chunk;
+            }
+
+            chunk[coord - origin] = value;
         }
 
         public void GenerateWaterfalls(TerrianChunk terrianChunk)
@@ -66,7 +90,7 @@ namespace FarmVox.Scripts
                 GenerateWaterfall(coord + origin);
             }
         }
-        
+
         private void GenerateWaterfall(Vector3Int coord)
         {
             var nextPoint = coord;
@@ -88,7 +112,7 @@ namespace FarmVox.Scripts
                 {
                     break;
                 }
-                
+
                 nextPoint = point.Value;
 
                 count++;
@@ -104,7 +128,7 @@ namespace FarmVox.Scripts
             }
         }
 
-        
+
         private Vector3Int? ProcessNextWater(Vector3Int coord, WaterTracker waterTracker)
         {
             var terrianConfig = terrian.Config;
@@ -123,8 +147,9 @@ namespace FarmVox.Scripts
                 return down;
             }
 
-            Vector3Int[] coords = {
-                new Vector3Int(coord.x, coord.y, coord.z  - 1),
+            Vector3Int[] coords =
+            {
+                new Vector3Int(coord.x, coord.y, coord.z - 1),
                 new Vector3Int(coord.x - 1, coord.y, coord.z),
                 new Vector3Int(coord.x + 1, coord.y, coord.z),
                 new Vector3Int(coord.x, coord.y, coord.z + 1),
@@ -182,7 +207,7 @@ namespace FarmVox.Scripts
                 }
 
                 if (value >= minValue) continue;
-                
+
                 minValue = value;
                 minCoord = t;
             }

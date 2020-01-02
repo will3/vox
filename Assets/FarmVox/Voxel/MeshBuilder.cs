@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using FarmVox.GPU.Shaders;
+using FarmVox.Scripts;
 using UnityEngine;
 
 namespace FarmVox.Voxel
@@ -12,7 +13,7 @@ namespace FarmVox.Voxel
         private readonly List<int> _indices = new List<int>();
         private readonly List<CoordData> _voxelData = new List<CoordData>();
 
-        private void AddTriangle(MesherGpu.Quad quad, IWaterfallChunk waterfallChunk)
+        private void AddTriangle(MesherGpu.Quad quad, Dictionary<Vector3Int, float> waterfallData)
         {
             var index = _vertices.Count;
 
@@ -26,7 +27,12 @@ namespace FarmVox.Voxel
             _colors.Add(quad.Color * quad.AO[2]);
             _colors.Add(quad.Color * quad.AO[3]);
 
-            var waterfall = waterfallChunk?.GetWaterfall(quad.Coord) ?? 0;
+            var waterfall = waterfallData == null
+                ? 0
+                : waterfallData.TryGetValue(quad.Coord, out var value)
+                    ? value
+                    : 0;
+
             var voxelDataIndex = _voxelData.Count;
             _uvs.Add(new Vector2(voxelDataIndex, waterfall));
             _uvs.Add(new Vector2(voxelDataIndex, waterfall));
@@ -46,11 +52,12 @@ namespace FarmVox.Voxel
             });
         }
 
-        public MeshBuilder AddTriangles(IEnumerable<MesherGpu.Quad> triangles, IWaterfallChunk waterfallChunk = null)
+        public MeshBuilder AddTriangles(IEnumerable<MesherGpu.Quad> triangles,
+            Dictionary<Vector3Int, float> waterfallData = null)
         {
             foreach (var triangle in triangles)
             {
-                AddTriangle(triangle, waterfallChunk);
+                AddTriangle(triangle, waterfallData);
             }
 
             return this;

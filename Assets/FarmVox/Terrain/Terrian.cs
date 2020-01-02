@@ -151,13 +151,6 @@ namespace FarmVox.Terrain
             );
         }
 
-        private void OnDestroy()
-        {
-            foreach (var tc in _map.Values) {
-                tc.Dispose();
-            }
-        }
-
         public void VisitChunks(Action<TerrianChunk> visit)
         {
             foreach (var column in _columnList)

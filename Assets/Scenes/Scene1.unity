@@ -1113,7 +1113,7 @@ MonoBehaviour:
   - {fileID: 1767922225}
   - {fileID: 1603196056}
   shadowMap: {fileID: 1396963312}
-  terrian: {fileID: 108989301}
+  waterfalls: {fileID: 1404610549}
 --- !u!4 &1396963311
 Transform:
   m_ObjectHideFlags: 0
@@ -1225,6 +1225,7 @@ MonoBehaviour:
       m_RotationOrder: 4
   groundChunks: {fileID: 316894773}
   terrian: {fileID: 108989301}
+  size: 32
 --- !u!4 &1404610550
 Transform:
   m_ObjectHideFlags: 0

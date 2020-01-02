@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Linq;
 using FarmVox.GPU.Shaders;
-using FarmVox.Terrain;
 using FarmVox.Voxel;
 using UnityEngine;
 
@@ -12,7 +11,7 @@ namespace FarmVox.Scripts
         public float aoStrength = 0.15f;
         public Chunks[] chunksToDraw;
         public VoxelShadowMap shadowMap;
-        public Terrian terrian;
+        public Waterfalls waterfalls;
 
         private IEnumerator Start()
         {
@@ -26,8 +25,7 @@ namespace FarmVox.Scripts
 
                 foreach (var chunk in chunks)
                 {
-                    var terrianChunk = terrian.GetTerrianChunk(chunk.origin);
-                    DrawChunk(chunk, terrianChunk);
+                    DrawChunk(chunk, waterfalls);
                     yield return null;
                 }
                 
@@ -35,14 +33,14 @@ namespace FarmVox.Scripts
             }
         }
 
-        private void DrawChunk(Chunk chunk, IWaterfallChunk waterfallChunk)
+        private void DrawChunk(Chunk chunk, Waterfalls waterfalls)
         {
             if (chunk.Mesh != null)
             {
                 Destroy(chunk.Mesh);
             }
 
-            chunk.Mesh = MeshGpu(chunk, waterfallChunk);
+            chunk.Mesh = MeshGpu(chunk, waterfalls);
             chunk.meshRenderer.material = chunk.Material;
             chunk.meshFilter.sharedMesh = chunk.Mesh;
             chunk.meshCollider.sharedMesh = chunk.Mesh;
@@ -52,7 +50,7 @@ namespace FarmVox.Scripts
             shadowMap.ChunkDrawn(chunk.origin);
         }
 
-        private Mesh MeshGpu(Chunk chunk, IWaterfallChunk waterfallChunk)
+        private Mesh MeshGpu(Chunk chunk, Waterfalls waterfalls)
         {
             var chunks = chunk.Chunks;
 
@@ -75,7 +73,10 @@ namespace FarmVox.Scripts
                 var triangles = mesher.ReadTriangles();
 
                 var builder = new MeshBuilder();
-                var meshResult = builder.AddTriangles(triangles, waterfallChunk).Build();
+                var meshResult = builder
+                    .AddTriangles(triangles, waterfalls.GetWaterfallChunk(chunk.origin))
+                    .Build();
+
                 chunk.SetVoxelData(meshResult.VoxelData);
 
                 // Update voxel data buffer
