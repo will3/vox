@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using FarmVox.Terrain;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace FarmVox.Scripts
 {
@@ -12,7 +9,7 @@ namespace FarmVox.Scripts
         public float highlightDistance = 10.0f;
         public float maxOpacity = 0.2f;
         public float highlightPowCurve = 0.4f;
-        public bool shouldHighlightCurrentTile = false;
+        public bool shouldHighlightCurrentTile;
         public float currentTileHighlightAmount = 0.8f;
 
         public BuildingTiles tiles;

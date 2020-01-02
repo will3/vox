@@ -13,17 +13,12 @@ namespace FarmVox.Objects
 
         public Vector3Int GetSize()
         {
-            return new Vector3Int(6 ,_height ,6);
+            return new Vector3Int(3 ,_height ,3);
         }
 
         public float GetValue(Vector3Int coord)
         {
-            if (coord.x > 0 && coord.x < 5 && coord.z > 0 && coord.z < 5 && coord.y < _height)
-            {
-                return 1;
-            }
-
-            return 0;
+            return 1;
         }
 
         public Color GetColor(Vector3Int coord)

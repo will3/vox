@@ -3,14 +3,10 @@ using UnityEngine.AI;
 
 namespace FarmVox.Scripts
 {
-    public class PlayerControl : MonoBehaviour
+    public class PlayerMovement : MonoBehaviour
     {
         public NavMeshAgent agent;
         public Camera targetCamera;
-        public Walls walls;
-        public BuildingTileTracker buildingTileTracker;
-        public BuildingTiles tiles;
-        public float buildingHighlightAmount = 0.6f;
 
         private void Start()
         {
@@ -27,30 +23,6 @@ namespace FarmVox.Scripts
             UpdateMovement();
 
             transform.position = agent.nextPosition;
-
-            var buildingTile = buildingTileTracker.CurrentTile;
-            if (buildingTile != null)
-            {
-                if (Input.GetKey(KeyCode.Space))
-                {
-                    if (tiles.TryFind2By2(transform.position, 0, out var ts))
-                    {
-                        foreach (var t in ts)
-                        {
-                            t.SetHighlightAmount(buildingHighlightAmount);
-                        }
-                    }
-                }
-
-                if (Input.GetKeyUp(KeyCode.Space))
-                {
-                    var structureType = StructureType.House;
-                    if (tiles.TryFind2By2(transform.position, 0, out var ts))
-                    {
-                        walls.TryPlaceBuilding(ts, structureType);
-                    }
-                }
-            }
         }
 
         private void UpdateMovement()

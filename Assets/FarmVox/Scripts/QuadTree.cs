@@ -61,6 +61,11 @@ namespace FarmVox.Scripts
             chunk.Add(bounds, obj);
         }
 
+        public IEnumerable<T> Search(Vector3Int coord)
+        {
+            return Search(new BoundsInt(coord, Vector3Int.one));
+        }
+
         public IEnumerable<T> Search(Bounds bounds)
         {
             var min = bounds.min.CeilToInt();

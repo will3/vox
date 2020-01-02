@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using FarmVox.Terrain;
@@ -14,12 +15,24 @@ namespace FarmVox.Scripts
         public int gridSize = 3;
         private const int SearchVerticalRange = 8;
 
-        public bool TryFind2By2(Vector3 coord, int maxYDis, out IEnumerable<BuildingTile> tiles)
+        public bool TryFindTilesAround(Vector3 coord, Vector2Int numGrids, out IEnumerable<BuildingTile> tiles)
         {
-//            var dir = Camera.main.transform.forward * -1;
-//            var cameraXDir = dir.x > 0 ? 1 : -1;
-//            var cameraZDir = dir.z > 0 ? 1 : -1;
+            if (numGrids.x == 2 && numGrids.y == 2)
+            {
+                return TryFind2By2(coord, out tiles);
+            }
 
+            if (numGrids.x == 1 && numGrids.y == 1)
+            {
+                tiles = new[] {GetOrCreateBuildingTile(coord)};
+                return true;
+            }
+            
+            throw new NotSupportedException($"Dimension {numGrids.x} {numGrids.y} not supported");
+        }
+
+        private bool TryFind2By2(Vector3 coord, out IEnumerable<BuildingTile> tiles)
+        {
             var dirs = new[]
             {
                 new Vector2Int(-1, -1),

@@ -10,7 +10,7 @@ namespace FarmVox.Scripts
         public float distance = 300;
         public bool keysEnabled = true;
         public float orthographicSize = 50;
-        public PlayerControl playerControl;
+        public GameObject playerObject;
         public float playerPositionY = 20;
         
         private float _forward;
@@ -31,14 +31,6 @@ namespace FarmVox.Scripts
             targetRotation.y += rotate * 90f;
         }
 
-        private void Start()
-        {
-            if (playerControl == null)
-            {
-                playerControl = FindObjectOfType<PlayerControl>();
-            }
-        }
-
         private void Update()
         {
             if (keysEnabled)
@@ -46,7 +38,7 @@ namespace FarmVox.Scripts
                 UpdateKeys();
             }
 
-            var playerPosition = playerControl.transform.position;
+            var playerPosition = playerObject.transform.position;
             target = new Vector3(playerPosition.x, playerPositionY, playerPosition.z);
 
             rotation = Vector3.Lerp(rotation, targetRotation, 0.2f);

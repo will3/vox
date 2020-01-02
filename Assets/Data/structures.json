@@ -1,0 +1,20 @@
+{
+    "structures": [
+    {
+        "type": 1,
+        "numGrids":
+        {
+            "x": 2,
+            "y": 2
+        },
+        "modelName": "house"
+    },
+    {
+        "type": 2,
+        "numGrids":
+        {
+            "x": 1,
+            "y": 1
+        }
+    }]
+}
