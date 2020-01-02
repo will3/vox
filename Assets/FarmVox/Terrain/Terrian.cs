@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using FarmVox.Scripts;
 using FarmVox.Terrain.Routing;
@@ -15,10 +14,7 @@ namespace FarmVox.Terrain
         
         public TerrianConfig Config;
 
-        private int Size
-        {
-            get { return Config.Size; }
-        }
+        private int Size => Config.Size;
 
         float _sizeF;
 
@@ -26,7 +22,6 @@ namespace FarmVox.Terrain
         public Chunks treeLayer;
         public Chunks waterLayer;
         public Chunks wallLayer;
-        public VoxelShadowMap shadowMap;
         public Trees trees;
 
         public RouteChunks Routes { get; private set; }
@@ -36,10 +31,6 @@ namespace FarmVox.Terrain
         private readonly Dictionary<Vector3Int, TerrianColumn> _columns = new Dictionary<Vector3Int, TerrianColumn>();
         
         private readonly List<TerrianColumn> _columnList = new List<TerrianColumn>();
-
-        private Chunks[] _chunksToDraw;
-
-        public HeightMap HeightMap;
 
         private string _lastConfig;
 
@@ -88,10 +79,6 @@ namespace FarmVox.Terrain
             var size = Config.Size;
             _sizeF = size;
 
-            _chunksToDraw = new[] { defaultLayer, treeLayer, waterLayer, wallLayer };
-
-            HeightMap = new HeightMap();
-
             if (Instance == null)
             {
                 Instance = this;
@@ -132,43 +119,11 @@ namespace FarmVox.Terrain
             {
                 queue.Enqueue(new GenRoutesWorker(chunk.Origin, Routes, defaultLayer));
             });
-            
-            StartCoroutine(UpdateMeshesLoop());
         }
 
-        private IEnumerator UpdateMeshesLoop() {
-            while (true) {
-                foreach (var column in _columnList)
-                {
-                    foreach (var chunks in _chunksToDraw)
-                    {
-                        foreach (var terrianChunk in column.TerrianChunks)
-                        {
-                            var chunk = chunks.GetChunk(terrianChunk.Origin);
-                            if (chunk == null)
-                            {
-                                continue;
-                            }
-
-                            if (!chunk.Dirty)
-                            {
-                                continue;
-                            }
-                            
-                            var worker = new DrawChunkWorker(Config, shadowMap, chunk, terrianChunk);    
-                            worker.Start();
-                        }
-                    }
-                    
-                    yield return null;
-                }
-            }            
-        }
-
-        private TerrianChunk GetTerrianChunk(Vector3Int origin) {
-            TerrianChunk terrianChunk;
-            _map.TryGetValue(origin, out terrianChunk);
-            return terrianChunk;
+        public TerrianChunk GetTerrianChunk(Vector3Int origin)
+        {
+            return _map.TryGetValue(origin, out var terrianChunk) ? terrianChunk : null;
         }
 
         private TerrianChunk GetOrCreateTerrianChunk(Vector3Int origin)
@@ -183,15 +138,6 @@ namespace FarmVox.Terrain
             return _map[origin];
         }
 
-        public Vector3Int GetOrigin(float i, float j, float k)
-        {
-            return new Vector3Int(
-               Mathf.FloorToInt(i / _sizeF) * Size,
-               Mathf.FloorToInt(j / _sizeF) * Size,
-               Mathf.FloorToInt(k / _sizeF) * Size
-            );
-        }
-
         private Vector3Int GetOrigin(int i, int j, int k)
         {
             return new Vector3Int(
@@ -199,22 +145,6 @@ namespace FarmVox.Terrain
                 Mathf.FloorToInt(j / _sizeF) * Size,
                 Mathf.FloorToInt(k / _sizeF) * Size
             );
-        }
-
-        public bool GetWater(Vector3Int coord) {
-            var origin = GetOrigin(coord.x, coord.y, coord.z);
-            var terrianChunk = GetTerrianChunk(origin);
-            return terrianChunk != null && terrianChunk.GetWater(coord);
-        }
-
-        public void SetWater(Vector3Int coord) {
-            var origin = GetOrigin(coord.x, coord.y, coord.z);
-            var terrianChunk = GetTerrianChunk(origin);
-            if (terrianChunk == null)
-            {
-                return;
-            }
-            terrianChunk.SetWater(coord, true);
         }
 
         private void OnDestroy()
@@ -253,18 +183,6 @@ namespace FarmVox.Terrain
             var origin = GetOrigin(coord.x, coord.y, coord.z);
             var chunk = GetOrCreateTerrianChunk(origin);
             chunk.SetWaterfall(coord - origin, value);
-        }
-
-        public void AddWall(Vector3Int coord)
-        {
-            const int height = 3;
-            const int yOffset = 1;
-            
-            for (var i = 0; i < height; i++)
-            {
-                wallLayer.Set(coord + new Vector3Int(0, i + yOffset, 0), 1.0f);
-                wallLayer.SetColor(coord + new Vector3Int(0, i + yOffset, 0), Color.red);    
-            }
         }
 
         public bool IsGround(Vector3Int coord)

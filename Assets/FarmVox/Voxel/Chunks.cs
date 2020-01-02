@@ -15,10 +15,10 @@ namespace FarmVox.Voxel
         public bool isWalkable;
         public GameObject chunkPrefab;
 
-        private Dictionary<Vector3Int, Chunk> _map;
+        private readonly Dictionary<Vector3Int, Chunk> _map = new Dictionary<Vector3Int, Chunk>();
         private GameObject _root;
 
-        private Dictionary<Vector3Int, Chunk> Map => _map ?? (_map = new Dictionary<Vector3Int, Chunk>());
+        public IEnumerable<Chunk> ChunkList => _map.Values;
 
         private Vector3Int GetKey(int i, int j, int k)
         {
@@ -46,12 +46,12 @@ namespace FarmVox.Voxel
         public float Get(int i, int j, int k)
         {
             var origin = GetOrigin(i, j, k);
-            if (!Map.ContainsKey(origin))
+            if (!_map.ContainsKey(origin))
             {
                 return 0;
             }
 
-            return Map[origin].Get(i - origin.x, j - origin.y, k - origin.z);
+            return _map[origin].Get(i - origin.x, j - origin.y, k - origin.z);
         }
 
         public Color GetColor(Vector3Int coord)
@@ -62,9 +62,9 @@ namespace FarmVox.Voxel
         public Color GetColor(int i, int j, int k)
         {
             var origin = GetOrigin(i, j, k);
-            return !Map.ContainsKey(origin)
+            return !_map.ContainsKey(origin)
                 ? default(Color)
-                : Map[origin].GetColor(i - origin.x, j - origin.y, k - origin.z);
+                : _map[origin].GetColor(i - origin.x, j - origin.y, k - origin.z);
         }
 
         public Chunk GetOrCreateChunk(Vector3Int origin)
@@ -75,9 +75,9 @@ namespace FarmVox.Voxel
                 _root.transform.parent = transform;
             }
 
-            if (Map.ContainsKey(origin))
+            if (_map.ContainsKey(origin))
             {
-                return Map[origin];
+                return _map[origin];
             }
 
             var chunkGo = Instantiate(chunkPrefab, _root.transform);
@@ -94,14 +94,14 @@ namespace FarmVox.Voxel
                 chunkGo.GetComponent<NavMeshSourceTag>().enabled = true;
             }
 
-            Map[origin] = chunk;
+            _map[origin] = chunk;
 
             return chunk;
         }
 
         public Chunk GetChunk(Vector3Int origin)
         {
-            return Map.TryGetValue(origin, out var chunk) ? chunk : null;
+            return _map.TryGetValue(origin, out var chunk) ? chunk : null;
         }
 
         private IEnumerable<Vector3Int> GetKeys(int i, int j, int k)

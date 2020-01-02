@@ -11,6 +11,7 @@ namespace FarmVox.Scripts
         public MeshRenderer meshRenderer;
         public MeshFilter meshFilter;
         public TextAsset spriteSheet;
+        public Vector3 scale = new Vector3(8, 12, 8);
 
         private ActorSpriteSheet _spriteSheet;
         private Texture2D _texture;
@@ -30,6 +31,7 @@ namespace FarmVox.Scripts
         {
             var textures = _spriteSheet.Idle;
             ApplyFrame(textures, _spriteSheet.IdleSpeed);
+            transform.localScale = scale;
         }
 
         private static Mesh BuildQuad()

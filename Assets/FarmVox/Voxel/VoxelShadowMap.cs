@@ -1,8 +1,10 @@
 using System.Collections.Generic;
+using FarmVox.Scripts;
 using UnityEngine;
 
 namespace FarmVox.Voxel
 {
+    [RequireComponent(typeof(ChunksMesher))]
     public class VoxelShadowMap : MonoBehaviour
     {
         private enum ShadowMapState
@@ -14,8 +16,8 @@ namespace FarmVox.Voxel
         public int size = 32;
         public int lightY = 100;
         public int minY = -100;
-        public Chunks[] chunksToNotify;
         public int maxChunksY = 4;
+        public ChunksMesher chunksMesher;
 
         public int DataSize => size + 1;
         private Dictionary<Vector2Int, ShadowMapState> _states;
@@ -41,7 +43,7 @@ namespace FarmVox.Voxel
 
                 foreach (var origin in affectedOrigins)
                 {
-                    foreach (var chunks in chunksToNotify)
+                    foreach (var chunks in chunksMesher.chunksToDraw)
                     {
                         var chunk = chunks.GetChunk(origin);
                         if (chunk == null)

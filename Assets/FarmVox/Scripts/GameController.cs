@@ -30,6 +30,8 @@ namespace FarmVox.Scripts
 			{
 				throw new Exception("Only one GameController allowed");
 			}
+
+			Application.targetFrameRate = 60;
 		}
 
 		// Use this for initialization

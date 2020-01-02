@@ -23,56 +23,9 @@ namespace FarmVox.Workers
         
         public void Start()
         {
-            if (!_chunk.Dirty)
-            {
-                return;
-            }
-
-            if (_chunk.Mesh != null)
-            {
-                Object.Destroy(_chunk.Mesh);
-            }
-
-            _chunk.Mesh = MeshGpu(_chunk);
-            _chunk.meshRenderer.material = _chunk.Material;
-            _chunk.meshFilter.sharedMesh = _chunk.Mesh;
-            _chunk.meshCollider.sharedMesh = _chunk.Mesh;
-
-            _chunk.Dirty = false;
-
-            _shadowMap.ChunkDrawn(_chunk.origin);
+            
         }
 
-        private Mesh MeshGpu(Chunk chunk)
-        {
-            var chunks = chunk.Chunks;
-
-            var mesherSettings = new MesherSettings
-            {
-                AoStrength = _config.AoStrength
-            };
-            
-            using (var mesher = new MesherGpu(chunk.DataSize, mesherSettings)) {
-                mesher.UseNormals = chunks.useNormals;
-                mesher.IsWater = chunks.isWater;
-                mesher.NormalStrength = chunk.Chunks.normalStrength;
-                
-                mesher.SetData(chunk.data);
-                mesher.SetColors(chunk.colors);
-                
-                mesher.Dispatch();
-            
-                var triangles = mesher.ReadTriangles();
-
-                var builder = new MeshBuilder();
-                var meshResult = builder.AddTriangles(triangles, _terrianChunk).Build();
-                chunk.SetVoxelData(meshResult.VoxelData);
-                
-                // Update voxel data buffer
-                chunk.Material.SetBuffer("_VoxelData", chunk.GetVoxelDataBuffer());
-                
-                return meshResult.Mesh;
-            }
-        }
+        
     }
 }
