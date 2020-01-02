@@ -23,7 +23,8 @@ namespace FarmVox.Terrain
         public Chunks waterLayer;
         public Chunks wallLayer;
         public Trees trees;
-
+        public Waterfalls waterfalls;
+        
         public RouteChunks Routes { get; private set; }
 
         private readonly Dictionary<Vector3Int, TerrianChunk> _map = new Dictionary<Vector3Int, TerrianChunk>();
@@ -112,7 +113,10 @@ namespace FarmVox.Terrain
 
             VisitChunks(chunk =>
             {
-                queue.Enqueue(new GenWaterfallWorker(chunk, defaultLayer, Config, this));
+                queue.Enqueue(new ActionWorker(() =>
+                {
+                    waterfalls.GenerateWaterfalls(chunk);
+                }));
             });
             
             VisitChunks(chunk =>
@@ -163,26 +167,6 @@ namespace FarmVox.Terrain
                     visit(chunk);
                 }
             }
-        }
-        
-        public float GetWaterfall(Vector3Int coord)
-        {
-            var origin = GetOrigin(coord.x, coord.y, coord.z);
-            var terrianChunk = GetTerrianChunk(origin);
-
-            if (terrianChunk == null)
-            {
-                return 0;
-            }
-
-            return terrianChunk.GetWaterfall(coord - terrianChunk.Origin);
-        }
-
-        public void SetWaterfall(Vector3Int coord, float value)
-        {
-            var origin = GetOrigin(coord.x, coord.y, coord.z);
-            var chunk = GetOrCreateTerrianChunk(origin);
-            chunk.SetWaterfall(coord - origin, value);
         }
 
         public bool IsGround(Vector3Int coord)

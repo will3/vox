@@ -30,13 +30,6 @@ namespace FarmVox.Terrain
         public float GrassValue;
         #endregion
 
-        #region waterfall
-        public Random WaterfallRandom;
-        public Noise WaterfallNoise;
-        public ValueGradient WaterfallHeightFilter;
-        public float WaterfallChance;
-        #endregion
-
         public ValueGradient HeightFilter;
         
         public BiomeConfig(int seed = 1337)
@@ -66,21 +59,6 @@ namespace FarmVox.Terrain
             RockColorNoise.Amplitude = 1.0f;
 
             GrassNoise = NoiseUtils.NextNoise();
-
-            
-            WaterfallRandom = NoiseUtils.NextRandom();
-
-            WaterfallNoise = NoiseUtils.NextNoise();
-            WaterfallNoise.Frequency = 0.005f;
-            WaterfallChance = 0.01f;
-
-            WaterfallHeightFilter = new ValueGradient(new Dictionary<float, float>()
-            {
-                {0, 0},
-                {0.3f, 0},
-                {0.5f, 1},
-                {1.0f, 1}
-            });
 
             GrassNoise.Frequency = 0.01f;
             GrassNoise.Amplitude = 2.0f;

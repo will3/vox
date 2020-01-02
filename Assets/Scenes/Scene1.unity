@@ -148,7 +148,7 @@ MonoBehaviour:
     PlainHeight: 4
     WaterLevel: 0
     GroundHeight: 12
-    MaxChunksX: 4
+    MaxChunksX: 1
     AoStrength: 0.15
     TreeMinDis: 3
     Biome:
@@ -325,60 +325,6 @@ MonoBehaviour:
           m_PostInfinity: 2
           m_RotationOrder: 4
       GrassValue: 1
-      WaterfallNoise:
-        Frequency: 0.005
-        Amplitude: 1
-        Seed: 1793091670
-        Lacunarity: 2
-        Persistence: 0.5
-        Octaves: 5
-        YScale: 1
-        XzScale: 1
-        Type: 0
-      WaterfallHeightFilter:
-        Curve:
-          serializedVersion: 2
-          m_Curve:
-          - serializedVersion: 3
-            time: 0
-            value: 0
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: 0.3
-            value: 0
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: 0.5
-            value: 1
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: 1
-            value: 1
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          m_PreInfinity: 2
-          m_PostInfinity: 2
-          m_RotationOrder: 4
-      WaterfallChance: 0.01
       HeightFilter:
         Curve:
           serializedVersion: 2
@@ -436,6 +382,7 @@ MonoBehaviour:
   waterLayer: {fileID: 1603196056}
   wallLayer: {fileID: 1223485162}
   trees: {fileID: 1767922226}
+  waterfalls: {fileID: 1404610549}
 --- !u!4 &108989302
 Transform:
   m_ObjectHideFlags: 0
@@ -662,10 +609,10 @@ MonoBehaviour:
   searchNumGrids: 3
   highlightSearchDistance: 20
   highlightDistance: 6
-  maxOpacity: 0.2
+  maxOpacity: 0.15
   highlightPowCurve: 0.4
   shouldHighlightCurrentTile: 1
-  currentTileHighlightAmount: 0.3
+  currentTileHighlightAmount: 0.15
   tiles: {fileID: 1556930457}
 --- !u!114 &490495055
 MonoBehaviour:
@@ -1232,6 +1179,52 @@ MonoBehaviour:
   width: 10
   min: 0.9
   variance: 0.7
+  chance: 0.01
+  heightFilter:
+    Curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.3
+        value: 0
+        inSlope: 2.5000002
+        outSlope: 2.5000002
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.5
+        value: 1
+        inSlope: 2.5000002
+        outSlope: 2.5000002
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+  groundChunks: {fileID: 316894773}
+  terrian: {fileID: 108989301}
 --- !u!4 &1404610550
 Transform:
   m_ObjectHideFlags: 0

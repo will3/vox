@@ -185,6 +185,11 @@ namespace FarmVox.Voxel
 
         public float Get(int i, int j, int k)
         {
+            if (data == null || data.Length == 0)
+            {
+                return 0;
+            }
+
             if (i < 0 || i >= DataSize ||
                 j < 0 || j >= DataSize ||
                 k < 0 || k >= DataSize)

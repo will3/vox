@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using FarmVox.Scripts;
 using FarmVox.Voxel;
 using UnityEngine;
 
@@ -21,10 +22,12 @@ namespace FarmVox.Terrain
         private readonly List<float> _costs = new List<float>();
 
         readonly TerrianConfig _config;
+        private readonly Waterfalls _waterfalls;
 
-        public WaterTracker(TerrianConfig config)
+        public WaterTracker(TerrianConfig config, Waterfalls waterfalls)
         {
             _config = config;
+            _waterfalls = waterfalls;
         }
 
         public float LastCost
@@ -85,7 +88,7 @@ namespace FarmVox.Terrain
                 var coord = _coords[i];
                 var cost = _costs[i];
                 chunks.SetColor(coord.x, coord.y, coord.z, _config.Biome.WaterColor);
-                Terrian.Instance.SetWaterfall(coord, cost);
+                _waterfalls.SetWaterfall(coord, cost);
             }
             foreach (var coord in _emptyCoords)
             {
