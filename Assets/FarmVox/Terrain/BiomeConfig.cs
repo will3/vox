@@ -30,7 +30,14 @@ namespace FarmVox.Terrain
         public float GrassValue;
         #endregion
 
-        public ValueGradient HeightFilter;
+        public ValueGradient heightFilter = new ValueGradient(new Dictionary<float, float>
+        {
+            {-1.0f, -0.27f },
+            {-0.2f, 0.05f },
+            {0.15f, 0.1f },
+            {0.5f, 0.75f },
+            {1, 1 }
+        });
         
         public BiomeConfig(int seed = 1337)
         {
@@ -42,15 +49,6 @@ namespace FarmVox.Terrain
             HeightNoise.YScale = 0.4f;
             HeightNoise.Octaves = 5;
 
-            HeightFilter = new ValueGradient(new Dictionary<float, float>
-            {
-                {-1.0f, -0.4f},
-                {-0.2f, 0.05f},
-                {0.15f, 0.1f},
-                {0.5f, 1.0f},
-                {1, 1.2f}
-            });
-            
             RockNoise = NoiseUtils.NextNoise();
 
             RockColorNoise = NoiseUtils.NextNoise();
