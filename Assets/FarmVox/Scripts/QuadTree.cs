@@ -104,10 +104,26 @@ namespace FarmVox.Scripts
             }
         }
 
+        public IEnumerable<T> UnloadChunk(Vector3Int origin)
+        {
+            if (!_chunks.TryGetValue(origin, out var chunk))
+            {
+                return new T[0];
+            }
+
+            _chunks.Remove(origin);
+            return chunk.GetItems();
+        }
+
         private class QuadTreeChunk
         {
             private readonly Dictionary<BoundsInt, HashSet<T>> _map =
                 new Dictionary<BoundsInt, HashSet<T>>();
+
+            public IEnumerable<T> GetItems()
+            {
+                return _map.Values.SelectMany(x => x);
+            }
 
             public void Add(BoundsInt bounds, T obj)
             {

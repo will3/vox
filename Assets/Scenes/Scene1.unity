@@ -552,6 +552,7 @@ MonoBehaviour:
   waterfalls: {fileID: 1404610549}
   waitForSeconds: 0.2
   numGridsToGenerate: {x: 1, y: 2, z: 1}
+  distanceToUnload: 1
 --- !u!114 &490495052
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -325,5 +325,15 @@ namespace FarmVox.Voxel
             Material.SetBuffer(ShadowMap10, shadowMap10);
             Material.SetBuffer(ShadowMap11, shadowMap11);
         }
+
+        public bool IsInBound(Vector3Int localCoord)
+        {
+            return localCoord.x >= 0 &&
+                   localCoord.y >= 0 &&
+                   localCoord.z >= 0 &&
+                   localCoord.x < size &&
+                   localCoord.y < size &&
+                   localCoord.z < size;
+        }
     }
 }

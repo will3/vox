@@ -4,7 +4,6 @@ using FarmVox.Terrain;
 using FarmVox.Voxel;
 using LibNoise;
 using UnityEngine;
-using Tree = FarmVox.Terrain.Tree;
 
 namespace FarmVox.Scripts
 {
@@ -17,26 +16,31 @@ namespace FarmVox.Scripts
         public Ground ground;
         public Water water;
 
-        private readonly QuadTree<Tree> _treeMap = new QuadTree<Tree>(32);
+        private readonly QuadTree<GameObject> _treeMap = new QuadTree<GameObject>(32);
 
         private ModuleBase _noiseModule;
 
         private ModuleBase NoiseModule => _noiseModule ?? (_noiseModule = ModuleBuilder.Build(config.noise));
 
-        public void GenerateTrees(TerrianChunk terrianChunk)
+        public void GenerateChunk(Vector3Int origin)
         {
             var groundConfig = ground.config;
             var defaultLayer = ground.chunks;
 
             var pine = new PineObject(3.0f, 10, 2);
 
-            var origin = terrianChunk.Origin;
             var chunk = defaultLayer.GetChunk(origin);
             chunk.UpdateNormals();
 
             foreach (var kv in chunk.Normals)
             {
                 var localCoord = kv.Key;
+
+                if (!chunk.IsInBound(localCoord))
+                {
+                    continue;
+                }
+
                 var normal = kv.Value;
 
                 var j = localCoord.y;
@@ -75,18 +79,28 @@ namespace FarmVox.Scripts
                     continue;
                 }
 
-                var tree = pine.Place(chunks, globalCoord, config);
+                pine.Place(chunks, globalCoord - pine.Pivot, config);
 
                 var treeGo = Instantiate(treePrefab, transform);
                 treeGo.transform.position = globalCoord + new Vector3(1.5f, 0, 1.5f);
 
-                _treeMap.Add(globalCoord, tree);
+                _treeMap.Add(globalCoord, treeGo);
             }
 
-            var treeChunk = chunks.GetChunk(terrianChunk.Origin);
+            var treeChunk = chunks.GetChunk(origin);
             if (treeChunk != null)
             {
                 treeChunk.UpdateSurfaceCoords();
+            }
+        }
+
+        public void UnloadChunk(Vector3Int origin)
+        {
+            chunks.UnloadChunk(origin);
+            var trees = _treeMap.UnloadChunk(origin);
+            foreach (var tree in trees)
+            {
+                Destroy(tree);
             }
         }
     }

@@ -1,7 +1,6 @@
 using FarmVox.Terrain;
 using FarmVox.Voxel;
 using UnityEngine;
-using Tree = FarmVox.Terrain.Tree;
 
 namespace FarmVox.Objects
 {
@@ -9,8 +8,9 @@ namespace FarmVox.Objects
     {
         private readonly float _r;
         private readonly float _h;
-        private readonly Vector3Int _pivot;
         private readonly int _trunkHeight;
+
+        public Vector3Int Pivot { get; }
 
         public PineObject(float r, float h, int trunkHeight)
         {
@@ -19,10 +19,10 @@ namespace FarmVox.Objects
             _trunkHeight = trunkHeight;
 
             var radius = Mathf.CeilToInt(r);
-            _pivot = new Vector3Int(-radius, 0, -radius);
+            Pivot = new Vector3Int(radius, 0, radius);
         }
 
-        public Tree Place(Chunks layer, Vector3Int offset, TreeConfig config)
+        public void Place(Chunks layer, Vector3Int position, TreeConfig config)
         {
             var radius = Mathf.CeilToInt(_r);
             var mid = radius + 1;
@@ -37,7 +37,7 @@ namespace FarmVox.Objects
                 {
                     for (var k = 0; k < width; k++)
                     {
-                        var coord = new Vector3Int(i, j, k) + offset + _pivot;
+                        var coord = new Vector3Int(i, j, k) + position;
                         if (j < _trunkHeight + 2 && i == mid && k == mid)
                         {
                             layer.Set(coord, 1);
@@ -63,9 +63,6 @@ namespace FarmVox.Objects
                     }
                 }
             }
-
-            var tree = new Tree(offset);
-            return tree;
         }
     }
 }

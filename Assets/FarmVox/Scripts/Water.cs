@@ -51,5 +51,10 @@ namespace FarmVox.Scripts
                 }
             }
         }
+
+        public void UnloadChunk(Vector3Int chunk)
+        {
+            chunks.UnloadChunk(chunk);
+        }
     }
 }

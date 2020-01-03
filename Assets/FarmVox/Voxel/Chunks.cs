@@ -43,7 +43,7 @@ namespace FarmVox.Voxel
             return Get(coord.x, coord.y, coord.z);
         }
 
-        public float Get(int i, int j, int k)
+        private float Get(int i, int j, int k)
         {
             var origin = GetOrigin(i, j, k);
             if (!_map.ContainsKey(origin))
@@ -59,7 +59,7 @@ namespace FarmVox.Voxel
             return GetColor(coord.x, coord.y, coord.z);
         }
 
-        public Color GetColor(int i, int j, int k)
+        private Color GetColor(int i, int j, int k)
         {
             var origin = GetOrigin(i, j, k);
             return !_map.ContainsKey(origin)
@@ -167,7 +167,7 @@ namespace FarmVox.Voxel
             Set(coord.x, coord.y, coord.z, v);
         }
 
-        public void Set(int i, int j, int k, float v)
+        private void Set(int i, int j, int k, float v)
         {
             var keys = GetKeys(i, j, k);
             foreach (var key in keys)
@@ -192,6 +192,15 @@ namespace FarmVox.Voxel
         public void SetColor(Vector3Int coord, Color v)
         {
             SetColor(coord.x, coord.y, coord.z, v);
+        }
+
+        public void UnloadChunk(Vector3Int origin)
+        {
+            if (_map.TryGetValue(origin, out var chunk))
+            {
+                Destroy(chunk.gameObject);
+                _map.Remove(origin);
+            }
         }
     }
 }

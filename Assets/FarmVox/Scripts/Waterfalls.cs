@@ -62,10 +62,8 @@ namespace FarmVox.Scripts
             chunk[coord - origin] = value;
         }
 
-        public void GenerateWaterfalls(TerrianChunk terrianChunk)
+        public void GenerateChunk(Vector3Int origin)
         {
-            var origin = terrianChunk.Origin;
-
             var chunk = groundChunks.GetChunk(origin);
             chunk.UpdateSurfaceCoords();
 
@@ -127,6 +125,11 @@ namespace FarmVox.Scripts
             {
                 waterTracker.Apply(groundChunks);
             }
+        }
+
+        public void UnloadChunk(Vector3Int origin)
+        {
+            _data.Remove(origin);
         }
 
 
