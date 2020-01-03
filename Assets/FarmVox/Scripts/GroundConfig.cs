@@ -22,7 +22,7 @@ namespace FarmVox.Scripts
         {
             seed = 1599434415,
             frequency = 0.015f,
-            yScale = 0.4f,
+            yScale = 0.2f,
             octaves = 5
         };
 

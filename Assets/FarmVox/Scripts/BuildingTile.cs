@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using FarmVox.Voxel;
 using UnityEngine;
@@ -10,8 +9,9 @@ namespace FarmVox.Scripts
         public Vector3Int[] coords;
         public BoundsInt bounds;
         public MeshRenderer meshRenderer;
+        public MeshFilter meshFilter;
         public Color baseColor = new Color(1, 1, 1);
-        public bool hasBuilding = false;
+        public bool hasBuilding;
         
         private static readonly int Color = Shader.PropertyToID("_Color");
 
@@ -43,6 +43,11 @@ namespace FarmVox.Scripts
         public Vector2 GetCenterXz()
         {
             return bounds.center.GetXz();
+        }
+
+        public void OnDrawGizmos()
+        {
+            Gizmos.DrawWireMesh(meshFilter.mesh);
         }
     }
 }

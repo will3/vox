@@ -181,7 +181,7 @@ MonoBehaviour:
     maxHeight: 64
     plainHeight: 4
     groundHeight: 12
-    hillHeight: 64
+    hillHeight: 48
     size: 32
     rockColor:
       Gradient:
@@ -252,7 +252,7 @@ MonoBehaviour:
       lacunarity: 2
       persistence: 0.5
       octaves: 5
-      yScale: 0.4
+      yScale: 0.2
       xzScale: 1
       type: 0
     rockColorNoise:
@@ -550,6 +550,7 @@ MonoBehaviour:
   water: {fileID: 1603196057}
   trees: {fileID: 1767922226}
   waterfalls: {fileID: 1404610549}
+  tiles: {fileID: 1556930457}
   waitForSeconds: 0.2
   numGridsToGenerate: {x: 1, y: 2, z: 1}
   distanceToUnload: 1

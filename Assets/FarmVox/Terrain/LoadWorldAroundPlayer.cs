@@ -14,6 +14,8 @@ namespace FarmVox.Terrain
         public Water water;
         public Trees trees;
         public Waterfalls waterfalls;
+        public BuildingTiles tiles;
+
         public float waitForSeconds = 0.2f;
 
         private readonly HashSet<Vector3Int> _columnGenerated = new HashSet<Vector3Int>();
@@ -98,6 +100,7 @@ namespace FarmVox.Terrain
                 trees.UnloadChunk(chunk);
                 water.UnloadChunk(chunk);
                 waterfalls.UnloadChunk(chunk);
+                tiles.UnloadChunk(chunk);
 
                 yield return new WaitForSeconds(waitForSeconds);
             }

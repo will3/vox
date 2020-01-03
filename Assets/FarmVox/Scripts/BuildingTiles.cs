@@ -28,8 +28,17 @@ namespace FarmVox.Scripts
                 tiles = new[] {GetOrCreateBuildingTile(coord)};
                 return true;
             }
-            
+
             throw new NotSupportedException($"Dimension {numGrids.x} {numGrids.y} not supported");
+        }
+
+        public void UnloadChunk(Vector3Int origin)
+        {
+            var tiles = _tiles.UnloadChunk(origin);
+            foreach (var tile in tiles)
+            {
+                Destroy(tile.gameObject);
+            }
         }
 
         private bool TryFind2By2(Vector3 coord, out IEnumerable<BuildingTile> tiles)
@@ -80,15 +89,15 @@ namespace FarmVox.Scripts
                 tiles = null;
                 return false;
             }
-            
+
             var d = GetOrCreateBuildingTile(a, 0, zDir);
             if (d.hasBuilding)
             {
                 tiles = null;
                 return false;
             }
-            
-            tiles = new []
+
+            tiles = new[]
             {
                 a, b, c, d
             };
@@ -102,7 +111,7 @@ namespace FarmVox.Scripts
             var bounds = new Bounds(position, size);
             return _tiles.Search(bounds);
         }
-        
+
         public BuildingTile GetOrCreateBuildingTile(Vector3 coord)
         {
             var coords = CalcBuildingTile(coord).ToArray();
@@ -138,7 +147,7 @@ namespace FarmVox.Scripts
             var next = tile.bounds.center.FloorToInt() + new Vector3Int(i, 0, k) * gridSize;
             return GetOrCreateBuildingTile(next);
         }
-        
+
         private IEnumerable<Vector3Int> CalcBuildingTile(Vector3 coord)
         {
             var xz = GetGridXz(coord);
@@ -165,7 +174,7 @@ namespace FarmVox.Scripts
 
             return tiles;
         }
-        
+
         private Vector3Int? SearchDown(Vector3Int coord, int searchDistance)
         {
             for (var i = 0; i < searchDistance; i++)
@@ -204,7 +213,7 @@ namespace FarmVox.Scripts
 
             return null;
         }
-        
+
         private Vector2Int GetGridXz(Vector3 coord)
         {
             var startX = Mathf.FloorToInt(coord.x / gridSize) * gridSize;
