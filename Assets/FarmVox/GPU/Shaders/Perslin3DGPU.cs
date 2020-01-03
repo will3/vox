@@ -25,14 +25,14 @@ namespace FarmVox.GPU.Shaders
 
         void Dispatch()
         {
-            var frequency = _noise.Frequency;
-            var amplitude = _noise.Amplitude;
-            var seed = _noise.Seed;
-            var lacunarity = _noise.Lacunarity;
-            var persistence = _noise.Persistence;
-            var octaves = _noise.Octaves;
-            var yScale = _noise.YScale;
-            var xzScale = _noise.XzScale;
+            var frequency = _noise.frequency;
+            var amplitude = _noise.amplitude;
+            var seed = _noise.seed;
+            var lacunarity = _noise.lacunarity;
+            var persistence = _noise.persistence;
+            var octaves = _noise.octaves;
+            var yScale = _noise.yScale;
+            var xzScale = _noise.xzScale;
 
             _shader.SetBuffer(0, "_Results", Results);
             _shader.SetFloat("_Persistence", persistence);
@@ -45,7 +45,7 @@ namespace FarmVox.GPU.Shaders
             _shader.SetFloat("_XZScale", xzScale);
             _shader.SetFloat("_Amplitude", amplitude);
             _shader.SetInt("_DataSize", _dataSize);
-            _shader.SetInt("_Type", (int)_noise.Type);
+            _shader.SetInt("_Type", (int)_noise.type);
 
             _shader.Dispatch(0, 
                 Mathf.CeilToInt(_dataSize / (float) _workGroups[0]),

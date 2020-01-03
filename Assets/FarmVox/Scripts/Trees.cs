@@ -2,6 +2,7 @@ using System.Linq;
 using FarmVox.Objects;
 using FarmVox.Terrain;
 using FarmVox.Voxel;
+using LibNoise;
 using UnityEngine;
 using Tree = FarmVox.Terrain.Tree;
 
@@ -15,15 +16,17 @@ namespace FarmVox.Scripts
         public TreeConfig config;
         public Ground ground;
         public Water water;
-        
+
         private readonly QuadTree<Tree> _treeMap = new QuadTree<Tree>(32);
+
+        private ModuleBase _noiseModule;
+
+        private ModuleBase NoiseModule => _noiseModule ?? (_noiseModule = ModuleBuilder.Build(config.noise));
 
         public void GenerateTrees(TerrianChunk terrianChunk)
         {
             var groundConfig = ground.config;
             var defaultLayer = ground.chunks;
-
-            var treeNoise = config.noise;
 
             var pine = new PineObject(3.0f, 10, 2);
 
@@ -36,23 +39,12 @@ namespace FarmVox.Scripts
                 var localCoord = kv.Key;
                 var normal = kv.Value;
 
-                // Cannot be stored in tree map
-                if (localCoord.x >= groundConfig.size || localCoord.y >= groundConfig.size ||
-                    localCoord.z >= groundConfig.size)
-                {
-                    continue;
-                }
-
                 var j = localCoord.y;
 
                 var globalCoord = localCoord + chunk.origin + new Vector3Int(0, 1, 0);
-                var noise = (float) treeNoise.GetValue(globalCoord);
-                var treeDensity = config.densityFilter.GetValue(noise);
+                var noise = (float) NoiseModule.GetValue(globalCoord);
 
-                if (config.random.NextDouble() * treeDensity > 0.02)
-                {
-                    continue;
-                }
+                noise = config.densityFilter.GetValue(noise);
 
                 var absY = j + chunk.origin.y;
                 var relY = absY - groundConfig.groundHeight;
@@ -62,19 +54,15 @@ namespace FarmVox.Scripts
                     continue;
                 }
 
-                var angle = Vector3.Angle(Vector3.up, normal);
-                var up = Mathf.Cos(angle * Mathf.Deg2Rad);
-                if (up < 0.7f)
-                {
-                    continue;
-                }
+                var dot = Vector3.Dot(Vector3.up, normal);
+                var directionFactor = Mathf.Clamp01(config.directionFilter.GetValue(dot));
 
                 var height = relY / groundConfig.maxHeight;
-                var treeHeightValue = config.heightGradient.GetValue(height);
+                var heightFactor = Mathf.Clamp01(config.heightGradient.GetValue(height));
 
-                var value = noise * treeHeightValue;
+                var value = noise * heightFactor * directionFactor;
 
-                if (value < config.threshold)
+                if (value < config.bias)
                 {
                     continue;
                 }

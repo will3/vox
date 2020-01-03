@@ -24,25 +24,23 @@ namespace FarmVox.Scripts
 
         public Noise heightNoise = new Noise
         {
-            Seed = 1599434415,
-            Frequency = 0.015f,
-            YScale = 0.4f,
-            Octaves = 5
+            seed = 1599434415,
+            frequency = 0.015f,
+            yScale = 0.4f,
+            octaves = 5
         };
 
         public Noise rockColorNoise = new Noise
         {
-            Seed = NoiseUtils.NextSeed(),
-            Frequency = 0.05f,
-            YScale = 4.0f,
-            Amplitude = 1.0f
+            frequency = 0.05f,
+            yScale = 4.0f,
+            amplitude = 1.0f
         };
 
         public Noise grassNoise = new Noise
         {
-            Seed = NoiseUtils.NextSeed(),
-            Frequency = 0.01f,
-            Amplitude = 2.0f
+            frequency = 0.01f,
+            amplitude = 2.0f
         };
 
         public ValueGradient grassHeightFilter = new ValueGradient(new Dictionary<float, float>

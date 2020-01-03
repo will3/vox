@@ -13,7 +13,7 @@ namespace FarmVox.Scripts
         public float width = 10.0f;
         public float min = 0.9f;
         public float variance = 0.7f;
-        public Random random = NoiseUtils.NextRandom();
+        public Random random = new Random();
         public float chance = 0.01f;
 
         public ValueGradient heightFilter = new ValueGradient(new Dictionary<float, float>

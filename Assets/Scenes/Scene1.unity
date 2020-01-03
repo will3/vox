@@ -141,8 +141,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a709a314f7d124b32be69669a48c99de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  config:
-    size: 32
+  size: 32
   ground: {fileID: 316894774}
   water: {fileID: 1603196057}
   trees: {fileID: 1767922226}
@@ -296,35 +295,35 @@ MonoBehaviour:
         m_NumAlphaKeys: 2
       Banding: 0
     heightNoise:
-      Frequency: 0.015
-      Amplitude: 1
-      Seed: 1599434415
-      Lacunarity: 2
-      Persistence: 0.5
-      Octaves: 5
-      YScale: 0.4
-      XzScale: 1
-      Type: 0
+      frequency: 0.015
+      amplitude: 1
+      seed: 1599434415
+      lacunarity: 2
+      persistence: 0.5
+      octaves: 5
+      yScale: 0.4
+      xzScale: 1
+      type: 0
     rockColorNoise:
-      Frequency: 0.05
-      Amplitude: 1
-      Seed: 1165647985
-      Lacunarity: 2
-      Persistence: 0.5
-      Octaves: 5
-      YScale: 4
-      XzScale: 1
-      Type: 0
+      frequency: 0.05
+      amplitude: 1
+      seed: 1337
+      lacunarity: 2
+      persistence: 0.5
+      octaves: 5
+      yScale: 4
+      xzScale: 1
+      type: 0
     grassNoise:
-      Frequency: 0.01
-      Amplitude: 2
-      Seed: 408182023
-      Lacunarity: 2
-      Persistence: 0.5
-      Octaves: 5
-      YScale: 1
-      XzScale: 1
-      Type: 0
+      frequency: 0.01
+      amplitude: 2
+      seed: 1337
+      lacunarity: 2
+      persistence: 0.5
+      octaves: 5
+      yScale: 1
+      xzScale: 1
+      type: 0
     grassHeightFilter:
       Curve:
         serializedVersion: 2
@@ -458,6 +457,7 @@ GameObject:
   m_Component:
   - component: {fileID: 362043728}
   - component: {fileID: 362043727}
+  - component: {fileID: 362043729}
   m_Layer: 0
   m_Name: Game
   m_TagString: GameController
@@ -477,7 +477,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b8e92769eacb4672b888f1ab521aeaf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  seed: 1337
 --- !u!4 &362043728
 Transform:
   m_ObjectHideFlags: 0
@@ -492,6 +491,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &362043729
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 362043726}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43e559f56941475fbfb9e73c7e4f2d03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  seed: 1599434415
+  ground: {fileID: 316894774}
+  waterfalls: {fileID: 1404610549}
+  trees: {fileID: 1767922226}
 --- !u!1 &490495045
 GameObject:
   m_ObjectHideFlags: 0
@@ -1432,6 +1447,16 @@ MonoBehaviour:
   config:
     trunkColor: {r: 0.30980393, g: 0.2509804, b: 0.16470589, a: 1}
     leafColor: {r: 0.18431373, g: 0.31764707, b: 0.047058824, a: 1}
+    noise:
+      frequency: 0.005
+      amplitude: 1
+      seed: 1337
+      lacunarity: 2
+      persistence: 0.5
+      octaves: 5
+      yScale: 1
+      xzScale: 1
+      type: 0
     heightGradient:
       Curve:
         serializedVersion: 2
@@ -1462,10 +1487,35 @@ MonoBehaviour:
         serializedVersion: 2
         m_Curve:
         - serializedVersion: 3
-          time: -1
+          time: 0
           value: 0
-          inSlope: 0.5
-          outSlope: 0.5
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 34
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+    directionFilter:
+      Curve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0.5
+          value: 0
+          inSlope: 1
+          outSlope: 1
           tangentMode: 0
           weightedMode: 0
           inWeight: 0
@@ -1473,8 +1523,8 @@ MonoBehaviour:
         - serializedVersion: 3
           time: 1
           value: 1
-          inSlope: 0.5
-          outSlope: 0.5
+          inSlope: 1
+          outSlope: 1
           tangentMode: 0
           weightedMode: 0
           inWeight: 0.33333334
@@ -1482,8 +1532,8 @@ MonoBehaviour:
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
-    threshold: 0.4
-    minDis: 3
+    bias: 0.4
+    minDis: 4
   ground: {fileID: 316894774}
   water: {fileID: 1603196057}
 --- !u!1 &1899087035
