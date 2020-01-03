@@ -141,245 +141,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a709a314f7d124b32be69669a48c99de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Config:
-    Size: 32
-    MaxHeight: 64
-    PlainHeight: 4
-    WaterLevel: 0
-    GroundHeight: 12
-    AoStrength: 0.15
-    TreeMinDis: 3
-    Biome:
-      HillHeight: 64
-      WaterColor: {r: 0.16078432, g: 0.49411765, b: 0.7137255, a: 0.4}
-      RockColor:
-        Gradient:
-          serializedVersion: 2
-          key0: {r: 0.4339623, g: 0.4206276, b: 0.39506945, a: 1}
-          key1: {r: 0.6132076, g: 0.5737251, b: 0.50040054, a: 1}
-          key2: {r: 0, g: 0, b: 0, a: 0}
-          key3: {r: 0, g: 0, b: 0, a: 0}
-          key4: {r: 0, g: 0, b: 0, a: 0}
-          key5: {r: 0, g: 0, b: 0, a: 0}
-          key6: {r: 0, g: 0, b: 0, a: 0}
-          key7: {r: 0, g: 0, b: 0, a: 0}
-          ctime0: 0
-          ctime1: 65535
-          ctime2: 0
-          ctime3: 0
-          ctime4: 0
-          ctime5: 0
-          ctime6: 0
-          ctime7: 0
-          atime0: 0
-          atime1: 65535
-          atime2: 0
-          atime3: 0
-          atime4: 0
-          atime5: 0
-          atime6: 0
-          atime7: 0
-          m_Mode: 0
-          m_NumColorKeys: 2
-          m_NumAlphaKeys: 2
-        Banding: 0
-      GrassColor:
-        Gradient:
-          serializedVersion: 2
-          key0: {r: 0.34901962, g: 0.45490196, b: 0.1254902, a: 1}
-          key1: {r: 0.34901962, g: 0.45490196, b: 0.1254902, a: 1}
-          key2: {r: 0, g: 0, b: 0, a: 0}
-          key3: {r: 0, g: 0, b: 0, a: 0}
-          key4: {r: 0, g: 0, b: 0, a: 0}
-          key5: {r: 0, g: 0, b: 0, a: 0}
-          key6: {r: 0, g: 0, b: 0, a: 0}
-          key7: {r: 0, g: 0, b: 0, a: 0}
-          ctime0: 0
-          ctime1: 65535
-          ctime2: 0
-          ctime3: 0
-          ctime4: 0
-          ctime5: 0
-          ctime6: 0
-          ctime7: 0
-          atime0: 0
-          atime1: 65535
-          atime2: 0
-          atime3: 0
-          atime4: 0
-          atime5: 0
-          atime6: 0
-          atime7: 0
-          m_Mode: 0
-          m_NumColorKeys: 2
-          m_NumAlphaKeys: 2
-        Banding: 0
-      HeightNoise:
-        Frequency: 0.015
-        Amplitude: 1
-        Seed: 1599434415
-        Lacunarity: 2
-        Persistence: 0.5
-        Octaves: 5
-        YScale: 0.4
-        XzScale: 1
-        Type: 0
-      RockNoise:
-        Frequency: 0.02
-        Amplitude: 1.5
-        Seed: 261942728
-        Lacunarity: 2
-        Persistence: 0.5
-        Octaves: 5
-        YScale: 1
-        XzScale: 1
-        Type: 0
-      RockColorNoise:
-        Frequency: 0.05
-        Amplitude: 1
-        Seed: 1439879474
-        Lacunarity: 2
-        Persistence: 0.5
-        Octaves: 5
-        YScale: 4
-        XzScale: 1
-        Type: 0
-      GrassNoise:
-        Frequency: 0.01
-        Amplitude: 2
-        Seed: 975866019
-        Lacunarity: 2
-        Persistence: 0.5
-        Octaves: 5
-        YScale: 1
-        XzScale: 1
-        Type: 0
-      GrassHeightFilter:
-        Curve:
-          serializedVersion: 2
-          m_Curve:
-          - serializedVersion: 3
-            time: 0
-            value: 0.2
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: 0.5
-            value: -0.5
-            inSlope: -2.0533333
-            outSlope: -2.0533333
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0.087087035
-          - serializedVersion: 3
-            time: 1
-            value: -1
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          m_PreInfinity: 2
-          m_PostInfinity: 2
-          m_RotationOrder: 4
-      GrassNormalFilter:
-        Curve:
-          serializedVersion: 2
-          m_Curve:
-          - serializedVersion: 3
-            time: -1
-            value: 0
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: -0.5
-            value: 0
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: 1
-            value: 1
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          m_PreInfinity: 2
-          m_PostInfinity: 2
-          m_RotationOrder: 4
-      GrassValue: 1
-      HeightFilter:
-        Curve:
-          serializedVersion: 2
-          m_Curve:
-          - serializedVersion: 3
-            time: -1.0333328
-            value: -0.26999512
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: -0.2
-            value: 0.05
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: 0.15
-            value: 0.1
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: 0.5
-            value: 0.75193787
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          - serializedVersion: 3
-            time: 1
-            value: 1.0070641
-            inSlope: 0
-            outSlope: 0
-            tangentMode: 0
-            weightedMode: 0
-            inWeight: 0
-            outWeight: 0
-          m_PreInfinity: 2
-          m_PostInfinity: 2
-          m_RotationOrder: 4
-  defaultLayer: {fileID: 316894773}
-  trees: {fileID: 1767922226}
-  waterfalls: {fileID: 1404610549}
+  config:
+    size: 32
   ground: {fileID: 316894774}
   water: {fileID: 1603196057}
+  trees: {fileID: 1767922226}
+  waterfalls: {fileID: 1404610549}
   numGridsToGenerate: {x: 2, y: 3, z: 2}
 --- !u!4 &108989302
 Transform:
@@ -460,7 +227,227 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76477d1d095a4ce09041c8c0ea57d70d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  config:
+    maxHeight: 64
+    plainHeight: 4
+    groundHeight: 12
+    hillHeight: 64
+    size: 32
+    rockColor:
+      Gradient:
+        serializedVersion: 2
+        key0: {r: 0.39607844, g: 0.3019608, b: 0.12156863, a: 1}
+        key1: {r: 0.39607844, g: 0.3019608, b: 0.12156863, a: 1}
+        key2: {r: 0, g: 0, b: 0, a: 0}
+        key3: {r: 0, g: 0, b: 0, a: 0}
+        key4: {r: 0, g: 0, b: 0, a: 0}
+        key5: {r: 0, g: 0, b: 0, a: 0}
+        key6: {r: 0, g: 0, b: 0, a: 0}
+        key7: {r: 0, g: 0, b: 0, a: 0}
+        ctime0: 0
+        ctime1: 65535
+        ctime2: 0
+        ctime3: 0
+        ctime4: 0
+        ctime5: 0
+        ctime6: 0
+        ctime7: 0
+        atime0: 0
+        atime1: 65535
+        atime2: 0
+        atime3: 0
+        atime4: 0
+        atime5: 0
+        atime6: 0
+        atime7: 0
+        m_Mode: 0
+        m_NumColorKeys: 2
+        m_NumAlphaKeys: 2
+      Banding: 0
+    grassColor:
+      Gradient:
+        serializedVersion: 2
+        key0: {r: 0.34901962, g: 0.45490196, b: 0.1254902, a: 1}
+        key1: {r: 0.34901962, g: 0.45490196, b: 0.1254902, a: 1}
+        key2: {r: 0, g: 0, b: 0, a: 0}
+        key3: {r: 0, g: 0, b: 0, a: 0}
+        key4: {r: 0, g: 0, b: 0, a: 0}
+        key5: {r: 0, g: 0, b: 0, a: 0}
+        key6: {r: 0, g: 0, b: 0, a: 0}
+        key7: {r: 0, g: 0, b: 0, a: 0}
+        ctime0: 0
+        ctime1: 65535
+        ctime2: 0
+        ctime3: 0
+        ctime4: 0
+        ctime5: 0
+        ctime6: 0
+        ctime7: 0
+        atime0: 0
+        atime1: 65535
+        atime2: 0
+        atime3: 0
+        atime4: 0
+        atime5: 0
+        atime6: 0
+        atime7: 0
+        m_Mode: 0
+        m_NumColorKeys: 2
+        m_NumAlphaKeys: 2
+      Banding: 0
+    heightNoise:
+      Frequency: 0.015
+      Amplitude: 1
+      Seed: 1599434415
+      Lacunarity: 2
+      Persistence: 0.5
+      Octaves: 5
+      YScale: 0.4
+      XzScale: 1
+      Type: 0
+    rockColorNoise:
+      Frequency: 0.05
+      Amplitude: 1
+      Seed: 1165647985
+      Lacunarity: 2
+      Persistence: 0.5
+      Octaves: 5
+      YScale: 4
+      XzScale: 1
+      Type: 0
+    grassNoise:
+      Frequency: 0.01
+      Amplitude: 2
+      Seed: 408182023
+      Lacunarity: 2
+      Persistence: 0.5
+      Octaves: 5
+      YScale: 1
+      XzScale: 1
+      Type: 0
+    grassHeightFilter:
+      Curve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0.2
+          inSlope: -1.4
+          outSlope: -1.4
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 0.5
+          value: -0.5
+          inSlope: -1.2
+          outSlope: -1.2
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 1
+          value: -1
+          inSlope: -1
+          outSlope: -1
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+    grassNormalFilter:
+      Curve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: -1
+          value: 0
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: -0.5
+          value: 0
+          inSlope: 0.33333334
+          outSlope: 0.33333334
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 0.6666667
+          outSlope: 0.6666667
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+    grassValue: 1
+    heightFilter:
+      Curve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: -1
+          value: -0.27
+          inSlope: 0.40000004
+          outSlope: 0.40000004
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: -0.2
+          value: 0.05
+          inSlope: 0.27142859
+          outSlope: 0.27142859
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 0.15
+          value: 0.1
+          inSlope: 1
+          outSlope: 1
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 0.5
+          value: 0.75
+          inSlope: 1.1785715
+          outSlope: 1.1785715
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 1
+          value: 1
+          inSlope: 0.5
+          outSlope: 0.5
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
   chunks: {fileID: 316894773}
+  water: {fileID: 1603196057}
 --- !u!1 &362043726
 GameObject:
   m_ObjectHideFlags: 0
@@ -490,6 +477,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b8e92769eacb4672b888f1ab521aeaf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  seed: 1337
 --- !u!4 &362043728
 Transform:
   m_ObjectHideFlags: 0
@@ -868,7 +856,7 @@ GameObject:
   - component: {fileID: 1066132913}
   - component: {fileID: 1066132915}
   m_Layer: 0
-  m_Name: Local Nav Mesh Builder
+  m_Name: Nav Mesh Builder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1003,6 +991,7 @@ MonoBehaviour:
     type: 3}
   wallHeightMultiplier: 3
   terrian: {fileID: 108989301}
+  water: {fileID: 1603196057}
   ground: {fileID: 316894774}
 --- !u!1 &1330442279
 GameObject:
@@ -1238,6 +1227,8 @@ MonoBehaviour:
       m_RotationOrder: 4
   groundChunks: {fileID: 316894773}
   terrian: {fileID: 108989301}
+  water: {fileID: 1603196057}
+  ground: {fileID: 316894774}
   size: 32
 --- !u!4 &1404610550
 Transform:
@@ -1367,7 +1358,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ground: {fileID: 316894774}
   chunks: {fileID: 1603196056}
-  terrian: {fileID: 108989301}
+  config:
+    waterColor: {r: 0.16078432, g: 0.49411765, b: 0.7137255, a: 0.4}
+    waterLevel: 12
 --- !u!1 &1767922223
 GameObject:
   m_ObjectHideFlags: 0
@@ -1490,7 +1483,9 @@ MonoBehaviour:
         m_PostInfinity: 2
         m_RotationOrder: 4
     threshold: 0.4
+    minDis: 3
   ground: {fileID: 316894774}
+  water: {fileID: 1603196057}
 --- !u!1 &1899087035
 GameObject:
   m_ObjectHideFlags: 0

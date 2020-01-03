@@ -31,6 +31,7 @@ namespace FarmVox.Scripts
         public GameObject structurePrefab;
         public int wallHeightMultiplier = 5;
         public Terrian terrian;
+        public Water water;
         public Ground ground;
 
         private readonly QuadTree<GameObject> _structures = new QuadTree<GameObject>(32);
@@ -68,7 +69,7 @@ namespace FarmVox.Scripts
             structure.gridSize = tiles.gridSize;
             structure.numGrids = structureData.numGrids;
             structure.structureType = structureData.type;
-            var y = Mathf.Max(buildingCoord.y, terrian.Config.ActualWaterLevel); 
+            var y = Mathf.Max(buildingCoord.y, water.config.waterLevel); 
             structure.wallHeight = (Mathf.CeilToInt(y / (float) wallHeightMultiplier) + 3)
                                    * wallHeightMultiplier;
             _structures.Add(buildingCoord, structureGo);

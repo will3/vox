@@ -21,10 +21,10 @@ namespace FarmVox.Terrain
         private readonly List<Vector3Int> _emptyCoords = new List<Vector3Int>();
         private readonly List<float> _costs = new List<float>();
 
-        readonly TerrianConfig _config;
+        readonly WaterConfig _config;
         private readonly Waterfalls _waterfalls;
 
-        public WaterTracker(TerrianConfig config, Waterfalls waterfalls)
+        public WaterTracker(WaterConfig config, Waterfalls waterfalls)
         {
             _config = config;
             _waterfalls = waterfalls;
@@ -87,7 +87,7 @@ namespace FarmVox.Terrain
             {
                 var coord = _coords[i];
                 var cost = _costs[i];
-                chunks.SetColor(coord.x, coord.y, coord.z, _config.Biome.WaterColor);
+                chunks.SetColor(coord.x, coord.y, coord.z, _config.waterColor);
                 _waterfalls.SetWaterfall(coord, cost);
             }
             foreach (var coord in _emptyCoords)

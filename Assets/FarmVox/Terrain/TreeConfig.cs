@@ -17,6 +17,7 @@ namespace FarmVox.Terrain
         public ValueGradient heightGradient;
         public ValueGradient densityFilter;
         public float threshold = 0.4f;
+        public int minDis = 3;
 
         public TreeConfig()
         {

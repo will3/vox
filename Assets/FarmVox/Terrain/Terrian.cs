@@ -8,10 +8,7 @@ namespace FarmVox.Terrain
 {
     public class Terrian : MonoBehaviour
     {
-        public TerrianConfig Config;
-
-        private int Size => Config.Size;
-        
+        public int size = 32;
         public Ground ground;
         public Water water;
         public Trees trees;
@@ -31,7 +28,7 @@ namespace FarmVox.Terrain
             {
                 for (var k = -numGridsToGenerate.z; k < numGridsToGenerate.z; k++)
                 {
-                    var columnOrigin = new Vector3Int(i, 0, k) * Size;
+                    var columnOrigin = new Vector3Int(i, 0, k) * size;
 
                     if (_columnGenerated.Contains(columnOrigin))
                     {
@@ -72,7 +69,7 @@ namespace FarmVox.Terrain
                         continue;
                     }
 
-                    var nextOrigin = origin + new Vector3Int(i, 0, k) * Size;
+                    var nextOrigin = origin + new Vector3Int(i, 0, k) * size;
 
                     if (!_columnGenerated.Contains(nextOrigin))
                     {
@@ -88,7 +85,7 @@ namespace FarmVox.Terrain
         {
             for (var i = 0; i < numGridsToGenerate.y; i++)
             {
-                var origin = new Vector3Int(columnOrigin.x, Size * i, columnOrigin.z);
+                var origin = new Vector3Int(columnOrigin.x, size * i, columnOrigin.z);
                 var chunk = GetOrCreateTerrianChunk(origin);
                 yield return chunk;
             }
@@ -99,7 +96,7 @@ namespace FarmVox.Terrain
             foreach (var chunk in GetChunks(origin))
             {
                 ground.GenerateChunk(chunk, this);
-                trees.GenerateTrees(this, chunk);
+                trees.GenerateTrees(chunk);
                 water.GenerateChunk(chunk.Origin);
             }
         }
@@ -116,8 +113,8 @@ namespace FarmVox.Terrain
                 return _map[origin];
             }
 
-            var key = new Vector3Int(origin.x / Size, origin.y / Size, origin.z / Size);
-            _map[origin] = new TerrianChunk(key, Size);
+            var key = new Vector3Int(origin.x / size, origin.y / size, origin.z / size);
+            _map[origin] = new TerrianChunk(key, size);
             return _map[origin];
         }
     }

@@ -29,6 +29,8 @@ namespace FarmVox.Scripts
 
         public Chunks groundChunks;
         public Terrian terrian;
+        public Water water;
+        public Ground ground;
         public int size = 32;
 
         public float GetWaterfall(Vector3Int coord)
@@ -68,7 +70,7 @@ namespace FarmVox.Scripts
             var chunk = groundChunks.GetChunk(origin);
             chunk.UpdateSurfaceCoords();
 
-            var terrianConfig = terrian.Config;
+            var groundConfig = ground.config;
 
             foreach (var coord in chunk.SurfaceCoords)
             {
@@ -76,7 +78,7 @@ namespace FarmVox.Scripts
 
                 var absY = coord.y + origin.y;
 
-                var height = (absY - terrianConfig.GroundHeight) / terrianConfig.MaxHeight;
+                var height = (absY - groundConfig.groundHeight) / groundConfig.maxHeight;
 
                 var heightValue = heightFilter.GetValue(height);
 
@@ -95,7 +97,7 @@ namespace FarmVox.Scripts
         {
             var nextPoint = coord;
 
-            var waterTracker = new WaterTracker(terrian.Config, this);
+            var waterTracker = new WaterTracker(water.config, this);
             waterTracker.Start(coord);
 
             var count = 0;
@@ -131,9 +133,7 @@ namespace FarmVox.Scripts
 
         private Vector3Int? ProcessNextWater(Vector3Int coord, WaterTracker waterTracker)
         {
-            var terrianConfig = terrian.Config;
-
-            if (coord.y < terrianConfig.WaterLevel + terrianConfig.GroundHeight)
+            if (coord.y < water.config.waterLevel)
             {
                 waterTracker.ReachedWater = true;
                 return null;

@@ -12,7 +12,6 @@ int _WaterLevel;
 
 float _HillHeight;
 float _GroundHeight;
-float4 _WaterColor;
 
 // Rock color
 float4 _RockGradient[8];
@@ -97,7 +96,7 @@ float getGrassDot(int i, int j, int k) {
 }
 
 float getGrass(int3 coord, float heightRatio, int absY) {
-    if (absY < _WaterLevel + _GroundHeight - 1) {
+    if (absY < _WaterLevel - 1) {
         return 0;
     }
     

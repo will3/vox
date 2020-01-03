@@ -22,5 +22,12 @@ namespace FarmVox
                 byte.Parse(hex.Substring(4, 2), NumberStyles.HexNumber),
                 byte.Parse(hex.Substring(6, 2), NumberStyles.HexNumber));
         }
+
+        public static Color GetColor(string hex, float a)
+        {
+            var color = GetColor(hex);
+            color.a = a;
+            return color;
+        }
     }
 }

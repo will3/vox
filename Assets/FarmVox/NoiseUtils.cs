@@ -27,5 +27,10 @@ namespace FarmVox
             var random = new Random(seed);
             return random;
         }
+
+        public static int NextSeed()
+        {
+            return _r.Next();
+        }
     }
 }

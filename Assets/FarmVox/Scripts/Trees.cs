@@ -14,12 +14,13 @@ namespace FarmVox.Scripts
         public GameObject treePrefab;
         public TreeConfig config;
         public Ground ground;
+        public Water water;
         
         private readonly QuadTree<Tree> _treeMap = new QuadTree<Tree>(32);
 
-        public void GenerateTrees(Terrian terrian, TerrianChunk terrianChunk)
+        public void GenerateTrees(TerrianChunk terrianChunk)
         {
-            var terrianConfig = terrian.Config;
+            var groundConfig = ground.config;
             var defaultLayer = ground.chunks;
 
             var treeNoise = config.noise;
@@ -36,8 +37,8 @@ namespace FarmVox.Scripts
                 var normal = kv.Value;
 
                 // Cannot be stored in tree map
-                if (localCoord.x >= terrianConfig.Size || localCoord.y >= terrianConfig.Size ||
-                    localCoord.z >= terrianConfig.Size)
+                if (localCoord.x >= groundConfig.size || localCoord.y >= groundConfig.size ||
+                    localCoord.z >= groundConfig.size)
                 {
                     continue;
                 }
@@ -53,9 +54,10 @@ namespace FarmVox.Scripts
                     continue;
                 }
 
-                var relY = j + chunk.origin.y - terrianConfig.GroundHeight;
+                var absY = j + chunk.origin.y;
+                var relY = absY - groundConfig.groundHeight;
 
-                if (relY <= terrianConfig.WaterLevel)
+                if (absY <= water.config.waterLevel)
                 {
                     continue;
                 }
@@ -67,7 +69,7 @@ namespace FarmVox.Scripts
                     continue;
                 }
 
-                var height = relY / terrianConfig.MaxHeight;
+                var height = relY / groundConfig.maxHeight;
                 var treeHeightValue = config.heightGradient.GetValue(height);
 
                 var value = noise * treeHeightValue;
@@ -77,7 +79,7 @@ namespace FarmVox.Scripts
                     continue;
                 }
 
-                var radius = terrianConfig.TreeMinDis;
+                var radius = config.minDis;
                 var treeBoundsSize = new Vector3Int(radius, radius, radius);
                 var treeBounds = new BoundsInt(globalCoord - treeBoundsSize, treeBoundsSize * 2);
                 if (_treeMap.Search(treeBounds).Any())

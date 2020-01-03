@@ -1,28 +1,34 @@
-using FarmVox.Terrain;
+using System;
 using FarmVox.Voxel;
 using UnityEngine;
 
 namespace FarmVox.Scripts
 {
+    [Serializable]
+    public class WaterConfig
+    {
+        public Color waterColor = ColorUtils.GetColor("#297eb6", 0.4f);
+        public int waterLevel = 12;
+    }
+
     public class Water : MonoBehaviour
     {
         public Ground ground;
         public Chunks chunks;
-        public Terrian terrian;
+        public WaterConfig config;
 
         public void GenerateChunk(Vector3Int origin)
         {
-            var config = terrian.Config;
             var waterChunk = chunks.GetOrCreateChunk(origin);
 
-            if (origin.y >= config.ActualWaterLevel)
+            if (origin.y >= config.waterLevel)
             {
                 return;
             }
 
             var chunk = ground.GetChunk(origin);
-            
-            float maxJ = terrian.Config.ActualWaterLevel - chunk.origin.y;
+
+            float maxJ = config.waterLevel - chunk.origin.y;
             if (maxJ > chunk.size)
             {
                 maxJ = chunk.size;
@@ -40,7 +46,7 @@ namespace FarmVox.Scripts
                         }
 
                         waterChunk.Set(i, j, k, 1);
-                        waterChunk.SetColor(i, j, k, config.Biome.WaterColor);
+                        waterChunk.SetColor(i, j, k, this.config.waterColor);
                     }
                 }
             }
