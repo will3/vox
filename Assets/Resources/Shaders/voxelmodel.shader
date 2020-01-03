@@ -42,6 +42,7 @@
                 float4 vertex : SV_POSITION;
                 float4 color : COLOR;
                 float3 normal : NORMAL;
+                float3 worldPos : TEXCOORD1;
             };
 
             v2f vert (appdata v)
@@ -60,6 +61,8 @@
                 int3 worldCoord = coord + floor(_Origin);
                 
                 o.color = c;
+                
+                o.worldPos = mul(unity_ObjectToWorld, v.vertex);
 
                 return o;
             }

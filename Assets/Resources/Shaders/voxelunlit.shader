@@ -100,6 +100,7 @@
                 float4 vertex : SV_POSITION;
                 float4 color : COLOR;
                 float3 normal : NORMAL;
+                float3 worldPos : TEXCOORD1;
             };
 
             v2f vert (appdata v)
@@ -150,6 +151,8 @@
                     o.color = float4(1.0, 0, 0, 1.0);
                     return o;
                 }
+                
+                o.worldPos = mul(unity_ObjectToWorld, v.vertex);
 
                 return o;
             }
@@ -170,6 +173,15 @@
 
                 // apply fog
                 UNITY_APPLY_FOG(i.fogCoord, col);
+                
+                float4 vision = float4(-32, 32, -32, 32);
+
+                float x = i.worldPos.x;
+                float z = i.worldPos.z;
+                
+                //if (x < vision[0] || x > vision[1] || z < vision[2] || z > vision[3]) {
+                    //discard;
+                //}
                 
                 return col;
             }

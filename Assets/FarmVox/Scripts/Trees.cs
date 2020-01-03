@@ -1,7 +1,6 @@
 using FarmVox.Objects;
 using FarmVox.Terrain;
 using FarmVox.Voxel;
-using FarmVox.Workers;
 using UnityEngine;
 
 namespace FarmVox.Scripts
@@ -14,30 +13,14 @@ namespace FarmVox.Scripts
         public GameObject treePrefab;
         public TreeConfig config;
 
-        private void Start()
+        public void GenerateTrees(Terrian terrian, TerrianChunk terrianChunk)
         {
-            if (chunks == null)
+            if (_treeMap == null)
             {
-                chunks = GetComponent<Chunks>();
+                var boundsInt = terrian.Config.BoundsInt;
+                _treeMap = new TreeMap(boundsInt);
             }
-        }
 
-        public void GenerateTrees(Terrian terrian)
-        {
-            var boundsInt = terrian.Config.BoundsInt;
-
-            _treeMap = new TreeMap(boundsInt);
-
-            var queue = GameController.Instance.Queue;
-
-            terrian.VisitChunks(chunk =>
-            {
-                queue.Enqueue(new ActionWorker(() => { GenerateTrees(terrian, chunk); }));
-            });
-        }
-
-        private void GenerateTrees(Terrian terrian, TerrianChunk terrianChunk)
-        {
             var terrianConfig = terrian.Config;
             var defaultLayer = terrian.defaultLayer;
 

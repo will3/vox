@@ -734,7 +734,7 @@ MonoBehaviour:
   keysEnabled: 1
   orthographicSize: 50
   playerObject: {fileID: 490495045}
-  playerPositionY: 12
+  playerPositionY: 16
   rotateAmount: 90
 --- !u!1 &844859491
 GameObject:
@@ -1404,7 +1404,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4098663ec67a4d68a1aa933dca59689c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chunks: {fileID: 0}
+  chunks: {fileID: 1767922225}
   treePrefab: {fileID: 1938742266042240935, guid: 71e8aed23ff004f169449469e00b718f,
     type: 3}
   config:

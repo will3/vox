@@ -52,12 +52,12 @@
                 float z = i.worldPos.z;
                 float g = _Gap / 2.0;
                 
-                float gx = floor(x / _GridSize) * _GridSize;
-                float gz = floor(z / _GridSize) * _GridSize;
+                float gx = round(x / _GridSize) * _GridSize;
+                float gz = round(z / _GridSize) * _GridSize;
                 float xdis = abs(x - gx);
                 float zdis = abs(z - gz); 
-                if (xdis < g || xdis > _GridSize - g ||
-                    zdis < g || zdis > _GridSize - g) {
+                if (xdis < g ||
+                    zdis < g) {
                     discard;
                 }
 
