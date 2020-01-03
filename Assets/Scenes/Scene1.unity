@@ -143,12 +143,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Config:
     Size: 32
-    MaxChunksY: 2
     MaxHeight: 64
     PlainHeight: 4
     WaterLevel: 0
     GroundHeight: 12
-    MaxChunksX: 1
     AoStrength: 0.15
     TreeMinDis: 3
     Biome:
@@ -383,6 +381,7 @@ MonoBehaviour:
   wallLayer: {fileID: 1223485162}
   trees: {fileID: 1767922226}
   waterfalls: {fileID: 1404610549}
+  numGridsToGenerate: {x: 2, y: 3, z: 2}
 --- !u!4 &108989302
 Transform:
   m_ObjectHideFlags: 0

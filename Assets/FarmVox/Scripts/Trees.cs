@@ -1,7 +1,9 @@
+using System.Linq;
 using FarmVox.Objects;
 using FarmVox.Terrain;
 using FarmVox.Voxel;
 using UnityEngine;
+using Tree = FarmVox.Terrain.Tree;
 
 namespace FarmVox.Scripts
 {
@@ -9,18 +11,13 @@ namespace FarmVox.Scripts
     public class Trees : MonoBehaviour
     {
         public Chunks chunks;
-        private TreeMap _treeMap;
         public GameObject treePrefab;
         public TreeConfig config;
 
+        private readonly QuadTree<Tree> _treeMap = new QuadTree<Tree>(32);
+
         public void GenerateTrees(Terrian terrian, TerrianChunk terrianChunk)
         {
-            if (_treeMap == null)
-            {
-                var boundsInt = terrian.Config.BoundsInt;
-                _treeMap = new TreeMap(boundsInt);
-            }
-
             var terrianConfig = terrian.Config;
             var defaultLayer = terrian.defaultLayer;
 
@@ -82,7 +79,7 @@ namespace FarmVox.Scripts
                 var radius = terrianConfig.TreeMinDis;
                 var treeBoundsSize = new Vector3Int(radius, radius, radius);
                 var treeBounds = new BoundsInt(globalCoord - treeBoundsSize, treeBoundsSize * 2);
-                if (_treeMap.HasTrees(treeBounds))
+                if (_treeMap.Search(treeBounds).Any())
                 {
                     continue;
                 }
@@ -92,7 +89,7 @@ namespace FarmVox.Scripts
                 var treeGo = Instantiate(treePrefab, transform);
                 treeGo.transform.position = globalCoord + new Vector3(1.5f, 0, 1.5f);
 
-                _treeMap.AddTree(tree);
+                _treeMap.Add(globalCoord, tree);
             }
 
             var treeChunk = chunks.GetChunk(terrianChunk.Origin);

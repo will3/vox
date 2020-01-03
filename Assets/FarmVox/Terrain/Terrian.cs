@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,18 +11,12 @@ namespace FarmVox.Terrain
 {
     public class Terrian : MonoBehaviour
     {
-        public static Terrian Instance;
-
         public TerrianConfig Config;
 
         private int Size => Config.Size;
 
-        float _sizeF;
-
         public Chunks defaultLayer;
-        public Chunks treeLayer;
         public Chunks waterLayer;
-        public Chunks wallLayer;
         public Trees trees;
         public Waterfalls waterfalls;
 
@@ -35,28 +28,18 @@ namespace FarmVox.Terrain
 
         private string _lastConfig;
 
+        public Vector3Int numGridsToGenerate = new Vector3Int(2, 3, 2);
+
         private void Awake()
         {
-            var size = Config.Size;
-            _sizeF = size;
-
-            if (Instance == null)
-            {
-                Instance = this;
-            }
-            else
-            {
-                throw new Exception("Only one instance of Terrian is allowed");
-            }
-
             Routes = new RouteChunks(Config.Size);
         }
 
         private IEnumerator Start()
         {
-            for (var i = -Config.MaxChunksX; i < Config.MaxChunksX; i++)
+            for (var i = -numGridsToGenerate.x; i < numGridsToGenerate.x; i++)
             {
-                for (var k = -Config.MaxChunksX; k < Config.MaxChunksX; k++)
+                for (var k = -numGridsToGenerate.z; k < numGridsToGenerate.z; k++)
                 {
                     var columnOrigin = new Vector3Int(i, 0, k) * Size;
 
@@ -77,7 +60,6 @@ namespace FarmVox.Terrain
                 foreach (var chunk in GetChunks(column))
                 {
                     waterfalls.GenerateWaterfalls(chunk);
-                    Debug.Log("Generate water fall");
                 }
 
                 _waterfallGenerated.Add(column);
@@ -114,14 +96,14 @@ namespace FarmVox.Terrain
 
         private IEnumerable<TerrianChunk> GetChunks(Vector3Int columnOrigin)
         {
-            for (var i = 0; i < Config.MaxChunksY; i++)
+            for (var i = 0; i < numGridsToGenerate.y; i++)
             {
                 var origin = new Vector3Int(columnOrigin.x, Size * i, columnOrigin.z);
                 var chunk = GetOrCreateTerrianChunk(origin);
                 yield return chunk;
             }
         }
-        
+
         private void GenerateColumn(Vector3Int origin)
         {
             foreach (var chunk in GetChunks(origin))
@@ -129,22 +111,9 @@ namespace FarmVox.Terrain
                 new GenGroundWorker(chunk, defaultLayer, Config).Start();
                 trees.GenerateTrees(this, chunk);
                 new GenWaterWorker(chunk, defaultLayer, waterLayer, Config).Start();
+                new GenRoutesWorker(chunk.Origin, Routes, defaultLayer).Start();
             }
         }
-        
-//            VisitChunks(chunk =>
-//            {
-//                queue.Enqueue(new ActionWorker(() =>
-//                {
-//                    waterfalls.GenerateWaterfalls(chunk);
-//                }));
-//            });
-//            
-//            VisitChunks(chunk =>
-//            {
-//                queue.Enqueue(new GenRoutesWorker(chunk.Origin, Routes, defaultLayer));
-//            });
-//        }
 
         public TerrianChunk GetTerrianChunk(Vector3Int origin)
         {
