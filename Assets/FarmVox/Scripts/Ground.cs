@@ -76,7 +76,7 @@ namespace FarmVox.Scripts
         public Chunks chunks;
         public Water water;
 
-        public void GenerateChunk(TerrianChunk terrianChunk, Terrian terrian)
+        public void GenerateChunk(TerrianChunk terrianChunk)
         {
             var origin = terrianChunk.Origin;
             var chunk = chunks.GetOrCreateChunk(origin);

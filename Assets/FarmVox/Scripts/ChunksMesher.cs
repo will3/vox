@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Diagnostics;
 using System.Linq;
 using FarmVox.GPU.Shaders;
 using FarmVox.Voxel;
@@ -12,6 +13,7 @@ namespace FarmVox.Scripts
         public Chunks[] chunksToDraw;
         public VoxelShadowMap shadowMap;
         public Waterfalls waterfalls;
+        public float waitForSeconds = 0.2f;
 
         private IEnumerator Start()
         {
@@ -26,7 +28,7 @@ namespace FarmVox.Scripts
                 foreach (var chunk in chunks)
                 {
                     DrawChunk(chunk, waterfalls);
-                    yield return null;
+                    yield return new WaitForSeconds(waitForSeconds);
                 }
                 
                 yield return null;
@@ -52,6 +54,7 @@ namespace FarmVox.Scripts
 
         private Mesh MeshGpu(Chunk chunk, Waterfalls waterfalls)
         {
+            var stopWatch = Stopwatch.StartNew();
             var chunks = chunk.Chunks;
 
             var mesherSettings = new MesherSettings

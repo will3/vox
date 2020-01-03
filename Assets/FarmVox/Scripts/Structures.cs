@@ -30,7 +30,6 @@ namespace FarmVox.Scripts
         public Chunks chunks;
         public GameObject structurePrefab;
         public int wallHeightMultiplier = 5;
-        public Terrian terrian;
         public Water water;
         public Ground ground;
 

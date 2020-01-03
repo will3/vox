@@ -2,17 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using FarmVox.Scripts;
+using FarmVox.Voxel;
 using UnityEngine;
 
 namespace FarmVox.Terrain
 {
-    public class Terrian : MonoBehaviour
+    public class LoadWorldAroundPlayer : MonoBehaviour
     {
         public int size = 32;
         public Ground ground;
         public Water water;
         public Trees trees;
         public Waterfalls waterfalls;
+        public float waitForSeconds = 0.2f;
 
         private readonly Dictionary<Vector3Int, TerrianChunk> _map = new Dictionary<Vector3Int, TerrianChunk>();
         private readonly HashSet<Vector3Int> _columnGenerated = new HashSet<Vector3Int>();
@@ -24,32 +26,55 @@ namespace FarmVox.Terrain
 
         private IEnumerator Start()
         {
-            for (var i = -numGridsToGenerate.x; i < numGridsToGenerate.x; i++)
+            while (true)
             {
-                for (var k = -numGridsToGenerate.z; k < numGridsToGenerate.z; k++)
-                {
-                    var columnOrigin = new Vector3Int(i, 0, k) * size;
+                var playerOrigin = transform.position.GetOrigin(size);
+                playerOrigin.y = 0;
 
-                    if (_columnGenerated.Contains(columnOrigin))
+                var columns = new List<Vector3Int>();
+                for (var i = -numGridsToGenerate.x; i <= numGridsToGenerate.x; i++)
+                {
+                    for (var k = -numGridsToGenerate.z; k <= numGridsToGenerate.z; k++)
                     {
-                        continue;
+                        var columnOrigin = playerOrigin + new Vector3Int(i, 0, k) * size;
+
+                        if (_columnGenerated.Contains(columnOrigin))
+                        {
+                            continue;
+                        }
+
+                        columns.Add(columnOrigin);
+                    }
+                }
+
+                foreach (var column in columns.OrderBy(c =>
+                    (transform.position - (c + new Vector3(size, 0, size) / 2.0f)).sqrMagnitude))
+                {
+                    foreach (var chunk in GetChunks(column))
+                    {
+                        ground.GenerateChunk(chunk);
+                        trees.GenerateTrees(chunk);
+                        water.GenerateChunk(chunk.Origin);
+
+                        yield return new WaitForSeconds(waitForSeconds);
                     }
 
-                    GenerateColumn(columnOrigin);
-                    yield return null;
-
-                    _columnGenerated.Add(columnOrigin);
+                    _columnGenerated.Add(column);
                 }
-            }
 
-            foreach (var column in _columnGenerated.Where(ShouldGenerateWaterfall))
-            {
-                foreach (var chunk in GetChunks(column))
+                foreach (var column in _columnGenerated.Where(ShouldGenerateWaterfall))
                 {
-                    waterfalls.GenerateWaterfalls(chunk);
+                    foreach (var chunk in GetChunks(column))
+                    {
+                        waterfalls.GenerateWaterfalls(chunk);
+                    }
+
+                    _waterfallGenerated.Add(column);
+
+                    yield return new WaitForSeconds(waitForSeconds);
                 }
 
-                _waterfallGenerated.Add(column);
+                yield return new WaitForSeconds(waitForSeconds);
             }
         }
 
@@ -89,21 +114,6 @@ namespace FarmVox.Terrain
                 var chunk = GetOrCreateTerrianChunk(origin);
                 yield return chunk;
             }
-        }
-
-        private void GenerateColumn(Vector3Int origin)
-        {
-            foreach (var chunk in GetChunks(origin))
-            {
-                ground.GenerateChunk(chunk, this);
-                trees.GenerateTrees(chunk);
-                water.GenerateChunk(chunk.Origin);
-            }
-        }
-
-        public TerrianChunk GetTerrianChunk(Vector3Int origin)
-        {
-            return _map.TryGetValue(origin, out var terrianChunk) ? terrianChunk : null;
         }
 
         private TerrianChunk GetOrCreateTerrianChunk(Vector3Int origin)

@@ -28,7 +28,6 @@ namespace FarmVox.Scripts
             new Dictionary<Vector3Int, Dictionary<Vector3Int, float>>();
 
         public Chunks groundChunks;
-        public Terrian terrian;
         public Water water;
         public Ground ground;
         public int size = 32;
