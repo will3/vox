@@ -2,9 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using FarmVox.Scripts;
-using FarmVox.Terrain.Routing;
-using FarmVox.Voxel;
-using FarmVox.Workers;
 using UnityEngine;
 
 namespace FarmVox.Terrain
@@ -14,13 +11,11 @@ namespace FarmVox.Terrain
         public TerrianConfig Config;
 
         private int Size => Config.Size;
-
-        public Chunks defaultLayer;
-        public Chunks waterLayer;
+        
+        public Ground ground;
+        public Water water;
         public Trees trees;
         public Waterfalls waterfalls;
-
-        public RouteChunks Routes { get; private set; }
 
         private readonly Dictionary<Vector3Int, TerrianChunk> _map = new Dictionary<Vector3Int, TerrianChunk>();
         private readonly HashSet<Vector3Int> _columnGenerated = new HashSet<Vector3Int>();
@@ -29,11 +24,6 @@ namespace FarmVox.Terrain
         private string _lastConfig;
 
         public Vector3Int numGridsToGenerate = new Vector3Int(2, 3, 2);
-
-        private void Awake()
-        {
-            Routes = new RouteChunks(Config.Size);
-        }
 
         private IEnumerator Start()
         {
@@ -108,10 +98,9 @@ namespace FarmVox.Terrain
         {
             foreach (var chunk in GetChunks(origin))
             {
-                new GenGroundWorker(chunk, defaultLayer, Config).Start();
+                ground.GenerateChunk(chunk, this);
                 trees.GenerateTrees(this, chunk);
-                new GenWaterWorker(chunk, defaultLayer, waterLayer, Config).Start();
-                new GenRoutesWorker(chunk.Origin, Routes, defaultLayer).Start();
+                water.GenerateChunk(chunk.Origin);
             }
         }
 
@@ -130,11 +119,6 @@ namespace FarmVox.Terrain
             var key = new Vector3Int(origin.x / Size, origin.y / Size, origin.z / Size);
             _map[origin] = new TerrianChunk(key, Size);
             return _map[origin];
-        }
-
-        public bool IsGround(Vector3Int coord)
-        {
-            return defaultLayer.Get(coord) > 0;
         }
     }
 }

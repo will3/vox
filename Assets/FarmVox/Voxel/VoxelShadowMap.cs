@@ -20,14 +20,8 @@ namespace FarmVox.Voxel
         public ChunksMesher chunksMesher;
 
         public int DataSize => size + 1;
-        private Dictionary<Vector2Int, ShadowMapState> _states;
-        private Dictionary<Vector2Int, ComputeBuffer> _buffers;
-
-        private void Start()
-        {
-            _states = new Dictionary<Vector2Int, ShadowMapState>();
-            _buffers = new Dictionary<Vector2Int, ComputeBuffer>();
-        }
+        private readonly Dictionary<Vector2Int, ShadowMapState> _states = new Dictionary<Vector2Int, ShadowMapState>();
+        private readonly Dictionary<Vector2Int, ComputeBuffer> _buffers = new Dictionary<Vector2Int, ComputeBuffer>();
 
         private void Update()
         {

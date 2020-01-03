@@ -7,7 +7,7 @@ namespace FarmVox.Scripts
     public class Structure : MonoBehaviour
     {
         public Chunks chunks;
-        public Terrian terrian;
+        public Ground ground;
 
         public Vector3Int origin;
         public int gridSize = 3;
@@ -37,7 +37,7 @@ namespace FarmVox.Scripts
                     for (var j = origin.y; j < wallHeight; j++)
                     {
                         var coord = new Vector3Int(origin.x + i, j, origin.z + k);
-                        var isGround = terrian.IsGround(coord);
+                        var isGround = ground.IsGround(coord);
 
                         if (j == wallHeight - 1)
                         {

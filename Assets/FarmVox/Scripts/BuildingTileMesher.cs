@@ -11,8 +11,7 @@ namespace FarmVox.Scripts
     {
         public BuildingTile tile;
         public MeshFilter meshFilter;
-        public MeshRenderer meshRenderer;
-        public Terrian terrian;
+        public Ground ground;
         public bool dirty = true;
 
         private void Update()
@@ -39,7 +38,7 @@ namespace FarmVox.Scripts
                     for (var k = 0; k < size.z; k++)
                     {
                         var c = bounds.position + new Vector3Int(i, j, k);
-                        var isGround = terrian.IsGround(c);
+                        var isGround = ground.IsGround(c);
 
                         if (!isGround)
                         {
@@ -58,7 +57,7 @@ namespace FarmVox.Scripts
                         foreach (var dir in dirs)
                         {
                             var next = c + dir;
-                            if (terrian.IsGround(next))
+                            if (ground.IsGround(next))
                             {
                                 continue;
                             }

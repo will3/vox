@@ -13,13 +13,14 @@ namespace FarmVox.Scripts
         public Chunks chunks;
         public GameObject treePrefab;
         public TreeConfig config;
-
+        public Ground ground;
+        
         private readonly QuadTree<Tree> _treeMap = new QuadTree<Tree>(32);
 
         public void GenerateTrees(Terrian terrian, TerrianChunk terrianChunk)
         {
             var terrianConfig = terrian.Config;
-            var defaultLayer = terrian.defaultLayer;
+            var defaultLayer = ground.chunks;
 
             var treeNoise = config.noise;
 

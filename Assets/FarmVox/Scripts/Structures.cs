@@ -31,6 +31,7 @@ namespace FarmVox.Scripts
         public GameObject structurePrefab;
         public int wallHeightMultiplier = 5;
         public Terrian terrian;
+        public Ground ground;
 
         private readonly QuadTree<GameObject> _structures = new QuadTree<GameObject>(32);
 
@@ -62,7 +63,7 @@ namespace FarmVox.Scripts
 
             var structure = structureGo.GetComponent<Structure>();
             structure.chunks = chunks;
-            structure.terrian = terrian;
+            structure.ground = ground;
             structure.origin = buildingCoord;
             structure.gridSize = tiles.gridSize;
             structure.numGrids = structureData.numGrids;

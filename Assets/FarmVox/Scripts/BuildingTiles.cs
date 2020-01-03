@@ -11,8 +11,9 @@ namespace FarmVox.Scripts
     {
         private readonly QuadTree<BuildingTile> _tiles = new QuadTree<BuildingTile>(32);
         public GameObject buildingTilePrefab;
-        public Terrian terrian;
         public int gridSize = 3;
+        public Ground ground;
+
         private const int SearchVerticalRange = 8;
 
         public bool TryFindTilesAround(Vector3 coord, Vector2Int numGrids, out IEnumerable<BuildingTile> tiles)
@@ -123,7 +124,7 @@ namespace FarmVox.Scripts
             tile = tileGo.GetComponent<BuildingTile>();
             // TODO maybe pass ground data in
             var mesher = tileGo.GetComponent<BuildingTileMesher>();
-            mesher.terrian = terrian;
+            mesher.ground = ground;
             tile.coords = coords;
             tile.bounds = bounds;
 
@@ -170,9 +171,9 @@ namespace FarmVox.Scripts
             for (var i = 0; i < searchDistance; i++)
             {
                 var next = coord + Vector3Int.down * i;
-                var hasGround = terrian.IsGround(next);
+                var isGround = ground.IsGround(next);
 
-                if (hasGround)
+                if (isGround)
                 {
                     return next;
                 }
@@ -186,14 +187,14 @@ namespace FarmVox.Scripts
             for (var i = 0; i < searchDistance; i++)
             {
                 var next = coord + Vector3Int.up * i;
-                var hasGround = terrian.IsGround(next);
+                var isGround = ground.IsGround(next);
 
-                if (i == 0 && !hasGround)
+                if (i == 0 && !isGround)
                 {
                     return null;
                 }
 
-                if (hasGround)
+                if (isGround)
                 {
                     continue;
                 }

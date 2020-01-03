@@ -1,30 +1,20 @@
-﻿using FarmVox.GPU.Shaders;
+using FarmVox.GPU.Shaders;
 using FarmVox.Terrain;
-using FarmVox.Threading;
 using FarmVox.Voxel;
 using UnityEngine;
 
-namespace FarmVox.Workers
+namespace FarmVox.Scripts
 {
-    public class GenGroundWorker : IWorker
+    public class Ground : MonoBehaviour
     {
-        private readonly TerrianChunk _terrianChunk;
-        private readonly Chunks _layer;
-        private readonly TerrianConfig _config;
-
-        public GenGroundWorker(TerrianChunk terrianChunk, Chunks layer, TerrianConfig config)
-        {
-            _terrianChunk = terrianChunk;
-            _layer = layer;
-            _config = config;
-        }
+        public Chunks chunks;
         
-        public void Start()
+        public void GenerateChunk(TerrianChunk terrianChunk, Terrian terrian)
         {
-            var origin = _terrianChunk.Origin;
-            var chunk = _layer.GetOrCreateChunk(origin);
+            var origin = terrianChunk.Origin;
+            var chunk = chunks.GetOrCreateChunk(origin);
 
-            var genTerrianGpu = new GenTerrianGpu(_config.Size, origin, _config);
+            var genTerrianGpu = new GenTerrianGpu(terrian.Config.Size, origin, terrian.Config);
 
             var voxelBuffer = genTerrianGpu.CreateVoxelBuffer();
             var colorBuffer = genTerrianGpu.CreateColorBuffer();
@@ -42,6 +32,16 @@ namespace FarmVox.Workers
 
             voxelBuffer.Dispose();
             colorBuffer.Dispose();
+        }
+        
+        public bool IsGround(Vector3Int coord)
+        {
+            return chunks.Get(coord) > 0;
+        }
+
+        public Chunk GetChunk(Vector3Int coord)
+        {
+            return chunks.GetChunk(coord);
         }
     }
 }
