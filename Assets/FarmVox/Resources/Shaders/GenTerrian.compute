@@ -92,7 +92,7 @@ float getGrassDot(int i, int j, int k) {
     float3(0, 0, -1) * v6;
     
     float3 up = float3(0, 1, 0);
-    return dot(-normalize(d), up);
+    return clamp(dot(-normalize(d), up), 0, 1);
 }
 
 float getGrass(int3 coord, float heightRatio, int absY) {
@@ -110,7 +110,7 @@ float getGrass(int3 coord, float heightRatio, int absY) {
     
     float heightValue = sampleValue(_GrassHeightValues, _GrassHeightKeys, _GrassHeightSize, heightRatio);
     
-    return _GrassValue - (1.0 - normalValue) - (1.0 - heightValue);
+    return normalValue * heightValue - _GrassValue;
 }
 
 [numthreads(8, 8, 4)]
