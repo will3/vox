@@ -27,7 +27,7 @@ namespace FarmVox.Scripts
             var groundConfig = ground.config;
             var defaultLayer = ground.chunks;
 
-            var pine = new PineObject(3.0f, 10, 2);
+            var pine = new PineObject(config.treeRadius, config.treeHeight, config.trunkHeight);
 
             var chunk = defaultLayer.GetChunk(origin);
             chunk.UpdateNormals();

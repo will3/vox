@@ -553,7 +553,7 @@ MonoBehaviour:
   tiles: {fileID: 1556930457}
   waitForSeconds: 0.2
   numGridsToGenerate: {x: 1, y: 2, z: 1}
-  distanceToUnload: 1
+  distanceToUnload: 2
 --- !u!114 &490495052
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1504,8 +1504,11 @@ MonoBehaviour:
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
-    bias: 0.4
+    bias: 0.5
     minDis: 4
+    trunkHeight: 1
+    treeHeight: 10
+    treeRadius: 3
   ground: {fileID: 316894774}
   water: {fileID: 1603196057}
 --- !u!1 &1899087035

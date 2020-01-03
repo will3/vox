@@ -37,5 +37,9 @@ namespace FarmVox.Terrain
         public int minDis = 4;
 
         public Random random = new Random();
+
+        public int trunkHeight = 1;
+        public float treeHeight = 10f;
+        public float treeRadius = 3.0f;
     }
 }
