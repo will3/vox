@@ -13,9 +13,10 @@ namespace FarmVox.Scripts
         public float speed = 15;
         public float waterSpeedMultiplier = 0.4f;
         public Animator animator;
-        public float walkSpeedMultiplier = 12f;
         private Vector3 _lastPosition;
         private static readonly int WalkSpeed = Animator.StringToHash("WalkSpeed");
+
+        private const float WalkSpeedMultiplier = 14f;
 
         private void Start()
         {
@@ -33,7 +34,7 @@ namespace FarmVox.Scripts
             if (_lastPosition != Vector3.zero)
             {
                 var velocity = (_lastPosition.GetXz() - position.GetXz()).magnitude;
-                animator.SetFloat(WalkSpeed, velocity * walkSpeedMultiplier);
+                animator.SetFloat(WalkSpeed, velocity * WalkSpeedMultiplier);
             }
 
             _lastPosition = position;
