@@ -19,6 +19,7 @@
             #pragma multi_compile_fog
             
             #include "UnityCG.cginc"
+            #include "vision.cginc"
             
             float3 _Origin;
             int _Size;
@@ -37,6 +38,11 @@
             StructuredBuffer<int> _ShadowMap10;
             StructuredBuffer<int> _ShadowMap11;
             int _ShadowMapSize;
+            
+            float _VisionRange;
+            float3 _PlayerPosition;
+            float _VisionGridSize;
+            float _VisionBlurRange;
 
             int getShadow(int3 coord) {
                 int x = coord.x - coord.y;
@@ -96,6 +102,7 @@
                 float4 vertex : SV_POSITION;
                 float4 color : COLOR;
                 float3 normal : NORMAL;
+                float3 worldPos : TEXCOORD1;
             };
 
             int3 getCoord(int index) {
@@ -128,6 +135,8 @@
                     o.color = float4(1.0, 0, 0, 1.0);
                     return o;
                 }
+                
+                o.worldPos = mul(unity_ObjectToWorld, v.vertex);
 
                 return o;
             }
@@ -148,6 +157,19 @@
 
                 // apply fog
                 UNITY_APPLY_FOG(i.fogCoord, col);
+                
+                float vision = getVision(
+                    i.worldPos, 
+                    _PlayerPosition, 
+                    _VisionRange, 
+                    _VisionGridSize, 
+                    _VisionBlurRange);
+                
+                if (vision == 0) {
+                    discard;
+                }
+                
+                col *= vision;
                 
                 return col;
             }

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace FarmVox.Scripts
@@ -30,6 +31,14 @@ namespace FarmVox.Scripts
             if (Input.GetKeyUp(KeyCode.E)) rotate -= 1.0f;
 
             targetRotation.y += rotate * rotateAmount;
+        }
+
+        private void Start()
+        {
+            if (playerObject == null)
+            {
+                playerObject = GameObject.FindWithTag("Player");
+            }
         }
 
         private void Update()

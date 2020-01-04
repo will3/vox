@@ -18,6 +18,7 @@
             #pragma multi_compile_fog
             
             #include "UnityCG.cginc"
+            #include "vision.cginc"
             
             float3 _Origin;
             int _Size;
@@ -27,6 +28,11 @@
             float _WaterfallWidth;
             float _WaterfallMin;
             float _WaterfallVariance;
+            
+            float _VisionRange;
+            float3 _PlayerPosition;
+            float _VisionGridSize;
+            float _VisionBlurRange;
 
             struct VoxelData {
                 int3 coord;
@@ -173,15 +179,19 @@
 
                 // apply fog
                 UNITY_APPLY_FOG(i.fogCoord, col);
-                
-                float4 vision = float4(-32, 32, -32, 32);
 
-                float x = i.worldPos.x;
-                float z = i.worldPos.z;
+                float vision = getVision(
+                    i.worldPos, 
+                    _PlayerPosition, 
+                    _VisionRange, 
+                    _VisionGridSize, 
+                    _VisionBlurRange);
                 
-                //if (x < vision[0] || x > vision[1] || z < vision[2] || z > vision[3]) {
-                    //discard;
-                //}
+                if (vision == 0) {
+                    discard;
+                }
+                
+                col *= vision;
                 
                 return col;
             }

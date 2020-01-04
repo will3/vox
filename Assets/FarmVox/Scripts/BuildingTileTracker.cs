@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace FarmVox.Scripts
 {
@@ -6,17 +7,25 @@ namespace FarmVox.Scripts
     {
         public int searchNumGrids = 3;
         public float highlightSearchDistance = 20.0f;
-        public float highlightDistance = 10.0f;
+        public float highlightDistance = 5.0f;
         public float maxOpacity = 0.2f;
         public float highlightPowCurve = 0.4f;
-        public bool shouldHighlightCurrentTile;
-        public float currentTileHighlightAmount = 0.8f;
+        public bool shouldHighlightCurrentTile = true;
+        public float currentTileHighlightAmount = 0.3f;
 
         public BuildingTiles tiles;
 
         private Vector3Int _lastCoord;
 
         public BuildingTile CurrentTile { get; private set; }
+
+        private void Start()
+        {
+            if (tiles == null)
+            {
+                tiles = FindObjectOfType<BuildingTiles>();
+            }
+        }
 
         private void Update()
         {

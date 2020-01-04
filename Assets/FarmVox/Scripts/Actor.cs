@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using FarmVox.Voxel;
 using UnityEngine;
 using UnityEngine.AI;
 using Random = UnityEngine.Random;
@@ -11,6 +12,10 @@ namespace FarmVox.Scripts
 
         public float speed = 15;
         public float waterSpeedMultiplier = 0.4f;
+        public Animator animator;
+        public float walkSpeedMultiplier = 12f;
+        private Vector3 _lastPosition;
+        private static readonly int WalkSpeed = Animator.StringToHash("WalkSpeed");
 
         private void Start()
         {
@@ -21,6 +26,21 @@ namespace FarmVox.Scripts
         {
             transform.position = agent.nextPosition;
 
+            UpdateWaterSpeedMultiplier();
+
+            var position = transform.position;
+
+            if (_lastPosition != Vector3.zero)
+            {
+                var velocity = (_lastPosition.GetXz() - position.GetXz()).magnitude;
+                animator.SetFloat(WalkSpeed, velocity * walkSpeedMultiplier);
+            }
+
+            _lastPosition = position;
+        }
+
+        private void UpdateWaterSpeedMultiplier()
+        {
             if (!agent.enabled)
             {
                 return;

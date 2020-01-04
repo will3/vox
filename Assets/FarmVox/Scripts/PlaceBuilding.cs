@@ -16,10 +16,20 @@ namespace FarmVox.Scripts
 
         private void Start()
         {
-            var structures = JsonUtility
+            var data = JsonUtility
                 .FromJson<StructureDataRoot>(structuresText.text)
                 .structures;
-            _structureData = structures.ToDictionary(d => d.type, d => d);
+            _structureData = data.ToDictionary(d => d.type, d => d);
+
+            if (structures == null)
+            {
+                structures = FindObjectOfType<Structures>();
+            }
+
+            if (tiles == null)
+            {
+                tiles = FindObjectOfType<BuildingTiles>();
+            }
         }
 
         private void Update()
