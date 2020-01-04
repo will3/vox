@@ -6,19 +6,20 @@
     }
     SubShader
     {
+        LOD 200
         Tags { "RenderType"="Opaque" }
-        LOD 100
 
         Pass
         {
+            Tags {"LightMode" = "ForwardBase"}
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            // make fog work
-            #pragma multi_compile_fog
+            #pragma multi_compile_fwdbase
             
             #include "UnityCG.cginc"
             #include "vision.cginc"
+            #include "AutoLight.cginc"
             
             float3 _Origin;
             int _Size;
@@ -102,18 +103,17 @@
             struct v2f
             {
                 float2 uv : TEXCOORD0;
-                UNITY_FOG_COORDS(1)
-                float4 vertex : SV_POSITION;
+                float4 pos : SV_POSITION;
                 float4 color : COLOR;
                 float3 normal : NORMAL;
                 float3 worldPos : TEXCOORD1;
+                LIGHTING_COORDS(2,3)
             };
 
             v2f vert (appdata v)
             {
                 v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);            
-                UNITY_TRANSFER_FOG(o,o.vertex);
+                o.pos = UnityObjectToClipPos(v.vertex);            
                 o.normal = v.normal;
                 o.uv = v.uv;
 
@@ -159,6 +159,8 @@
                 }
                 
                 o.worldPos = mul(unity_ObjectToWorld, v.vertex);
+                
+                TRANSFER_VERTEX_TO_FRAGMENT(o);
 
                 return o;
             }
@@ -169,16 +171,14 @@
                 float4 lightColor = float4(255 / 255.0, 244 / 255.0, 214 / 255.0, 1.0);
                 float4 diffuse;
 
-                diffuse = color * lightColor;
+                fixed atten = LIGHT_ATTENUATION(i);
+                diffuse = color * lightColor * atten;
 
                 float ambientStrength = 0.5;
                 float4 ambient = float4(1.0, 1.0, 1.0, 1.0) * color * ambientStrength;
 
                 // sample the texture
                 fixed4 col = diffuse + ambient;
-
-                // apply fog
-                UNITY_APPLY_FOG(i.fogCoord, col);
 
                 float vision = getVision(
                     i.worldPos, 
@@ -198,4 +198,5 @@
             ENDCG
         }
     }
+    FallBack "Diffuse"
 }
