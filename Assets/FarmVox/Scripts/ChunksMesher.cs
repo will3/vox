@@ -54,7 +54,6 @@ namespace FarmVox.Scripts
 
         private Mesh MeshGpu(Chunk chunk, Waterfalls waterfalls)
         {
-            var stopWatch = Stopwatch.StartNew();
             var chunks = chunk.Chunks;
 
             var mesherSettings = new MesherSettings

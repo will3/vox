@@ -13,7 +13,7 @@ namespace FarmVox.Voxel
         private readonly List<int> _indices = new List<int>();
         private readonly List<CoordData> _voxelData = new List<CoordData>();
 
-        private void AddTriangle(MesherGpu.Quad quad, Dictionary<Vector3Int, float> waterfallData)
+        private void AddTriangle(Quad quad, Dictionary<Vector3Int, float> waterfallData)
         {
             var index = _vertices.Count;
 
@@ -52,7 +52,7 @@ namespace FarmVox.Voxel
             });
         }
 
-        public MeshBuilder AddTriangles(IEnumerable<MesherGpu.Quad> triangles,
+        public MeshBuilder AddTriangles(IEnumerable<Quad> triangles,
             Dictionary<Vector3Int, float> waterfallData = null)
         {
             foreach (var triangle in triangles)
