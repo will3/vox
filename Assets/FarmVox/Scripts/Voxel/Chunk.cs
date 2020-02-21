@@ -331,10 +331,11 @@ namespace FarmVox.Voxel
                 {
                     playerObject = GameObject.FindWithTag("Player");
                 }
-                return playerObject.transform.position;
+
+                return playerObject == null ? new Vector3() : playerObject.transform.position;
             }
         }
-        
+
         private void Update()
         {
             Material.SetVector("_PlayerPosition", PlayerPosition);
