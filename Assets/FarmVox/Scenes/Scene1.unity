@@ -160,6 +160,7 @@ MonoBehaviour:
   useNormals: 1
   isWater: 0
   normalStrength: 0.4
+  normalBanding: 6
   shadowStrength: 0.5
   transparent: 0
   isWalkable: 1
@@ -807,6 +808,7 @@ MonoBehaviour:
   useNormals: 1
   isWater: 0
   normalStrength: 0.2
+  normalBanding: 6
   shadowStrength: 0.2
   transparent: 0
   isWalkable: 1
@@ -867,7 +869,7 @@ MonoBehaviour:
   - {fileID: 1223485162}
   - {fileID: 1767922225}
   - {fileID: 1603196056}
-  shadowMap: {fileID: 1396963312}
+  shadowMap: {fileID: 0}
   waterfalls: {fileID: 1404610549}
   waitForSeconds: 0
 --- !u!4 &1396963311
@@ -1091,6 +1093,7 @@ MonoBehaviour:
   useNormals: 0
   isWater: 1
   normalStrength: 0
+  normalBanding: 6
   shadowStrength: 0.5
   transparent: 1
   isWalkable: 1
@@ -1161,6 +1164,7 @@ MonoBehaviour:
   useNormals: 1
   isWater: 0
   normalStrength: 0.2
+  normalBanding: 6
   shadowStrength: 0.2
   transparent: 0
   isWalkable: 0

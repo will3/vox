@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
-using FarmVox.Scripts;
-using FarmVox.Scripts.Voxel;
+using FarmVox.Voxel;
 using UnityEngine;
 
-namespace FarmVox.Voxel
+namespace FarmVox.Scripts.Voxel
 {
     [RequireComponent(typeof(MeshRenderer))]
     [RequireComponent(typeof(MeshFilter))]
@@ -299,7 +298,6 @@ namespace FarmVox.Voxel
             _defaultVoxelDataBuffer?.Dispose();
         }
 
-        private VoxelShadowMap _shadowMap;
         private static readonly int ShadowMap00 = Shader.PropertyToID("_ShadowMap00");
         private static readonly int ShadowMap01 = Shader.PropertyToID("_ShadowMap01");
         private static readonly int ShadowMap10 = Shader.PropertyToID("_ShadowMap10");
@@ -309,14 +307,11 @@ namespace FarmVox.Voxel
 
         private void Start()
         {
-            _shadowMap = FindObjectOfType<VoxelShadowMap>();
-
-            var defaultBuffer = _shadowMap.GetDefaultBuffer();
+            var defaultBuffer = VoxelShadowMap.GetDefaultBuffer();
             Material.SetBuffer(ShadowMap00, defaultBuffer);
             Material.SetBuffer(ShadowMap01, defaultBuffer);
             Material.SetBuffer(ShadowMap10, defaultBuffer);
             Material.SetBuffer(ShadowMap11, defaultBuffer);
-            Material.SetInt(ShadowMapSize, _shadowMap.DataSize);
             Material.SetFloat(ShadowStrength, Chunks.shadowStrength);
 
             Material.SetFloat("_VisionRange", 32);
@@ -368,6 +363,11 @@ namespace FarmVox.Voxel
                    localCoord.x < size &&
                    localCoord.y < size &&
                    localCoord.z < size;
+        }
+
+        public void SetShadowMapSize(int dataSize)
+        {
+            Material.SetInt(ShadowMapSize, dataSize);
         }
     }
 }

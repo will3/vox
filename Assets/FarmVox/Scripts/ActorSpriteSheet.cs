@@ -6,7 +6,7 @@ namespace FarmVox.Scripts
     public class ActorSpriteSheet
     {
         public string[] Idle;
-        
+
         public float IdleSpeed;
 
         public void AssertSpriteSheetValid()

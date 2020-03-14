@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Diagnostics;
 using System.Linq;
@@ -13,13 +14,39 @@ namespace FarmVox.Scripts
     {
         public float aoStrength = 0.15f;
         public Chunks[] chunksToDraw;
-        public VoxelShadowMap shadowMap;
         public Waterfalls waterfalls;
         public float waitForSeconds = 0.2f;
         private LightController _lightController;
         private Vector3Int _lightDir;
 
-        private IEnumerator Start()
+        private void Start()
+        {
+            ShadowEvents.Instance.ShadowMapUpdated += OnShadowMapUpdated;
+            StartCoroutine(DrawLoop());
+        }
+
+        private void OnDestroy()
+        {
+            ShadowEvents.Instance.ShadowMapUpdated -= OnShadowMapUpdated;
+        }
+
+        private void OnShadowMapUpdated(Vector3Int origin, int dataSize, ComputeBuffer[] buffers)
+        {
+            foreach (var chunks in chunksToDraw)
+            {
+                var chunk = chunks.GetChunk(origin);
+                if (chunk == null)
+                {
+                    continue;
+                }
+
+                chunk.SetLightDir(_lightDir);
+                chunk.UpdateShadowBuffers(buffers);
+                chunk.SetShadowMapSize(dataSize);
+            }
+        }
+
+        private IEnumerator DrawLoop()
         {
             _lightController = FindObjectOfType<LightController>();
             if (_lightController == null)
@@ -61,7 +88,7 @@ namespace FarmVox.Scripts
 
             chunk.Dirty = false;
 
-            shadowMap.ChunkDrawn(chunk.origin);
+            ShadowEvents.Instance.PublishChunkUpdated(chunk.origin);
         }
 
         private Mesh MeshGpu(Chunk chunk, Waterfalls waterfalls)
