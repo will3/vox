@@ -9,6 +9,7 @@ namespace FarmVox.Scripts.GPU.Shaders
         private readonly ComputeShader _shader;
         private readonly int _size;
         private readonly MesherSettings _settings;
+        private readonly Vector3Int _lightDir;
         private readonly int[] _workGroups = {8, 8, 4};
         
         public int NormalBanding = 6;
@@ -21,10 +22,11 @@ namespace FarmVox.Scripts.GPU.Shaders
 
         public float NormalStrength = 0.0f;
         
-        public MesherGpu(int size, MesherSettings settings)
+        public MesherGpu(int size, MesherSettings settings, Vector3Int lightDir)
         {
             _size = size;
             _settings = settings;
+            _lightDir = lightDir;
             _shader = Resources.Load<ComputeShader>("Shaders/Mesher");
 
             _trianglesBuffer =
@@ -46,6 +48,7 @@ namespace FarmVox.Scripts.GPU.Shaders
             _shader.SetInt("_IsWater", IsWater ? 1 : 0);
             _shader.SetFloat("_NormalStrength", NormalStrength);
             _shader.SetFloat("_AoStrength", _settings.AoStrength);
+            _shader.SetVector("_LightDir", (Vector3)_lightDir);
 
             _shader.Dispatch(0, 
                 3 * Mathf.CeilToInt(_size / (float) _workGroups[0]),

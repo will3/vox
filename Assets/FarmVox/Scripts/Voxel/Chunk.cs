@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using FarmVox.Scripts;
+using FarmVox.Scripts.Voxel;
 using UnityEngine;
 
 namespace FarmVox.Voxel
@@ -315,13 +316,14 @@ namespace FarmVox.Voxel
             Material.SetBuffer(ShadowMap11, defaultBuffer);
             Material.SetInt(ShadowMapSize, _shadowMap.DataSize);
             Material.SetFloat(ShadowStrength, Chunks.shadowStrength);
-            
+
             Material.SetFloat("_VisionRange", 32);
             Material.SetFloat("_VisionGridSize", 1);
             Material.SetFloat("_VisionBlurRange", 0);
         }
 
         private GameObject playerObject;
+        private static readonly int LightDir = Shader.PropertyToID("_LightDir");
 
         private Vector3 PlayerPosition
         {
@@ -341,13 +343,17 @@ namespace FarmVox.Voxel
             Material.SetVector("_PlayerPosition", PlayerPosition);
         }
 
-        public void UpdateShadowBuffers(ComputeBuffer shadowMap00, ComputeBuffer shadowMap01, ComputeBuffer shadowMap10,
-            ComputeBuffer shadowMap11)
+        public void UpdateShadowBuffers(ComputeBuffer[] shadowMaps)
         {
-            Material.SetBuffer(ShadowMap00, shadowMap00);
-            Material.SetBuffer(ShadowMap01, shadowMap01);
-            Material.SetBuffer(ShadowMap10, shadowMap10);
-            Material.SetBuffer(ShadowMap11, shadowMap11);
+            Material.SetBuffer(ShadowMap00, shadowMaps[0]);
+            Material.SetBuffer(ShadowMap01, shadowMaps[1]);
+            Material.SetBuffer(ShadowMap10, shadowMaps[2]);
+            Material.SetBuffer(ShadowMap11, shadowMaps[3]);
+        }
+
+        public void SetLightDir(Vector3Int lightDir)
+        {
+            Material.SetVector(LightDir, (Vector3) lightDir);
         }
 
         public bool IsInBound(Vector3Int localCoord)

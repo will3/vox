@@ -1,8 +1,9 @@
+using System;
 using System.Collections.Generic;
-using FarmVox.Scripts;
+using System.Linq;
 using UnityEngine;
 
-namespace FarmVox.Voxel
+namespace FarmVox.Scripts.Voxel
 {
     [RequireComponent(typeof(ChunksMesher))]
     public class VoxelShadowMap : MonoBehaviour
@@ -15,13 +16,29 @@ namespace FarmVox.Voxel
 
         public int size = 32;
         public int lightY = 100;
-        public int minY = -100;
+
         public int maxChunksY = 4;
         public ChunksMesher chunksMesher;
 
         public int DataSize => size + 1;
+        private const int MinY = -100;
+        private static ComputeBuffer _defaultBuffer;
+
         private readonly Dictionary<Vector2Int, ShadowMapState> _states = new Dictionary<Vector2Int, ShadowMapState>();
         private readonly Dictionary<Vector2Int, ComputeBuffer> _buffers = new Dictionary<Vector2Int, ComputeBuffer>();
+        private Vector3Int _lightDir = new Vector3Int(-1, -1, -1);
+        private LightDirection _lightDirection;
+
+        private void Start()
+        {
+            _lightDirection = FindObjectOfType<LightDirection>();
+            if (_lightDirection == null)
+            {
+                Debug.LogError($"Cannot find component of type {typeof(LightDirection)}");
+            }
+
+            _lightDir = _lightDirection.lightDir;
+        }
 
         private void Update()
         {
@@ -33,7 +50,7 @@ namespace FarmVox.Voxel
                 var state = GetState(key);
                 if (state != ShadowMapState.Pending) continue;
                 UpdateChunk(key);
-                var affectedOrigins = CalcAffectedOrigins(key);
+                var affectedOrigins = CalcChunksToUpdate(key);
 
                 foreach (var origin in affectedOrigins)
                 {
@@ -45,15 +62,55 @@ namespace FarmVox.Voxel
                             continue;
                         }
 
-                        chunk.UpdateShadowBuffers(
-                            GetBuffer(origin, new Vector2Int(0, 0)),
-                            GetBuffer(origin, new Vector2Int(0, 1)),
-                            GetBuffer(origin, new Vector2Int(1, 0)),
-                            GetBuffer(origin, new Vector2Int(1, 1)));
-                    }    
+                        var offsets = new[]
+                        {
+                            new Vector2Int(0, 0),
+                            new Vector2Int(0, 1),
+                            new Vector2Int(1, 0),
+                            new Vector2Int(1, 1)
+                        };
+
+                        var y = origin.y;
+                        var shadowOrigin = new Vector2Int(origin.x + y * _lightDir.x, origin.z + y * _lightDir.z);
+                        var buffers = offsets.Select(offset =>
+                        {
+                            var o = new Vector2Int(
+                                shadowOrigin.x + offset.x * size * _lightDir.x,
+                                shadowOrigin.y + offset.y * size * _lightDir.z);
+                            return _buffers.TryGetValue(o, out var buffer) ? buffer : GetDefaultBuffer();
+                        }).ToArray();
+                        
+                        chunk.SetLightDir(_lightDir);
+                        chunk.UpdateShadowBuffers(buffers);
+                    }
                 }
 
                 SetState(key, ShadowMapState.Ready);
+            }
+        }
+
+        private void OnDestroy()
+        {
+            foreach (var buffer in _buffers.Values)
+            {
+                buffer.Dispose();
+            }
+
+            _defaultBuffer?.Dispose();
+        }
+
+        public ComputeBuffer GetDefaultBuffer()
+        {
+            return _defaultBuffer ?? (_defaultBuffer = new ComputeBuffer(DataSize * DataSize, sizeof(int)));
+        }
+
+        public void ChunkDrawn(Vector3Int origin)
+        {
+            var origins = CalcChunksToRedraw(origin);
+
+            foreach (var o in origins)
+            {
+                SetState(o, ShadowMapState.Pending);
             }
         }
 
@@ -67,17 +124,7 @@ namespace FarmVox.Voxel
             return _states.TryGetValue(origin, out var state) ? state : ShadowMapState.Pending;
         }
 
-        public void ChunkDrawn(Vector3Int origin)
-        {
-            var origins = CalcAffectedKeys(origin);
-
-            foreach (var o in origins)
-            {
-                SetState(o, ShadowMapState.Pending);
-            }
-        }
-
-        private IEnumerable<Vector3Int> CalcAffectedOrigins(Vector2Int key)
+        private IEnumerable<Vector3Int> CalcChunksToUpdate(Vector2Int key)
         {
             for (var j = 0; j < maxChunksY; j++)
             {
@@ -85,16 +132,16 @@ namespace FarmVox.Voxel
                 {
                     for (var k = 0; k < 2; k++)
                     {
-                        var result = new Vector3Int(i + j, j, k + j) * size;
+                        var result = new Vector3Int(i - j * _lightDir.x, j, k - j * _lightDir.z) * size;
                         result.x += key.x;
                         result.z += key.y;
                         yield return result;
                     }
                 }
-            }           
+            }
         }
 
-        private IEnumerable<Vector2Int> CalcAffectedKeys(Vector3Int origin)
+        private IEnumerable<Vector2Int> CalcChunksToRedraw(Vector3Int origin)
         {
             var from = new Vector2Int(origin.x - origin.y, origin.z - origin.y);
             const int num = 2;
@@ -104,7 +151,7 @@ namespace FarmVox.Voxel
             {
                 for (var j = 0; j < num; j++)
                 {
-                    var uv = new Vector2Int(from.x - i * size, from.y - j * size);
+                    var uv = new Vector2Int(from.x + i * size * _lightDir.x, from.y + j * size * _lightDir.z);
                     list.Add(uv);
                 }
             }
@@ -138,18 +185,11 @@ namespace FarmVox.Voxel
 
         private int CalcShadow(Vector3Int coord)
         {
-            var start = LiftVector(coord, lightY);
+            var diff = coord.y - lightY;
+            var start = coord + _lightDir * diff;
+            var ray = new Ray(start, _lightDir);
 
-            var dir = new Vector3(-1, -1, -1).normalized;
-            var ray = new Ray(start, dir);
-
-            return Physics.Raycast(ray, out var hit) ? GetCoord(hit, dir).y : minY;
-        }
-
-        private static Vector3Int LiftVector(Vector3Int coord, int height)
-        {
-            var diff = height - coord.y;
-            return new Vector3Int(coord.x + diff, coord.y + diff, coord.z + diff);
+            return Physics.Raycast(ray, out var hit) ? GetCoord(hit, _lightDir).y : MinY;
         }
 
         private static Vector3Int GetCoord(RaycastHit hit, Vector3 dir)
@@ -158,36 +198,6 @@ namespace FarmVox.Voxel
             return new Vector3Int(Mathf.FloorToInt(point.x),
                 Mathf.FloorToInt(point.y),
                 Mathf.FloorToInt(point.z));
-        }
-
-        public void OnDestroy()
-        {
-            foreach (var buffer in _buffers.Values)
-            {
-                buffer.Dispose();
-            }
-
-            _defaultBuffer?.Dispose();
-        }
-
-        private static ComputeBuffer _defaultBuffer;
-
-        public ComputeBuffer GetDefaultBuffer()
-        {
-            return _defaultBuffer ?? (_defaultBuffer = new ComputeBuffer(DataSize * DataSize, sizeof(int)));
-        }
-
-        public ComputeBuffer GetBuffer(Vector3Int origin, Vector2Int offset)
-        {
-            if (offset.x >= 2 || offset.y >= 2 || offset.x < 0 || offset.y < 0)
-            {
-                throw new System.ArgumentException("offset must be within 0 - 2");
-            }
-
-            var y = origin.y;
-            var o = new Vector2Int(origin.x - y, origin.z - y) - offset * size;
-
-            return _buffers.ContainsKey(o) ? _buffers[o] : GetDefaultBuffer();
         }
     }
 }

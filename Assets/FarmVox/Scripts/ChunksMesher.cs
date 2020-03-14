@@ -2,8 +2,10 @@ using System.Collections;
 using System.Diagnostics;
 using System.Linq;
 using FarmVox.Scripts.GPU.Shaders;
+using FarmVox.Scripts.Voxel;
 using FarmVox.Voxel;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace FarmVox.Scripts
 {
@@ -14,9 +16,19 @@ namespace FarmVox.Scripts
         public VoxelShadowMap shadowMap;
         public Waterfalls waterfalls;
         public float waitForSeconds = 0.2f;
+        private LightDirection _lightDirection;
+        private Vector3Int _lightDir;
 
         private IEnumerator Start()
         {
+            _lightDirection = FindObjectOfType<LightDirection>();
+            if (_lightDirection == null)
+            {
+                Debug.LogError($"Cannot find component of type {typeof(LightDirection)}");
+            }
+
+            _lightDir = _lightDirection.lightDir;
+
             while (true)
             {
                 var chunks = chunksToDraw
@@ -61,7 +73,7 @@ namespace FarmVox.Scripts
                 AoStrength = aoStrength
             };
 
-            using (var mesher = new MesherGpu(chunk.DataSize, mesherSettings))
+            using (var mesher = new MesherGpu(chunk.DataSize, mesherSettings, _lightDir))
             {
                 mesher.UseNormals = chunks.useNormals;
                 mesher.IsWater = chunks.isWater;

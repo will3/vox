@@ -20,6 +20,7 @@
             #include "UnityCG.cginc"
             #include "vision.cginc"
             #include "AutoLight.cginc"
+            #include "shadow.cginc"
             
             float3 _Origin;
             int _Size;
@@ -48,49 +49,7 @@
             StructuredBuffer<int> _ShadowMap10;
             StructuredBuffer<int> _ShadowMap11;
             int _ShadowMapSize;
-
-            int getShadow(int3 coord) {
-                int x = coord.x - coord.y;
-                int z = coord.z - coord.y;
-
-                int i = 0;
-                int j = 0;
-                int u = x;
-                int v = z;
-                int size = _ShadowMapSize;
-
-                if (x < 0) {
-                    i = 1;
-                    u += size;
-                } 
-
-                if (z < 0) {
-                    j = 1;
-                    v += size;
-                }
-
-                if (u < 0 || u >= size || v < 0 || v >= size) {
-                    //return 99;
-                }
-
-                int index = u * size + v;
-
-                if (i == 0) {
-                    if (j == 0) {
-                        return _ShadowMap00[index];
-                    } else if (j == 1) {
-                        return _ShadowMap01[index];
-                    }
-                } else if (i == 1) {
-                    if (j == 0) {
-                        return _ShadowMap10[index];
-                    } else if (j == 1) {
-                        return _ShadowMap11[index];
-                    }
-                }
-
-                return 99;
-            }
+            float3 _LightDir;
 
             struct appdata
             {
@@ -129,7 +88,11 @@
                 
                 o.color = c;
 
-                float shadowHeight = getShadow(coord);
+                float shadowHeight = getVoxelShadow(coord, _ShadowMapSize, _LightDir, 
+                    _ShadowMap00,
+                    _ShadowMap01,
+                    _ShadowMap10,
+                    _ShadowMap11);
                 float shadow = shadowHeight > worldCoord.y ? 1.0 : 0;
                 
                 if (waterfall > 0) {

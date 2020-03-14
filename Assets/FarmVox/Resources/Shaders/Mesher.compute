@@ -22,6 +22,7 @@ int _UseNormals;
 int _IsWater;
 float _NormalStrength;
 float _AoStrength;
+float3 _LightDir;
 
 int3 getVectorInt(int i, int j, int k, int d) {
     if (d == 0) {
@@ -69,7 +70,7 @@ float getDot(int i, int j, int k) {
       //v = float3(0, 1, 0);
     //}
 
-    float3 lightDir = normalize(float3(1, 1, 1));
+    float3 lightDir = normalize(_LightDir * -1);
     float dt = dot(-normalize(v), lightDir);
     dt = clamp(dt, 0.0, 1.0);
     return dt;

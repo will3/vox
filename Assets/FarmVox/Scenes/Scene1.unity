@@ -541,7 +541,7 @@ MonoBehaviour:
   distance: 300
   keysEnabled: 1
   orthographicSize: 50
-  playerObject: {fileID: 0}
+  _playerObject: {fileID: 0}
   playerPositionY: 16
   rotateAmount: 90
 --- !u!1 &679011203
@@ -758,7 +758,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2eb91f5b6e14a4eb929c6a2e66db296, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pos: {x: 1, y: 1, z: 1}
+  lightDir: {x: -1, y: -1, z: -1}
 --- !u!1 &1223485160
 GameObject:
   m_ObjectHideFlags: 0
@@ -898,7 +898,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   size: 32
   lightY: 100
-  minY: -100
   maxChunksY: 4
   chunksMesher: {fileID: 1396963310}
 --- !u!1 &1404610548
