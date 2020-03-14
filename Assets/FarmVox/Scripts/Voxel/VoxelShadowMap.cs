@@ -27,17 +27,17 @@ namespace FarmVox.Scripts.Voxel
         private readonly Dictionary<Vector2Int, ShadowMapState> _states = new Dictionary<Vector2Int, ShadowMapState>();
         private readonly Dictionary<Vector2Int, ComputeBuffer> _buffers = new Dictionary<Vector2Int, ComputeBuffer>();
         private Vector3Int _lightDir = new Vector3Int(-1, -1, -1);
-        private LightDirection _lightDirection;
+        private LightController _lightController;
 
         private void Start()
         {
-            _lightDirection = FindObjectOfType<LightDirection>();
-            if (_lightDirection == null)
+            _lightController = FindObjectOfType<LightController>();
+            if (_lightController == null)
             {
-                Debug.LogError($"Cannot find component of type {typeof(LightDirection)}");
+                Logger.LogComponentNotFound(typeof(LightController));
             }
 
-            _lightDir = _lightDirection.lightDir;
+            _lightDir = _lightController.lightDir;
         }
 
         private void Update()

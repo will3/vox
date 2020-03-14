@@ -16,18 +16,18 @@ namespace FarmVox.Scripts
         public VoxelShadowMap shadowMap;
         public Waterfalls waterfalls;
         public float waitForSeconds = 0.2f;
-        private LightDirection _lightDirection;
+        private LightController _lightController;
         private Vector3Int _lightDir;
 
         private IEnumerator Start()
         {
-            _lightDirection = FindObjectOfType<LightDirection>();
-            if (_lightDirection == null)
+            _lightController = FindObjectOfType<LightController>();
+            if (_lightController == null)
             {
-                Debug.LogError($"Cannot find component of type {typeof(LightDirection)}");
+                Logger.LogComponentNotFound(typeof(LightController));
             }
 
-            _lightDir = _lightDirection.lightDir;
+            _lightDir = _lightController.lightDir;
 
             while (true)
             {
