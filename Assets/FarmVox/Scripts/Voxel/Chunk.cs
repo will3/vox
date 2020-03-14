@@ -38,7 +38,7 @@ namespace FarmVox.Voxel
 
         private ComputeBuffer _voxelDataBuffer;
 
-        private List<CoordData> _coordData = new List<CoordData>();
+        private List<VoxelData> _coordData = new List<VoxelData>();
 
         private Material _material;
 
@@ -81,6 +81,8 @@ namespace FarmVox.Voxel
                     _material.SetFloat(WaterfallWidth, _waterfalls.width);
                     _material.SetFloat(WaterfallMin, _waterfalls.min);
                     _material.SetFloat(WaterfallVariance, _waterfalls.variance);
+                    _material.SetInt(NormalBanding, Chunks.normalBanding);
+                    _material.SetFloat(NormalStrength, Chunks.normalStrength);
                 }
 
                 _material.SetVector(Origin, (Vector3) origin);
@@ -90,7 +92,7 @@ namespace FarmVox.Voxel
             }
         }
 
-        public void SetVoxelData(List<CoordData> coordData)
+        public void SetVoxelData(List<VoxelData> coordData)
         {
             _coordData = coordData;
             UpdateVoxelDataBuffer();
@@ -108,7 +110,7 @@ namespace FarmVox.Voxel
                 return;
             }
 
-            _voxelDataBuffer = new ComputeBuffer(_coordData.Count, CoordData.Size);
+            _voxelDataBuffer = new ComputeBuffer(_coordData.Count, VoxelData.Size);
             _voxelDataBuffer.SetData(_coordData);
         }
 
@@ -116,7 +118,7 @@ namespace FarmVox.Voxel
         {
             if (_coordData.Count == 0)
             {
-                return _defaultVoxelDataBuffer ?? (_defaultVoxelDataBuffer = new ComputeBuffer(1, CoordData.Size));
+                return _defaultVoxelDataBuffer ?? (_defaultVoxelDataBuffer = new ComputeBuffer(1, VoxelData.Size));
             }
 
             return _voxelDataBuffer;
@@ -324,6 +326,8 @@ namespace FarmVox.Voxel
 
         private GameObject playerObject;
         private static readonly int LightDir = Shader.PropertyToID("_LightDir");
+        private static readonly int NormalBanding = Shader.PropertyToID("_NormalBanding");
+        private static readonly int NormalStrength = Shader.PropertyToID("_NormalStrength");
 
         private Vector3 PlayerPosition
         {

@@ -22,6 +22,8 @@ namespace FarmVox.Scripts.GPU.Shaders
             
         public int Z;
 
+        public Vector3 Normal;
+
         public int GetIndex(int size)
         {
             return X * size * size + Y * size + Z;
@@ -40,7 +42,8 @@ namespace FarmVox.Scripts.GPU.Shaders
                     sizeof(float) * 3 * 4 +
                     sizeof(float) * 4 +
                     sizeof(float) * 4 +
-                    sizeof(int) * 3;
+                    sizeof(int) * 3 + 
+                    sizeof(float) * 3;
             }
         }
     }

@@ -28,6 +28,7 @@
 
             struct VoxelData {
                 int3 coord;
+                float3 normal;
             };
             
             StructuredBuffer<VoxelData> _VoxelData;

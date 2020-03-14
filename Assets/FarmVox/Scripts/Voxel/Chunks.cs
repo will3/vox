@@ -10,6 +10,7 @@ namespace FarmVox.Voxel
         public bool useNormals = true;
         public bool isWater;
         public float normalStrength = 0.4f;
+        public int normalBanding = 6;
         public float shadowStrength = 0.5f;
         public bool transparent;
         public bool isWalkable;

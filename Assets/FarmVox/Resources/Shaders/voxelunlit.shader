@@ -35,9 +35,12 @@
             float3 _PlayerPosition;
             float _VisionGridSize;
             float _VisionBlurRange;
+            int _NormalBanding;
+            float _NormalStrength;
 
             struct VoxelData {
                 int3 coord;
+                float3 normal;
             };
             
             StructuredBuffer<VoxelData> _VoxelData;
@@ -81,12 +84,21 @@
                 
                 VoxelData voxelData = _VoxelData[index]; 
                 int3 coord = voxelData.coord;
+                float3 normal = voxelData.normal;
 
                 float4 c = v.color;
 
                 int3 worldCoord = coord + floor(_Origin);
                 
-                o.color = c;
+                float dif = clamp(dot(normal, _LightDir), 0, 1);
+
+                if (_NormalBanding != 0.0) {
+                    dif = floor(dif * _NormalBanding) / _NormalBanding;
+                }
+
+                dif = 1 - (1 - dif) * _NormalStrength;
+
+                o.color = c * dif;
 
                 float shadowHeight = getVoxelShadow(coord, _ShadowMapSize, _LightDir, 
                     _ShadowMap00,

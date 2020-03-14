@@ -1,17 +1,18 @@
 ﻿using System.Collections.Generic;
+using FarmVox.Scripts.Voxel;
 using UnityEngine;
 
 namespace FarmVox.Voxel
 {
     public class MeshResult
     {
-        public MeshResult(List<CoordData> voxelData, Mesh mesh)
+        public MeshResult(List<VoxelData> voxelData, Mesh mesh)
         {
             VoxelData = voxelData;
             Mesh = mesh;
         }
 
-        public List<CoordData> VoxelData { get; private set; }
+        public List<VoxelData> VoxelData { get; private set; }
         public Mesh Mesh { get; private set; }
     }
 }

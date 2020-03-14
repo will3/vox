@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using FarmVox.Scripts;
 using FarmVox.Scripts.GPU.Shaders;
+using FarmVox.Scripts.Voxel;
 using UnityEngine;
 
 namespace FarmVox.Voxel
@@ -11,7 +12,7 @@ namespace FarmVox.Voxel
         private readonly List<Color> _colors = new List<Color>();
         private readonly List<Vector2> _uvs = new List<Vector2>();
         private readonly List<int> _indices = new List<int>();
-        private readonly List<CoordData> _voxelData = new List<CoordData>();
+        private readonly List<VoxelData> _voxelData = new List<VoxelData>();
 
         private void AddTriangle(Quad quad, Dictionary<Vector3Int, float> waterfallData)
         {
@@ -46,9 +47,10 @@ namespace FarmVox.Voxel
             _indices.Add(index + 3);
             _indices.Add(index);
 
-            _voxelData.Add(new CoordData
+            _voxelData.Add(new VoxelData
             {
-                Coord = quad.Coord
+                Coord = quad.Coord,
+                Normal = quad.Normal
             });
         }
 

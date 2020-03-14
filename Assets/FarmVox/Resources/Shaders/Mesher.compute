@@ -11,6 +11,7 @@ struct Triangle {
     int x;
     int y;
     int z;
+    float3 normal;
 };
 
 int _Size;
@@ -55,28 +56,19 @@ float getVoxel(int3 coord) {
     return v;
 }
 
-float getDot(int i, int j, int k) {
+float3 calcNormal(int i, int j, int k) {
     float3 v;
-    for(int di = -1; di <= 1; di++) {
-    for(int dj = -1; dj <= 1; dj++) {
-    for(int dk = -1; dk <= 1; dk++) {
-        v += normalize(float3(di,dj,dk)) * getVoxel(int3(i + di, j + dj, k + dk));
+        for(int di = -1; di <= 1; di++) {
+        for(int dj = -1; dj <= 1; dj++) {
+        for(int dk = -1; dk <= 1; dk++) {
+            v += normalize(float3(di,dj,dk)) * getVoxel(int3(i + di, j + dj, k + dk));
+        }
+        }
     }
-    }
-    }
-
-    // Assume up
-    //if (v.x == 0 && v.y == 0 && v.z == 0) {
-      //v = float3(0, 1, 0);
-    //}
-
-    float3 lightDir = normalize(_LightDir * -1);
-    float dt = dot(-normalize(v), lightDir);
-    dt = clamp(dt, 0.0, 1.0);
-    return dt;
+    return normalize(v);
 }
 
-void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, float ab, float ac, float ad, bool order, bool flipped, int x, int y, int z) {
+void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, float ab, float ac, float ad, bool order, bool flipped, int x, int y, int z, float3 normal) {
     Triangle t1;
 
     if (order) {
@@ -89,6 +81,7 @@ void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, flo
         t1.x = x;
         t1.y = y;
         t1.z = z;
+        t1.normal = normal;
         _TrianglesBuffer.Append(t1);
     } else {
         t1.a = c;
@@ -100,6 +93,7 @@ void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, flo
         t1.x = x;
         t1.y = y;
         t1.z = z;
+        t1.normal = normal;
         _TrianglesBuffer.Append(t1);
     }
 }
@@ -170,19 +164,9 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     int3 c = front ? int3(i, j, k) : int3(i + 1, j, k);
     c = getVector(c.x, c.y, c.z, d);
 
-    float normal;
-
-    if (_IsWater) {
-        normal = 1;
-    } else {
-        float _normal = getDot(c.x, c.y, c.z);
-        if (_NormalBanding != 0.0) {
-            _normal = floor(_normal * _NormalBanding) / _NormalBanding;
-        }
-        normal = 1 - (1 - _normal) * _NormalStrength;
-    }
+    float3 normal = calcNormal(c.x, c.y, c.z);
   
-    float4 color = getColor(c) * normal;
+    float4 color = getColor(c);
 
     int aoI = front ? i + 1 : i;
     int3 c00 = getVectorInt(aoI, j - 1, k - 1, d);
@@ -222,6 +206,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
         ao10,
         front,
         flipped,
-        c.x, c.y, c.z
+        c.x, c.y, c.z,
+        normal
     );
 }
