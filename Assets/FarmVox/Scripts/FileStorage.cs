@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 
-namespace FarmVox
+namespace FarmVox.Scripts
 {
     public class FileStorage
     {

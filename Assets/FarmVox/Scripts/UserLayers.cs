@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace FarmVox
+namespace FarmVox.Scripts
 {
     public static class UserLayers {
         public static int Terrian {

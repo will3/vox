@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Diagnostics;
 using System.Linq;
-using FarmVox.GPU.Shaders;
+using FarmVox.Scripts.GPU.Shaders;
 using FarmVox.Voxel;
 using UnityEngine;
 

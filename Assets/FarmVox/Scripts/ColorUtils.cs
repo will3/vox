@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using UnityEngine;
 
-namespace FarmVox
+namespace FarmVox.Scripts
 {
     public static class ColorUtils
     {

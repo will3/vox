@@ -2,7 +2,7 @@
 using System.Linq;
 using UnityEngine;
 
-namespace FarmVox.GPU
+namespace FarmVox.Scripts.GPU
 {
     public static class ComputeShaderExtensions {
         public static void SetColorGradient(this ComputeShader computeShader, ColorGradient colorGradient, string prefix)

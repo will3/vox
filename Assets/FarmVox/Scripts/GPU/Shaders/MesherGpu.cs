@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace FarmVox.GPU.Shaders
+namespace FarmVox.Scripts.GPU.Shaders
 {
     public class MesherGpu : IDisposable
     {

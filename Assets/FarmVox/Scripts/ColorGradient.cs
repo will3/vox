@@ -2,7 +2,7 @@ using System;
 using FarmVox.Terrain;
 using UnityEngine;
 
-namespace FarmVox
+namespace FarmVox.Scripts
 {
     [Serializable]
     public class ColorGradient

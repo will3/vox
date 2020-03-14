@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace FarmVox
+namespace FarmVox.Scripts
 {
     public static class PerformanceLogger
     {

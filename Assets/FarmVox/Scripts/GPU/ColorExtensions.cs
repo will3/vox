@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace FarmVox.GPU
+namespace FarmVox.Scripts.GPU
 {
     public static class ColorExtensions
     {
