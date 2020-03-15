@@ -11,8 +11,6 @@ namespace FarmVox.Scripts
         public float distance = 300;
         public bool keysEnabled = true;
         public float orthographicSize = 50;
-        public GameObject _playerObject;
-        public float playerPositionY = 20;
         public float rotateAmount = 90f;
         public float cameraRotateSpeed = 0.2f;
 
@@ -24,12 +22,6 @@ namespace FarmVox.Scripts
         private bool _leftDragging;
 
         private float _rotate;
-        private bool _isPlayerObjectNull = true;
-
-        private void Start()
-        {
-            _isPlayerObjectNull = PlayerObject == null;
-        }
 
         private void UpdateKeys()
         {
@@ -40,31 +32,12 @@ namespace FarmVox.Scripts
             targetRotation.y += rotate * rotateAmount;
         }
 
-        private GameObject PlayerObject
-        {
-            get
-            {
-                if (_playerObject != null)
-                {
-                    return _playerObject;
-                }
-
-                _playerObject = GameObject.Find("Player");
-                _isPlayerObjectNull = false;
-
-                return _playerObject;
-            }
-        }
-
         private void Update()
         {
             if (keysEnabled)
             {
                 UpdateKeys();
             }
-
-            var playerPosition = _isPlayerObjectNull ? new Vector3() : PlayerObject.transform.position;
-            target = new Vector3(playerPosition.x, playerPositionY, playerPosition.z);
 
             rotation = Vector3.Lerp(rotation, targetRotation, cameraRotateSpeed);
             var dir = Quaternion.Euler(rotation) * Vector3.forward;

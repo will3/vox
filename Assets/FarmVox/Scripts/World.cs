@@ -25,6 +25,9 @@ namespace FarmVox.Scripts
         public Vector3Int numGridsToGenerate = new Vector3Int(1, 2, 1);
         public int distanceToUnload = 1;
 
+        public Vector3 Center =>
+            new Vector3(0.5f, 0, 0.5f) * size;
+
         private IEnumerator Start()
         {
             while (true)
