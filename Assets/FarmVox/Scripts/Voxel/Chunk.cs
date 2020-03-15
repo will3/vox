@@ -307,7 +307,7 @@ namespace FarmVox.Scripts.Voxel
 
         private void Start()
         {
-            var defaultBuffer = VoxelShadowMap.GetDefaultBuffer();
+            var defaultBuffer = ShadowMap.GetDefaultBuffer();
             Material.SetBuffer(ShadowMap00, defaultBuffer);
             Material.SetBuffer(ShadowMap01, defaultBuffer);
             Material.SetBuffer(ShadowMap10, defaultBuffer);

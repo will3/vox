@@ -112,6 +112,124 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &11901111
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 11901113}
+  - component: {fileID: 11901117}
+  - component: {fileID: 11901112}
+  - component: {fileID: 11901116}
+  - component: {fileID: 11901115}
+  - component: {fileID: 11901114}
+  m_Layer: 0
+  m_Name: Shadows
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &11901112
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 11901111}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b48eb999ac1e1445c9a40c1fcf4f5329, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  size: 32
+  lightY: 100
+  maxChunksY: 4
+  lightDir: 0
+--- !u!4 &11901113
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 11901111}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 10
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &11901114
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 11901111}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b48eb999ac1e1445c9a40c1fcf4f5329, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  size: 32
+  lightY: 100
+  maxChunksY: 4
+  lightDir: 3
+--- !u!114 &11901115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 11901111}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b48eb999ac1e1445c9a40c1fcf4f5329, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  size: 32
+  lightY: 100
+  maxChunksY: 4
+  lightDir: 2
+--- !u!114 &11901116
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 11901111}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b48eb999ac1e1445c9a40c1fcf4f5329, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  size: 32
+  lightY: 100
+  maxChunksY: 4
+  lightDir: 1
+--- !u!114 &11901117
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 11901111}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e1dfbea414c42f6996361b16b8fb771, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shadowMaps:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  lightController: {fileID: 0}
+  lightDir: 0
 --- !u!1 &316894771
 GameObject:
   m_ObjectHideFlags: 0
@@ -759,7 +877,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2eb91f5b6e14a4eb929c6a2e66db296, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lightDir: {x: -1, y: -1, z: -1}
+  lightDir: 1
 --- !u!1 &1223485160
 GameObject:
   m_ObjectHideFlags: 0
@@ -843,7 +961,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1396963311}
   - component: {fileID: 1396963310}
-  - component: {fileID: 1396963312}
   m_Layer: 0
   m_Name: Chunks Mesher
   m_TagString: Untagged
@@ -869,7 +986,6 @@ MonoBehaviour:
   - {fileID: 1223485162}
   - {fileID: 1767922225}
   - {fileID: 1603196056}
-  shadowMap: {fileID: 0}
   waterfalls: {fileID: 1404610549}
   waitForSeconds: 0
 --- !u!4 &1396963311
@@ -886,22 +1002,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1396963312
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1396963309}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b48eb999ac1e1445c9a40c1fcf4f5329, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  size: 32
-  lightY: 100
-  maxChunksY: 4
-  chunksMesher: {fileID: 1396963310}
 --- !u!1 &1404610548
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,12 +1,9 @@
-using System;
 using System.Collections;
-using System.Diagnostics;
 using System.Linq;
 using FarmVox.Scripts.GPU.Shaders;
 using FarmVox.Scripts.Voxel;
 using FarmVox.Voxel;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
 
 namespace FarmVox.Scripts
 {
@@ -17,7 +14,7 @@ namespace FarmVox.Scripts
         public Waterfalls waterfalls;
         public float waitForSeconds = 0.2f;
         private LightController _lightController;
-        private Vector3Int _lightDir;
+        private Vector3Int LightDir => _lightController.lightDir.GetDirVector();
 
         private void Start()
         {
@@ -40,7 +37,7 @@ namespace FarmVox.Scripts
                     continue;
                 }
 
-                chunk.SetLightDir(_lightDir);
+                chunk.SetLightDir(LightDir);
                 chunk.UpdateShadowBuffers(buffers);
                 chunk.SetShadowMapSize(dataSize);
             }
@@ -53,8 +50,6 @@ namespace FarmVox.Scripts
             {
                 Logger.LogComponentNotFound(typeof(LightController));
             }
-
-            _lightDir = _lightController.lightDir;
 
             while (true)
             {
@@ -100,7 +95,7 @@ namespace FarmVox.Scripts
                 AoStrength = aoStrength
             };
 
-            using (var mesher = new MesherGpu(chunk.DataSize, mesherSettings, _lightDir))
+            using (var mesher = new MesherGpu(chunk.DataSize, mesherSettings, LightDir))
             {
                 mesher.UseNormals = chunks.useNormals;
                 mesher.IsWater = chunks.isWater;
