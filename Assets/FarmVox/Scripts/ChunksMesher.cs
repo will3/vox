@@ -15,9 +15,16 @@ namespace FarmVox.Scripts
         public float waitForSeconds = 0.2f;
         private LightController _lightController;
         private Vector3Int LightDir => _lightController.lightDir.GetDirVector();
+        public World world;
 
         private void Start()
         {
+            world = FindObjectOfType<World>();
+            if (world == null)
+            {
+                Logger.LogComponentNotFound(typeof(World));
+            }
+
             ShadowEvents.Instance.ShadowMapUpdated += OnShadowMapUpdated;
             StartCoroutine(DrawLoop());
         }
@@ -64,7 +71,7 @@ namespace FarmVox.Scripts
                     DrawChunk(chunk, waterfalls);
                     yield return new WaitForSeconds(waitForSeconds);
                 }
-                
+
                 yield return null;
             }
         }
@@ -95,7 +102,7 @@ namespace FarmVox.Scripts
                 AoStrength = aoStrength
             };
 
-            using (var mesher = new MesherGpu(chunk.DataSize, mesherSettings, LightDir))
+            using (var mesher = new MesherGpu(chunk.DataSize, mesherSettings, LightDir, world.Bounds, chunk.origin))
             {
                 mesher.UseNormals = chunks.useNormals;
                 mesher.IsWater = chunks.isWater;

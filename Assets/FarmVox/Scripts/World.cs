@@ -25,6 +25,13 @@ namespace FarmVox.Scripts
         public Vector3Int numGridsToGenerate = new Vector3Int(1, 2, 1);
         public int distanceToUnload = 1;
 
+        public BoundsInt Bounds =>
+            new BoundsInt
+            {
+                min = new Vector3Int(-numGridsToGenerate.x, 0, -numGridsToGenerate.z) * size,
+                max = new Vector3Int(numGridsToGenerate.x + 1, 0, numGridsToGenerate.z + 1) * size
+            };
+
         public Vector3 Center =>
             new Vector3(0.5f, 0, 0.5f) * size;
 
