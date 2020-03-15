@@ -14,6 +14,7 @@ namespace FarmVox.Scripts
         public GameObject _playerObject;
         public float playerPositionY = 20;
         public float rotateAmount = 90f;
+        public float cameraRotateSpeed = 0.2f;
 
         private float _forward;
         private float _right;
@@ -65,7 +66,7 @@ namespace FarmVox.Scripts
             var playerPosition = _isPlayerObjectNull ? new Vector3() : PlayerObject.transform.position;
             target = new Vector3(playerPosition.x, playerPositionY, playerPosition.z);
 
-            rotation = Vector3.Lerp(rotation, targetRotation, 0.2f);
+            rotation = Vector3.Lerp(rotation, targetRotation, cameraRotateSpeed);
             var dir = Quaternion.Euler(rotation) * Vector3.forward;
             var position = target - dir * distance;
             transform.position = position;

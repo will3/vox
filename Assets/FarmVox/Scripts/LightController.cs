@@ -6,16 +6,6 @@ namespace FarmVox.Scripts
     public class LightController : MonoBehaviour
     {
         public LightDir lightDir;
-        private Camera _camera;
-
-        private void Start()
-        {
-            _camera = Camera.main;
-            if (_camera == null)
-            {
-                Logger.LogComponentNotFound(typeof(Camera));
-            }
-        }
 
         private void Update()
         {

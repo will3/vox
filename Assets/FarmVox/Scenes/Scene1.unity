@@ -126,6 +126,7 @@ GameObject:
   - component: {fileID: 11901116}
   - component: {fileID: 11901115}
   - component: {fileID: 11901114}
+  - component: {fileID: 11901118}
   m_Layer: 0
   m_Name: Shadows
   m_TagString: Untagged
@@ -230,6 +231,18 @@ MonoBehaviour:
   - {fileID: 0}
   lightController: {fileID: 0}
   lightDir: 0
+--- !u!114 &11901118
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 11901111}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7359e105dd243008036305402aa0f7b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &316894771
 GameObject:
   m_ObjectHideFlags: 0
@@ -623,7 +636,7 @@ Camera:
   m_TargetEye: 3
   m_HDR: 1
   m_AllowMSAA: 1
-  m_AllowDynamicResolution: 0
+  m_AllowDynamicResolution: 1
   m_ForceIntoRT: 0
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
@@ -663,6 +676,7 @@ MonoBehaviour:
   _playerObject: {fileID: 0}
   playerPositionY: 16
   rotateAmount: 90
+  cameraRotateSpeed: 0.5
 --- !u!1 &679011203
 GameObject:
   m_ObjectHideFlags: 0
