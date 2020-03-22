@@ -10,6 +10,7 @@ namespace FarmVox.Scripts.Voxel
         public int lightY = 100;
         public int maxChunksY = 4;
         public LightDir lightDir;
+        public bool debugLog;
 
         public Vector3Int LightDirVector => lightDir.GetDirVector();
 
@@ -67,9 +68,12 @@ namespace FarmVox.Scripts.Voxel
                 ShadowEvents.Instance.PublishShadowMapUpdated(origin, DataSize, buffers);
             }
 
-            if (dirtyShadowMapChunksCount > 0 || _dirtyChunks.Count > 0)
+            if (debugLog)
             {
-                Debug.Log($"Redrawn {dirtyShadowMapChunksCount} chunks, Updated {_dirtyChunks.Count} chunks");    
+                if (dirtyShadowMapChunksCount > 0 || _dirtyChunks.Count > 0)
+                {
+                    Debug.Log($"Redrawn {dirtyShadowMapChunksCount} chunks, Updated {_dirtyChunks.Count} chunks");
+                }
             }
 
             _dirtyChunks.Clear();

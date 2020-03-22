@@ -8,8 +8,10 @@ namespace FarmVox.Scripts.Voxel
         public ShadowMap[] shadowMaps;
         public LightController lightController;
         public LightDir lightDir;
+        public bool debugLog;
+
         private ShadowMap ActiveShadowMap => shadowMaps.Single(s => s.lightDir == lightDir);
-        private LightDir lastLightDir;
+        private LightDir _lastLightDir;
 
         private void Start()
         {
@@ -34,14 +36,19 @@ namespace FarmVox.Scripts.Voxel
         {
             lightDir = lightController.lightDir;
 
-            if (lightDir != lastLightDir)
+            if (lightDir != _lastLightDir)
             {
                 ActiveShadowMap.UpdateAllChunks();
             }
 
             ActiveShadowMap.UpdateBuffers();
 
-            lastLightDir = lightDir;
+            _lastLightDir = lightDir;
+
+            foreach (var shadowMap in shadowMaps)
+            {
+                shadowMap.debugLog = debugLog;
+            }
         }
 
         private void OnDestroy()

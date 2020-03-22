@@ -15,10 +15,12 @@ namespace FarmVox.Scripts
         public Waterfalls waterfalls;
         public BuildingTiles tiles;
 
-        public float waitForSeconds = 0.2f;
+        public float waitForSeconds = 0.1f;
 
-        private readonly HashSet<Vector3Int> _columnGenerated = new HashSet<Vector3Int>();
+        private readonly HashSet<Vector3Int> _columns = new HashSet<Vector3Int>();
+        private readonly List<Vector3Int> _columnsDirty = new List<Vector3Int>();
         private readonly HashSet<Vector3Int> _waterfallGenerated = new HashSet<Vector3Int>();
+        private readonly HashSet<Vector3Int> _columnsToUnload = new HashSet<Vector3Int>();
 
         private string _lastConfig;
 
@@ -35,36 +37,27 @@ namespace FarmVox.Scripts
         public Vector3 Center =>
             new Vector3(0.5f, 0, 0.5f) * size;
 
-        private IEnumerator Start()
+        private void Start()
+        {
+            StartCoroutine(GenerateWorldLoop());
+            StartCoroutine(UnloadColumnsLoop());
+        }
+
+        private IEnumerator GenerateWorldLoop()
         {
             while (true)
             {
-                var playerOrigin = transform.position.GetOrigin(size);
-                playerOrigin.y = 0;
+                UpdateColumns();
 
-                var columns = new List<Vector3Int>();
-                for (var i = -numGridsToGenerate.x; i <= numGridsToGenerate.x; i++)
-                {
-                    for (var k = -numGridsToGenerate.z; k <= numGridsToGenerate.z; k++)
-                    {
-                        var columnOrigin = new Vector3Int(i, 0, k) * size;
-
-                        if (_columnGenerated.Contains(columnOrigin))
-                        {
-                            continue;
-                        }
-
-                        columns.Add(columnOrigin);
-                    }
-                }
-
-                foreach (var column in columns.OrderBy(c =>
-                    (transform.position - (c + new Vector3(size, 0, size) / 2.0f)).sqrMagnitude))
+                foreach (var column in _columnsDirty)
                 {
                     yield return LoadColumn(column);
                 }
 
-                foreach (var column in _columnGenerated.Where(ShouldGenerateWaterfall))
+                _columnsDirty.Clear();
+
+                var waterfallColumns = _columns.Where(ShouldGenerateWaterfall);
+                foreach (var column in waterfallColumns)
                 {
                     foreach (var chunk in GetChunks(column))
                     {
@@ -76,20 +69,53 @@ namespace FarmVox.Scripts
                     yield return new WaitForSeconds(waitForSeconds);
                 }
 
-                var columnsToUnload = _columnGenerated.Where(column =>
-                {
-                    var xDis = Mathf.Abs((playerOrigin.x - column.x) / size);
-                    var zDis = Mathf.Abs((playerOrigin.z - column.z) / size);
-                    return Mathf.Max(xDis, zDis) > distanceToUnload;
-                }).ToArray();
+                yield return new WaitForSeconds(waitForSeconds);
+            }
+        }
 
-                foreach (var column in columnsToUnload)
-                {
-                    yield return UnloadColumn(column);
-                }
+        private IEnumerator UnloadColumnsLoop()
+        {
+            while (true)
+            {
+                UpdateColumnsToUnload();
+                yield return UnloadColumns();
 
                 yield return new WaitForSeconds(waitForSeconds);
             }
+        }
+
+        private void Update()
+        {
+            if (!Input.GetKeyDown(KeyCode.Return)) return;
+            foreach (var column in _columns)
+            {
+                _columnsToUnload.Add(column);
+            }
+        }
+
+        private void UpdateColumns()
+        {
+            for (var i = -numGridsToGenerate.x; i <= numGridsToGenerate.x; i++)
+            {
+                for (var k = -numGridsToGenerate.z; k <= numGridsToGenerate.z; k++)
+                {
+                    var columnOrigin = new Vector3Int(i, 0, k) * size;
+
+                    if (_columns.Contains(columnOrigin))
+                    {
+                        continue;
+                    }
+
+                    _columnsDirty.Add(columnOrigin);
+                }
+            }
+
+            _columnsDirty.Sort((a, b) => CalcDistance(a).CompareTo(CalcDistance(b)));
+        }
+
+        private float CalcDistance(Vector3Int c)
+        {
+            return (transform.position - (c + new Vector3(size, 0, size) / 2.0f)).sqrMagnitude;
         }
 
         private IEnumerator LoadColumn(Vector3Int column)
@@ -101,9 +127,35 @@ namespace FarmVox.Scripts
                 water.GenerateChunk(chunk);
             }
 
-            _columnGenerated.Add(column);
+            _columns.Add(column);
 
             yield return new WaitForSeconds(waitForSeconds);
+        }
+
+        private void UpdateColumnsToUnload()
+        {
+            var playerOrigin = transform.position.GetOrigin(size);
+            playerOrigin.y = 0;
+
+            var columnsToUnload = _columns.Where(column =>
+            {
+                var xDis = Mathf.Abs((playerOrigin.x - column.x) / size);
+                var zDis = Mathf.Abs((playerOrigin.z - column.z) / size);
+                return Mathf.Max(xDis, zDis) > distanceToUnload;
+            }).ToArray();
+
+            _columnsToUnload.UnionWith(columnsToUnload);
+        }
+
+        private IEnumerator UnloadColumns()
+        {
+            var copy = new HashSet<Vector3Int>(_columnsToUnload);
+            foreach (var column in copy)
+            {
+                yield return UnloadColumn(column);
+            }
+
+            _columnsToUnload.ExceptWith(copy);
         }
 
         private IEnumerator UnloadColumn(Vector3Int column)
@@ -119,7 +171,7 @@ namespace FarmVox.Scripts
                 yield return new WaitForSeconds(waitForSeconds);
             }
 
-            _columnGenerated.Remove(column);
+            _columns.Remove(column);
         }
 
         private bool ShouldGenerateWaterfall(Vector3Int origin)
@@ -140,7 +192,7 @@ namespace FarmVox.Scripts
 
                     var nextOrigin = origin + new Vector3Int(i, 0, k) * size;
 
-                    if (!_columnGenerated.Contains(nextOrigin))
+                    if (!_columns.Contains(nextOrigin))
                     {
                         return false;
                     }
