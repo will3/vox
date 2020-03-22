@@ -61,7 +61,6 @@ namespace FarmVox.Scripts.GPU.Shaders
                 _shader.SetInt("_Size", _size);
                 _shader.SetVector("_Origin", (Vector3) _origin);
                 _shader.SetFloat("_HillHeight", _groundConfig.hillHeight);
-                _shader.SetFloat("_PlainHeight", _groundConfig.plainHeight);
                 _shader.SetFloat("_GroundHeight", _groundConfig.groundHeight);
                 _shader.SetInt("_WaterLevel", _waterConfig.waterLevel);
 

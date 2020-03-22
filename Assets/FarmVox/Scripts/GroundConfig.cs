@@ -7,7 +7,6 @@ namespace FarmVox.Scripts
     public class GroundConfig
     {
         public float maxHeight = 64;
-        public float plainHeight = 4;
         public int groundHeight = 12;
         public float hillHeight = 64;
 
