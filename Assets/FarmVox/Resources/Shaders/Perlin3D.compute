@@ -16,6 +16,7 @@ float _XZScale;
 float _Amplitude;
 int _DataSize;
 int _Type;
+float _Offset;
 
 // fractal sum, range -1.0 - 1.0
 float fBm(float3 p, int octaves)
@@ -102,7 +103,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
     int index = getIndex(id.x, id.y, id.z);
     
-    value = value * _Amplitude;
+    value = value * _Amplitude + _Offset;
     
     _Results[index] = value;
 }

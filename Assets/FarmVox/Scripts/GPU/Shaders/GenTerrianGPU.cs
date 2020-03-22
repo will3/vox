@@ -10,6 +10,7 @@ namespace FarmVox.Scripts.GPU.Shaders
         private readonly ComputeShader _shader;
         private readonly GroundConfig _groundConfig;
         private readonly WaterConfig _waterConfig;
+        private readonly StoneConfig _stoneConfig;
         private readonly Vector3Int _origin;
         private ComputeBuffer _voxelBuffer;
 
@@ -17,12 +18,14 @@ namespace FarmVox.Scripts.GPU.Shaders
             int size,
             Vector3Int origin,
             GroundConfig groundConfig,
-            WaterConfig waterConfig)
+            WaterConfig waterConfig,
+            StoneConfig stoneConfig)
         {
             _size = size;
             _origin = origin;
             _groundConfig = groundConfig;
             _waterConfig = waterConfig;
+            _stoneConfig = stoneConfig;
 
             _dataSize = size + 3;
             _shader = Resources.Load<ComputeShader>("Shaders/GenTerrian");
@@ -43,10 +46,12 @@ namespace FarmVox.Scripts.GPU.Shaders
             using (var rockColorBuffer = new Perlin3DGpu(_groundConfig.rockColorNoise, _dataSize, _origin))
             using (var heightBuffer = new Perlin3DGpu(_groundConfig.heightNoise, _dataSize, _origin))
             using (var grassBuffer = new Perlin3DGpu(_groundConfig.grassNoise, _dataSize, _origin))
+            using (var stoneBuffer = new Perlin3DGpu(_stoneConfig.noise, _dataSize, _origin))
             {
                 _shader.SetBuffer(0, "_RockColorBuffer", rockColorBuffer.Results);
                 _shader.SetBuffer(0, "_HeightBuffer", heightBuffer.Results);
                 _shader.SetBuffer(0, "_GrassBuffer", grassBuffer.Results);
+                _shader.SetBuffer(0, "_StoneBuffer", stoneBuffer.Results);
 
                 _shader.SetBuffer(0, "_VoxelBuffer", voxelBuffer);
                 _shader.SetBuffer(0, "_ColorBuffer", colorBuffer);
@@ -67,10 +72,13 @@ namespace FarmVox.Scripts.GPU.Shaders
 
                 _shader.SetColorGradient(_groundConfig.rockColor, "_Rock");
                 _shader.SetColorGradient(_groundConfig.grassColor, "_Grass");
+                _shader.SetColorGradient(_stoneConfig.color, "_Stone");
 
                 _shader.SetValueGradient(_groundConfig.heightFilter, "_Height");
 
                 _shader.SetFloat("_GrassValue", _groundConfig.grassValue);
+                
+                _shader.SetValueGradient(_stoneConfig.heightCurve, "_StoneHeight");
 
                 _shader.Dispatch(0,
                     Mathf.CeilToInt(_dataSize / (float) _workGroups[0]),

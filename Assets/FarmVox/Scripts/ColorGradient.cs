@@ -7,12 +7,16 @@ namespace FarmVox.Scripts
     [Serializable]
     public class ColorGradient
     {
-        public Gradient Gradient;
-        public int Banding;
+        public Gradient gradient;
+        public int banding;
 
         public ColorGradient(Color color)
         {
-            Gradient = GradientUtils.CreateGradient(color);
+            gradient = GradientUtils.CreateGradient(color);
+        }
+
+        public ColorGradient(string color) : this(ColorUtils.GetColor(color))
+        {
         }
     }
 }

@@ -10,12 +10,18 @@ namespace FarmVox.Scripts
         public GroundConfig config;
         public Chunks chunks;
         public Water water;
+        public Stone stone;
 
         public void GenerateChunk(Vector3Int origin)
         {
             var chunk = chunks.GetOrCreateChunk(origin);
 
-            var genTerrianGpu = new GenTerrianGpu(config.size, origin, config, water.config);
+            if (stone == null)
+            {
+                stone = FindObjectOfType<Stone>();
+            }
+
+            var genTerrianGpu = new GenTerrianGpu(config.size, origin, config, water.config, stone.config);
 
             var voxelBuffer = genTerrianGpu.CreateVoxelBuffer();
             var colorBuffer = genTerrianGpu.CreateColorBuffer();

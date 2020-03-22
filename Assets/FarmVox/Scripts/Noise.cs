@@ -24,6 +24,7 @@ namespace FarmVox.Scripts
         public float yScale = 1.0f;
         public float xzScale = 1.0f;
         public NoiseType type;
+        public float offset;
     }
 
     public static class ModuleBuilder

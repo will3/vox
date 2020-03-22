@@ -46,6 +46,7 @@ namespace FarmVox.Scripts.GPU.Shaders
             _shader.SetFloat("_Amplitude", amplitude);
             _shader.SetInt("_DataSize", _dataSize);
             _shader.SetInt("_Type", (int)_noise.type);
+            _shader.SetFloat("_Offset", _noise.offset);
 
             _shader.Dispatch(0, 
                 Mathf.CeilToInt(_dataSize / (float) _workGroups[0]),

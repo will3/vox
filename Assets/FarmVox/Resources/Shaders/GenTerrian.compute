@@ -6,6 +6,7 @@
 StructuredBuffer<float> _HeightBuffer;
 StructuredBuffer<float> _RockColorBuffer;
 StructuredBuffer<float> _GrassBuffer;
+StructuredBuffer<float> _StoneBuffer;
 
 float _MaxHeight;
 int _WaterLevel;
@@ -25,6 +26,12 @@ float _GrassGradientIntervals[8];
 float _GrassGradientBanding;
 int _GrassGradientSize;
 
+// Grass color
+float4 _StoneGradient[8];
+float _StoneGradientIntervals[8];
+float _StoneGradientBanding;
+int _StoneGradientSize;
+
 // Grass Normal Filter
 float _GrassNormalValues[8];
 float _GrassNormalKeys[8];
@@ -40,6 +47,12 @@ float _GrassValue;
 float _HeightValues[8];
 float _HeightKeys[8];
 int _HeightSize;
+
+// Stone Height Filter
+float _StoneHeightValues[8];
+float _StoneHeightKeys[8];
+int _StoneHeightSize;
+float _StoneValue;
 
 // Output
 RWStructuredBuffer<float> _VoxelBuffer;
@@ -113,6 +126,13 @@ float getGrass(int3 coord, float heightRatio, int absY) {
     return normalValue * heightValue - _GrassValue;
 }
 
+float getStone(int3 coord, float heightRatio) {
+    int index = getIndex(coord);
+    float heightValue = sampleValue(_StoneHeightValues, _StoneHeightKeys, _StoneHeightSize, heightRatio);
+    float v = _StoneBuffer[index];
+    return v * heightValue - 0.3;
+}
+
 [numthreads(8, 8, 4)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
@@ -137,9 +157,16 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     float grass = getGrass(coord, heightRatio, absY);
     float4 grassColor = sampleColor(_GrassGradient, _GrassGradientIntervals, _GrassGradientSize, _GrassGradientBanding, grass);
     
-    if (grass > 0) {
-        _ColorBuffer[index] = grassColor;
+    float stone = getStone(coord, heightRatio);
+        
+    if (stone > 0) {
+        float4 stoneColor = sampleColor(_StoneGradient, _StoneGradientIntervals, _StoneGradientSize, _StoneGradientBanding, stone);
+        _ColorBuffer[index] = stoneColor;
     } else {
-        _ColorBuffer[index] = rockColor;
+        if (grass > 0) {
+            _ColorBuffer[index] = grassColor;
+        } else {
+            _ColorBuffer[index] = rockColor;
+        }   
     }
 }
