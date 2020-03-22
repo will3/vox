@@ -311,7 +311,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   config:
     maxHeight: 64
-    plainHeight: 4
     groundHeight: 12
     hillHeight: 64
     size: 32
@@ -834,7 +833,7 @@ MonoBehaviour:
       lacunarity: 2
       persistence: 0.5
       octaves: 5
-      yScale: 2
+      yScale: 4
       xzScale: 1
       type: 0
       offset: 0
@@ -852,8 +851,8 @@ MonoBehaviour:
           inWeight: 0
           outWeight: 0.33333334
         - serializedVersion: 3
-          time: 0.5
-          value: -1
+          time: 0.2
+          value: -800
           inSlope: -1
           outSlope: -1
           tangentMode: 0
