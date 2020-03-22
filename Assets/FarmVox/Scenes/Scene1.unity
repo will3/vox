@@ -150,6 +150,7 @@ MonoBehaviour:
   lightY: 100
   maxChunksY: 4
   lightDir: 0
+  debugLog: 0
 --- !u!4 &11901113
 Transform:
   m_ObjectHideFlags: 0
@@ -180,6 +181,7 @@ MonoBehaviour:
   lightY: 100
   maxChunksY: 4
   lightDir: 3
+  debugLog: 0
 --- !u!114 &11901115
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -196,6 +198,7 @@ MonoBehaviour:
   lightY: 100
   maxChunksY: 4
   lightDir: 2
+  debugLog: 0
 --- !u!114 &11901116
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -212,6 +215,7 @@ MonoBehaviour:
   lightY: 100
   maxChunksY: 4
   lightDir: 1
+  debugLog: 0
 --- !u!114 &11901117
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -231,6 +235,7 @@ MonoBehaviour:
   - {fileID: 0}
   lightController: {fileID: 0}
   lightDir: 0
+  debugLog: 0
 --- !u!114 &11901118
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -704,7 +709,6 @@ GameObject:
   m_Component:
   - component: {fileID: 679011204}
   - component: {fileID: 679011205}
-  - component: {fileID: 679011206}
   m_Layer: 0
   m_Name: World
   m_TagString: Untagged
@@ -752,19 +756,6 @@ MonoBehaviour:
   waitForSeconds: 0.2
   numGridsToGenerate: {x: 1, y: 2, z: 1}
   distanceToUnload: 99
---- !u!114 &679011206
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 679011203}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 551af3a9e0994ce98c4a095250620db6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  world: {fileID: 0}
 --- !u!1 &950524156
 GameObject:
   m_ObjectHideFlags: 0
