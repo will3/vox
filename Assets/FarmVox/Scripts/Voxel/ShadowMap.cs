@@ -1,20 +1,21 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 namespace FarmVox.Scripts.Voxel
 {
-    public class ShadowMap : MonoBehaviour
+    public class ShadowMap : IDisposable
     {
-        public int size = 32;
-        public int lightY = 100;
-        public int maxChunksY = 4;
-        public LightDir lightDir;
-        public bool debugLog;
+        private const int Size = 32;
+        private const int LightY = 100;
+        private const int MaxChunksY = 4;
+        public readonly LightDir LightDir;
+        public bool DebugLog { get; set; }
 
-        public Vector3Int LightDirVector => lightDir.GetDirVector();
+        private Vector3Int LightDirVector => LightDir.GetDirVector();
 
-        private int DataSize => size + 1;
+        private static int DataSize => Size + 1;
         private const int MinY = -100;
         private static ComputeBuffer _defaultBuffer;
 
@@ -22,6 +23,11 @@ namespace FarmVox.Scripts.Voxel
         private readonly HashSet<Vector2Int> _dirtyShadowMapChunks = new HashSet<Vector2Int>();
         private readonly HashSet<Vector3Int> _dirtyChunks = new HashSet<Vector3Int>();
         private readonly HashSet<Vector3Int> _allChunks = new HashSet<Vector3Int>();
+
+        public ShadowMap(LightDir lightDir)
+        {
+            LightDir = lightDir;
+        }
 
         public void UpdateAllChunks()
         {
@@ -61,14 +67,14 @@ namespace FarmVox.Scripts.Voxel
                 var buffers = offsets.Select(offset =>
                 {
                     var o = new Vector2Int(
-                        shadowOrigin.x + offset.x * size * LightDirVector.x,
-                        shadowOrigin.y + offset.y * size * LightDirVector.z);
+                        shadowOrigin.x + offset.x * Size * LightDirVector.x,
+                        shadowOrigin.y + offset.y * Size * LightDirVector.z);
                     return _buffers.TryGetValue(o, out var buffer) ? buffer : GetDefaultBuffer();
                 }).ToArray();
                 ShadowEvents.Instance.PublishShadowMapUpdated(origin, DataSize, buffers);
             }
 
-            if (debugLog)
+            if (DebugLog)
             {
                 if (dirtyShadowMapChunksCount > 0 || _dirtyChunks.Count > 0)
                 {
@@ -79,16 +85,6 @@ namespace FarmVox.Scripts.Voxel
             _dirtyChunks.Clear();
         }
 
-        private void OnDestroy()
-        {
-            foreach (var buffer in _buffers.Values)
-            {
-                buffer.Dispose();
-            }
-
-            _defaultBuffer?.Dispose();
-        }
-
         public static ComputeBuffer GetDefaultBuffer()
         {
             return _defaultBuffer ?? (_defaultBuffer = new ComputeBuffer(1, sizeof(int)));
@@ -96,13 +92,13 @@ namespace FarmVox.Scripts.Voxel
 
         private IEnumerable<Vector3Int> CalcChunksToUpdate(Vector2Int key)
         {
-            for (var j = 0; j < maxChunksY; j++)
+            for (var j = 0; j < MaxChunksY; j++)
             {
                 for (var i = 0; i < 2; i++)
                 {
                     for (var k = 0; k < 2; k++)
                     {
-                        var result = new Vector3Int(i - j * LightDirVector.x, j, k - j * LightDirVector.z) * size;
+                        var result = new Vector3Int(i - j * LightDirVector.x, j, k - j * LightDirVector.z) * Size;
                         result.x += key.x;
                         result.z += key.y;
                         yield return result;
@@ -121,7 +117,7 @@ namespace FarmVox.Scripts.Voxel
             {
                 for (var j = 0; j < num; j++)
                 {
-                    var uv = new Vector2Int(from.x + i * size * LightDirVector.x, from.y + j * size * LightDirVector.z);
+                    var uv = new Vector2Int(from.x + i * Size * LightDirVector.x, from.y + j * Size * LightDirVector.z);
                     list.Add(uv);
                 }
             }
@@ -155,7 +151,7 @@ namespace FarmVox.Scripts.Voxel
 
         private int CalcShadow(Vector3Int coord)
         {
-            var diff = coord.y - lightY;
+            var diff = coord.y - LightY;
             var start = coord + LightDirVector * diff;
             var ray = new Ray(start, LightDirVector);
 
@@ -173,6 +169,16 @@ namespace FarmVox.Scripts.Voxel
         public void SetDirty(Vector2Int origin)
         {
             _dirtyShadowMapChunks.Add(origin);
+        }
+
+        public void Dispose()
+        {
+            foreach (var buffer in _buffers.Values)
+            {
+                buffer.Dispose();
+            }
+
+            _defaultBuffer?.Dispose();
         }
     }
 }

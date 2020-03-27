@@ -5,12 +5,19 @@ namespace FarmVox.Scripts.Voxel
 {
     public class ShadowMapController : MonoBehaviour
     {
-        public ShadowMap[] shadowMaps;
+        private ShadowMap[] _shadowMaps =
+        {
+            new ShadowMap(LightDir.NorthEast),
+            new ShadowMap(LightDir.NorthWest),
+            new ShadowMap(LightDir.SouthEast),
+            new ShadowMap(LightDir.SouthWest),
+        };
+
         public LightController lightController;
         public LightDir lightDir;
         public bool debugLog;
 
-        private ShadowMap ActiveShadowMap => shadowMaps.Single(s => s.lightDir == lightDir);
+        private ShadowMap ActiveShadowMap => _shadowMaps.Single(s => s.LightDir == lightDir);
         private LightDir _lastLightDir;
 
         private void Start()
@@ -25,8 +32,7 @@ namespace FarmVox.Scripts.Voxel
             }
 
             ShadowEvents.Instance.ChunkUpdated += OnChunkUpdated;
-            shadowMaps = GetComponents<ShadowMap>();
-            if (shadowMaps.Length != 4)
+            if (_shadowMaps.Length != 4)
             {
                 Debug.LogError("Please configure 4 shadow maps, one of each direction");
             }
@@ -45,20 +51,25 @@ namespace FarmVox.Scripts.Voxel
 
             _lastLightDir = lightDir;
 
-            foreach (var shadowMap in shadowMaps)
+            foreach (var shadowMap in _shadowMaps)
             {
-                shadowMap.debugLog = debugLog;
+                shadowMap.DebugLog = debugLog;
             }
         }
 
         private void OnDestroy()
         {
             ShadowEvents.Instance.ChunkUpdated -= OnChunkUpdated;
+
+            foreach (var shadowMap in _shadowMaps)
+            {
+                shadowMap.Dispose();
+            }
         }
 
         private void OnChunkUpdated(Vector3Int origin)
         {
-            foreach (var shadowMap in shadowMaps)
+            foreach (var shadowMap in _shadowMaps)
             {
                 var origins = shadowMap.CalcChunksToRedraw(origin);
 
