@@ -9,6 +9,8 @@ namespace FarmVox.Scripts
     {
         public Gradient gradient;
         public int banding;
+        public bool useSolidColor;
+        public Color solidColor;
 
         public ColorGradient(Color color)
         {
