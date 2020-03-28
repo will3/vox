@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using FarmVox.Objects;
 using FarmVox.Scripts.Voxel;
@@ -23,7 +24,22 @@ namespace FarmVox.Scripts
 
         private ModuleBase NoiseModule => _noiseModule ?? (_noiseModule = ModuleBuilder.Build(config.noise));
 
-        public void GenerateChunk(Vector3Int origin)
+        private void Start()
+        {
+            TerrianEvents.Instance.GroundGenerated += OnGroundGenerated;
+        }
+
+        private void OnDestroy()
+        {
+            TerrianEvents.Instance.GroundGenerated -= OnGroundGenerated;
+        }
+
+        private void OnGroundGenerated(Vector3Int origin)
+        {
+            GenerateChunk(origin);
+        }
+
+        private void GenerateChunk(Vector3Int origin)
         {
             var groundConfig = ground.config;
             var defaultLayer = ground.chunks;

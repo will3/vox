@@ -16,6 +16,7 @@ namespace FarmVox.Scripts
         public float variance = 0.7f;
         public Random random = new Random();
         public float chance = 0.01f;
+        public int numY = 2;
 
         public ValueGradient heightFilter = new ValueGradient(new Dictionary<float, float>
         {
@@ -32,8 +33,70 @@ namespace FarmVox.Scripts
         public Water water;
         public Ground ground;
         public int size = 32;
+        private readonly HashSet<Vector3Int> _columns = new HashSet<Vector3Int>();
+        private readonly HashSet<Vector3Int> _waterfallsGenerated = new HashSet<Vector3Int>();
 
-        public float GetWaterfall(Vector3Int coord)
+        private void Awake()
+        {
+            TerrianEvents.Instance.ColumnGenerated += OnColumnGenerated;
+        }
+
+        private void OnColumnGenerated(Vector3Int column)
+        {
+            _columns.Add(column);
+
+            var columns = FindNeighbours(column);
+
+            foreach (var c in columns)
+            {
+                GenerateColumnIfNeeded(c);
+            }
+        }
+
+        private void GenerateColumnIfNeeded(Vector3Int c)
+        {
+            if (_waterfallsGenerated.Contains(c))
+            {
+                return;
+            }
+
+            var neighbours = FindNeighbours(c);
+            if (!_columns.IsSupersetOf(neighbours))
+            {
+                return;
+            }
+
+            for (var i = 0; i < numY; i++)
+            {
+                var origin = new Vector3Int(c.x, i * size, c.z);
+                GenerateChunk(origin);
+            }
+
+            _waterfallsGenerated.Add(c);
+        }
+
+        private IEnumerable<Vector3Int> FindNeighbours(Vector3Int column)
+        {
+            return new[]
+            {
+                column + new Vector3Int(-size, 0, -size),
+                column + new Vector3Int(0, 0, -size),
+                column + new Vector3Int(size, 0, -size),
+                column + new Vector3Int(-size, 0, 0),
+                column,
+                column + new Vector3Int(size, 0, 0),
+                column + new Vector3Int(-size, 0, size),
+                column + new Vector3Int(0, 0, size),
+                column + new Vector3Int(size, 0, size),
+            };
+        }
+
+        private void OnDestroy()
+        {
+            TerrianEvents.Instance.ColumnGenerated -= OnColumnGenerated;
+        }
+
+        private float GetWaterfall(Vector3Int coord)
         {
             var origin = coord.GetOrigin(size);
 

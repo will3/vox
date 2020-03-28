@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using FarmVox.Scripts.GPU.Shaders;
 using FarmVox.Scripts.Voxel;
@@ -14,8 +15,13 @@ namespace FarmVox.Scripts
         public Stone stone;
         public Vector3Int numGridsToGenerate = new Vector3Int(1, 2, 1);
 
+        public Vector3 Center =>
+            new Vector3(0.5f, 0, 0.5f) * size;
+
         private readonly HashSet<Vector3Int> _columns = new HashSet<Vector3Int>();
         private readonly List<Vector3Int> _columnsDirty = new List<Vector3Int>();
+
+        public IEnumerable<Vector3Int> Columns => _columns;
 
         public BoundsInt Bounds =>
             new BoundsInt
@@ -24,16 +30,23 @@ namespace FarmVox.Scripts
                 max = new Vector3Int(numGridsToGenerate.x + 1, 0, numGridsToGenerate.z + 1) * size
             };
 
-        private void Update()
+        private IEnumerator Start()
         {
-            UpdateColumns();
-
-            foreach (var column in _columnsDirty)
+            while (true)
             {
-                LoadColumn(column);
+                UpdateColumns();
+
+                foreach (var column in _columnsDirty)
+                {
+                    LoadColumn(column);
+                    yield return null;
+                }
+
+                _columnsDirty.Clear();
+                yield return null;
             }
 
-            _columnsDirty.Clear();
+            // ReSharper disable once IteratorNeverReturns
         }
 
         private void UpdateColumns()
@@ -88,8 +101,8 @@ namespace FarmVox.Scripts
 
             voxelBuffer.Dispose();
             colorBuffer.Dispose();
-            
-            TerrainEvents.Instance.PublishGroundGenerated(origin);
+
+            TerrianEvents.Instance.PublishGroundGenerated(origin);
         }
 
         public void UnloadChunk(Vector3Int origin)
@@ -112,11 +125,10 @@ namespace FarmVox.Scripts
             foreach (var chunk in GetChunks(column))
             {
                 GenerateChunk(chunk);
-//                trees.GenerateChunk(chunk);
-//                water.GenerateChunk(chunk);
             }
 
             _columns.Add(column);
+            TerrianEvents.Instance.PublishColumnGenerated(column);
         }
 
         private IEnumerable<Vector3Int> GetChunks(Vector3Int columnOrigin)

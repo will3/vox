@@ -20,6 +20,7 @@ namespace FarmVox.Scripts
         private void Start()
         {
             ShadowEvents.Instance.ShadowMapUpdated += OnShadowMapUpdated;
+
             StartCoroutine(DrawLoop());
         }
 

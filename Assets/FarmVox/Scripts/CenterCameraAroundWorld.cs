@@ -5,7 +5,7 @@ namespace FarmVox.Scripts
     public class CenterCameraAroundWorld : MonoBehaviour
     {
         public CameraController cameraController;
-        public World world;
+        public Ground ground;
         public float targetY = 16;
 
         private void Start()
@@ -15,12 +15,12 @@ namespace FarmVox.Scripts
                 cameraController = FindObjectOfType<CameraController>();
             }
 
-            if (world == null)
+            if (ground == null)
             {
-                world = FindObjectOfType<World>();
+                ground = FindObjectOfType<Ground>();
             }
 
-            var target = world.Center;
+            var target = ground.Center;
             target.y = targetY;
             cameraController.target = target;
         }

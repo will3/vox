@@ -18,7 +18,22 @@ namespace FarmVox.Scripts
         public Chunks chunks;
         public WaterConfig config;
 
-        public void GenerateChunk(Vector3Int origin)
+        private void Start()
+        {
+            TerrianEvents.Instance.GroundGenerated += OnGroundGenerated;
+        }
+
+        private void OnDestroy()
+        {
+            TerrianEvents.Instance.GroundGenerated -= OnGroundGenerated;
+        }
+
+        private void OnGroundGenerated(Vector3Int origin)
+        {
+            GenerateChunk(origin);
+        }
+
+        private void GenerateChunk(Vector3Int origin)
         {
             var waterChunk = chunks.GetOrCreateChunk(origin);
 
