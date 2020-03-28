@@ -1,5 +1,6 @@
 using System.Linq;
 using FarmVox.Objects;
+using FarmVox.Scripts.Voxel;
 using FarmVox.Terrain;
 using FarmVox.Voxel;
 using LibNoise;

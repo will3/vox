@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using FarmVox.Scripts.GPU.Shaders;
 using FarmVox.Scripts.Voxel;
-using FarmVox.Voxel;
 using UnityEngine;
 
 namespace FarmVox.Scripts

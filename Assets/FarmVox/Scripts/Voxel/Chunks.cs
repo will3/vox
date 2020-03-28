@@ -1,9 +1,7 @@
 using System.Collections.Generic;
-using FarmVox.Scripts;
-using FarmVox.Scripts.Voxel;
 using UnityEngine;
 
-namespace FarmVox.Voxel
+namespace FarmVox.Scripts.Voxel
 {
     public class Chunks : MonoBehaviour
     {
@@ -18,7 +16,6 @@ namespace FarmVox.Voxel
         public GameObject chunkPrefab;
 
         private readonly Dictionary<Vector3Int, Chunk> _map = new Dictionary<Vector3Int, Chunk>();
-        private GameObject _root;
 
         public IEnumerable<Chunk> ChunkList => _map.Values;
 
@@ -71,18 +68,12 @@ namespace FarmVox.Voxel
 
         public Chunk GetOrCreateChunk(Vector3Int origin)
         {
-            if (_root == null)
-            {
-                _root = new GameObject("Chunks");
-                _root.transform.parent = transform;
-            }
-
             if (_map.ContainsKey(origin))
             {
                 return _map[origin];
             }
 
-            var chunkGo = Instantiate(chunkPrefab, _root.transform);
+            var chunkGo = Instantiate(chunkPrefab, transform);
 
             chunkGo.name = "Chunk" + origin;
             chunkGo.transform.localPosition = origin;

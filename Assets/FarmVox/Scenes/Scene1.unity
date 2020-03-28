@@ -975,7 +975,6 @@ MonoBehaviour:
   - {fileID: 1767922225}
   - {fileID: 1603196056}
   waterfalls: {fileID: 1404610549}
-  waitForSeconds: 0
   bounds:
     m_Position: {x: 0, y: 0, z: 0}
     m_Size: {x: 0, y: 0, z: 0}

@@ -15,6 +15,7 @@ namespace FarmVox.Scripts
         private Vector3Int LightDir => _lightController.lightDir.GetDirVector();
         public BoundsInt bounds;
         public bool useBounds;
+        private static readonly int VoxelData = Shader.PropertyToID("_VoxelData");
 
         private void Start()
         {
@@ -61,22 +62,23 @@ namespace FarmVox.Scripts
 
                 foreach (var chunk in chunks)
                 {
-                    DrawChunk(chunk, waterfalls);
+                    DrawChunk(chunk);
                     yield return null;
                 }
 
                 yield return null;
             }
+            // ReSharper disable once IteratorNeverReturns
         }
 
-        private void DrawChunk(Chunk chunk, Waterfalls waterfalls)
+        private void DrawChunk(Chunk chunk)
         {
             if (chunk.Mesh != null)
             {
                 Destroy(chunk.Mesh);
             }
 
-            chunk.Mesh = MeshGpu(chunk, waterfalls);
+            chunk.Mesh = MeshGpu(chunk);
             chunk.meshRenderer.material = chunk.Material;
             chunk.meshFilter.sharedMesh = chunk.Mesh;
             chunk.meshCollider.sharedMesh = chunk.Mesh;
@@ -86,7 +88,7 @@ namespace FarmVox.Scripts
             ShadowEvents.Instance.PublishChunkUpdated(chunk.origin);
         }
 
-        private Mesh MeshGpu(Chunk chunk, Waterfalls waterfalls)
+        private Mesh MeshGpu(Chunk chunk)
         {
             var options = chunk.options;
 
@@ -98,8 +100,8 @@ namespace FarmVox.Scripts
                 NormalStrength = options.normalStrength
             })
             {
-                mesher.SetData(chunk.data);
-                mesher.SetColors(chunk.colors);
+                mesher.SetData(chunk.Data);
+                mesher.SetColors(chunk.Colors);
 
                 mesher.Dispatch();
 
@@ -113,7 +115,7 @@ namespace FarmVox.Scripts
                 chunk.SetVoxelData(meshResult.VoxelData);
 
                 // Update voxel data buffer
-                chunk.Material.SetBuffer("_VoxelData", chunk.GetVoxelDataBuffer());
+                chunk.Material.SetBuffer(VoxelData, chunk.GetVoxelDataBuffer());
 
                 return meshResult.Mesh;
             }
