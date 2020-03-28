@@ -14,7 +14,7 @@ namespace FarmVox.Voxel
         private readonly List<int> _indices = new List<int>();
         private readonly List<VoxelData> _voxelData = new List<VoxelData>();
 
-        private void AddTriangle(Quad quad, Dictionary<Vector3Int, float> waterfallData)
+        private void AddTriangle(Quad quad, IReadOnlyDictionary<Vector3Int, float> waterfallData)
         {
             var index = _vertices.Count;
 
