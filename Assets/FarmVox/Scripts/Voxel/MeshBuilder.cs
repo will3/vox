@@ -55,7 +55,7 @@ namespace FarmVox.Voxel
         }
 
         public MeshBuilder AddTriangles(IEnumerable<Quad> triangles,
-            Dictionary<Vector3Int, float> waterfallData = null)
+            IReadOnlyDictionary<Vector3Int, float> waterfallData = null)
         {
             foreach (var triangle in triangles)
             {

@@ -39,7 +39,7 @@ namespace FarmVox.Scripts
 
         private void Start()
         {
-            StartCoroutine(GenerateWorldLoop());
+//            StartCoroutine(GenerateWorldLoop());
             StartCoroutine(UnloadColumnsLoop());
         }
 

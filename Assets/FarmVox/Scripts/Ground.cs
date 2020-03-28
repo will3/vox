@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using FarmVox.Scripts.GPU.Shaders;
 using FarmVox.Scripts.Voxel;
 using FarmVox.Voxel;
@@ -7,10 +8,59 @@ namespace FarmVox.Scripts
 {
     public class Ground : MonoBehaviour
     {
+        public int size = 32;
         public GroundConfig config;
         public Chunks chunks;
         public Water water;
         public Stone stone;
+        public Vector3Int numGridsToGenerate = new Vector3Int(1, 2, 1);
+
+        private readonly HashSet<Vector3Int> _columns = new HashSet<Vector3Int>();
+        private readonly List<Vector3Int> _columnsDirty = new List<Vector3Int>();
+
+        public BoundsInt Bounds =>
+            new BoundsInt
+            {
+                min = new Vector3Int(-numGridsToGenerate.x, 0, -numGridsToGenerate.z) * size,
+                max = new Vector3Int(numGridsToGenerate.x + 1, 0, numGridsToGenerate.z + 1) * size
+            };
+
+        private void Update()
+        {
+            UpdateColumns();
+
+            foreach (var column in _columnsDirty)
+            {
+                LoadColumn(column);
+            }
+
+            _columnsDirty.Clear();
+        }
+
+        private void UpdateColumns()
+        {
+            for (var i = -numGridsToGenerate.x; i <= numGridsToGenerate.x; i++)
+            {
+                for (var k = -numGridsToGenerate.z; k <= numGridsToGenerate.z; k++)
+                {
+                    var columnOrigin = new Vector3Int(i, 0, k) * size;
+
+                    if (_columns.Contains(columnOrigin))
+                    {
+                        continue;
+                    }
+
+                    _columnsDirty.Add(columnOrigin);
+                }
+            }
+
+            _columnsDirty.Sort((a, b) => CalcDistance(a).CompareTo(CalcDistance(b)));
+        }
+
+        private float CalcDistance(Vector3Int c)
+        {
+            return (transform.position - (c + new Vector3(size, 0, size) / 2.0f)).sqrMagnitude;
+        }
 
         public void GenerateChunk(Vector3Int origin)
         {
@@ -39,6 +89,8 @@ namespace FarmVox.Scripts
 
             voxelBuffer.Dispose();
             colorBuffer.Dispose();
+            
+            TerrainEvents.Instance.PublishGroundGenerated(origin);
         }
 
         public void UnloadChunk(Vector3Int origin)
@@ -54,6 +106,26 @@ namespace FarmVox.Scripts
         public Chunk GetChunk(Vector3Int coord)
         {
             return chunks.GetChunk(coord);
+        }
+
+        private void LoadColumn(Vector3Int column)
+        {
+            foreach (var chunk in GetChunks(column))
+            {
+                GenerateChunk(chunk);
+//                trees.GenerateChunk(chunk);
+//                water.GenerateChunk(chunk);
+            }
+
+            _columns.Add(column);
+        }
+
+        private IEnumerable<Vector3Int> GetChunks(Vector3Int columnOrigin)
+        {
+            for (var i = 0; i < numGridsToGenerate.y; i++)
+            {
+                yield return new Vector3Int(columnOrigin.x, size * i, columnOrigin.z);
+            }
         }
     }
 }

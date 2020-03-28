@@ -88,7 +88,14 @@ namespace FarmVox.Voxel
             chunkGo.transform.localPosition = origin;
             chunkGo.layer = gameObject.layer;
             var chunk = chunkGo.GetComponent<Chunk>();
-            chunk.Chunks = this;
+            
+            chunk.options.transparent = transparent;
+            chunk.options.normalBanding = normalBanding;
+            chunk.options.normalStrength = normalStrength;
+            chunk.options.shadowStrength = shadowStrength;
+            chunk.options.useNormals = useNormals;
+            chunk.options.isWater = isWater;
+
             chunk.origin = origin;
 
             if (isWalkable)

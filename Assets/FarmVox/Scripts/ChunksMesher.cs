@@ -9,22 +9,15 @@ namespace FarmVox.Scripts
 {
     public class ChunksMesher : MonoBehaviour
     {
-        public float aoStrength = 0.15f;
         public Chunks[] chunksToDraw;
         public Waterfalls waterfalls;
-        public float waitForSeconds = 0.2f;
         private LightController _lightController;
         private Vector3Int LightDir => _lightController.lightDir.GetDirVector();
-        public World world;
+        public BoundsInt bounds;
+        public bool useBounds;
 
         private void Start()
         {
-            world = FindObjectOfType<World>();
-            if (world == null)
-            {
-                Logger.LogComponentNotFound(typeof(World));
-            }
-
             ShadowEvents.Instance.ShadowMapUpdated += OnShadowMapUpdated;
             StartCoroutine(DrawLoop());
         }
@@ -69,7 +62,7 @@ namespace FarmVox.Scripts
                 foreach (var chunk in chunks)
                 {
                     DrawChunk(chunk, waterfalls);
-                    yield return new WaitForSeconds(waitForSeconds);
+                    yield return null;
                 }
 
                 yield return null;
@@ -95,19 +88,16 @@ namespace FarmVox.Scripts
 
         private Mesh MeshGpu(Chunk chunk, Waterfalls waterfalls)
         {
-            var chunks = chunk.Chunks;
+            var options = chunk.options;
 
-            var mesherSettings = new MesherSettings
+            using (var mesher = new MesherGpu(chunk.DataSize, LightDir, bounds, chunk.origin, useBounds)
             {
-                AoStrength = aoStrength
-            };
-
-            using (var mesher = new MesherGpu(chunk.DataSize, mesherSettings, LightDir, world.Bounds, chunk.origin))
+                AoStrength = options.aoStrength,
+                UseNormals = options.useNormals,
+                IsWater = options.isWater,
+                NormalStrength = options.normalStrength
+            })
             {
-                mesher.UseNormals = chunks.useNormals;
-                mesher.IsWater = chunks.isWater;
-                mesher.NormalStrength = chunk.Chunks.normalStrength;
-
                 mesher.SetData(chunk.data);
                 mesher.SetColors(chunk.colors);
 

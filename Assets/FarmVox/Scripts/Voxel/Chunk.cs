@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using FarmVox.Voxel;
 using UnityEngine;
 
 namespace FarmVox.Scripts.Voxel
@@ -20,9 +19,9 @@ namespace FarmVox.Scripts.Voxel
         public MeshFilter meshFilter;
         public MeshCollider meshCollider;
 
-        public int DataSize => size + 3;
+        public ChunkOptions options;
 
-        public Chunks Chunks { get; set; }
+        public int DataSize => size + 3;
         public bool Dirty { get; set; }
         private GameObject _gameObject;
 
@@ -57,7 +56,7 @@ namespace FarmVox.Scripts.Voxel
             get
             {
                 if (_material != null) return _material;
-                if (Chunks.transparent)
+                if (options.transparent)
                 {
                     _material = Materials.GetVoxelMaterialTrans();
                 }
@@ -80,8 +79,8 @@ namespace FarmVox.Scripts.Voxel
                     _material.SetFloat(WaterfallWidth, _waterfalls.width);
                     _material.SetFloat(WaterfallMin, _waterfalls.min);
                     _material.SetFloat(WaterfallVariance, _waterfalls.variance);
-                    _material.SetInt(NormalBanding, Chunks.normalBanding);
-                    _material.SetFloat(NormalStrength, Chunks.normalStrength);
+                    _material.SetInt(NormalBanding, options.normalBanding);
+                    _material.SetFloat(NormalStrength, options.normalStrength);
                 }
 
                 _material.SetVector(Origin, (Vector3) origin);
@@ -312,7 +311,7 @@ namespace FarmVox.Scripts.Voxel
             Material.SetBuffer(ShadowMap01, defaultBuffer);
             Material.SetBuffer(ShadowMap10, defaultBuffer);
             Material.SetBuffer(ShadowMap11, defaultBuffer);
-            Material.SetFloat(ShadowStrength, Chunks.shadowStrength);
+            Material.SetFloat(ShadowStrength, options.shadowStrength);
 
             Material.SetFloat("_VisionRange", 32);
             Material.SetFloat("_VisionGridSize", 1);

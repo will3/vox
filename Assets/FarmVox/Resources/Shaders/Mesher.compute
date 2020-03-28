@@ -26,6 +26,7 @@ float _AoStrength;
 float3 _LightDir;
 int4 _Bounds;
 int3 _Origin;
+int _UseBounds;
 
 int3 getVectorInt(int i, int j, int k, int d) {
     if (d == 0) {
@@ -48,6 +49,9 @@ float3 getVector(int i, int j, int k, int d) {
 }
 
 bool calcOutOfBounds(int3 worldCoord) {
+    if (_UseBounds == 0) {
+        return false;
+    }
     return worldCoord.x <= _Bounds[0] + 1 || worldCoord.x >= _Bounds[1] || worldCoord.z <= _Bounds[2] + 1 || worldCoord.z >= _Bounds[3];
 }
 

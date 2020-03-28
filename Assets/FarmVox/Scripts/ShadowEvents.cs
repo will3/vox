@@ -2,6 +2,26 @@ using UnityEngine;
 
 namespace FarmVox.Scripts
 {
+    public class TerrainEvents
+    {
+        private TerrainEvents()
+        {
+            
+        }
+
+        private static TerrainEvents _instance;
+        public static TerrainEvents Instance => _instance ?? (_instance = new TerrainEvents());
+
+        public delegate void GroundGeneratedHandler(Vector3Int origin);
+
+        public event GroundGeneratedHandler GroundGenerated;
+        
+        public void PublishGroundGenerated(Vector3Int origin)
+        {
+            GroundGenerated?.Invoke(origin);
+        }
+    }
+    
     public class ShadowEvents
     {
         private ShadowEvents()
