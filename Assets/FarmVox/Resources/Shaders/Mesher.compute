@@ -27,6 +27,7 @@ float3 _LightDir;
 int4 _Bounds;
 int3 _Origin;
 int _UseBounds;
+int _WaterLevel;
 
 int3 getVectorInt(int i, int j, int k, int d) {
     if (d == 0) {
@@ -126,7 +127,14 @@ float4 getColor(int3 coord) {
     if (index == -1) {
         return float4(1, 0, 0, 1);
     }
-    return _ColorsBuffer[index];
+    
+    float depthRatio = 1;
+    if (!_IsWater && worldCoord.y < _WaterLevel) {
+        int depth = _WaterLevel - worldCoord.y;
+        depthRatio = pow(0.6, depth - 1);
+    }
+
+    return _ColorsBuffer[index] * depthRatio;
 }
 
 float _getAO(float s1f, float s2f, float cf) {

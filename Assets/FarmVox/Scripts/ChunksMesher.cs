@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Linq;
 using FarmVox.Scripts.GPU.Shaders;
@@ -11,16 +12,21 @@ namespace FarmVox.Scripts
     {
         public Chunks[] chunksToDraw;
         public Waterfalls waterfalls;
+        public Water water;
         private LightController _lightController;
         private Vector3Int LightDir => _lightController.lightDir.GetDirVector();
         public BoundsInt bounds;
         public bool useBounds;
         private static readonly int VoxelData = Shader.PropertyToID("_VoxelData");
 
-        private void Start()
+        private void Awake()
         {
             ShadowEvents.Instance.ShadowMapUpdated += OnShadowMapUpdated;
+        }
 
+        private void Start()
+        {
+            water = FindObjectOfType<Water>();
             StartCoroutine(DrawLoop());
         }
 
@@ -69,6 +75,7 @@ namespace FarmVox.Scripts
 
                 yield return null;
             }
+
             // ReSharper disable once IteratorNeverReturns
         }
 
@@ -93,7 +100,13 @@ namespace FarmVox.Scripts
         {
             var options = chunk.options;
 
-            using (var mesher = new MesherGpu(chunk.DataSize, LightDir, bounds, chunk.origin, useBounds)
+            using (var mesher = new MesherGpu(
+                chunk.DataSize,
+                LightDir,
+                bounds,
+                chunk.origin,
+                useBounds,
+                water.config.waterLevel)
             {
                 AoStrength = options.aoStrength,
                 UseNormals = options.useNormals,
