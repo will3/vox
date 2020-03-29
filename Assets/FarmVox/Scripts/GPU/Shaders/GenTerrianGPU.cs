@@ -50,11 +50,13 @@ namespace FarmVox.Scripts.GPU.Shaders
             using (var heightBuffer = new Perlin3DGpu(_groundConfig.heightNoise, _dataSize, _origin))
             using (var grassBuffer = new Perlin3DGpu(_groundConfig.grassNoise, _dataSize, _origin))
             using (var stoneBuffer = new Perlin3DGpu(_stoneConfig.noise, _dataSize, _origin))
+            using (var edgeNoiseBuffer = new Perlin3DGpu(_groundConfig.edgeNoise, _dataSize, _origin))
             {
                 _shader.SetBuffer(0, "_RockColorBuffer", rockColorBuffer.Results);
                 _shader.SetBuffer(0, "_HeightBuffer", heightBuffer.Results);
                 _shader.SetBuffer(0, "_GrassBuffer", grassBuffer.Results);
                 _shader.SetBuffer(0, "_StoneBuffer", stoneBuffer.Results);
+                _shader.SetBuffer(0, "_EdgeBuffer", edgeNoiseBuffer.Results);
 
                 _shader.SetBuffer(0, "_VoxelBuffer", voxelBuffer);
                 _shader.SetBuffer(0, "_ColorBuffer", colorBuffer);
@@ -81,6 +83,8 @@ namespace FarmVox.Scripts.GPU.Shaders
                 _shader.SetFloat("_GrassValue", _groundConfig.grassValue);
 
                 _shader.SetValueGradient(_stoneConfig.heightCurve, "_StoneHeight");
+                _shader.SetValueGradient(_groundConfig.edgeCurve, "_Edge");
+                _shader.SetFloat("_EdgeDistance", _groundConfig.edgeDistance);
 
                 _shader.SetInts("_Bounds", _bounds.min.x, _bounds.min.z, _bounds.max.x, _bounds.max.z);
 

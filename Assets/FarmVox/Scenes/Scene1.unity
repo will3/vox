@@ -184,6 +184,7 @@ MonoBehaviour:
     maxHeight: 64
     groundHeight: 12
     hillHeight: 64
+    edgeDistance: 40
     size: 32
     rockColor:
       gradient:
@@ -387,10 +388,64 @@ MonoBehaviour:
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
+    edgeCurve:
+      Curve:
+        serializedVersion: 2
+        m_Curve:
+        - serializedVersion: 3
+          time: 0
+          value: 0
+          inSlope: -1
+          outSlope: -1
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 0.2995369
+          value: -0.17984189
+          inSlope: -1
+          outSlope: -1
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 0.43591484
+          value: -0.5683409
+          inSlope: -1.4109178
+          outSlope: -1.4109178
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
+          time: 0.99853516
+          value: -0.9971924
+          inSlope: -1
+          outSlope: -1
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+    edgeNoise:
+      frequency: 0.01
+      amplitude: 0.5
+      seed: 1337
+      lacunarity: 2
+      persistence: 0.5
+      octaves: 5
+      yScale: 1
+      xzScale: 1
+      type: 0
+      offset: 0.7
   chunks: {fileID: 316894773}
   water: {fileID: 1603196057}
   stone: {fileID: 316894775}
-  numGridsToGenerate: {x: 2, y: 2, z: 2}
+  numGridsToGenerate: {x: 3, y: 2, z: 3}
 --- !u!114 &316894775
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1212,7 +1267,7 @@ MonoBehaviour:
   normalStrength: 0
   normalBanding: 6
   shadowStrength: 0.5
-  transparent: 1
+  transparent: 0
   isWalkable: 1
   chunkPrefab: {fileID: 7243905177124364530, guid: 8a77c3dcd2b9d4557aa70d485ff9442c,
     type: 3}

@@ -9,6 +9,7 @@ namespace FarmVox.Scripts
         public float maxHeight = 64;
         public int groundHeight = 12;
         public float hillHeight = 64;
+        public float edgeDistance = 40;
 
         public int size = 32;
 
@@ -63,5 +64,8 @@ namespace FarmVox.Scripts
             {0.5f, 0.75f},
             {1, 1}
         });
+
+        public ValueGradient edgeCurve = new ValueGradient(0, -1);
+        public Noise edgeNoise;
     }
 }
