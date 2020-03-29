@@ -1028,6 +1028,7 @@ MonoBehaviour:
   - {fileID: 1767922225}
   - {fileID: 1603196056}
   waterfalls: {fileID: 1404610549}
+  water: {fileID: 0}
   bounds:
     m_Position: {x: 0, y: 0, z: 0}
     m_Size: {x: 0, y: 0, z: 0}
@@ -1267,7 +1268,7 @@ MonoBehaviour:
   normalStrength: 0
   normalBanding: 6
   shadowStrength: 0.5
-  transparent: 0
+  transparent: 1
   isWalkable: 1
   chunkPrefab: {fileID: 7243905177124364530, guid: 8a77c3dcd2b9d4557aa70d485ff9442c,
     type: 3}
