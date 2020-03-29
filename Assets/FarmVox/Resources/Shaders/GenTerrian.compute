@@ -62,6 +62,7 @@ int _Size;
 float3 _Origin;
 int _DataSize;
 int _Resolution;
+int4 _Bounds;
 
 int getIndex(int3 coord) {
     int dataSize = _DataSize;
@@ -133,6 +134,21 @@ float getStone(int3 coord, float heightRatio) {
     return v * heightValue - 0.3;
 }
 
+float calcDistanceFromEdge(int3 worldCoord) {
+    return min(
+        min(worldCoord.x - _Bounds[0] - 1, worldCoord.z - _Bounds[1] - 1), 
+        min(_Bounds[2] - worldCoord.x, _Bounds[3] - worldCoord.z));
+}
+
+float getHeight(int3 coord, float relY) {
+    int3 worldCoord = coord + _Origin;
+    int index = getIndex(coord);
+    float distanceFromEdge = calcDistanceFromEdge(worldCoord);
+    float ratio = clamp(distanceFromEdge / 20, 0, 1);
+    float gradient = -relY / _HillHeight / ratio;
+    return sampleValue(_HeightValues, _HeightKeys, _HeightSize, _HeightBuffer[index]) + gradient;
+}
+
 [numthreads(8, 8, 4)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
@@ -144,13 +160,12 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     int3 coord = int3(id.x, id.y, id.z);
     int index = getIndex(coord);
     
-    float absY = coord.y + _Origin.y;
+    int3 worldCoord = coord + _Origin;
+    float absY = worldCoord.y;
     float relY = absY - _GroundHeight;
-    float gradient = -relY / _HillHeight;
-    float height = sampleValue(_HeightValues, _HeightKeys, _HeightSize, _HeightBuffer[index]);
-    
-    float value = height + gradient;
-    _VoxelBuffer[index] = value;
+
+    float height = getHeight(coord, relY);    
+    _VoxelBuffer[index] = height;
 
     float heightRatio = relY / _MaxHeight;
     float4 rockColor = sampleColor(_RockGradient, _RockGradientIntervals, _RockGradientSize, _RockGradientBanding, heightRatio + _RockColorBuffer[index]);
@@ -158,7 +173,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     float4 grassColor = sampleColor(_GrassGradient, _GrassGradientIntervals, _GrassGradientSize, _GrassGradientBanding, grass);
     
     float stone = getStone(coord, heightRatio);
-        
+
     if (stone > 0) {
         float4 stoneColor = sampleColor(_StoneGradient, _StoneGradientIntervals, _StoneGradientSize, _StoneGradientBanding, stone);
         _ColorBuffer[index] = stoneColor;
@@ -167,6 +182,11 @@ void CSMain (uint3 id : SV_DispatchThreadID)
             _ColorBuffer[index] = grassColor;
         } else {
             _ColorBuffer[index] = rockColor;
-        }   
+        }
+    }
+    
+    float d = calcDistanceFromEdge(worldCoord);
+    if (d < 3) {
+        // _ColorBuffer[index] = float4(1, 0, 0, 1); 
     }
 }

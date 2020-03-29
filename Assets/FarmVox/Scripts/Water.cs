@@ -18,7 +18,7 @@ namespace FarmVox.Scripts
         public Chunks chunks;
         public WaterConfig config;
 
-        private void Start()
+        private void Awake()
         {
             TerrianEvents.Instance.GroundGenerated += OnGroundGenerated;
         }

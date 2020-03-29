@@ -11,6 +11,7 @@ namespace FarmVox.Scripts.GPU.Shaders
         private readonly GroundConfig _groundConfig;
         private readonly WaterConfig _waterConfig;
         private readonly StoneConfig _stoneConfig;
+        private readonly BoundsInt _bounds;
         private readonly Vector3Int _origin;
         private ComputeBuffer _voxelBuffer;
 
@@ -19,13 +20,15 @@ namespace FarmVox.Scripts.GPU.Shaders
             Vector3Int origin,
             GroundConfig groundConfig,
             WaterConfig waterConfig,
-            StoneConfig stoneConfig)
+            StoneConfig stoneConfig,
+            BoundsInt bounds)
         {
             _size = size;
             _origin = origin;
             _groundConfig = groundConfig;
             _waterConfig = waterConfig;
             _stoneConfig = stoneConfig;
+            _bounds = bounds;
 
             _dataSize = size + 3;
             _shader = Resources.Load<ComputeShader>("Shaders/GenTerrian");
@@ -76,8 +79,10 @@ namespace FarmVox.Scripts.GPU.Shaders
                 _shader.SetValueGradient(_groundConfig.heightFilter, "_Height");
 
                 _shader.SetFloat("_GrassValue", _groundConfig.grassValue);
-                
+
                 _shader.SetValueGradient(_stoneConfig.heightCurve, "_StoneHeight");
+
+                _shader.SetInts("_Bounds", _bounds.min.x, _bounds.min.z, _bounds.max.x, _bounds.max.z);
 
                 _shader.Dispatch(0,
                     Mathf.CeilToInt(_dataSize / (float) _workGroups[0]),

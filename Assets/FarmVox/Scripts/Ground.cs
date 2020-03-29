@@ -83,7 +83,7 @@ namespace FarmVox.Scripts
                 stone = FindObjectOfType<Stone>();
             }
 
-            var genTerrianGpu = new GenTerrianGpu(config.size, origin, config, water.config, stone.config);
+            var genTerrianGpu = new GenTerrianGpu(config.size, origin, config, water.config, stone.config, Bounds);
 
             var voxelBuffer = genTerrianGpu.CreateVoxelBuffer();
             var colorBuffer = genTerrianGpu.CreateColorBuffer();
