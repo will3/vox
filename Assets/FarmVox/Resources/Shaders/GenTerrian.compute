@@ -140,12 +140,15 @@ float calcDistanceFromEdge(int3 worldCoord) {
         min(_Bounds[2] - worldCoord.x, _Bounds[3] - worldCoord.z));
 }
 
-float getHeight(int3 coord, float relY) {
+float getHeight(int3 coord) {
     int3 worldCoord = coord + _Origin;
-    int index = getIndex(coord);
     float distanceFromEdge = calcDistanceFromEdge(worldCoord);
-    float ratio = clamp(distanceFromEdge / 20, 0, 1);
-    float gradient = -relY / _HillHeight / ratio;
+    float edgeRatio = clamp(1 - distanceFromEdge / 20, 0, 1);
+
+    float relY = worldCoord.y - _GroundHeight;
+    int index = getIndex(coord);
+    float gradient = -relY / _HillHeight;
+    // gradient += edgeRatio;
     return sampleValue(_HeightValues, _HeightKeys, _HeightSize, _HeightBuffer[index]) + gradient;
 }
 
@@ -161,15 +164,13 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     int index = getIndex(coord);
     
     int3 worldCoord = coord + _Origin;
-    float absY = worldCoord.y;
-    float relY = absY - _GroundHeight;
 
-    float height = getHeight(coord, relY);    
+    float height = getHeight(coord);
     _VoxelBuffer[index] = height;
 
-    float heightRatio = relY / _MaxHeight;
+    float heightRatio = worldCoord.y / _MaxHeight;
     float4 rockColor = sampleColor(_RockGradient, _RockGradientIntervals, _RockGradientSize, _RockGradientBanding, heightRatio + _RockColorBuffer[index]);
-    float grass = getGrass(coord, heightRatio, absY);
+    float grass = getGrass(coord, heightRatio, worldCoord.y);
     float4 grassColor = sampleColor(_GrassGradient, _GrassGradientIntervals, _GrassGradientSize, _GrassGradientBanding, grass);
     
     float stone = getStone(coord, heightRatio);
