@@ -184,7 +184,7 @@ MonoBehaviour:
     maxHeight: 64
     groundHeight: 12
     hillHeight: 64
-    edgeDistance: 40
+    edgeDistance: 80
     size: 32
     rockColor:
       gradient:
@@ -411,8 +411,8 @@ MonoBehaviour:
           inWeight: 0.33333334
           outWeight: 0.33333334
         - serializedVersion: 3
-          time: 0.43591484
-          value: -0.5683409
+          time: 0.46624932
+          value: -0.7705809
           inSlope: -1.4109178
           outSlope: -1.4109178
           tangentMode: 0
@@ -420,8 +420,8 @@ MonoBehaviour:
           inWeight: 0.33333334
           outWeight: 0.33333334
         - serializedVersion: 3
-          time: 0.99853516
-          value: -0.9971924
+          time: 0.9996338
+          value: -1.1259155
           inSlope: -1
           outSlope: -1
           tangentMode: 0
@@ -445,7 +445,8 @@ MonoBehaviour:
   chunks: {fileID: 316894773}
   water: {fileID: 1603196057}
   stone: {fileID: 316894775}
-  numGridsToGenerate: {x: 3, y: 2, z: 3}
+  numGridsToGenerate: {x: 7, y: 2, z: 7}
+  gridOffset: {x: -3, y: 0, z: -3}
 --- !u!114 &316894775
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -692,6 +693,8 @@ MonoBehaviour:
   orthographicSize: 50
   rotateAmount: 90
   cameraRotateSpeed: 0.5
+  zoom: 1
+  zoomSpeed: 1.1
 --- !u!114 &534669907
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -759,6 +762,53 @@ MonoBehaviour:
   waitForSeconds: 0.2
   numGridsToGenerate: {x: 1, y: 2, z: 1}
   distanceToUnload: 99
+--- !u!1 &791372233
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 791372234}
+  - component: {fileID: 791372235}
+  m_Layer: 0
+  m_Name: Actor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &791372234
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 791372233}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 13
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &791372235
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 791372233}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 899611b3bcdd494490c7447c8b0ad859, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agent: {fileID: 0}
+  speed: 15
+  waterSpeedMultiplier: 0.4
+  animator: {fileID: 0}
 --- !u!1 &1066132912
 GameObject:
   m_ObjectHideFlags: 0
@@ -1289,6 +1339,9 @@ MonoBehaviour:
   config:
     waterColor: {r: 0.16078432, g: 0.49411765, b: 0.7137255, a: 0.4}
     waterLevel: 12
+    opacity: 0.65
+  size: 32
+  extraWaterChunks: 0
 --- !u!1 &1767922223
 GameObject:
   m_ObjectHideFlags: 0
@@ -1454,37 +1507,6 @@ MonoBehaviour:
     treeRadius: 3
   ground: {fileID: 316894774}
   water: {fileID: 1603196057}
---- !u!1 &1897305109
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1897305110}
-  m_Layer: 0
-  m_Name: Debug
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &1897305110
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1897305109}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 2079543345}
-  m_Father: {fileID: 0}
-  m_RootOrder: 13
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1985934944
 GameObject:
   m_ObjectHideFlags: 0
@@ -1577,48 +1599,3 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1985934944}
   m_Mesh: {fileID: 0}
---- !u!1 &2079543344
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2079543345}
-  - component: {fileID: 2079543346}
-  m_Layer: 0
-  m_Name: Spawn Enemy On Click
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &2079543345
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2079543344}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 1897305110}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2079543346
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2079543344}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b2a87c3d46a462e9edbd8eaac596e76, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  prefab: {fileID: 7713091837503635374, guid: 112c1bc937f9a4efebb70fdb2dc46047, type: 3}
-  mainCamera: {fileID: 0}

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using FarmVox.Scripts.Terrain;
 using FarmVox.Scripts.Voxel;
 using FarmVox.Terrain;
 using FarmVox.Voxel;
@@ -199,7 +200,7 @@ namespace FarmVox.Scripts
 
         private Vector3Int? ProcessNextWater(Vector3Int coord, WaterTracker waterTracker)
         {
-            if (coord.y < water.config.waterLevel)
+            if (coord.y <= water.config.waterLevel)
             {
                 waterTracker.ReachedWater = true;
                 return null;

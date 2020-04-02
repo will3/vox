@@ -1,18 +1,16 @@
 ﻿using System.Collections.Generic;
-using FarmVox.Scripts;
 using FarmVox.Scripts.Voxel;
-using FarmVox.Voxel;
 using UnityEngine;
 
-namespace FarmVox.Terrain
-{   
+namespace FarmVox.Scripts.Terrain
+{
     class WaterTracker
     {
         private const float Friction = 0.9f;
         private const float FreeFallFriction = 0f;
         private const float MaxSpeed = 5;
         private const float Gravity = 0.5f;
-        
+
         private float _speed;
         private bool _freeFall;
         private float _lastCost;
@@ -22,21 +20,13 @@ namespace FarmVox.Terrain
         private readonly List<Vector3Int> _emptyCoords = new List<Vector3Int>();
         private readonly List<float> _costs = new List<float>();
 
-        readonly WaterConfig _config;
+        private readonly WaterConfig _config;
         private readonly Waterfalls _waterfalls;
 
         public WaterTracker(WaterConfig config, Waterfalls waterfalls)
         {
             _config = config;
             _waterfalls = waterfalls;
-        }
-
-        public float LastCost
-        {
-            get
-            {
-                return _lastCost;
-            }
         }
 
         public void Start(Vector3Int coord)
@@ -91,6 +81,7 @@ namespace FarmVox.Terrain
                 chunks.SetColor(coord.x, coord.y, coord.z, _config.waterColor);
                 _waterfalls.SetWaterfall(coord, cost);
             }
+
             foreach (var coord in _emptyCoords)
             {
                 chunks.Set(coord, 1);

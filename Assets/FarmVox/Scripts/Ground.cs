@@ -13,10 +13,18 @@ namespace FarmVox.Scripts
         public Chunks chunks;
         public Water water;
         public Stone stone;
-        public Vector3Int numGridsToGenerate = new Vector3Int(1, 2, 1);
+        public Vector3Int numGridsToGenerate = new Vector3Int(3, 2, 3);
+        public Vector3Int gridOffset = new Vector3Int(-1, 0, -1);
 
-        public Vector3 Center =>
-            new Vector3(0.5f, 0, 0.5f) * size;
+        public Vector3 Center
+        {
+            get
+            {
+                var center = Bounds.center;
+                center.y = 0;
+                return center;
+            }
+        }
 
         private readonly HashSet<Vector3Int> _columns = new HashSet<Vector3Int>();
         private readonly List<Vector3Int> _columnsDirty = new List<Vector3Int>();
@@ -26,8 +34,8 @@ namespace FarmVox.Scripts
         public BoundsInt Bounds =>
             new BoundsInt
             {
-                min = new Vector3Int(-numGridsToGenerate.x, 0, -numGridsToGenerate.z) * size,
-                max = new Vector3Int(numGridsToGenerate.x + 1, 0, numGridsToGenerate.z + 1) * size
+                min = gridOffset * size,
+                max = (gridOffset + new Vector3Int(numGridsToGenerate.x, 0, numGridsToGenerate.z)) * size
             };
 
         private IEnumerator Start()
@@ -51,18 +59,18 @@ namespace FarmVox.Scripts
 
         private void UpdateColumns()
         {
-            for (var i = -numGridsToGenerate.x; i <= numGridsToGenerate.x; i++)
+            for (var i = 0; i < numGridsToGenerate.x; i++)
             {
-                for (var k = -numGridsToGenerate.z; k <= numGridsToGenerate.z; k++)
+                for (var k = 0; k < numGridsToGenerate.z; k++)
                 {
-                    var columnOrigin = new Vector3Int(i, 0, k) * size;
+                    var column = (gridOffset + new Vector3Int(i, 0, k)) * size;
 
-                    if (_columns.Contains(columnOrigin))
+                    if (_columns.Contains(column))
                     {
                         continue;
                     }
 
-                    _columnsDirty.Add(columnOrigin);
+                    _columnsDirty.Add(column);
                 }
             }
 

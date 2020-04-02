@@ -21,9 +21,9 @@ namespace FarmVox.Scripts.GPU.Shaders
         private readonly ComputeBuffer _colorsBuffer;
         private readonly ComputeBuffer _trianglesBuffer;
         private readonly bool _useBounds;
-        private readonly int _waterLevel;
         public float NormalStrength = 0.0f;
         public float AoStrength = 0.0f;
+        private readonly WaterConfig _waterConfig;
 
         public MesherGpu(
             int size,
@@ -31,7 +31,7 @@ namespace FarmVox.Scripts.GPU.Shaders
             BoundsInt bounds,
             Vector3Int origin,
             bool useBounds,
-            int waterLevel)
+            WaterConfig waterConfig)
         {
             _size = size;
             _lightDir = lightDir;
@@ -39,7 +39,7 @@ namespace FarmVox.Scripts.GPU.Shaders
             _origin = origin;
             _shader = Resources.Load<ComputeShader>("Shaders/Mesher");
             _useBounds = useBounds;
-            _waterLevel = waterLevel;
+            _waterConfig = waterConfig;
 
             _trianglesBuffer =
                 new ComputeBuffer(_size * _size * _size, Quad.Size, ComputeBufferType.Append);
@@ -64,7 +64,8 @@ namespace FarmVox.Scripts.GPU.Shaders
             _shader.SetInts("_Bounds", _bounds.min.x, _bounds.max.x, _bounds.min.z, _bounds.max.z);
             _shader.SetInts("_Origin", _origin.x, _origin.y, _origin.z);
             _shader.SetInt("_UseBounds", _useBounds ? 1 : 0);
-            _shader.SetInt("_WaterLevel", _waterLevel);
+            _shader.SetInt("_WaterLevel", _waterConfig.waterLevel);
+            _shader.SetFloat("_WaterOpacity", _waterConfig.opacity);
 
             var slices = _size + 1;
             _shader.Dispatch(0,

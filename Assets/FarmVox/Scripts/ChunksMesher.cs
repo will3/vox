@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Linq;
 using FarmVox.Scripts.GPU.Shaders;
@@ -106,7 +105,7 @@ namespace FarmVox.Scripts
                 bounds,
                 chunk.origin,
                 useBounds,
-                water.config.waterLevel)
+                water.config)
             {
                 AoStrength = options.aoStrength,
                 UseNormals = options.useNormals,

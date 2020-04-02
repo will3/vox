@@ -118,7 +118,7 @@ float getGrassDot(int i, int j, int k) {
 }
 
 float getGrass(int3 coord, float heightRatio, int absY) {
-    if (absY < _WaterLevel - 1) {
+    if (absY < _WaterLevel) {
         return 0;
     }
     
@@ -129,9 +129,9 @@ float getGrass(int3 coord, float heightRatio, int absY) {
     }
     
     float normalValue = sampleValue(_GrassNormalValues, _GrassNormalKeys, _GrassNormalSize, normal);
-    
+
     float heightValue = sampleValue(_GrassHeightValues, _GrassHeightKeys, _GrassHeightSize, heightRatio);
-    
+
     return normalValue * heightValue - _GrassValue;
 }
 
@@ -194,10 +194,5 @@ void CSMain (uint3 id : SV_DispatchThreadID)
         } else {
             _ColorBuffer[index] = rockColor;
         }
-    }
-    
-    float d = calcDistanceFromEdge(worldCoord);
-    if (d < 3) {
-        // _ColorBuffer[index] = float4(1, 0, 0, 1); 
     }
 }

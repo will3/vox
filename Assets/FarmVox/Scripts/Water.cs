@@ -1,53 +1,75 @@
-using System;
 using FarmVox.Scripts.Voxel;
-using FarmVox.Voxel;
 using UnityEngine;
 
 namespace FarmVox.Scripts
 {
-    [Serializable]
-    public class WaterConfig
-    {
-        public Color waterColor = ColorUtils.GetColor("#297eb6", 0.4f);
-        public int waterLevel = 12;
-    }
-
     public class Water : MonoBehaviour
     {
         public Ground ground;
         public Chunks chunks;
         public WaterConfig config;
+        public int size = 32;
+        public int extraWaterChunks = 1;
 
         private void Awake()
         {
-            TerrianEvents.Instance.GroundGenerated += OnGroundGenerated;
+            TerrianEvents.Instance.ColumnGenerated += OnColumnGenerated;
+        }
+
+        private void Start()
+        {
+            var extra = new Vector3Int(extraWaterChunks, 0, extraWaterChunks);
+            var min = ground.gridOffset;
+            var max = ground.gridOffset + ground.numGridsToGenerate;
+            var waterMin = min - extra;
+            var waterMax = max + extra;
+
+            for (var i = waterMin.x; i < waterMax.x; i++)
+            {
+                for (var j = waterMin.z; j < waterMax.z; j++)
+                {
+                    if (i >= min.x && i < max.x && j >= min.z && j < max.z)
+                    {
+                        continue;
+                    }
+
+                    var column = new Vector3Int(i, 0, j) * size;
+                    var y = Mathf.FloorToInt(config.waterLevel / (float) size) * size;
+                    var origin = new Vector3Int(column.x, y, column.z);
+
+                    GenerateChunk(origin);
+                }
+            }
         }
 
         private void OnDestroy()
         {
-            TerrianEvents.Instance.GroundGenerated -= OnGroundGenerated;
+            TerrianEvents.Instance.ColumnGenerated -= OnColumnGenerated;
         }
 
-        private void OnGroundGenerated(Vector3Int origin)
+        private void OnColumnGenerated(Vector3Int column)
         {
-            GenerateChunk(origin);
+            GenerateChunk(column);
         }
 
-        private void GenerateChunk(Vector3Int origin)
+        private void GenerateChunk(Vector3Int column)
         {
+            var y = Mathf.FloorToInt(config.waterLevel / (float) size) * size;
+            var origin = new Vector3Int(column.x, y, column.z);
+
             var waterChunk = chunks.GetOrCreateChunk(origin);
-
-            if (origin.y >= config.waterLevel)
-            {
-                return;
-            }
 
             var chunk = ground.GetChunk(origin);
 
-            float maxJ = config.waterLevel - chunk.origin.y;
-            if (maxJ > chunk.size)
+            GenerateChunk(origin, waterChunk, chunk);
+        }
+
+        private void GenerateChunk(Vector3Int origin, Chunk waterChunk, Chunk chunk)
+        {
+            float maxJ = config.waterLevel - origin.y;
+            if (maxJ > size)
             {
-                maxJ = chunk.size;
+                maxJ = size;
             }
 
             for (var i = 0; i < waterChunk.DataSize; i++)
@@ -56,7 +78,7 @@ namespace FarmVox.Scripts
                 {
                     for (var j = 0; j <= maxJ; j++)
                     {
-                        if (chunk.Get(i, j, k) > 0)
+                        if (chunk != null && chunk.Get(i, j, k) > 0)
                         {
                             continue;
                         }

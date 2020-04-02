@@ -13,6 +13,8 @@ namespace FarmVox.Scripts
         public float orthographicSize = 50;
         public float rotateAmount = 90f;
         public float cameraRotateSpeed = 0.2f;
+        public float zoom = 1.0f;
+        public float zoomSpeed = 1.1f;
 
         private float _forward;
         private float _right;
@@ -23,11 +25,25 @@ namespace FarmVox.Scripts
 
         private float _rotate;
 
+        private Camera _camera;
+
+        private void Start()
+        {
+            _camera = GetComponent<Camera>();
+            if (_camera == null)
+            {
+                Logger.LogComponentNotFound(typeof(Camera));
+            }
+        }
+
         private void UpdateKeys()
         {
             var rotate = 0.0f;
             if (Input.GetKeyUp(KeyCode.Q)) rotate += 1.0f;
             if (Input.GetKeyUp(KeyCode.E)) rotate -= 1.0f;
+
+            if (Input.GetKeyUp(KeyCode.Equals)) zoom /= zoomSpeed;
+            if (Input.GetKeyUp(KeyCode.Minus)) zoom *= zoomSpeed;
 
             targetRotation.y += rotate * rotateAmount;
         }
@@ -45,10 +61,9 @@ namespace FarmVox.Scripts
             transform.position = position;
             transform.LookAt(target, Vector3.up);
 
-            var c = GetComponent<Camera>();
-            if (c.orthographic)
+            if (_camera.orthographic)
             {
-                c.orthographicSize = orthographicSize;
+                _camera.orthographicSize = orthographicSize * zoom;
             }
         }
     }
