@@ -24,12 +24,14 @@ AppendStructuredBuffer<Triangle> _TrianglesBuffer;
 int _Size;
 float _NormalBanding;
 int _IsWater;
-float _NormalStrength;
 float _AoStrength;
+
+
+// Not used
+float _NormalStrength;
 float3 _LightDir;
-int4 _Bounds;
+
 int3 _Origin;
-int _UseBounds;
 int _WaterLevel;
 float _WaterOpacity;
 
@@ -53,19 +55,9 @@ float3 getVector(int i, int j, int k, int d) {
     return float3(j, k, i);
 }
 
-bool calcOutOfBounds(int3 worldCoord) {
-    if (_UseBounds == 0) {
-        return false;
-    }
-    return worldCoord.x <= _Bounds[0] + 1 || worldCoord.x >= _Bounds[1] || worldCoord.z <= _Bounds[2] + 1 || worldCoord.z >= _Bounds[3];
-}
-
 int getIndex(int3 coord) {
     int offset = 3;
     int3 worldCoord = coord + _Origin;
-    if (calcOutOfBounds(worldCoord)) {
-        return -1;
-    }
 
     return coord.x * _Size * _Size + coord.y * _Size + coord.z;
 }
