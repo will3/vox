@@ -16,6 +16,7 @@ namespace FarmVox.Scripts.GPU.Shaders
 
         private readonly ComputeBuffer _voxelBuffer;
         private readonly ComputeBuffer _colorsBuffer;
+        private readonly ComputeBuffer _normalsBuffer;
         private readonly ComputeBuffer _quadsBuffer;
         private readonly bool _useBounds;
         public float AoStrength = 0.0f;
@@ -39,15 +40,17 @@ namespace FarmVox.Scripts.GPU.Shaders
                 new ComputeBuffer(_size * _size * _size, Quad.Size, ComputeBufferType.Append);
             _voxelBuffer = new ComputeBuffer(_size * _size * _size, sizeof(float));
             _colorsBuffer = new ComputeBuffer(_size * _size * _size, sizeof(float) * 4);
+            _normalsBuffer = new ComputeBuffer(_size * _size * _size, sizeof(float) * 3);
         }
 
         public void Dispatch()
         {
             _shader.SetInt("_Size", _size);
             _shader.SetBuffer(0, "_VoxelBuffer", _voxelBuffer);
-            _shader.SetBuffer(0, "_QuadsBuffer", _quadsBuffer);
-
+            _shader.SetBuffer(0, "_NormalsBuffer", _normalsBuffer);
             _shader.SetBuffer(0, "_ColorsBuffer", _colorsBuffer);
+
+            _shader.SetBuffer(0, "_QuadsBuffer", _quadsBuffer);
 
             _shader.SetInt("_IsWater", IsWater ? 1 : 0);
             _shader.SetFloat("_AoStrength", AoStrength);
@@ -84,10 +87,16 @@ namespace FarmVox.Scripts.GPU.Shaders
             _colorsBuffer.SetData(colors);
         }
 
+        public void SetNormals(Vector3[] normals)
+        {
+            _normalsBuffer.SetData(normals);
+        }
+
         public void Dispose()
         {
             _voxelBuffer?.Dispose();
             _colorsBuffer?.Dispose();
+            _normalsBuffer?.Dispose();
             _quadsBuffer?.Dispose();
         }
     }

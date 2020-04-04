@@ -64,6 +64,7 @@ namespace FarmVox.Scripts
                     .Select(c => c.ChunkList)
                     .SelectMany(x => x)
                     .Where(c => c.Dirty)
+                    .Where(c => c.Normals != null)
                     .ToArray();
 
                 foreach (var chunk in chunks)
@@ -112,6 +113,7 @@ namespace FarmVox.Scripts
             {
                 mesher.SetData(chunk.Data);
                 mesher.SetColors(chunk.Colors);
+                mesher.SetNormals(chunk.Normals);
 
                 mesher.Dispatch();
 

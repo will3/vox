@@ -15,6 +15,7 @@ struct Quad {
 // Input
 StructuredBuffer<float> _VoxelBuffer;
 StructuredBuffer<float4> _ColorsBuffer;
+StructuredBuffer<float3> _NormalsBuffer;
 
 // Output
 AppendStructuredBuffer<Quad> _QuadsBuffer;
@@ -122,22 +123,6 @@ float4 getColor(int3 coord) {
 
     return _ColorsBuffer[index] * depthRatio;
 }
-
-float3 calcNormal(int3 coord) {
-    int i = coord.x;
-    int j = coord.y;
-    int k = coord.z;
-
-    float3 v;
-        for(int di = -1; di <= 1; di++) {
-        for(int dj = -1; dj <= 1; dj++) {
-        for(int dk = -1; dk <= 1; dk++) {
-            v += normalize(float3(di,dj,dk)) * getVoxel(int3(i + di, j + dj, k + dk));
-        }
-        }
-    }
-    return normalize(v);
-}
        
 void addQuadIfNeeded(int3 coord, int d) {
     int i = coord.x;
@@ -170,7 +155,8 @@ void addQuadIfNeeded(int3 coord, int d) {
     int3 c = front ? int3(i, j, k) : int3(i + 1, j, k);
     c = getVector(c.x, c.y, c.z, d);
 
-    float3 normal = calcNormal(c);
+    int index = getIndex(c);
+    float3 normal = _NormalsBuffer[index];
   
     float4 color = getColor(c);
 

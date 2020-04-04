@@ -65,71 +65,9 @@ float readBuffer(StructuredBuffer<float> buffer, int3 coord) {
     return buffer[index];
 }
 
-float getVoxel(int3 coord) {
-    int index = getIndex(coord);
-    float v = _VoxelBuffer[index];
-    return v;
-}
-
-float getGrassDot(int i, int j, int k) {
-    float v = getVoxel(int3(i, j, k));
-
-    if (v <= 0) {
-        return 99;
-    }
-    
-    float v1 = getVoxel(int3(i + 1, j, k));
-    float v2 = getVoxel(int3(i - 1, j, k));
-    float v3 = getVoxel(int3(i, j + 1, k));
-    float v4 = getVoxel(int3(i, j - 1, k));
-    float v5 = getVoxel(int3(i, j, k + 1));
-    float v6 = getVoxel(int3(i, j, k - 1));
-    
-    if (v1 > 0 && v2 > 0 && v3 > 0 && v4 > 0 && v5 > 0 && v6 > 0) {
-        return 99;
-    }
-
-    float3 d =  float3(1, 0, 0) * v1 +
-    float3(-1, 0, 0) * v2   +
-    float3(0, 1, 0) * v3    +
-    float3(0, -1, 0) * v4   +
-    float3(0, 0, 1) * v5    +
-    float3(0, 0, -1) * v6;
-    
-    float3 up = float3(0, 1, 0);
-    return clamp(dot(-normalize(d), up), 0, 1);
-}
-
-float calcGrass(int3 worldCoord) {
-    float heightRatio = worldCoord.y / _MaxHeight;
-    int absY = worldCoord.y;
-    int3 coord = worldCoord - _Origin;
-    if (absY < _WaterLevel) {
-        return 0;
-    }
-    
-    float normal = getGrassDot(coord.x, coord.y, coord.z);
-    
-    if (normal == 99) {
-        return 0;
-    }
-
-    float normalValue = sampleValueGradient64(_GrassNormalCurve, normal);
-    float heightValue = sampleValueGradient64(_GrassHeightCurve, heightRatio);
-
-    return normalValue * heightValue - _GrassValue;
-}
-
-float calcStone(int3 worldCoord) {
-    float heightRatio = worldCoord.y / _MaxHeight;
-    float heightValue = sampleValueGradient64(_StoneHeightCurve, heightRatio);
-    float v = calcStoneNoise(worldCoord);
-    return v * heightValue - 0.3;
-}
-
 float calcDistanceFromEdge(float3 worldCoord) {
     return min(
-        min(worldCoord.x - _Bounds[0] - 1, worldCoord.z - _Bounds[1] - 1), 
+        min(worldCoord.x - _Bounds[0] - 1, worldCoord.z - _Bounds[1] - 1),
         min(_Bounds[2] - worldCoord.x, _Bounds[3] - worldCoord.z));
 }
 
@@ -150,6 +88,36 @@ float calcValue(float3 worldCoord) {
     return heightCurveValue + gradient;
 }
 
+float3 calcNormal(int3 p)
+{
+    return normalize(float3(
+        calcValue(p + int3(1, 0, 0)) - calcValue(p - int3(1, 0, 0)),
+        calcValue(p + int3(0, 1, 0)) - calcValue(p - int3(0, 1, 0)),
+        calcValue(p + int3(0, 0, 1)) - calcValue(p - int3(0, 0, 1))));
+}
+
+float calcGrass(int3 worldCoord) {
+    float heightRatio = worldCoord.y / _MaxHeight;
+    int absY = worldCoord.y;
+    int3 coord = worldCoord - _Origin;
+    if (absY < _WaterLevel) {
+        return 0;
+    }
+    
+    float normal = dot(calcNormal(worldCoord), float3(0, -1, 0));
+    float normalValue = sampleValueGradient64(_GrassNormalCurve, normal);
+    float heightValue = sampleValueGradient64(_GrassHeightCurve, heightRatio);
+
+    return normalValue * heightValue - _GrassValue;
+}
+
+float calcStone(int3 worldCoord) {
+    float heightRatio = worldCoord.y / _MaxHeight;
+    float heightValue = sampleValueGradient64(_StoneHeightCurve, heightRatio);
+    float v = calcStoneNoise(worldCoord);
+    return v * heightValue - 0.3;
+}
+
 float4 calcColor(int3 worldCoord) {
     float stone = calcStone(worldCoord);
     float heightRatio = worldCoord.y / _MaxHeight;
@@ -165,16 +133,6 @@ float4 calcColor(int3 worldCoord) {
 
     float rockColorNoise = calcRockColorNoise(worldCoord);
     return sampleColorGradient32(_RockColorGradient, heightRatio + rockColorNoise);
-}
-
-float3 calcNormal(float3 p)
-{
-    const float h = 0.1;
-    const float2 k = float2(1,-1);
-    return normalize( k.xyy*calcValue( p + k.xyy*h ) + 
-                      k.yyx*calcValue( p + k.yyx*h ) + 
-                      k.yxy*calcValue( p + k.yxy*h ) + 
-                      k.xxx*calcValue( p + k.xxx*h ) ) * -1;
 }
 
 [numthreads(8, 8, 4)]

@@ -96,8 +96,8 @@ namespace FarmVox.Scripts
             using (var results = genTerrianGpu.Dispatch())
             {
                 chunk.SetColors(results.ReadColors());
-                chunk.SetData(results.ReadData());
                 chunk.SetNormals(results.ReadNormals());
+                chunk.SetData(results.ReadData());
             }
 
             TerrianEvents.Instance.PublishGroundGenerated(origin);

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace FarmVox.Scripts.Voxel
@@ -24,7 +25,7 @@ namespace FarmVox.Scripts.Voxel
         private GameObject _gameObject;
         public float[] Data { get; private set; }
         public Color[] Colors { get; private set; }
-        private Vector3[] _normals;
+        public Vector3[] Normals { get; private set; }
 
         public Mesh Mesh { get; set; }
 
@@ -118,28 +119,28 @@ namespace FarmVox.Scripts.Voxel
             return _voxelDataBuffer;
         }
 
-        public void SetColors(Color[] value)
+        public void SetColors([NotNull] Color[] value)
         {
-            Colors = value;
+            Colors = value ?? throw new ArgumentNullException(nameof(value));
             Dirty = true;
         }
 
-        public void SetData(float[] value)
+        public void SetData([NotNull] float[] value)
         {
-            Data = value;
+            Data = value ?? throw new ArgumentNullException(nameof(value));
             Dirty = true;
             _surfaceCoordsDirty = true;
         }
 
-        public void SetNormals(Vector3[] normals)
+        public void SetNormals([NotNull] Vector3[] normals)
         {
-            _normals = normals;
+            Normals = normals ?? throw new ArgumentNullException(nameof(normals));
         }
 
         public Vector3 GetNormal(Vector3Int localCoord)
         {
             var index = GetIndex(localCoord.x, localCoord.y, localCoord.z);
-            return _normals?[index] ?? Vector3.zero;
+            return Normals?[index] ?? Vector3.zero;
         }
 
         public void UpdateSurfaceCoords()
@@ -252,23 +253,21 @@ namespace FarmVox.Scripts.Voxel
             return index;
         }
 
-        private Vector3 CalcNormal(Vector3Int coord)
+        private void OnDrawGizmosSelected()
         {
-            var n = new Vector3(-1, -1, -1) * Get(new Vector3Int(coord.x, coord.y, coord.z)) +
-                    new Vector3(1, -1, -1) * Get(new Vector3Int(coord.x + 1, coord.y, coord.z)) +
-                    new Vector3(-1, 1, -1) * Get(new Vector3Int(coord.x, coord.y + 1, coord.z)) +
-                    new Vector3(1, 1, -1) * Get(new Vector3Int(coord.x + 1, coord.y + 1, coord.z)) +
-                    new Vector3(-1, -1, 1) * Get(new Vector3Int(coord.x, coord.y, coord.z + 1)) +
-                    new Vector3(1, -1, 1) * Get(new Vector3Int(coord.x + 1, coord.y, coord.z + 1)) +
-                    new Vector3(1, 1, 1) * Get(new Vector3Int(coord.x, coord.y + 1, coord.z + 1)) +
-                    new Vector3(1, 1, 1) * Get(new Vector3Int(coord.x + 1, coord.y + 1, coord.z + 1));
+            if (Normals == null)
+            {
+                return;
+            }
 
-            return n.normalized * -1;
-        }
+            UpdateSurfaceCoords();
 
-        private float Get(Vector3Int coord)
-        {
-            return Get(coord.x, coord.y, coord.z);
+            foreach (var surfaceCoord in SurfaceCoords)
+            {
+                var normal = GetNormal(surfaceCoord);
+                var offset = new Vector3(0.5f, 1.0f, 0.5f);
+                Gizmos.DrawLine(surfaceCoord + origin + offset, surfaceCoord + origin + offset + normal);
+            }
         }
 
         public void OnDestroy()
