@@ -20,7 +20,6 @@ StructuredBuffer<float4> _ColorsBuffer;
 AppendStructuredBuffer<Quad> _QuadsBuffer;
 
 int _Size;
-float _NormalBanding;
 int _IsWater;
 float _AoStrength;
 
