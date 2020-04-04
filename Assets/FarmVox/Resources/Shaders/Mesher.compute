@@ -47,6 +47,53 @@ float3 getVector(int i, int j, int k, int d) {
     return float3(j, k, i);
 }
 
+Quad buildQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float4 ao, bool order, int3 coord, float3 normal) {
+    Quad t;
+
+    t.color = color;
+    t.coord = coord;
+    t.normal = normal;
+
+    if (order) {
+        t.a = a;
+        t.b = b;
+        t.c = c;
+        t.d = d;
+        t.ao = ao;
+    } else {
+        t.a = c;
+        t.b = b;
+        t.c = a;
+        t.d = d;
+        t.ao = float4(ao[2], ao[1], ao[0], ao[3]);
+    }
+
+    return t;
+}
+
+float calcAORaw(float s1f, float s2f, float cf) {
+    bool s1 = s1f > 0;
+    bool s2 = s2f > 0;
+    bool c = cf > 0;
+
+    if (s1 && s2) {
+        return 1.0;
+    }
+
+    int count = 0;
+    if (s1 > 0) count ++;
+    if (s2 > 0) count ++;
+    if (c > 0) count ++;
+
+    if (count == 0) return 0.0;
+    if (count == 1) return 0.33;
+    return 0.66;
+}
+
+float calcAO(float s1f, float s2f, float cf, float aoStrength) {
+    return 1.0 - (calcAORaw(s1f, s2f, cf) * aoStrength);
+}
+
 int getIndex(int3 coord) {
     return coord.x * _Size * _Size + coord.y * _Size + coord.z;
 }
@@ -91,53 +138,6 @@ float3 calcNormal(int3 coord) {
     }
     return normalize(v);
 }
-
-void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float4 ao, bool order, int3 coord, float3 normal) {
-    Quad t;
-
-    t.color = color;
-    t.coord = coord;
-    t.normal = normal;
-
-    if (order) {
-        t.a = a;
-        t.b = b;
-        t.c = c;
-        t.d = d;
-        t.ao = ao;
-    } else {
-        t.a = c;
-        t.b = b;
-        t.c = a;
-        t.d = d;
-        t.ao = float4(ao[2], ao[1], ao[0], ao[3]);
-    }
-
-    _QuadsBuffer.Append(t);
-}
-
-float calcAORaw(float s1f, float s2f, float cf) {
-    bool s1 = s1f > 0;
-    bool s2 = s2f > 0;
-    bool c = cf > 0;
-
-    if (s1 && s2) {
-        return 1.0;
-    }
-
-    int count = 0;
-    if (s1 > 0) count ++;
-    if (s2 > 0) count ++;
-    if (c > 0) count ++;
-
-    if (count == 0) return 0.0;
-    if (count == 1) return 0.33;
-    return 0.66;
-}
-
-float calcAO(float s1f, float s2f, float cf) {
-    return 1.0 - (calcAORaw(s1f, s2f, cf) * _AoStrength);
-}
        
 void addQuadIfNeeded(int3 coord, int d) {
     int i = coord.x;
@@ -175,31 +175,23 @@ void addQuadIfNeeded(int3 coord, int d) {
     float4 color = getColor(c);
 
     int aoI = front ? i + 1 : i;
-    int3 c00 = getVectorInt(aoI, j - 1, k - 1, d);
-    int3 c01 = getVectorInt(aoI, j, k - 1, d);
-    int3 c02 = getVectorInt(aoI, j + 1, k - 1, d);
-    int3 c10 = getVectorInt(aoI, j - 1, k, d);
-    int3 c12 = getVectorInt(aoI, j + 1, k, d);
-    int3 c20 = getVectorInt(aoI, j - 1, k + 1, d);
-    int3 c21 = getVectorInt(aoI, j, k + 1, d);
-    int3 c22 = getVectorInt(aoI, j + 1, k + 1, d);
+    float v00 = getVoxel(getVectorInt(aoI, j - 1, k - 1, d));
+    float v01 = getVoxel(getVectorInt(aoI, j, k - 1, d));
+    float v02 = getVoxel(getVectorInt(aoI, j + 1, k - 1, d));
+    float v10 = getVoxel(getVectorInt(aoI, j - 1, k, d));
+    float v12 = getVoxel(getVectorInt(aoI, j + 1, k, d));
+    float v20 = getVoxel(getVectorInt(aoI, j - 1, k + 1, d));
+    float v21 = getVoxel(getVectorInt(aoI, j, k + 1, d));
+    float v22 = getVoxel(getVectorInt(aoI, j + 1, k + 1, d));
 
-    float v00 = getVoxel(c00);
-    float v01 = getVoxel(c01);
-    float v02 = getVoxel(c02);
-    float v10 = getVoxel(c10);
-    float v12 = getVoxel(c12);
-    float v20 = getVoxel(c20);
-    float v21 = getVoxel(c21);
-    float v22 = getVoxel(c22);
-
+    float aoStrength = _AoStrength;
     float4 ao = float4(
-        calcAO(v10, v01, v00),
-        calcAO(v01, v12, v02),
-        calcAO(v12, v21, v22),
-        calcAO(v21, v10, v20));
+        calcAO(v10, v01, v00, aoStrength),
+        calcAO(v01, v12, v02, aoStrength),
+        calcAO(v12, v21, v22, aoStrength),
+        calcAO(v21, v10, v20, aoStrength));
 
-    addQuad(
+    Quad quad = buildQuad(
         getVector(i + 1, j, k, d),
         getVector(i + 1, j + 1, k, d),
         getVector(i + 1, j + 1, k + 1, d),
@@ -210,6 +202,8 @@ void addQuadIfNeeded(int3 coord, int d) {
         c,
         normal
     );
+
+    _QuadsBuffer.Append(quad);
 }
 
 void addQuadsIfNeeded(int3 coord) {
