@@ -99,7 +99,10 @@ float getGrassDot(int i, int j, int k) {
     return clamp(dot(-normalize(d), up), 0, 1);
 }
 
-float getGrass(int3 coord, float heightRatio, int absY) {
+float calcGrass(int3 worldCoord) {
+    float heightRatio = worldCoord.y / _MaxHeight;
+    int absY = worldCoord.y;
+    int3 coord = worldCoord - _Origin;
     if (absY < _WaterLevel) {
         return 0;
     }
@@ -116,9 +119,10 @@ float getGrass(int3 coord, float heightRatio, int absY) {
     return normalValue * heightValue - _GrassValue;
 }
 
-float getStone(int3 coord, float heightRatio) {
+float calcStone(int3 worldCoord) {
+    float heightRatio = worldCoord.y / _MaxHeight;
     float heightValue = sampleValueGradient64(_StoneHeightCurve, heightRatio);
-    float v = calcStoneNoise(_Origin + coord);
+    float v = calcStoneNoise(worldCoord);
     return v * heightValue - 0.3;
 }
 
@@ -128,7 +132,7 @@ float calcDistanceFromEdge(int3 worldCoord) {
         min(_Bounds[2] - worldCoord.x, _Bounds[3] - worldCoord.z));
 }
 
-float getHeight(int3 coord) {
+float calcValue(int3 coord) {
     int3 worldCoord = coord + _Origin;
     float relY = worldCoord.y - _GroundHeight;
     float gradient = -relY / _HillHeight;
@@ -146,6 +150,23 @@ float getHeight(int3 coord) {
     return heightCurveValue + gradient;
 }
 
+float4 calcColor(int3 worldCoord) {
+    float stone = calcStone(worldCoord);
+    float heightRatio = worldCoord.y / _MaxHeight;
+
+    if (stone > 0) {
+        return sampleColorGradient32(_StoneColorGradient, stone);
+    }
+
+    float grass = calcGrass(worldCoord);
+    if (grass > 0) {
+        return sampleColorGradient32(_GrassColorGradient, grass);
+    }
+
+    float rockColorNoise = calcRockColorNoise(worldCoord);
+    return sampleColorGradient32(_RockColorGradient, heightRatio + rockColorNoise);
+}
+
 [numthreads(8, 8, 4)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
@@ -155,29 +176,11 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     }
 
     int3 coord = int3(id.x, id.y, id.z);
-    int index = getIndex(coord);
-    
     int3 worldCoord = coord + _Origin;
-
-    float height = getHeight(coord);
-    _VoxelBuffer[index] = height;
-
     float heightRatio = worldCoord.y / _MaxHeight;
-    float rockColorNoise = calcRockColorNoise(worldCoord);
-    float4 rockColor = sampleColorGradient32(_RockColorGradient, heightRatio + rockColorNoise);
-    float grass = getGrass(coord, heightRatio, worldCoord.y);
-    float4 grassColor = sampleColorGradient32(_GrassColorGradient, grass);
-    
-    float stone = getStone(coord, heightRatio);
 
-    if (stone > 0) {
-        float4 stoneColor = sampleColorGradient32(_StoneColorGradient, stone);
-        _ColorBuffer[index] = stoneColor;
-    } else {
-        if (grass > 0) {
-            _ColorBuffer[index] = grassColor;
-        } else {
-            _ColorBuffer[index] = rockColor;
-        }
-    }
+    int index = getIndex(coord);
+
+    _VoxelBuffer[index] = calcValue(coord);
+    _ColorBuffer[index] = calcColor(worldCoord);
 }
