@@ -51,9 +51,6 @@ float3 getVector(int i, int j, int k, int d) {
 }
 
 int getIndex(int3 coord) {
-    int offset = 3;
-    int3 worldCoord = coord + _Origin;
-
     return coord.x * _Size * _Size + coord.y * _Size + coord.z;
 }
 
