@@ -1,7 +1,7 @@
 ﻿// Each #kernel tells which function to compile; you can have many kernels
 #pragma kernel CSMain
 
-struct Triangle {
+struct Quad {
     float3 a;
     float3 b;
     float3 c;
@@ -19,7 +19,7 @@ StructuredBuffer<float> _VoxelBuffer;
 StructuredBuffer<float4> _ColorsBuffer;
 
 // Output
-AppendStructuredBuffer<Triangle> _TrianglesBuffer;
+AppendStructuredBuffer<Quad> _QuadsBuffer;
 
 int _Size;
 float _NormalBanding;
@@ -80,7 +80,7 @@ float3 calcNormal(int3 coord) {
 }
 
 void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, float ab, float ac, float ad, bool order, bool flipped, int x, int y, int z, float3 normal) {
-    Triangle t;
+    Quad t;
 
     t.color = color;
     t.x = x;
@@ -102,7 +102,7 @@ void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, flo
         t.ao = float4(ac, ab, aa, ad);
     }
 
-    _TrianglesBuffer.Append(t);
+    _QuadsBuffer.Append(t);
 }
 
 float4 getColor(int3 coord) {

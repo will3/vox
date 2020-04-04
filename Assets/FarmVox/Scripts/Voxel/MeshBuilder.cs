@@ -14,7 +14,7 @@ namespace FarmVox.Voxel
         private readonly List<int> _indices = new List<int>();
         private readonly List<VoxelData> _voxelData = new List<VoxelData>();
 
-        private void AddTriangle(Quad quad, IReadOnlyDictionary<Vector3Int, float> waterfallData)
+        private void AddQuad(Quad quad, IReadOnlyDictionary<Vector3Int, float> waterfallData)
         {
             var index = _vertices.Count;
 
@@ -54,12 +54,12 @@ namespace FarmVox.Voxel
             });
         }
 
-        public MeshBuilder AddTriangles(IEnumerable<Quad> triangles,
+        public MeshBuilder AddQuads(IEnumerable<Quad> quads,
             IReadOnlyDictionary<Vector3Int, float> waterfallData = null)
         {
-            foreach (var triangle in triangles)
+            foreach (var quad in quads)
             {
-                AddTriangle(triangle, waterfallData);
+                AddQuad(quad, waterfallData);
             }
 
             return this;

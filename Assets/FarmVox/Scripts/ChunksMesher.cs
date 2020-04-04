@@ -115,11 +115,11 @@ namespace FarmVox.Scripts
 
                 mesher.Dispatch();
 
-                var triangles = mesher.ReadTriangles();
+                var triangles = mesher.ReadQuads();
 
                 var builder = new MeshBuilder();
                 var meshResult = builder
-                    .AddTriangles(triangles, waterfalls.GetWaterfallChunk(chunk.origin))
+                    .AddQuads(triangles, waterfalls.GetWaterfallChunk(chunk.origin))
                     .Build();
 
                 chunk.SetVoxelData(meshResult.VoxelData);

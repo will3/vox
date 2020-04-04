@@ -17,7 +17,7 @@ namespace FarmVox.Scripts.GPU.Shaders
 
         private readonly ComputeBuffer _voxelBuffer;
         private readonly ComputeBuffer _colorsBuffer;
-        private readonly ComputeBuffer _trianglesBuffer;
+        private readonly ComputeBuffer _quadsBuffer;
         private readonly bool _useBounds;
         public float AoStrength = 0.0f;
         private readonly WaterConfig _waterConfig;
@@ -36,7 +36,7 @@ namespace FarmVox.Scripts.GPU.Shaders
             _useBounds = useBounds;
             _waterConfig = waterConfig;
 
-            _trianglesBuffer =
+            _quadsBuffer =
                 new ComputeBuffer(_size * _size * _size, Quad.Size, ComputeBufferType.Append);
             _voxelBuffer = new ComputeBuffer(_size * _size * _size, sizeof(float));
             _colorsBuffer = new ComputeBuffer(_size * _size * _size, sizeof(float) * 4);
@@ -46,7 +46,7 @@ namespace FarmVox.Scripts.GPU.Shaders
         {
             _shader.SetInt("_Size", _size);
             _shader.SetBuffer(0, "_VoxelBuffer", _voxelBuffer);
-            _shader.SetBuffer(0, "_TrianglesBuffer", _trianglesBuffer);
+            _shader.SetBuffer(0, "_QuadsBuffer", _quadsBuffer);
 
             _shader.SetBuffer(0, "_ColorsBuffer", _colorsBuffer);
 
@@ -66,14 +66,14 @@ namespace FarmVox.Scripts.GPU.Shaders
                 Mathf.CeilToInt(slices / (float) _workGroups[2]));
         }
 
-        public IEnumerable<Quad> ReadTriangles()
+        public IEnumerable<Quad> ReadQuads()
         {
-            var count = AppendBufferCounter.Count(_trianglesBuffer);
-            var triangles = new Quad[count];
+            var count = AppendBufferCounter.Count(_quadsBuffer);
+            var quads = new Quad[count];
 
-            _trianglesBuffer.GetData(triangles);
+            _quadsBuffer.GetData(quads);
 
-            return triangles;
+            return quads;
         }
 
         public void SetData(float[] data)
@@ -90,7 +90,7 @@ namespace FarmVox.Scripts.GPU.Shaders
         {
             _voxelBuffer?.Dispose();
             _colorsBuffer?.Dispose();
-            _trianglesBuffer?.Dispose();
+            _quadsBuffer?.Dispose();
         }
     }
 }
