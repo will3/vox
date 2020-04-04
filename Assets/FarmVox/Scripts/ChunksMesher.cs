@@ -101,7 +101,6 @@ namespace FarmVox.Scripts
 
             using (var mesher = new MesherGpu(
                 chunk.DataSize,
-                LightDir,
                 bounds,
                 chunk.origin,
                 useBounds,
@@ -109,7 +108,6 @@ namespace FarmVox.Scripts
             {
                 AoStrength = options.aoStrength,
                 IsWater = options.isWater,
-                NormalStrength = options.normalStrength
             })
             {
                 mesher.SetData(chunk.Data);
