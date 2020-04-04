@@ -70,19 +70,20 @@ namespace FarmVox.Scripts.GPU.Shaders
 
                 _shader.SetInt("_DataSize", _dataSize);
 
-                _shader.SetValueGradient(_groundConfig.grassNormalFilter, "_GrassNormal");
-                _shader.SetValueGradient(_groundConfig.grassHeightFilter, "_GrassHeight");
+                _shader.SetValueGradient("_GrassNormalCurve", _groundConfig.grassNormalFilter);
+
+                _shader.SetValueGradient("_GrassHeightCurve", _groundConfig.grassHeightFilter);
 
                 _shader.SetColorGradient(_groundConfig.rockColor, "_Rock");
                 _shader.SetColorGradient(_groundConfig.grassColor, "_Grass");
                 _shader.SetColorGradient(_stoneConfig.color, "_Stone");
 
-                _shader.SetValueGradient(_groundConfig.heightFilter, "_Height");
+                _shader.SetValueGradient("_HeightCurve", _groundConfig.heightFilter);
 
                 _shader.SetFloat("_GrassValue", _groundConfig.grassValue);
 
-                _shader.SetValueGradient(_stoneConfig.heightCurve, "_StoneHeight");
-                _shader.SetValueGradient(_groundConfig.edgeCurve, "_Edge");
+                _shader.SetValueGradient("_StoneHeightCurve", _stoneConfig.heightCurve);
+                _shader.SetValueGradient("_EdgeHeightCurve", _groundConfig.edgeCurve);
                 _shader.SetFloat("_EdgeDistance", _groundConfig.edgeDistance);
                 _shader.SetInt("_UseEdges", _groundConfig.useEdges ? 1 : 0);
 

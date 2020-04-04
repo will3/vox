@@ -26,24 +26,30 @@ float4 sampleColor(float4 gradient[8], float intervals[8], int size, float bandi
     return float4(0, 0, 0, 0);
 }
 
-float sampleValue(float values[8], float keys[8], int size, float ratio) {
-    if (ratio < keys[0]) {
-        ratio = keys[0];
-    }
-    if (ratio > keys[size - 1]) {
-        ratio = keys[size - 1];
+float sampleValueGradient64(float curve[67], float v) {
+    float segments = 64;
+    int offset = 2;
+
+    float t1 = curve[0];
+    float t2 = curve[1];
+
+    if (v < t1) {
+        return curve[offset];
     }
 
-    for (int i = 0; i < size - 1; i++) {
-        float ra = keys[i];
-        float rb = keys[i + 1];
-
-        if (ratio >= ra && ratio <= rb) {
-            float r = (ratio - ra) / (rb - ra);
-            float va = values[i];
-            float vb = values[i + 1];
-            return va + (vb - va) * r;
-        }
+    if (v > t2) {
+        return curve[segments + offset];
     }
-    return 0;
+
+    float i = (v - t1) / (t2 - t1) * segments;
+
+    int i1 = floor(i);
+
+    int i2 = i + 1;
+    float r = i - i1;
+
+    float v1 = curve[i1 + offset];
+    float v2 = curve[i2 + offset];
+
+    return v1 * (1 - r) + v2 * r;
 }

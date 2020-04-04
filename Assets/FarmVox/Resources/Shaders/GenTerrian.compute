@@ -20,6 +20,8 @@ float calcEdgeNoise(float3 coord) { return calcNoiseAtIndex(4, coord); }
 float _MaxHeight;
 int _WaterLevel;
 
+// Height
+float _HeightCurve[67];
 float _HillHeight;
 float _GroundHeight;
 
@@ -41,32 +43,17 @@ float _StoneGradientIntervals[8];
 float _StoneGradientBanding;
 int _StoneGradientSize;
 
-// Grass Normal Filter
-float _GrassNormalValues[8];
-float _GrassNormalKeys[8];
-int _GrassNormalSize;
-
-// Grass Height Filter
-float _GrassHeightValues[8];
-float _GrassHeightKeys[8];
-int _GrassHeightSize;
+// Grass
+float _GrassNormalCurve[67];
+float _GrassHeightCurve[67];
 float _GrassValue;
 
-// Height Filter
-float _HeightValues[8];
-float _HeightKeys[8];
-int _HeightSize;
-
-// Stone Height Filter
-float _StoneHeightValues[8];
-float _StoneHeightKeys[8];
-int _StoneHeightSize;
+// Stone
+float _StoneHeightCurve[67];
 float _StoneValue;
 
 // Edge
-float _EdgeValues[8];
-float _EdgeKeys[8];
-int _EdgeSize;
+float _EdgeHeightCurve[67];
 float _EdgeDistance;
 int _UseEdges;
 
@@ -135,16 +122,15 @@ float getGrass(int3 coord, float heightRatio, int absY) {
     if (normal == 99) {
         return 0;
     }
-    
-    float normalValue = sampleValue(_GrassNormalValues, _GrassNormalKeys, _GrassNormalSize, normal);
 
-    float heightValue = sampleValue(_GrassHeightValues, _GrassHeightKeys, _GrassHeightSize, heightRatio);
+    float normalValue = sampleValueGradient64(_GrassNormalCurve, normal);
+    float heightValue = sampleValueGradient64(_GrassHeightCurve, heightRatio);
 
     return normalValue * heightValue - _GrassValue;
 }
 
 float getStone(int3 coord, float heightRatio) {
-    float heightValue = sampleValue(_StoneHeightValues, _StoneHeightKeys, _StoneHeightSize, heightRatio);
+    float heightValue = sampleValueGradient64(_StoneHeightCurve, heightRatio);
     float v = calcStoneNoise(_Origin + coord);
     return v * heightValue - 0.3;
 }
@@ -164,12 +150,13 @@ float getHeight(int3 coord) {
         float distanceFromEdge = calcDistanceFromEdge(worldCoord);
         float edgeRatio = clamp(1 - distanceFromEdge / _EdgeDistance, 0, 1);
         float edgeNoise = calcEdgeNoise(worldCoord);
-        float edgeValue = sampleValue(_EdgeValues, _EdgeKeys, _EdgeSize, edgeRatio) * clamp(edgeNoise, 0, 1);
+        float edgeValue = sampleValueGradient64(_EdgeHeightCurve, edgeRatio) * clamp(edgeNoise, 0, 1);
         gradient += edgeValue;
     }
 
-    float heightValue = calcHeightNoise(worldCoord);
-    return sampleValue(_HeightValues, _HeightKeys, _HeightSize, heightValue) + gradient;
+    float heightNoise = calcHeightNoise(worldCoord);
+    float heightCurveValue = sampleValueGradient64(_HeightCurve, heightNoise);
+    return heightCurveValue + gradient;
 }
 
 [numthreads(8, 8, 4)]
