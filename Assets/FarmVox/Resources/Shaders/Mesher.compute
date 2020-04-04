@@ -8,9 +8,7 @@ struct Quad {
     float3 d;
     float4 color;
     float4 ao;
-    int x;
-    int y;
-    int z;
+    int3 coord;
     float3 normal;
 };
 
@@ -63,6 +61,22 @@ float getVoxel(int3 coord) {
     return v;
 }
 
+float4 getColor(int3 coord) {
+    int3 worldCoord = coord + _Origin;
+    int index = getIndex(coord);
+    if (index == -1) {
+        return float4(1, 0, 0, 1);
+    }
+
+    float depthRatio = 1;
+    if (!_IsWater && worldCoord.y < _WaterLevel) {
+        int depth = _WaterLevel - worldCoord.y;
+        depthRatio = pow(_WaterOpacity, depth - 1);
+    }
+
+    return _ColorsBuffer[index] * depthRatio;
+}
+
 float3 calcNormal(int3 coord) {
     int i = coord.x;
     int j = coord.y;
@@ -79,13 +93,11 @@ float3 calcNormal(int3 coord) {
     return normalize(v);
 }
 
-void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, float ab, float ac, float ad, bool order, int x, int y, int z, float3 normal) {
+void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float4 ao, bool order, int3 coord, float3 normal) {
     Quad t;
 
     t.color = color;
-    t.x = x;
-    t.y = y;
-    t.z = z;
+    t.coord = coord;
     t.normal = normal;
 
     if (order) {
@@ -93,32 +105,16 @@ void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, flo
         t.b = b;
         t.c = c;
         t.d = d;
-        t.ao = float4(aa, ab, ac, ad);
+        t.ao = ao;
     } else {
         t.a = c;
         t.b = b;
         t.c = a;
         t.d = d;
-        t.ao = float4(ac, ab, aa, ad);
+        t.ao = float4(ao[2], ao[1], ao[0], ao[3]);
     }
 
     _QuadsBuffer.Append(t);
-}
-
-float4 getColor(int3 coord) {
-    int3 worldCoord = coord + _Origin;
-    int index = getIndex(coord);
-    if (index == -1) {
-        return float4(1, 0, 0, 1);
-    }
-    
-    float depthRatio = 1;
-    if (!_IsWater && worldCoord.y < _WaterLevel) {
-        int depth = _WaterLevel - worldCoord.y;
-        depthRatio = pow(_WaterOpacity, depth - 1);
-    }
-
-    return _ColorsBuffer[index] * depthRatio;
 }
 
 float calcAORaw(float s1f, float s2f, float cf) {
@@ -198,10 +194,11 @@ void addQuadIfNeeded(int3 coord, int d) {
     float v21 = getVoxel(c21);
     float v22 = getVoxel(c22);
 
-    float ao00 = calcAO(v10, v01, v00);
-    float ao01 = calcAO(v01, v12, v02);
-    float ao11 = calcAO(v12, v21, v22);
-    float ao10 = calcAO(v21, v10, v20);
+    float4 ao = float4(
+        calcAO(v10, v01, v00),
+        calcAO(v01, v12, v02),
+        calcAO(v12, v21, v22),
+        calcAO(v21, v10, v20));
 
     addQuad(
         getVector(i + 1, j, k, d),
@@ -209,12 +206,9 @@ void addQuadIfNeeded(int3 coord, int d) {
         getVector(i + 1, j + 1, k + 1, d),
         getVector(i + 1, j, k + 1, d),
         color,
-        ao00,
-        ao01,
-        ao11,
-        ao10,
+        ao,
         front,
-        c.x, c.y, c.z,
+        c,
         normal
     );
 }
@@ -226,6 +220,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     int j = id.y;
     int k = id.z;
     int d = id.x % 3;
+    int3 coord = int3(i, j, k);
 
-    addQuadIfNeeded(int3(i,j,k), d);    
+    addQuadIfNeeded(coord, d);    
 }

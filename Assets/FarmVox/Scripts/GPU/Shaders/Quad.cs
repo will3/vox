@@ -16,23 +16,9 @@ namespace FarmVox.Scripts.GPU.Shaders
 
         public Vector4 AO;
             
-        public int X;
-            
-        public int Y;
-            
-        public int Z;
+        public Vector3Int Coord;
 
         public Vector3 Normal;
-
-        public int GetIndex(int size)
-        {
-            return X * size * size + Y * size + Z;
-        }
-
-        public Vector3Int Coord
-        {
-            get { return new Vector3Int(X, Y, Z); }
-        }
 
         public static int Size
         {
