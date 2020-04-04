@@ -126,14 +126,14 @@ float calcStone(int3 worldCoord) {
     return v * heightValue - 0.3;
 }
 
-float calcDistanceFromEdge(int3 worldCoord) {
+float calcDistanceFromEdge(float3 worldCoord) {
     return min(
         min(worldCoord.x - _Bounds[0] - 1, worldCoord.z - _Bounds[1] - 1), 
         min(_Bounds[2] - worldCoord.x, _Bounds[3] - worldCoord.z));
 }
 
-float calcValue(int3 coord) {
-    int3 worldCoord = coord + _Origin;
+float calcValue(float3 coord) {
+    float3 worldCoord = coord + _Origin;
     float relY = worldCoord.y - _GroundHeight;
     float gradient = -relY / _HillHeight;
 

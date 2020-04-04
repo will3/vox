@@ -212,14 +212,15 @@ void addQuadIfNeeded(int3 coord, int d) {
     );
 }
 
+void addQuadsIfNeeded(int3 coord) {
+    for (int d = 0; d < 3; d++) {
+        addQuadIfNeeded(coord, d);
+    }
+}
+
 [numthreads(8, 8, 4)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
-    int i = id.x / 3;
-    int j = id.y;
-    int k = id.z;
-    int d = id.x % 3;
-    int3 coord = int3(i, j, k);
-
-    addQuadIfNeeded(coord, d);    
+    int3 coord = int3(id.x, id.y, id.z);
+    addQuadsIfNeeded(coord);
 }

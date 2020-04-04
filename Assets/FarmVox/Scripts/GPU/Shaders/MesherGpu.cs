@@ -59,7 +59,7 @@ namespace FarmVox.Scripts.GPU.Shaders
 
             var slices = _size + 1;
             _shader.Dispatch(0,
-                3 * Mathf.CeilToInt(slices / (float) _workGroups[0]),
+                Mathf.CeilToInt(slices / (float) _workGroups[0]),
                 Mathf.CeilToInt(slices / (float) _workGroups[1]),
                 Mathf.CeilToInt(slices / (float) _workGroups[2]));
         }
