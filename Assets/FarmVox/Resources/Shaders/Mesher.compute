@@ -79,7 +79,7 @@ float3 calcNormal(int3 coord) {
     return normalize(v);
 }
 
-void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, float ab, float ac, float ad, bool order, bool flipped, int x, int y, int z, float3 normal) {
+void addQuad(float3 a, float3 b, float3 c, float3 d, float4 color, float aa, float ab, float ac, float ad, bool order, int x, int y, int z, float3 normal) {
     Quad t;
 
     t.color = color;
@@ -203,8 +203,6 @@ void addQuadIfNeeded(int3 coord, int d) {
     float ao11 = calcAO(v12, v21, v22);
     float ao10 = calcAO(v21, v10, v20);
 
-    bool flipped = ao00 + ao11 > ao01 + ao10;
-
     addQuad(
         getVector(i + 1, j, k, d),
         getVector(i + 1, j + 1, k, d),
@@ -216,7 +214,6 @@ void addQuadIfNeeded(int3 coord, int d) {
         ao11,
         ao10,
         front,
-        flipped,
         c.x, c.y, c.z,
         normal
     );
