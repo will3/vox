@@ -47,18 +47,16 @@ namespace FarmVox.Scripts
             var pine = new PineObject(config.treeRadius, config.treeHeight, config.trunkHeight);
 
             var chunk = defaultLayer.GetChunk(origin);
-            chunk.UpdateNormals();
+            chunk.UpdateSurfaceCoords();
 
-            foreach (var kv in chunk.Normals)
+            foreach (var localCoord in chunk.SurfaceCoords)
             {
-                var localCoord = kv.Key;
-
                 if (!chunk.IsInBound(localCoord))
                 {
                     continue;
                 }
 
-                var normal = kv.Value;
+                var normal = chunk.GetNormal(localCoord);
 
                 var j = localCoord.y;
 

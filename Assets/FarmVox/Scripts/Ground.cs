@@ -93,22 +93,12 @@ namespace FarmVox.Scripts
 
             var genTerrianGpu = new GenTerrianGpu(config.size, origin, config, water.config, stone.config, Bounds);
 
-            var voxelBuffer = genTerrianGpu.CreateVoxelBuffer();
-            var colorBuffer = genTerrianGpu.CreateColorBuffer();
-
-            genTerrianGpu.Dispatch(voxelBuffer, colorBuffer);
-
-            var voxelBufferData = new float[voxelBuffer.count];
-            voxelBuffer.GetData(voxelBufferData);
-
-            var colorBufferData = new Color[colorBuffer.count];
-            colorBuffer.GetData(colorBufferData);
-
-            chunk.SetColors(colorBufferData);
-            chunk.SetData(voxelBufferData);
-
-            voxelBuffer.Dispose();
-            colorBuffer.Dispose();
+            using (var results = genTerrianGpu.Dispatch())
+            {
+                chunk.SetColors(results.ReadColors());
+                chunk.SetData(results.ReadData());
+                chunk.SetNormals(results.ReadNormals());
+            }
 
             TerrianEvents.Instance.PublishGroundGenerated(origin);
         }

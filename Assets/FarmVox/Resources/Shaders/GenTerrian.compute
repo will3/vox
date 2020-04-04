@@ -47,6 +47,7 @@ int _UseEdges;
 // Output
 RWStructuredBuffer<float> _VoxelBuffer;
 RWStructuredBuffer<float4> _ColorBuffer;
+RWStructuredBuffer<float3> _NormalBuffer;
 
 int _Size;
 float3 _Origin;
@@ -132,8 +133,7 @@ float calcDistanceFromEdge(float3 worldCoord) {
         min(_Bounds[2] - worldCoord.x, _Bounds[3] - worldCoord.z));
 }
 
-float calcValue(float3 coord) {
-    float3 worldCoord = coord + _Origin;
+float calcValue(float3 worldCoord) {
     float relY = worldCoord.y - _GroundHeight;
     float gradient = -relY / _HillHeight;
 
@@ -167,6 +167,16 @@ float4 calcColor(int3 worldCoord) {
     return sampleColorGradient32(_RockColorGradient, heightRatio + rockColorNoise);
 }
 
+float3 calcNormal(float3 p)
+{
+    const float h = 0.1;
+    const float2 k = float2(1,-1);
+    return normalize( k.xyy*calcValue( p + k.xyy*h ) + 
+                      k.yyx*calcValue( p + k.yyx*h ) + 
+                      k.yxy*calcValue( p + k.yxy*h ) + 
+                      k.xxx*calcValue( p + k.xxx*h ) ) * -1;
+}
+
 [numthreads(8, 8, 4)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
@@ -181,6 +191,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
     int index = getIndex(coord);
 
-    _VoxelBuffer[index] = calcValue(coord);
+    _VoxelBuffer[index] = calcValue(worldCoord);
     _ColorBuffer[index] = calcColor(worldCoord);
+    _NormalBuffer[index] = calcNormal(worldCoord);
 }

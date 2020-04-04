@@ -446,7 +446,7 @@ MonoBehaviour:
   chunks: {fileID: 316894773}
   water: {fileID: 1603196057}
   stone: {fileID: 316894775}
-  numGridsToGenerate: {x: 3, y: 2, z: 3}
+  numGridsToGenerate: {x: 5, y: 2, z: 5}
   gridOffset: {x: -1, y: 0, z: -1}
 --- !u!114 &316894775
 MonoBehaviour:

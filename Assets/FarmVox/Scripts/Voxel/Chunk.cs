@@ -24,15 +24,14 @@ namespace FarmVox.Scripts.Voxel
         private GameObject _gameObject;
         public float[] Data { get; private set; }
         public Color[] Colors { get; private set; }
+        private Vector3[] _normals;
 
         public Mesh Mesh { get; set; }
 
         public readonly HashSet<Vector3Int> SurfaceCoords = new HashSet<Vector3Int>();
         public readonly HashSet<Vector3Int> SurfaceCoordsUp = new HashSet<Vector3Int>();
-        public readonly Dictionary<Vector3Int, Vector3> Normals = new Dictionary<Vector3Int, Vector3>();
 
         private bool _surfaceCoordsDirty = true;
-        private bool _normalsDirty = true;
         private ComputeBuffer _voxelDataBuffer;
         private List<VoxelData> _coordData = new List<VoxelData>();
         private Material _material;
@@ -130,7 +129,17 @@ namespace FarmVox.Scripts.Voxel
             Data = value;
             Dirty = true;
             _surfaceCoordsDirty = true;
-            _normalsDirty = true;
+        }
+
+        public void SetNormals(Vector3[] normals)
+        {
+            _normals = normals;
+        }
+
+        public Vector3 GetNormal(Vector3Int localCoord)
+        {
+            var index = GetIndex(localCoord.x, localCoord.y, localCoord.z);
+            return _normals?[index] ?? Vector3.zero;
         }
 
         public void UpdateSurfaceCoords()
@@ -217,7 +226,6 @@ namespace FarmVox.Scripts.Voxel
             Data[index] = v;
             Dirty = true;
             _surfaceCoordsDirty = true;
-            _normalsDirty = true;
         }
 
         public void SetColor(int i, int j, int k, Color v)
@@ -242,31 +250,6 @@ namespace FarmVox.Scripts.Voxel
         {
             var index = i * DataSize * DataSize + j * DataSize + k;
             return index;
-        }
-
-        public void UpdateNormals()
-        {
-            if (!_normalsDirty)
-            {
-                return;
-            }
-
-            UpdateSurfaceCoords();
-
-            Normals.Clear();
-
-            foreach (var coord in SurfaceCoords)
-            {
-                if (coord.x >= DataSize - 1 || coord.y >= DataSize - 1 || coord.z >= DataSize - 1)
-                {
-                    continue;
-                }
-
-                var normal = CalcNormal(coord);
-                Normals[coord] = normal;
-            }
-
-            _normalsDirty = false;
         }
 
         private Vector3 CalcNormal(Vector3Int coord)

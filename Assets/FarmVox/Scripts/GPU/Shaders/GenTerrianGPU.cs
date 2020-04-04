@@ -34,18 +34,10 @@ namespace FarmVox.Scripts.GPU.Shaders
             _shader = Resources.Load<ComputeShader>("Shaders/GenTerrian");
         }
 
-        public ComputeBuffer CreateVoxelBuffer()
+        public GenTerrianResults Dispatch()
         {
-            return new ComputeBuffer(_dataSize * _dataSize * _dataSize, sizeof(float));
-        }
+            var results = new GenTerrianResults(_dataSize);
 
-        public ComputeBuffer CreateColorBuffer()
-        {
-            return new ComputeBuffer(_dataSize * _dataSize * _dataSize, sizeof(float) * 4);
-        }
-
-        public void Dispatch(ComputeBuffer voxelBuffer, ComputeBuffer colorBuffer)
-        {
             using (var noisesBuffer = NoisePacker.PackNoises(new[]
             {
                 _groundConfig.heightNoise,
@@ -57,8 +49,9 @@ namespace FarmVox.Scripts.GPU.Shaders
             {
                 _shader.SetBuffer(0, "_NoisesBuffer", noisesBuffer);
 
-                _shader.SetBuffer(0, "_VoxelBuffer", voxelBuffer);
-                _shader.SetBuffer(0, "_ColorBuffer", colorBuffer);
+                _shader.SetBuffer(0, "_VoxelBuffer", results.VoxelBuffer);
+                _shader.SetBuffer(0, "_ColorBuffer", results.ColorBuffer);
+                _shader.SetBuffer(0, "_NormalBuffer", results.NormalBuffer);
 
                 _shader.SetFloat("_MaxHeight", _groundConfig.maxHeight);
 
@@ -94,6 +87,8 @@ namespace FarmVox.Scripts.GPU.Shaders
                     Mathf.CeilToInt(_dataSize / (float) _workGroups[1]),
                     Mathf.CeilToInt(_dataSize / (float) _workGroups[2]));
             }
+
+            return results;
         }
     }
 }
