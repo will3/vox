@@ -67,5 +67,6 @@ namespace FarmVox.Scripts
 
         public ValueGradient edgeCurve = new ValueGradient(0, -1);
         public Noise edgeNoise;
+        public bool useEdges = true;
     }
 }

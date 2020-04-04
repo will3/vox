@@ -85,6 +85,7 @@ namespace FarmVox.Scripts.GPU.Shaders
                 _shader.SetValueGradient(_stoneConfig.heightCurve, "_StoneHeight");
                 _shader.SetValueGradient(_groundConfig.edgeCurve, "_Edge");
                 _shader.SetFloat("_EdgeDistance", _groundConfig.edgeDistance);
+                _shader.SetInt("_UseEdges", _groundConfig.useEdges ? 1 : 0);
 
                 _shader.SetInts("_Bounds", _bounds.min.x, _bounds.min.z, _bounds.max.x, _bounds.max.z);
 

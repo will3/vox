@@ -59,8 +59,8 @@ float _StoneValue;
 float _EdgeValues[8];
 float _EdgeKeys[8];
 int _EdgeSize;
-
 float _EdgeDistance;
+int _UseEdges;
 
 // Output
 RWStructuredBuffer<float> _VoxelBuffer;
@@ -150,14 +150,16 @@ float calcDistanceFromEdge(int3 worldCoord) {
 
 float getHeight(int3 coord) {
     int3 worldCoord = coord + _Origin;
-    float distanceFromEdge = calcDistanceFromEdge(worldCoord);
-    float edgeRatio = clamp(1 - distanceFromEdge / _EdgeDistance, 0, 1);
-    int index = getIndex(coord);
-    float edgeValue = sampleValue(_EdgeValues, _EdgeKeys, _EdgeSize, edgeRatio) * clamp(_EdgeBuffer[index], 0, 1); 
-
     float relY = worldCoord.y - _GroundHeight;
     float gradient = -relY / _HillHeight;
-    gradient += edgeValue; 
+    int index = getIndex(coord);
+
+    if (_UseEdges != 0) {
+        float distanceFromEdge = calcDistanceFromEdge(worldCoord);
+        float edgeRatio = clamp(1 - distanceFromEdge / _EdgeDistance, 0, 1);
+        float edgeValue = sampleValue(_EdgeValues, _EdgeKeys, _EdgeSize, edgeRatio) * clamp(_EdgeBuffer[index], 0, 1);
+        gradient += edgeValue;
+    }
 
     return sampleValue(_HeightValues, _HeightKeys, _HeightSize, _HeightBuffer[index]) + gradient;
 }
