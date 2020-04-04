@@ -1,3 +1,16 @@
+struct Noise {
+    float frequency;
+    float amplitude;
+    int seed;
+    float lacunarity;
+    float persistence;
+    int octaves;
+    float yScale;
+    float xzScale;
+    int type;
+    float offset;
+};
+
 float3 mod289(float3 x)
 {
     return x - floor(x / 289.0) * 289.0;
@@ -167,4 +180,82 @@ float4 snoise_grad(float3 v)
         -6.0 * m3.w * x3 * dot(x3, g3) + m4.w * g3;
     float4 px = float4(dot(x0, g0), dot(x1, g1), dot(x2, g2), dot(x3, g3));
     return 42.0 * float4(grad, dot(m4, px));
+}
+
+// fractal sum, range -1.0 - 1.0
+float fBm(Noise n, float3 p)
+{
+    float freq = n.frequency;
+    float amp = 0.5;
+    float sum = 0;
+    for(int i = 0; i < n.octaves; i++) 
+    {
+        sum += snoise(p * freq) * amp;
+        freq *= n.lacunarity;
+        amp *= n.persistence;
+    }
+    return sum;
+}
+
+// fractal abs sum, range 0.0 - 1.0
+float turbulence(Noise n, float3 p)
+{
+    float sum = 0;
+    float freq = n.frequency;
+    float amp = 1.0;
+    for(int i = 0; i < n.octaves; i++) 
+    {
+        sum += abs(snoise(p*freq))*amp;
+        freq *= n.lacunarity;
+        amp *= n.persistence;
+    }
+    return sum;
+}
+
+// Ridged multifractal, range 0.0 - 1.0
+// See "Texturing & Modeling, A Procedural Approach", Chapter 12
+float ridge(Noise n, float h, float offset)
+{
+    h = abs(h);
+    h = offset - h;
+    h = h * h;
+    return h;
+}
+
+float ridgedmf(Noise n, float3 p, float offset)
+{
+    float sum = 0;
+    float freq = n.frequency;
+    float amp = 0.5;
+    float prev = 1.0;
+    for(int i = 0; i < n.octaves; i++) 
+    {
+        float v = ridge(n, snoise(p*freq), offset);
+        sum += v*amp*prev;
+        prev = v;
+        freq *= n.lacunarity;
+        amp *= n.persistence;
+    }
+    return sum;
+}
+
+float calcNoise(Noise n, float3 c) {
+    c.y *= n.yScale;
+    c.xz *= n.xzScale;
+    c.z += n.seed % 1000000;
+
+    float offset = 1.0f;
+    float value;
+    int type = n.type;
+    if (type == 0) {
+        value = fBm(n, c);
+    } else if (type == 1) {
+        value = ridgedmf(n, c, offset); 
+    } else if (type == 2) {
+        value = turbulence(n, c);
+    }
+    
+    value = value * n.amplitude + n.offset;
+    
+    return value;
 }

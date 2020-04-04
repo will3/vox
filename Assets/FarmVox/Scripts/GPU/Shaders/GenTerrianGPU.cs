@@ -46,17 +46,16 @@ namespace FarmVox.Scripts.GPU.Shaders
 
         public void Dispatch(ComputeBuffer voxelBuffer, ComputeBuffer colorBuffer)
         {
-            using (var rockColorBuffer = new Perlin3DGpu(_groundConfig.rockColorNoise, _dataSize, _origin))
-            using (var heightBuffer = new Perlin3DGpu(_groundConfig.heightNoise, _dataSize, _origin))
-            using (var grassBuffer = new Perlin3DGpu(_groundConfig.grassNoise, _dataSize, _origin))
-            using (var stoneBuffer = new Perlin3DGpu(_stoneConfig.noise, _dataSize, _origin))
-            using (var edgeNoiseBuffer = new Perlin3DGpu(_groundConfig.edgeNoise, _dataSize, _origin))
+            using (var noisesBuffer = NoisePacker.PackNoises(new[]
             {
-                _shader.SetBuffer(0, "_RockColorBuffer", rockColorBuffer.Results);
-                _shader.SetBuffer(0, "_HeightBuffer", heightBuffer.Results);
-                _shader.SetBuffer(0, "_GrassBuffer", grassBuffer.Results);
-                _shader.SetBuffer(0, "_StoneBuffer", stoneBuffer.Results);
-                _shader.SetBuffer(0, "_EdgeBuffer", edgeNoiseBuffer.Results);
+                _groundConfig.heightNoise,
+                _groundConfig.rockColorNoise,
+                _groundConfig.grassNoise,
+                _stoneConfig.noise,
+                _groundConfig.edgeNoise
+            }))
+            {
+                _shader.SetBuffer(0, "_NoisesBuffer", noisesBuffer);
 
                 _shader.SetBuffer(0, "_VoxelBuffer", voxelBuffer);
                 _shader.SetBuffer(0, "_ColorBuffer", colorBuffer);

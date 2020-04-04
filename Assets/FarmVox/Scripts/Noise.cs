@@ -1,17 +1,7 @@
 ﻿using System;
-using LibNoise;
-using LibNoise.Generator;
-using LibNoise.Operator;
 
 namespace FarmVox.Scripts
 {
-    public enum NoiseType
-    {
-        FBM = 0,
-        Ridged = 1,
-        Turbulence = 2
-    }
-
     [Serializable]
     public class Noise
     {
@@ -26,16 +16,20 @@ namespace FarmVox.Scripts
         public NoiseType type;
         public float offset;
     }
-
-    public static class ModuleBuilder
-    {
-        public static ModuleBase Build(Noise noise)
-        {
-            return new ScaleBias(noise.amplitude, 0,
-                new Scale(noise.xzScale, noise.yScale, noise.xzScale,
-                    new ScaleBias(0.5f, 0.5f, new Perlin(noise.frequency, noise.lacunarity, noise.persistence,
-                        noise.octaves, noise.seed,
-                        QualityMode.Medium))));
-        }
-    }
+    
+//    struct Noise {
+//        int size;
+//        int seed;
+//        float frequency;
+//        float lacunarity;
+//        float persistence;
+//        int octaves;
+//        float3 origin;
+//        float yScale;
+//        float xzScale;
+//        float amplitude;
+//        int dataSize;
+//        int type;
+//        float offset;
+//    };
 }

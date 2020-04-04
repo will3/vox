@@ -2,12 +2,20 @@
 #pragma kernel CSMain
 
 #include "common.cginc"
+#include "noise.cginc"
 
-StructuredBuffer<float> _HeightBuffer;
-StructuredBuffer<float> _RockColorBuffer;
-StructuredBuffer<float> _GrassBuffer;
-StructuredBuffer<float> _StoneBuffer;
-StructuredBuffer<float> _EdgeBuffer;
+// Input
+StructuredBuffer<Noise> _NoisesBuffer;
+
+float calcNoiseAtIndex(int index, float3 coord) {
+    return calcNoise(_NoisesBuffer[index], coord);
+}
+
+float calcHeightNoise(float3 coord) { return calcNoiseAtIndex(0, coord); }
+float calcRockColorNoise(float3 coord) { return calcNoiseAtIndex(1, coord); }
+float calcGrassNoise(float3 coord) { return calcNoiseAtIndex(2, coord); }
+float calcStoneNoise(float3 coord) { return calcNoiseAtIndex(3, coord); }
+float calcEdgeNoise(float3 coord) { return calcNoiseAtIndex(4, coord); }
 
 float _MaxHeight;
 int _WaterLevel;
@@ -136,9 +144,8 @@ float getGrass(int3 coord, float heightRatio, int absY) {
 }
 
 float getStone(int3 coord, float heightRatio) {
-    int index = getIndex(coord);
     float heightValue = sampleValue(_StoneHeightValues, _StoneHeightKeys, _StoneHeightSize, heightRatio);
-    float v = _StoneBuffer[index];
+    float v = calcStoneNoise(_Origin + coord);
     return v * heightValue - 0.3;
 }
 
@@ -152,16 +159,17 @@ float getHeight(int3 coord) {
     int3 worldCoord = coord + _Origin;
     float relY = worldCoord.y - _GroundHeight;
     float gradient = -relY / _HillHeight;
-    int index = getIndex(coord);
 
     if (_UseEdges != 0) {
         float distanceFromEdge = calcDistanceFromEdge(worldCoord);
         float edgeRatio = clamp(1 - distanceFromEdge / _EdgeDistance, 0, 1);
-        float edgeValue = sampleValue(_EdgeValues, _EdgeKeys, _EdgeSize, edgeRatio) * clamp(_EdgeBuffer[index], 0, 1);
+        float edgeNoise = calcEdgeNoise(worldCoord);
+        float edgeValue = sampleValue(_EdgeValues, _EdgeKeys, _EdgeSize, edgeRatio) * clamp(edgeNoise, 0, 1);
         gradient += edgeValue;
     }
 
-    return sampleValue(_HeightValues, _HeightKeys, _HeightSize, _HeightBuffer[index]) + gradient;
+    float heightValue = calcHeightNoise(worldCoord);
+    return sampleValue(_HeightValues, _HeightKeys, _HeightSize, heightValue) + gradient;
 }
 
 [numthreads(8, 8, 4)]
@@ -181,7 +189,8 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     _VoxelBuffer[index] = height;
 
     float heightRatio = worldCoord.y / _MaxHeight;
-    float4 rockColor = sampleColor(_RockGradient, _RockGradientIntervals, _RockGradientSize, _RockGradientBanding, heightRatio + _RockColorBuffer[index]);
+    float rockColorNoise = calcRockColorNoise(worldCoord);
+    float4 rockColor = sampleColor(_RockGradient, _RockGradientIntervals, _RockGradientSize, _RockGradientBanding, heightRatio + rockColorNoise);
     float grass = getGrass(coord, heightRatio, worldCoord.y);
     float4 grassColor = sampleColor(_GrassGradient, _GrassGradientIntervals, _GrassGradientSize, _GrassGradientBanding, grass);
     
