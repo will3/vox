@@ -14,7 +14,6 @@ namespace FarmVox.Scripts.GPU.Shaders
         private readonly int[] _workGroups = {8, 8, 4};
 
         public int NormalBanding = 6;
-        public bool UseNormals = true;
         public bool IsWater = false;
 
         private readonly ComputeBuffer _voxelBuffer;
@@ -56,7 +55,6 @@ namespace FarmVox.Scripts.GPU.Shaders
             _shader.SetBuffer(0, "_ColorsBuffer", _colorsBuffer);
 
             _shader.SetFloat("_NormalBanding", NormalBanding);
-            _shader.SetInt("_UseNormals", UseNormals ? 1 : 0);
             _shader.SetInt("_IsWater", IsWater ? 1 : 0);
             _shader.SetFloat("_NormalStrength", NormalStrength);
             _shader.SetFloat("_AoStrength", AoStrength);

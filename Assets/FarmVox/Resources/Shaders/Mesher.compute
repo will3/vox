@@ -14,12 +14,15 @@ struct Triangle {
     float3 normal;
 };
 
-int _Size;
+// Input
 StructuredBuffer<float> _VoxelBuffer;
 StructuredBuffer<float4> _ColorsBuffer;
+
+// Output
 AppendStructuredBuffer<Triangle> _TrianglesBuffer;
+
+int _Size;
 float _NormalBanding;
-int _UseNormals;
 int _IsWater;
 float _NormalStrength;
 float _AoStrength;

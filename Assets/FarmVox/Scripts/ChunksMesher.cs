@@ -108,7 +108,6 @@ namespace FarmVox.Scripts
                 water.config)
             {
                 AoStrength = options.aoStrength,
-                UseNormals = options.useNormals,
                 IsWater = options.isWater,
                 NormalStrength = options.normalStrength
             })
