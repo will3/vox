@@ -6,22 +6,10 @@ namespace FarmVox.Scripts.GPU
 {
     public static class ComputeShaderExtensions
     {
-        public static void SetColorGradient(this ComputeShader computeShader, ColorGradient colorGradient,
-            string prefix)
+        public static void SetColorGradient(this ComputeShader computeShader, string name, ColorGradient colorGradient)
         {
-            var colors = colorGradient.gradient.colorKeys.Select(u => u.color.ToVector4()).ToArray();
-            var keys = colorGradient.gradient.colorKeys.Select(u => u.time).ToArray();
-
-            if (colorGradient.useSolidColor)
-            {
-                colors = new[] {colorGradient.solidColor.ToVector4()};
-                keys = new[] {0.0f};
-            }
-
-            computeShader.SetVectorArray(prefix + "Gradient", colors);
-            computeShader.SetFloats(prefix + "GradientIntervals", PackFloats(keys));
-            computeShader.SetInt(prefix + "GradientSize", keys.Length);
-            computeShader.SetFloat(prefix + "GradientBanding", colorGradient.banding);
+            var results = ColorGradientPacker.PackColorGradient(colorGradient).Select(x => x.ToVector4()).ToArray();
+            computeShader.SetVectorArray(name, results);
         }
 
         public static void SetValueGradient(this ComputeShader computeShader, string name, ValueGradient valueGradient)

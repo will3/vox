@@ -20,5 +20,10 @@ namespace FarmVox.Scripts
         public ColorGradient(string color) : this(ColorUtils.GetColor(color))
         {
         }
+
+        public Color GetColor(float r)
+        {
+            return useSolidColor ? solidColor : gradient.Evaluate(r);
+        }
     }
 }

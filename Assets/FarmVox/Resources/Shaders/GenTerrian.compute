@@ -25,32 +25,19 @@ float _HeightCurve[67];
 float _HillHeight;
 float _GroundHeight;
 
-// Rock color
-float4 _RockGradient[8];
-float _RockGradientIntervals[8];
-float _RockGradientBanding;
-int _RockGradientSize;
-
-// Grass color
-float4 _GrassGradient[8];
-float _GrassGradientIntervals[8];
-float _GrassGradientBanding;
-int _GrassGradientSize;
-
-// Grass color
-float4 _StoneGradient[8];
-float _StoneGradientIntervals[8];
-float _StoneGradientBanding;
-int _StoneGradientSize;
+// Rock
+float4 _RockColorGradient[33];
 
 // Grass
 float _GrassNormalCurve[67];
 float _GrassHeightCurve[67];
 float _GrassValue;
+float4 _GrassColorGradient[33];
 
 // Stone
 float _StoneHeightCurve[67];
 float _StoneValue;
+float4 _StoneColorGradient[33];
 
 // Edge
 float _EdgeHeightCurve[67];
@@ -177,14 +164,14 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
     float heightRatio = worldCoord.y / _MaxHeight;
     float rockColorNoise = calcRockColorNoise(worldCoord);
-    float4 rockColor = sampleColor(_RockGradient, _RockGradientIntervals, _RockGradientSize, _RockGradientBanding, heightRatio + rockColorNoise);
+    float4 rockColor = sampleColorGradient32(_RockColorGradient, heightRatio + rockColorNoise);
     float grass = getGrass(coord, heightRatio, worldCoord.y);
-    float4 grassColor = sampleColor(_GrassGradient, _GrassGradientIntervals, _GrassGradientSize, _GrassGradientBanding, grass);
+    float4 grassColor = sampleColorGradient32(_GrassColorGradient, grass);
     
     float stone = getStone(coord, heightRatio);
 
     if (stone > 0) {
-        float4 stoneColor = sampleColor(_StoneGradient, _StoneGradientIntervals, _StoneGradientSize, _StoneGradientBanding, stone);
+        float4 stoneColor = sampleColorGradient32(_StoneColorGradient, stone);
         _ColorBuffer[index] = stoneColor;
     } else {
         if (grass > 0) {

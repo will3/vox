@@ -74,9 +74,9 @@ namespace FarmVox.Scripts.GPU.Shaders
 
                 _shader.SetValueGradient("_GrassHeightCurve", _groundConfig.grassHeightFilter);
 
-                _shader.SetColorGradient(_groundConfig.rockColor, "_Rock");
-                _shader.SetColorGradient(_groundConfig.grassColor, "_Grass");
-                _shader.SetColorGradient(_stoneConfig.color, "_Stone");
+                _shader.SetColorGradient("_RockColorGradient", _groundConfig.rockColor);
+                _shader.SetColorGradient("_GrassColorGradient", _groundConfig.grassColor);
+                _shader.SetColorGradient("_StoneColorGradient", _stoneConfig.color);
 
                 _shader.SetValueGradient("_HeightCurve", _groundConfig.heightFilter);
 

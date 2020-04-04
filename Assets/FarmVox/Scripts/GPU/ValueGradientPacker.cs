@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace FarmVox.Scripts.GPU
 {
     public static class ValueGradientPacker
