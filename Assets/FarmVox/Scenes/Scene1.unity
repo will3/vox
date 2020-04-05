@@ -222,8 +222,8 @@ MonoBehaviour:
     grassColor:
       gradient:
         serializedVersion: 2
-        key0: {r: 0.34901962, g: 0.45490196, b: 0.1254902, a: 1}
-        key1: {r: 0.34901962, g: 0.45490196, b: 0.1254902, a: 1}
+        key0: {r: 0.37725997, g: 0.45490196, b: 0.21334904, a: 1}
+        key1: {r: 0.38039216, g: 0.45490196, b: 0.21568628, a: 1}
         key2: {r: 0, g: 0, b: 0, a: 0}
         key3: {r: 0, g: 0, b: 0, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}
@@ -442,12 +442,12 @@ MonoBehaviour:
       xzScale: 1
       type: 0
       offset: 0.7
-    useEdges: 0
+    useEdges: 1
   chunks: {fileID: 316894773}
   water: {fileID: 1603196057}
   stone: {fileID: 316894775}
-  numGridsToGenerate: {x: 5, y: 2, z: 5}
-  gridOffset: {x: -1, y: 0, z: -1}
+  numGridsToGenerate: {x: 7, y: 2, z: 7}
+  gridOffset: {x: -3, y: 0, z: -3}
 --- !u!114 &316894775
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1313,7 +1313,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1767922224
 Transform:
   m_ObjectHideFlags: 0

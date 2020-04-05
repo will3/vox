@@ -90,10 +90,13 @@ float calcValue(float3 worldCoord) {
 
 float3 calcNormal(int3 p)
 {
+    float eps = 1.0;
+    float2 h = float2(eps, 0);
+
     return normalize(float3(
-        calcValue(p + int3(1, 0, 0)) - calcValue(p - int3(1, 0, 0)),
-        calcValue(p + int3(0, 1, 0)) - calcValue(p - int3(0, 1, 0)),
-        calcValue(p + int3(0, 0, 1)) - calcValue(p - int3(0, 0, 1))));
+        calcValue(p + h.xyy) - calcValue(p - h.xyy),
+        calcValue(p + h.yxy) - calcValue(p - h.yxy),
+        calcValue(p + h.yyx) - calcValue(p - h.yyx)));
 }
 
 float calcGrass(int3 worldCoord) {
