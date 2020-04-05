@@ -189,8 +189,8 @@ MonoBehaviour:
     rockColor:
       gradient:
         serializedVersion: 2
-        key0: {r: 0.39607844, g: 0.3019608, b: 0.12156863, a: 1}
-        key1: {r: 0.39607844, g: 0.3019608, b: 0.12156863, a: 1}
+        key0: {r: 0.39607844, g: 0.30539346, b: 0.19130588, a: 1}
+        key1: {r: 0.39607844, g: 0.30588236, b: 0.19215687, a: 1}
         key2: {r: 0, g: 0, b: 0, a: 0}
         key3: {r: 0, g: 0, b: 0, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}
@@ -222,8 +222,8 @@ MonoBehaviour:
     grassColor:
       gradient:
         serializedVersion: 2
-        key0: {r: 0.37725997, g: 0.45490196, b: 0.21334904, a: 1}
-        key1: {r: 0.38039216, g: 0.45490196, b: 0.21568628, a: 1}
+        key0: {r: 0.41843137, g: 0.45490196, b: 0.2117647, a: 1}
+        key1: {r: 0.41960785, g: 0.45490196, b: 0.21176471, a: 1}
         key2: {r: 0, g: 0, b: 0, a: 0}
         key3: {r: 0, g: 0, b: 0, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}
@@ -1367,7 +1367,7 @@ MonoBehaviour:
     type: 3}
   config:
     trunkColor: {r: 0.30980393, g: 0.2509804, b: 0.16470589, a: 1}
-    leafColor: {r: 0.18431373, g: 0.31764707, b: 0.047058824, a: 1}
+    leafColor: {r: 0.22044706, g: 0.31764707, b: 0.12038824, a: 1}
     noise:
       frequency: 0.005
       amplitude: 1
