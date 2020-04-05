@@ -1,69 +1,104 @@
+using System.Collections.Generic;
 using FarmVox.Scripts.Voxel;
 using FarmVox.Terrain;
-using FarmVox.Voxel;
 using UnityEngine;
 
-namespace FarmVox.Objects
+namespace FarmVox.Scripts.Objects
 {
     public class PineObject
     {
         private readonly float _r;
         private readonly float _h;
         private readonly int _trunkHeight;
+        private readonly TreeConfig _config;
+        private readonly Dictionary<Vector3Int, float> _cache = new Dictionary<Vector3Int, float>();
 
-        public Vector3Int Pivot { get; }
-
-        public PineObject(float r, float h, int trunkHeight)
+        public PineObject(float r, float h, int trunkHeight, TreeConfig config)
         {
             _r = r;
             _h = h;
             _trunkHeight = trunkHeight;
-
-            var radius = Mathf.CeilToInt(r);
-            Pivot = new Vector3Int(radius, 0, radius);
+            _config = config;
         }
 
-        public void Place(Chunks layer, Vector3Int position, TreeConfig config)
+        public void Place(Chunks layer, Vector3Int position)
         {
             var radius = Mathf.CeilToInt(_r);
-            var mid = radius + 1;
-            var width = radius * 2 + 1;
             var height = Mathf.CeilToInt(_h) + _trunkHeight;
 
-            for (var j = 0; j < height; j++)
+            for (var i = -radius; i <= radius; i++)
             {
-                var currentR = _r * (1 - (j - _trunkHeight) / _h);
-
-                for (var i = 0; i < width; i++)
+                for (var k = 0 - radius; k <= radius; k++)
                 {
-                    for (var k = 0; k < width; k++)
+                    for (var j = 0; j < height; j++)
                     {
-                        var coord = new Vector3Int(i, j, k) + position;
-                        if (j < _trunkHeight + 2 && i == mid && k == mid)
-                        {
-                            layer.Set(coord, 1);
-                            layer.SetColor(coord, config.trunkColor);
-                        }
-                        else if (j >= _trunkHeight)
-                        {
-                            var diffI = Mathf.Abs(mid - i);
-                            var diffK = Mathf.Abs(mid - k);
-                            var distance = Mathf.Sqrt(diffI * diffI + diffK * diffK);
-                            var density = currentR - distance;
+                        var localCoord = new Vector3Int(i, j, k);
+                        var v = GetValue(localCoord);
+                        if (!(v > 0)) continue;
 
-                            if (j == height - 1)
-                            {
-                                density = 0f;
-                            }
-
-                            if (!(density > 0)) continue;
-                            var value = density - (float) config.random.NextDouble() * 1.0f;
-                            layer.Set(coord, value);
-                            layer.SetColor(coord, config.leafColor);
-                        }
+                        var worldCoord = localCoord + position;
+                        var color = GetColor(localCoord);
+                        layer.Set(worldCoord, v);
+                        layer.SetColor(worldCoord, color);
+                        layer.SetNormal(worldCoord, GetNormal(localCoord));
                     }
                 }
             }
+        }
+
+        private float GetCone(Vector3 localCoord)
+        {
+            var radius = _r * (1 - (localCoord.y - _trunkHeight) / _h);
+
+            var dis = Mathf.Sqrt(localCoord.x * localCoord.x + localCoord.z * localCoord.z);
+            var density = radius - dis;
+            density -= (float) _config.random.NextDouble() * _config.randomAmount;
+
+            return density;
+        }
+
+        private Color GetColor(Vector3Int localCoord)
+        {
+            return localCoord.y < _trunkHeight
+                ? _config.trunkColor
+                : _config.leafColor;
+        }
+
+        private float GetValue(Vector3Int localCoord)
+        {
+            if (_cache.TryGetValue(localCoord, out var v))
+            {
+                return v;
+            }
+
+            v = CalcValue(localCoord);
+            _cache[localCoord] = v;
+
+            return v;
+        }
+
+        private Vector3 GetNormal(Vector3Int localCoord)
+        {
+            var x = GetValue(localCoord + new Vector3Int(1, 0, 0)) - GetValue(localCoord - new Vector3Int(1, 0, 0));
+            var y = GetValue(localCoord + new Vector3Int(0, 1, 0)) - GetValue(localCoord - new Vector3Int(0, 1, 0));
+            var z = GetValue(localCoord + new Vector3Int(0, 0, 1)) - GetValue(localCoord - new Vector3Int(0, 0, 1));
+
+            return new Vector3(x, y, z).normalized * -1;
+        }
+
+        private float CalcValue(Vector3Int localCoord)
+        {
+            if (localCoord.y >= _trunkHeight)
+            {
+                return GetCone(localCoord);
+            }
+
+            if (localCoord.x == 0 && localCoord.z == 0)
+            {
+                return 1.0f;
+            }
+
+            return 0.0f;
         }
     }
 }

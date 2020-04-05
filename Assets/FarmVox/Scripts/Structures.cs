@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FarmVox.Models;
 using FarmVox.Objects;
+using FarmVox.Scripts.Models;
 using FarmVox.Scripts.Voxel;
 using FarmVox.Terrain;
 using FarmVox.Voxel;

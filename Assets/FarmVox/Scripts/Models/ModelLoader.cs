@@ -1,3 +1,4 @@
+using FarmVox.Scripts.Models;
 using UnityEngine;
 
 namespace FarmVox.Models

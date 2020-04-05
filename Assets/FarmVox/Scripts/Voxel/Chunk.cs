@@ -135,6 +135,7 @@ namespace FarmVox.Scripts.Voxel
         public void SetNormals([NotNull] Vector3[] normals)
         {
             Normals = normals ?? throw new ArgumentNullException(nameof(normals));
+            Dirty = true;
         }
 
         public Vector3 GetNormal(Vector3Int localCoord)
@@ -346,6 +347,18 @@ namespace FarmVox.Scripts.Voxel
         public void SetShadowMapSize(int dataSize)
         {
             Material.SetInt(ShadowMapSize, dataSize);
+        }
+
+        public void SetNormal(int i, int j, int k, Vector3 normal)
+        {
+            if (Normals == null)
+            {
+                Normals = new Vector3[DataSize * DataSize * DataSize];
+            }
+
+            var index = GetIndex(i, j, k);
+            Normals[index] = normal;
+            Dirty = true;
         }
     }
 }

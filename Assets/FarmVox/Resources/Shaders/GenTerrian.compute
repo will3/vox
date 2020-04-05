@@ -96,7 +96,7 @@ float3 calcNormal(int3 p)
     return normalize(float3(
         calcValue(p + h.xyy) - calcValue(p - h.xyy),
         calcValue(p + h.yxy) - calcValue(p - h.yxy),
-        calcValue(p + h.yyx) - calcValue(p - h.yyx)));
+        calcValue(p + h.yyx) - calcValue(p - h.yyx))) * -1;
 }
 
 float calcGrass(int3 worldCoord) {
@@ -107,7 +107,7 @@ float calcGrass(int3 worldCoord) {
         return 0;
     }
     
-    float normal = dot(calcNormal(worldCoord), float3(0, -1, 0));
+    float normal = dot(calcNormal(worldCoord), float3(0, 1, 0));
     float normalValue = sampleValueGradient64(_GrassNormalCurve, normal);
     float heightValue = sampleValueGradient64(_GrassHeightCurve, heightRatio);
 

@@ -193,6 +193,29 @@ namespace FarmVox.Scripts.Voxel
             SetColor(coord.x, coord.y, coord.z, v);
         }
 
+        public void SetNormal(Vector3Int worldCoord, Vector3 normal)
+        {
+            var i = worldCoord.x;
+            var j = worldCoord.y;
+            var k = worldCoord.z;
+            var keys = GetKeys(i, j, k);
+            foreach (var key in keys)
+            {
+                var origin = key * size;
+                var chunk = GetOrCreateChunk(origin);
+                chunk.SetNormal(i - origin.x, j - origin.y, k - origin.z, normal);
+            }
+//            var origin = GetOrigin(worldCoord.x, worldCoord.y, worldCoord.z);
+//            var coord = worldCoord - origin;
+//            var chunk = GetOrCreateChunk(coord);
+//            if (chunk == null)
+//            {
+//                return;
+//            }
+//            
+//            chunk.SetNormal(coord, normal);
+        }
+
         public void UnloadChunk(Vector3Int origin)
         {
             if (_map.TryGetValue(origin, out var chunk))

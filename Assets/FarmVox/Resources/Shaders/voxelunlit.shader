@@ -75,7 +75,7 @@
             v2f vert (appdata v)
             {
                 v2f o;
-                o.pos = UnityObjectToClipPos(v.vertex);            
+                o.pos = UnityObjectToClipPos(v.vertex);
                 o.normal = v.normal;
                 o.uv = v.uv;
 
@@ -90,7 +90,7 @@
 
                 int3 worldCoord = coord + floor(_Origin);
                 
-                float dif = clamp(dot(normal, _LightDir), 0, 1);
+                float dif = clamp(dot(normal, _LightDir * -1), 0, 1);
 
                 if (_NormalBanding != 0.0) {
                     dif = floor(dif * _NormalBanding) / _NormalBanding;

@@ -1,9 +1,7 @@
-using System;
 using System.Linq;
-using FarmVox.Objects;
+using FarmVox.Scripts.Objects;
 using FarmVox.Scripts.Voxel;
 using FarmVox.Terrain;
-using FarmVox.Voxel;
 using LibNoise;
 using UnityEngine;
 
@@ -44,7 +42,7 @@ namespace FarmVox.Scripts
             var groundConfig = ground.config;
             var defaultLayer = ground.chunks;
 
-            var pine = new PineObject(config.treeRadius, config.treeHeight, config.trunkHeight);
+            var pine = new PineObject(config.treeRadius, config.treeHeight, config.trunkHeight, config);
 
             var chunk = defaultLayer.GetChunk(origin);
             chunk.UpdateSurfaceCoords();
@@ -94,7 +92,7 @@ namespace FarmVox.Scripts
                     continue;
                 }
 
-                pine.Place(chunks, globalCoord - pine.Pivot, config);
+                pine.Place(chunks, globalCoord);
 
                 var treeGo = Instantiate(treePrefab, transform);
                 treeGo.transform.position = globalCoord + new Vector3(1.5f, 0, 1.5f);

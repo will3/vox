@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace FarmVox.Models
+namespace FarmVox.Scripts.Models
 {
     [Serializable]
     public class Model

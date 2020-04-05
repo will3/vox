@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using FarmVox.Models;
+using FarmVox.Scripts.Models;
 using UnityEngine;
 
 namespace FarmVox.Objects
