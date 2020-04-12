@@ -158,7 +158,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   size: 32
-  useNormals: 1
   isWater: 0
   normalStrength: 0.4
   normalBanding: 6
@@ -446,7 +445,7 @@ MonoBehaviour:
   chunks: {fileID: 316894773}
   water: {fileID: 1603196057}
   stone: {fileID: 316894775}
-  numGridsToGenerate: {x: 5, y: 2, z: 5}
+  numGridsToGenerate: {x: 7, y: 2, z: 7}
   gridOffset: {x: -2, y: 0, z: -2}
 --- !u!114 &316894775
 MonoBehaviour:
@@ -967,7 +966,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   size: 32
-  useNormals: 1
   isWater: 0
   normalStrength: 0.2
   normalBanding: 6
@@ -1031,12 +1029,9 @@ MonoBehaviour:
   - {fileID: 1223485162}
   - {fileID: 1767922225}
   - {fileID: 1603196056}
+  ground: {fileID: 0}
   waterfalls: {fileID: 1404610549}
   water: {fileID: 0}
-  bounds:
-    m_Position: {x: 0, y: 0, z: 0}
-    m_Size: {x: 0, y: 0, z: 0}
-  useBounds: 0
 --- !u!4 &1396963311
 Transform:
   m_ObjectHideFlags: 0
@@ -1267,7 +1262,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   size: 32
-  useNormals: 0
   isWater: 1
   normalStrength: 0
   normalBanding: 6
@@ -1341,7 +1335,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   size: 32
-  useNormals: 1
   isWater: 0
   normalStrength: 0.2
   normalBanding: 6

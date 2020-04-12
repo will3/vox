@@ -124,6 +124,11 @@ namespace FarmVox.Scripts
 
             for (var d = 0; d < 3; d++)
             {
+                if (isWater && d != 1)
+                {
+                    continue;
+                }
+
                 // Optimize this
                 for (var i = -1; i < size; i++)
                 {
@@ -149,6 +154,12 @@ namespace FarmVox.Scripts
                             }
 
                             var front = va > 0;
+
+                            if (isWater && !front)
+                            {
+                                continue;
+                            }
+
                             var i2 = i + 1;
                             var coord = front ? ca : cb;
 
