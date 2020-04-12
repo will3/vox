@@ -104,13 +104,11 @@ namespace FarmVox.Scripts.Voxel
             return _map.TryGetValue(origin, out var chunk) ? chunk : null;
         }
 
-        public void Set(Vector3Int coord, float v)
+        public void Set(Vector3Int worldCoord, float v)
         {
-            var origin = GetOrigin(coord);
-            if (_map.TryGetValue(origin, out var chunk))
-            {
-                chunk.Set(coord - origin, v);
-            }
+            var origin = GetOrigin(worldCoord);
+            var chunk = GetOrCreateChunk(origin);
+            chunk.Set(worldCoord - origin, v);
         }
 
         public void SetColor(int i, int j, int k, Color v)
@@ -121,19 +119,15 @@ namespace FarmVox.Scripts.Voxel
         public void SetColor(Vector3Int coord, Color v)
         {
             var origin = GetOrigin(coord);
-            if (_map.TryGetValue(origin, out var chunk))
-            {
-                chunk.SetColor(coord - origin, v);
-            }
+            var chunk = GetOrCreateChunk(origin);
+            chunk.SetColor(coord - origin, v);
         }
 
         public void SetNormal(Vector3Int worldCoord, Vector3 normal)
         {
             var origin = GetOrigin(worldCoord);
-            if (_map.TryGetValue(origin, out var chunk))
-            {
-                chunk.SetNormal(worldCoord - origin, normal);
-            }
+            var chunk = GetOrCreateChunk(origin);
+            chunk.SetNormal(worldCoord - origin, normal);
         }
 
         public void UnloadChunk(Vector3Int origin)
