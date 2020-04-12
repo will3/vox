@@ -64,7 +64,7 @@ namespace FarmVox.Scripts
                 var chunks = chunksToDraw
                     .Select(c => c.ChunkList)
                     .SelectMany(x => x)
-                    .Where(c => c.Dirty)
+                    .Where(c => c.dirty)
                     .ToArray();
 
                 foreach (var chunk in chunks)
@@ -81,17 +81,17 @@ namespace FarmVox.Scripts
 
         private void DrawChunk(Chunk chunk)
         {
-            if (chunk.Mesh != null)
+            if (chunk.hasMesh)
             {
-                Destroy(chunk.Mesh);
+                Destroy(chunk.meshFilter.sharedMesh);
             }
 
-            chunk.Mesh = MeshGpu(chunk);
+            var mesh = MeshGpu(chunk);
             chunk.meshRenderer.material = chunk.Material;
-            chunk.meshFilter.sharedMesh = chunk.Mesh;
-            chunk.meshCollider.sharedMesh = chunk.Mesh;
-
-            chunk.Dirty = false;
+            chunk.meshFilter.sharedMesh = mesh;
+            chunk.meshCollider.sharedMesh = mesh;
+            chunk.hasMesh = true;
+            chunk.dirty = false;
 
             ShadowEvents.Instance.PublishChunkUpdated(chunk.origin);
         }
@@ -156,7 +156,7 @@ namespace FarmVox.Scripts
                             var v4 = GetVector(i2, j, k + 1, d);
                             var color = chunk.GetColor(coord);
 
-                            if (isWater)
+                            if (!isWater)
                             {
                                 var worldCoord = chunk.origin + coord;
                                 var depth = waterLevel - worldCoord.y;
@@ -164,7 +164,9 @@ namespace FarmVox.Scripts
                                 if (depth > 0)
                                 {
                                     var depthRatio = Mathf.Pow(waterOpacity, depth - 1);
-                                    color *= depthRatio;
+                                    color.r *= depthRatio;
+                                    color.g *= depthRatio;
+                                    color.b *= depthRatio;
                                 }
                             }
 
@@ -217,7 +219,7 @@ namespace FarmVox.Scripts
             return quads;
         }
 
-        private Vector3Int GetVectorInt(int i, int j, int k, int d)
+        private static Vector3Int GetVectorInt(int i, int j, int k, int d)
         {
             switch (d)
             {
@@ -230,7 +232,7 @@ namespace FarmVox.Scripts
             }
         }
 
-        private Vector3 GetVector(int i, int j, int k, int d)
+        private static Vector3 GetVector(int i, int j, int k, int d)
         {
             switch (d)
             {
@@ -272,7 +274,7 @@ namespace FarmVox.Scripts
 
         private static float CalcAo(float s1F, float s2F, float cf, float aoStrength)
         {
-            return 1.0f - (CalcAoRaw(s1F, s2F, cf) * aoStrength);
+            return 1.0f - CalcAoRaw(s1F, s2F, cf) * aoStrength;
         }
     }
 }

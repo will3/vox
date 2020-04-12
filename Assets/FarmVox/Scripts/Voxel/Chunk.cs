@@ -13,21 +13,18 @@ namespace FarmVox.Scripts.Voxel
     {
         public int size = 32;
         public Vector3Int origin;
-
         public MeshRenderer meshRenderer;
         public MeshFilter meshFilter;
         public MeshCollider meshCollider;
-
         public ChunkOptions options;
+        public bool dirty;
+        public bool hasMesh;
 
         public int DataSize => size + 3;
-        public bool Dirty { get; set; }
-        private GameObject _gameObject;
-        public float[] Data { get; private set; }
-        public Color[] Colors { get; private set; }
-        public Vector3[] Normals { get; private set; }
 
-        public Mesh Mesh { get; set; }
+        private float[] _data;
+        private Color[] _colors;
+        private Vector3[] _normals;
 
         public readonly HashSet<Vector3Int> SurfaceCoords = new HashSet<Vector3Int>();
         public readonly HashSet<Vector3Int> SurfaceCoordsUp = new HashSet<Vector3Int>();
@@ -45,6 +42,15 @@ namespace FarmVox.Scripts.Voxel
         private static readonly int WaterfallVariance = Shader.PropertyToID("_WaterfallVariance");
         private static readonly int Origin = Shader.PropertyToID("_Origin");
         private static readonly int Size = Shader.PropertyToID("_Size");
+        private static readonly int LightDir = Shader.PropertyToID("_LightDir");
+        private static readonly int NormalBanding = Shader.PropertyToID("_NormalBanding");
+        private static readonly int NormalStrength = Shader.PropertyToID("_NormalStrength");
+        private static readonly int ShadowMap00 = Shader.PropertyToID("_ShadowMap00");
+        private static readonly int ShadowMap01 = Shader.PropertyToID("_ShadowMap01");
+        private static readonly int ShadowMap10 = Shader.PropertyToID("_ShadowMap10");
+        private static readonly int ShadowMap11 = Shader.PropertyToID("_ShadowMap11");
+        private static readonly int ShadowMapSize = Shader.PropertyToID("_ShadowMapSize");
+        private static readonly int ShadowStrength = Shader.PropertyToID("_ShadowStrength");
 
         private ComputeBuffer _defaultVoxelDataBuffer;
 
@@ -83,6 +89,13 @@ namespace FarmVox.Scripts.Voxel
                 _material.SetVector(Origin, (Vector3) origin);
                 _material.SetInt(Size, size);
 
+                var defaultBuffer = ShadowMap.GetDefaultBuffer();
+                _material.SetBuffer(ShadowMap00, defaultBuffer);
+                _material.SetBuffer(ShadowMap01, defaultBuffer);
+                _material.SetBuffer(ShadowMap10, defaultBuffer);
+                _material.SetBuffer(ShadowMap11, defaultBuffer);
+                _material.SetFloat(ShadowStrength, options.shadowStrength);
+
                 return _material;
             }
         }
@@ -95,10 +108,7 @@ namespace FarmVox.Scripts.Voxel
 
         private void UpdateVoxelDataBuffer()
         {
-            if (_voxelDataBuffer != null)
-            {
-                _voxelDataBuffer.Dispose();
-            }
+            _voxelDataBuffer?.Dispose();
 
             if (_coordData.Count == 0)
             {
@@ -121,27 +131,27 @@ namespace FarmVox.Scripts.Voxel
 
         public void SetColors([NotNull] Color[] value)
         {
-            Colors = value ?? throw new ArgumentNullException(nameof(value));
-            Dirty = true;
+            _colors = value ?? throw new ArgumentNullException(nameof(value));
+            dirty = true;
         }
 
         public void SetData([NotNull] float[] value)
         {
-            Data = value ?? throw new ArgumentNullException(nameof(value));
-            Dirty = true;
+            _data = value ?? throw new ArgumentNullException(nameof(value));
+            dirty = true;
             _surfaceCoordsDirty = true;
         }
 
         public void SetNormals([NotNull] Vector3[] normals)
         {
-            Normals = normals ?? throw new ArgumentNullException(nameof(normals));
-            Dirty = true;
+            _normals = normals ?? throw new ArgumentNullException(nameof(normals));
+            dirty = true;
         }
 
         public Vector3 GetNormal(Vector3Int localCoord)
         {
             var index = GetIndex(localCoord.x, localCoord.y, localCoord.z);
-            return Normals?[index] ?? Vector3.zero;
+            return _normals?[index] ?? Vector3.zero;
         }
 
         public void UpdateSurfaceCoords()
@@ -199,7 +209,7 @@ namespace FarmVox.Scripts.Voxel
 
         public float Get(int i, int j, int k)
         {
-            if (Data == null || Data.Length == 0)
+            if (_data == null || _data.Length == 0)
             {
                 return 0;
             }
@@ -212,14 +222,14 @@ namespace FarmVox.Scripts.Voxel
             }
 
             var index = GetIndex(i, j, k);
-            return Data[index];
+            return _data[index];
         }
 
         public void Set(int i, int j, int k, float v)
         {
-            if (Data == null || Data.Length == 0)
+            if (_data == null || _data.Length == 0)
             {
-                Data = new float[DataSize * DataSize * DataSize];
+                _data = new float[DataSize * DataSize * DataSize];
             }
 
             if (i < 0 || i >= DataSize ||
@@ -230,21 +240,21 @@ namespace FarmVox.Scripts.Voxel
             }
 
             var index = GetIndex(i, j, k);
-            Data[index] = v;
-            Dirty = true;
+            _data[index] = v;
+            dirty = true;
             _surfaceCoordsDirty = true;
         }
 
         public void SetColor(int i, int j, int k, Color v)
         {
-            if (Colors == null || Colors.Length == 0)
+            if (_colors == null || _colors.Length == 0)
             {
-                Colors = new Color[DataSize * DataSize * DataSize];
+                _colors = new Color[DataSize * DataSize * DataSize];
             }
 
             var index = GetIndex(i, j, k);
-            Colors[index] = v;
-            Dirty = true;
+            _colors[index] = v;
+            dirty = true;
         }
 
         public Color GetColor(Vector3Int coord)
@@ -255,7 +265,7 @@ namespace FarmVox.Scripts.Voxel
         public Color GetColor(int i, int j, int k)
         {
             var index = GetIndex(i, j, k);
-            return Colors[index];
+            return _colors[index];
         }
 
         private int GetIndex(int i, int j, int k)
@@ -266,7 +276,7 @@ namespace FarmVox.Scripts.Voxel
 
         private void OnDrawGizmosSelected()
         {
-            if (Normals == null)
+            if (_normals == null)
             {
                 return;
             }
@@ -285,50 +295,6 @@ namespace FarmVox.Scripts.Voxel
         {
             _voxelDataBuffer?.Dispose();
             _defaultVoxelDataBuffer?.Dispose();
-        }
-
-        private static readonly int ShadowMap00 = Shader.PropertyToID("_ShadowMap00");
-        private static readonly int ShadowMap01 = Shader.PropertyToID("_ShadowMap01");
-        private static readonly int ShadowMap10 = Shader.PropertyToID("_ShadowMap10");
-        private static readonly int ShadowMap11 = Shader.PropertyToID("_ShadowMap11");
-        private static readonly int ShadowMapSize = Shader.PropertyToID("_ShadowMapSize");
-        private static readonly int ShadowStrength = Shader.PropertyToID("_ShadowStrength");
-
-        private void Start()
-        {
-            var defaultBuffer = ShadowMap.GetDefaultBuffer();
-            Material.SetBuffer(ShadowMap00, defaultBuffer);
-            Material.SetBuffer(ShadowMap01, defaultBuffer);
-            Material.SetBuffer(ShadowMap10, defaultBuffer);
-            Material.SetBuffer(ShadowMap11, defaultBuffer);
-            Material.SetFloat(ShadowStrength, options.shadowStrength);
-
-            Material.SetFloat("_VisionRange", 32);
-            Material.SetFloat("_VisionGridSize", 1);
-            Material.SetFloat("_VisionBlurRange", 0);
-        }
-
-        private GameObject playerObject;
-        private static readonly int LightDir = Shader.PropertyToID("_LightDir");
-        private static readonly int NormalBanding = Shader.PropertyToID("_NormalBanding");
-        private static readonly int NormalStrength = Shader.PropertyToID("_NormalStrength");
-
-        private Vector3 PlayerPosition
-        {
-            get
-            {
-                if (playerObject == null)
-                {
-                    playerObject = GameObject.FindWithTag("Player");
-                }
-
-                return playerObject == null ? new Vector3() : playerObject.transform.position;
-            }
-        }
-
-        private void Update()
-        {
-            Material.SetVector("_PlayerPosition", PlayerPosition);
         }
 
         public void UpdateShadowBuffers(ComputeBuffer[] shadowMaps)
@@ -361,14 +327,14 @@ namespace FarmVox.Scripts.Voxel
 
         public void SetNormal(int i, int j, int k, Vector3 normal)
         {
-            if (Normals == null)
+            if (_normals == null)
             {
-                Normals = new Vector3[DataSize * DataSize * DataSize];
+                _normals = new Vector3[DataSize * DataSize * DataSize];
             }
 
             var index = GetIndex(i, j, k);
-            Normals[index] = normal;
-            Dirty = true;
+            _normals[index] = normal;
+            dirty = true;
         }
     }
 }

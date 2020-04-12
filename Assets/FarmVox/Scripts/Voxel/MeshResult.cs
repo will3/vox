@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using FarmVox.Scripts.Voxel;
 using UnityEngine;
 
-namespace FarmVox.Voxel
+namespace FarmVox.Scripts.Voxel
 {
     public class MeshResult
     {
@@ -12,7 +11,7 @@ namespace FarmVox.Voxel
             Mesh = mesh;
         }
 
-        public List<VoxelData> VoxelData { get; private set; }
-        public Mesh Mesh { get; private set; }
+        public List<VoxelData> VoxelData { get; }
+        public Mesh Mesh { get; }
     }
 }
