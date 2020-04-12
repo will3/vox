@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using FarmVox.Scripts.GPU.Shaders;
@@ -35,8 +36,15 @@ namespace FarmVox.Scripts
             new BoundsInt
             {
                 min = gridOffset * size,
-                max = (gridOffset + new Vector3Int(numGridsToGenerate.x, 0, numGridsToGenerate.z)) * size
+                max = (gridOffset + new Vector3Int(numGridsToGenerate.x, numGridsToGenerate.y, numGridsToGenerate.z)) *
+                      size
             };
+
+        private void OnDrawGizmosSelected()
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireCube(Bounds.center, Bounds.size);
+        }
 
         private IEnumerator Start()
         {

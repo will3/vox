@@ -16,20 +16,4 @@ namespace FarmVox.Scripts
         public NoiseType type;
         public float offset;
     }
-    
-//    struct Noise {
-//        int size;
-//        int seed;
-//        float frequency;
-//        float lacunarity;
-//        float persistence;
-//        int octaves;
-//        float3 origin;
-//        float yScale;
-//        float xzScale;
-//        float amplitude;
-//        int dataSize;
-//        int type;
-//        float offset;
-//    };
 }

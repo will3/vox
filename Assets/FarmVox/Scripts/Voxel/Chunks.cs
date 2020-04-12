@@ -27,8 +27,11 @@ namespace FarmVox.Scripts.Voxel
             );
         }
 
-        private Vector3Int GetOrigin(int i, int j, int k)
+        private Vector3Int GetOrigin(Vector3Int coord)
         {
+            var i = coord.x;
+            var j = coord.y;
+            var k = coord.z;
             return new Vector3Int(
                 Mathf.FloorToInt(i / (float) size) * size,
                 Mathf.FloorToInt(j / (float) size) * size,
@@ -38,31 +41,29 @@ namespace FarmVox.Scripts.Voxel
 
         public float Get(Vector3Int coord)
         {
-            return Get(coord.x, coord.y, coord.z);
-        }
-
-        private float Get(int i, int j, int k)
-        {
-            var origin = GetOrigin(i, j, k);
+            var origin = GetOrigin(coord);
             if (!_map.ContainsKey(origin))
             {
                 return 0;
             }
 
-            return _map[origin].Get(i - origin.x, j - origin.y, k - origin.z);
+            return _map[origin].Get(coord - origin);
         }
 
         public Color GetColor(Vector3Int coord)
         {
-            return GetColor(coord.x, coord.y, coord.z);
-        }
-
-        private Color GetColor(int i, int j, int k)
-        {
-            var origin = GetOrigin(i, j, k);
+            var origin = GetOrigin(coord);
             return !_map.ContainsKey(origin)
                 ? default(Color)
-                : _map[origin].GetColor(i - origin.x, j - origin.y, k - origin.z);
+                : _map[origin].GetColor(coord - origin);
+        }
+
+        public Vector3 GetNormal(Vector3Int worldCoord)
+        {
+            var origin = GetOrigin(worldCoord);
+            return _map.TryGetValue(origin, out var chunk)
+                ? chunk.GetNormal(worldCoord - chunk.origin)
+                : Vector3.zero;
         }
 
         public Chunk GetOrCreateChunk(Vector3Int origin)
@@ -78,12 +79,13 @@ namespace FarmVox.Scripts.Voxel
             chunkGo.transform.localPosition = origin;
             chunkGo.layer = gameObject.layer;
             var chunk = chunkGo.GetComponent<Chunk>();
-            
+
             chunk.options.transparent = transparent;
             chunk.options.normalBanding = normalBanding;
             chunk.options.normalStrength = normalStrength;
             chunk.options.shadowStrength = shadowStrength;
             chunk.options.isWater = isWater;
+            chunk.chunks = this;
 
             chunk.origin = origin;
 
@@ -102,117 +104,36 @@ namespace FarmVox.Scripts.Voxel
             return _map.TryGetValue(origin, out var chunk) ? chunk : null;
         }
 
-        private IEnumerable<Vector3Int> GetKeys(int i, int j, int k)
-        {
-            var key = GetKey(i, j, k);
-            var list = new List<Vector3Int>();
-
-            var origin = key * size;
-            var ri = i - origin.x;
-            var rj = j - origin.y;
-            var rk = k - origin.z;
-
-            var iList = new List<int> {0};
-            var jList = new List<int> {0};
-            var kList = new List<int> {0};
-
-            if (ri == 0 || ri == 1)
-            {
-                iList.Add(-1);
-            }
-
-            if (rj == 0 || rj == 1)
-            {
-                jList.Add(-1);
-            }
-
-            if (rk == 0 || rk == 1)
-            {
-                kList.Add(-1);
-            }
-
-            if (ri >= size)
-            {
-                iList.Add(1);
-            }
-
-            if (rj >= size)
-            {
-                jList.Add(1);
-            }
-
-            if (rk >= size)
-            {
-                kList.Add(1);
-            }
-
-            foreach (var di in iList)
-            {
-                foreach (var dj in jList)
-                {
-                    foreach (var dk in kList)
-                    {
-                        list.Add(new Vector3Int(key.x + di, key.y + dj, key.z + dk));
-                    }
-                }
-            }
-
-            return list;
-        }
-
         public void Set(Vector3Int coord, float v)
         {
-            Set(coord.x, coord.y, coord.z, v);
-        }
-
-        private void Set(int i, int j, int k, float v)
-        {
-            var keys = GetKeys(i, j, k);
-            foreach (var key in keys)
+            var origin = GetOrigin(coord);
+            if (_map.TryGetValue(origin, out var chunk))
             {
-                var origin = key * size;
-                var chunk = GetOrCreateChunk(origin);
-                chunk.Set(i - origin.x, j - origin.y, k - origin.z, v);
+                chunk.Set(coord - origin, v);
             }
         }
 
         public void SetColor(int i, int j, int k, Color v)
         {
-            var keys = GetKeys(i, j, k);
-            foreach (var key in keys)
-            {
-                var origin = key * size;
-                var chunk = GetOrCreateChunk(origin);
-                chunk.SetColor(i - origin.x, j - origin.y, k - origin.z, v);
-            }
+            SetColor(new Vector3Int(i, j, k), v);
         }
 
         public void SetColor(Vector3Int coord, Color v)
         {
-            SetColor(coord.x, coord.y, coord.z, v);
+            var origin = GetOrigin(coord);
+            if (_map.TryGetValue(origin, out var chunk))
+            {
+                chunk.SetColor(coord - origin, v);
+            }
         }
 
         public void SetNormal(Vector3Int worldCoord, Vector3 normal)
         {
-            var i = worldCoord.x;
-            var j = worldCoord.y;
-            var k = worldCoord.z;
-            var keys = GetKeys(i, j, k);
-            foreach (var key in keys)
+            var origin = GetOrigin(worldCoord);
+            if (_map.TryGetValue(origin, out var chunk))
             {
-                var origin = key * size;
-                var chunk = GetOrCreateChunk(origin);
-                chunk.SetNormal(i - origin.x, j - origin.y, k - origin.z, normal);
+                chunk.SetNormal(worldCoord - origin, normal);
             }
-//            var origin = GetOrigin(worldCoord.x, worldCoord.y, worldCoord.z);
-//            var coord = worldCoord - origin;
-//            var chunk = GetOrCreateChunk(coord);
-//            if (chunk == null)
-//            {
-//                return;
-//            }
-//            
-//            chunk.SetNormal(coord, normal);
         }
 
         public void UnloadChunk(Vector3Int origin)

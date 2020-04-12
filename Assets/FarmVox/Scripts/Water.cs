@@ -78,13 +78,14 @@ namespace FarmVox.Scripts
                 {
                     for (var j = 0; j <= maxJ; j++)
                     {
-                        if (chunk != null && chunk.Get(i, j, k) > 0)
+                        var coord = new Vector3Int(i, j, k);
+                        if (chunk != null && chunk.Get(coord) > 0)
                         {
                             continue;
                         }
 
-                        waterChunk.Set(i, j, k, 1);
-                        waterChunk.SetColor(i, j, k, this.config.waterColor);
+                        waterChunk.Set(coord, 1);
+                        waterChunk.SetColor(coord, config.waterColor);
                     }
                 }
             }

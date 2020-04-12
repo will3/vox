@@ -11,12 +11,11 @@ namespace FarmVox.Scripts
     public class ChunksMesher : MonoBehaviour
     {
         public Chunks[] chunksToDraw;
+        public Ground ground;
         public Waterfalls waterfalls;
         public Water water;
         private LightController _lightController;
         private Vector3Int LightDir => _lightController.lightDir.GetDirVector();
-        public BoundsInt bounds;
-        public bool useBounds;
         private static readonly int VoxelData = Shader.PropertyToID("_VoxelData");
 
         private void Awake()
@@ -27,6 +26,7 @@ namespace FarmVox.Scripts
         private void Start()
         {
             water = FindObjectOfType<Water>();
+            ground = FindObjectOfType<Ground>();
             StartCoroutine(DrawLoop());
         }
 
@@ -115,7 +115,7 @@ namespace FarmVox.Scripts
 
         private IEnumerable<Quad> MeshCpu(Chunk chunk)
         {
-            var size = chunk.DataSize;
+            var size = chunk.size;
             var quads = new List<Quad>();
             var isWater = chunk.options.isWater;
             var aoStrength = chunk.options.aoStrength;
@@ -124,24 +124,26 @@ namespace FarmVox.Scripts
 
             for (var d = 0; d < 3; d++)
             {
-                for (var i = 0; i < size; i++)
+                // Optimize this
+                for (var i = -1; i < size; i++)
                 {
                     for (var j = 0; j < size; j++)
                     {
                         for (var k = 0; k < size; k++)
                         {
-                            if (i == 0 || i >= size - 2 || j == 0 || j >= size - 2 || k == 0 || k >= size - 2)
+                            var ca = GetVectorInt(i, j, k, d);
+                            var cb = GetVectorInt(i + 1, j, k, d);
+
+                            var va = chunk.GetLocal(ca);
+                            var vb = chunk.GetLocal(cb);
+
+                            if (va > 0 == vb > 0)
                             {
                                 continue;
                             }
 
-                            var ca = GetVectorInt(i, j, k, d);
-                            var cb = GetVectorInt(i + 1, j, k, d);
-
-                            var va = chunk.Get(ca);
-                            var vb = chunk.Get(cb);
-
-                            if (va > 0 == vb > 0)
+                            if (!ground.Bounds.Contains(chunk.origin + cb) ||
+                                !ground.Bounds.Contains(chunk.origin + ca))
                             {
                                 continue;
                             }
@@ -154,7 +156,7 @@ namespace FarmVox.Scripts
                             var v2 = GetVector(i2, j + 1, k, d);
                             var v3 = GetVector(i2, j + 1, k + 1, d);
                             var v4 = GetVector(i2, j, k + 1, d);
-                            var color = chunk.GetColor(coord);
+                            var color = chunk.GetColorLocal(coord);
 
                             if (!isWater)
                             {
@@ -171,14 +173,14 @@ namespace FarmVox.Scripts
                             }
 
                             var aoI = front ? i + 1 : i;
-                            var v00 = chunk.Get(GetVectorInt(aoI, j - 1, k - 1, d));
-                            var v01 = chunk.Get(GetVectorInt(aoI, j, k - 1, d));
-                            var v02 = chunk.Get(GetVectorInt(aoI, j + 1, k - 1, d));
-                            var v10 = chunk.Get(GetVectorInt(aoI, j - 1, k, d));
-                            var v12 = chunk.Get(GetVectorInt(aoI, j + 1, k, d));
-                            var v20 = chunk.Get(GetVectorInt(aoI, j - 1, k + 1, d));
-                            var v21 = chunk.Get(GetVectorInt(aoI, j, k + 1, d));
-                            var v22 = chunk.Get(GetVectorInt(aoI, j + 1, k + 1, d));
+                            var v00 = chunk.GetLocal(GetVectorInt(aoI, j - 1, k - 1, d));
+                            var v01 = chunk.GetLocal(GetVectorInt(aoI, j, k - 1, d));
+                            var v02 = chunk.GetLocal(GetVectorInt(aoI, j + 1, k - 1, d));
+                            var v10 = chunk.GetLocal(GetVectorInt(aoI, j - 1, k, d));
+                            var v12 = chunk.GetLocal(GetVectorInt(aoI, j + 1, k, d));
+                            var v20 = chunk.GetLocal(GetVectorInt(aoI, j - 1, k + 1, d));
+                            var v21 = chunk.GetLocal(GetVectorInt(aoI, j, k + 1, d));
+                            var v22 = chunk.GetLocal(GetVectorInt(aoI, j + 1, k + 1, d));
 
                             var ao = new Vector4(
                                 CalcAo(v10, v01, v00, aoStrength),
@@ -190,7 +192,7 @@ namespace FarmVox.Scripts
                             {
                                 Color = color,
                                 Coord = coord,
-                                Normal = chunk.GetNormal(coord)
+                                Normal = chunk.GetNormalLocal(coord)
                             };
 
                             if (front)

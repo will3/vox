@@ -30,7 +30,7 @@ namespace FarmVox.Scripts.GPU.Shaders
             _stoneConfig = stoneConfig;
             _bounds = bounds;
 
-            _dataSize = size + 3;
+            _dataSize = size;
             _shader = Resources.Load<ComputeShader>("Shaders/GenTerrian");
         }
 
