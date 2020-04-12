@@ -192,6 +192,11 @@ namespace FarmVox.Scripts.Voxel
             _surfaceCoordsDirty = false;
         }
 
+        public float Get(Vector3Int coord)
+        {
+            return Get(coord.x, coord.y, coord.z);
+        }
+
         public float Get(int i, int j, int k)
         {
             if (Data == null || Data.Length == 0)
@@ -240,6 +245,11 @@ namespace FarmVox.Scripts.Voxel
             var index = GetIndex(i, j, k);
             Colors[index] = v;
             Dirty = true;
+        }
+
+        public Color GetColor(Vector3Int coord)
+        {
+            return GetColor(coord.x, coord.y, coord.z);
         }
 
         public Color GetColor(int i, int j, int k)

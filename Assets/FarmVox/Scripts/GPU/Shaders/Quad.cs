@@ -20,17 +20,11 @@ namespace FarmVox.Scripts.GPU.Shaders
 
         public Vector3 Normal;
 
-        public static int Size
-        {
-            get
-            {
-                return
-                    sizeof(float) * 3 * 4 +
-                    sizeof(float) * 4 +
-                    sizeof(float) * 4 +
-                    sizeof(int) * 3 + 
-                    sizeof(float) * 3;
-            }
-        }
+        public static int Size =>
+            sizeof(float) * 3 * 4 +
+            sizeof(float) * 4 +
+            sizeof(float) * 4 +
+            sizeof(int) * 3 + 
+            sizeof(float) * 3;
     }
 }
