@@ -6,7 +6,6 @@ namespace FarmVox.Scripts.Voxel
     public class Chunks : MonoBehaviour
     {
         public int size = 32;
-        public bool useNormals = true;
         public bool isWater;
         public float normalStrength = 0.4f;
         public int normalBanding = 6;
