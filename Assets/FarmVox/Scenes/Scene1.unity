@@ -1006,6 +1006,49 @@ MonoBehaviour:
   wallHeightMultiplier: 3
   water: {fileID: 1603196057}
   ground: {fileID: 316894774}
+--- !u!1 &1245385522
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1245385524}
+  - component: {fileID: 1245385523}
+  m_Layer: 0
+  m_Name: Default Buffers
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1245385523
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1245385522}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88df4367deae43cf8d7807f722517567, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1245385524
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1245385522}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 14
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1396963309
 GameObject:
   m_ObjectHideFlags: 0
@@ -1042,9 +1085,9 @@ MonoBehaviour:
   - {fileID: 1223485162}
   - {fileID: 1767922225}
   - {fileID: 1603196056}
-  ground: {fileID: 0}
+  ground: {fileID: 316894774}
   waterfalls: {fileID: 1404610549}
-  water: {fileID: 0}
+  water: {fileID: 1603196057}
 --- !u!4 &1396963311
 Transform:
   m_ObjectHideFlags: 0
@@ -1378,6 +1421,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76eff013f4bf4a39a4586b10edd6172a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  output: test output
 --- !u!1 &1556930456
 GameObject:
   m_ObjectHideFlags: 0

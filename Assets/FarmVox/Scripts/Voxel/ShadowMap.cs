@@ -17,7 +17,6 @@ namespace FarmVox.Scripts.Voxel
 
         public static int DataSize => Size + 1;
         private const int MinY = -100;
-        private static ComputeBuffer _defaultBuffer;
 
         private readonly Dictionary<Vector2Int, ComputeBuffer> _buffers = new Dictionary<Vector2Int, ComputeBuffer>();
         private readonly HashSet<Vector2Int> _dirtyShadowMapChunks = new HashSet<Vector2Int>();
@@ -89,9 +88,16 @@ namespace FarmVox.Scripts.Voxel
             });
         }
 
+        private static DefaultBuffers _defaultBuffers;
+
         public static ComputeBuffer GetDefaultBuffer()
         {
-            return _defaultBuffer ?? (_defaultBuffer = new ComputeBuffer(1, sizeof(int)));
+            if (_defaultBuffers == null)
+            {
+                _defaultBuffers = UnityEngine.Object.FindObjectOfType<DefaultBuffers>();
+            }
+
+            return _defaultBuffers.GetBuffer(1, sizeof(int));
         }
 
         private IEnumerable<Vector3Int> CalcChunksToUpdate(Vector2Int key)
@@ -181,8 +187,6 @@ namespace FarmVox.Scripts.Voxel
             {
                 buffer.Dispose();
             }
-
-            _defaultBuffer?.Dispose();
         }
     }
 }

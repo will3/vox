@@ -56,56 +56,60 @@ namespace FarmVox.Scripts.Voxel
         private static ShadowMapController _shadowMapController;
         private ComputeBuffer _defaultVoxelDataBuffer;
 
-        private void OnEnable()
+        private void Awake()
         {
             _shadowMapController = FindObjectOfType<ShadowMapController>();
+            _waterfalls = FindObjectOfType<Waterfalls>();
         }
 
         public Material Material
         {
             get
             {
-                if (_material != null) return _material;
-                if (options.transparent)
+                if (_material != null)
                 {
-                    _material = Materials.GetVoxelMaterialTrans();
-                }
-                else
-                {
-                    _material = Materials.GetVoxelMaterial();
-
-                    if (_waterfalls == null)
-                    {
-                        _waterfalls = FindObjectOfType<Waterfalls>();
-                    }
-
-                    if (_waterfalls == null)
-                    {
-                        return _material;
-                    }
-
-                    _material.SetFloat(WaterfallShadowStrength, _waterfalls.shadowStrength);
-                    _material.SetFloat(WaterfallSpeed, _waterfalls.speed);
-                    _material.SetFloat(WaterfallWidth, _waterfalls.width);
-                    _material.SetFloat(WaterfallMin, _waterfalls.min);
-                    _material.SetFloat(WaterfallVariance, _waterfalls.variance);
-                    _material.SetInt(NormalBanding, options.normalBanding);
-                    _material.SetFloat(NormalStrength, options.normalStrength);
+                    return _material;
                 }
 
-                _material.SetVector(Origin, (Vector3) origin);
-                _material.SetInt(Size, size);
-
-                var defaultBuffer = ShadowMap.GetDefaultBuffer();
-                _material.SetBuffer(ShadowMap00, defaultBuffer);
-                _material.SetBuffer(ShadowMap01, defaultBuffer);
-                _material.SetBuffer(ShadowMap10, defaultBuffer);
-                _material.SetBuffer(ShadowMap11, defaultBuffer);
-                _material.SetFloat(ShadowStrength, options.shadowStrength);
-                _material.SetInt(ShadowMapSize, ShadowMap.DataSize);
+                _material = BuildMaterial();
 
                 return _material;
             }
+        }
+
+        private Material BuildMaterial()
+        {
+            Material material;
+            if (options.transparent)
+            {
+                material = Materials.GetVoxelMaterialTrans();
+            }
+            else
+            {
+                material = Materials.GetVoxelMaterial();
+
+                material.SetFloat(WaterfallShadowStrength, _waterfalls.shadowStrength);
+                material.SetFloat(WaterfallSpeed, _waterfalls.speed);
+                material.SetFloat(WaterfallWidth, _waterfalls.width);
+                material.SetFloat(WaterfallMin, _waterfalls.min);
+                material.SetFloat(WaterfallVariance, _waterfalls.variance);
+
+                material.SetInt(NormalBanding, options.normalBanding);
+                material.SetFloat(NormalStrength, options.normalStrength);
+            }
+
+            material.SetVector(Origin, (Vector3) origin);
+            material.SetInt(Size, size);
+
+            var defaultBuffer = ShadowMap.GetDefaultBuffer();
+            material.SetBuffer(ShadowMap00, defaultBuffer);
+            material.SetBuffer(ShadowMap01, defaultBuffer);
+            material.SetBuffer(ShadowMap10, defaultBuffer);
+            material.SetBuffer(ShadowMap11, defaultBuffer);
+            material.SetFloat(ShadowStrength, options.shadowStrength);
+            material.SetInt(ShadowMapSize, ShadowMap.DataSize);
+
+            return material;
         }
 
         public void SetVoxelData(List<VoxelData> coordData)

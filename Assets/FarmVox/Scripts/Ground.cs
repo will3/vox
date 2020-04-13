@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using FarmVox.Scripts.GPU.Shaders;
 using FarmVox.Scripts.Voxel;
@@ -46,22 +44,16 @@ namespace FarmVox.Scripts
             Gizmos.DrawWireCube(Bounds.center, Bounds.size);
         }
 
-        private IEnumerator Start()
+        private void Update()
         {
-            while (true)
+            UpdateColumns();
+
+            foreach (var column in _columnsDirty)
             {
-                UpdateColumns();
-
-                foreach (var column in _columnsDirty)
-                {
-                    LoadColumn(column);
-                }
-
-                _columnsDirty.Clear();
-                yield return null;
+                LoadColumn(column);
             }
 
-            // ReSharper disable once IteratorNeverReturns
+            _columnsDirty.Clear();
         }
 
         private void UpdateColumns()

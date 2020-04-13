@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using FarmVox.Scripts.GPU.Shaders;
@@ -26,7 +25,12 @@ namespace FarmVox.Scripts
         {
             water = FindObjectOfType<Water>();
             ground = FindObjectOfType<Ground>();
-            StartCoroutine(DrawLoop());
+
+            _lightController = FindObjectOfType<LightController>();
+            if (_lightController == null)
+            {
+                Logger.LogComponentNotFound(typeof(LightController));
+            }
         }
 
         private void OnDestroy()
@@ -49,32 +53,18 @@ namespace FarmVox.Scripts
             }
         }
 
-        private IEnumerator DrawLoop()
+        private void Update()
         {
-            _lightController = FindObjectOfType<LightController>();
-            if (_lightController == null)
+            var chunks = chunksToDraw
+                .Select(c => c.ChunkList)
+                .SelectMany(x => x)
+                .Where(c => c.dirty)
+                .ToArray();
+
+            foreach (var chunk in chunks)
             {
-                Logger.LogComponentNotFound(typeof(LightController));
+                DrawChunk(chunk);
             }
-
-            while (true)
-            {
-                var chunks = chunksToDraw
-                    .Select(c => c.ChunkList)
-                    .SelectMany(x => x)
-                    .Where(c => c.dirty)
-                    .ToArray();
-
-                foreach (var chunk in chunks)
-                {
-                    DrawChunk(chunk);
-                    yield return null;
-                }
-
-                yield return null;
-            }
-
-            // ReSharper disable once IteratorNeverReturns
         }
 
         private void DrawChunk(Chunk chunk)
@@ -85,6 +75,9 @@ namespace FarmVox.Scripts
             }
 
             var mesh = MeshGpu(chunk);
+
+            Debug.Log($"Meshed {chunk.origin} {mesh.triangles.Length} triangles {mesh.vertices.Length} vertices");
+
             chunk.meshRenderer.material = chunk.Material;
             chunk.meshFilter.sharedMesh = mesh;
             chunk.meshCollider.sharedMesh = mesh;
