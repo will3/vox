@@ -6,11 +6,7 @@ namespace FarmVox.Scripts.Voxel
     public class Chunks : MonoBehaviour
     {
         public int size = 32;
-        public bool isWater;
-        public float normalStrength = 0.4f;
-        public int normalBanding = 6;
-        public float shadowStrength = 0.5f;
-        public bool transparent;
+        public ChunkOptions chunkOptions;
         public bool isWalkable;
         public GameObject chunkPrefab;
 
@@ -80,11 +76,7 @@ namespace FarmVox.Scripts.Voxel
             chunkGo.layer = gameObject.layer;
             var chunk = chunkGo.GetComponent<Chunk>();
 
-            chunk.options.transparent = transparent;
-            chunk.options.normalBanding = normalBanding;
-            chunk.options.normalStrength = normalStrength;
-            chunk.options.shadowStrength = shadowStrength;
-            chunk.options.isWater = isWater;
+            chunk.options = chunkOptions;
             chunk.chunks = this;
 
             chunk.origin = origin;

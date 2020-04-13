@@ -158,11 +158,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   size: 32
-  isWater: 0
-  normalStrength: 0.4
-  normalBanding: 6
-  shadowStrength: 0.5
-  transparent: 0
+  chunkOptions:
+    transparent: 0
+    isWater: 0
+    normalBanding: 6
+    normalStrength: 0.4
+    shadowStrength: 0.5
+    aoStrength: 0.15
   isWalkable: 1
   chunkPrefab: {fileID: 7243905177124364530, guid: 8a77c3dcd2b9d4557aa70d485ff9442c,
     type: 3}
@@ -966,11 +968,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   size: 32
-  isWater: 0
-  normalStrength: 0.2
-  normalBanding: 6
-  shadowStrength: 0.2
-  transparent: 0
+  chunkOptions:
+    transparent: 0
+    isWater: 0
+    normalBanding: 6
+    normalStrength: 0.4
+    shadowStrength: 0.5
+    aoStrength: 0.15
   isWalkable: 1
   chunkPrefab: {fileID: 7243905177124364530, guid: 8a77c3dcd2b9d4557aa70d485ff9442c,
     type: 3}
@@ -1262,11 +1266,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   size: 32
-  isWater: 1
-  normalStrength: 0
-  normalBanding: 6
-  shadowStrength: 0.5
-  transparent: 1
+  chunkOptions:
+    transparent: 1
+    isWater: 1
+    normalBanding: 6
+    normalStrength: 0.4
+    shadowStrength: 0.5
+    aoStrength: 0.15
   isWalkable: 1
   chunkPrefab: {fileID: 7243905177124364530, guid: 8a77c3dcd2b9d4557aa70d485ff9442c,
     type: 3}
@@ -1335,11 +1341,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   size: 32
-  isWater: 0
-  normalStrength: 0.2
-  normalBanding: 6
-  shadowStrength: 0.2
-  transparent: 0
+  chunkOptions:
+    transparent: 0
+    isWater: 0
+    normalBanding: 0
+    normalStrength: 0.2
+    shadowStrength: 0.5
+    aoStrength: 0.15
   isWalkable: 0
   chunkPrefab: {fileID: 7243905177124364530, guid: 8a77c3dcd2b9d4557aa70d485ff9442c,
     type: 3}
