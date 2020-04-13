@@ -5,10 +5,11 @@ namespace FarmVox.Scripts
     public class TestCommand : MonoBehaviour, ICommand
     {
         public string Name => "test";
+        public string output = "test output";
 
-        public void Run(string[] args)
+        public string Run(string[] args)
         {
-            Debug.Log("test command");
+            return output;
         }
     }
 }

@@ -14,6 +14,7 @@ namespace FarmVox.Scripts
         public GUIStyle textFieldStyle;
         private bool _hasAppliedBoxBackgroundColor;
         private bool _showingConsole;
+        private string _output = "";
 
         private void ApplyBoxBackgroundColorIfNeeded()
         {
@@ -28,12 +29,10 @@ namespace FarmVox.Scripts
 
         private void Update()
         {
-            if (Input.GetKeyUp(KeyCode.Return))
+            if (!Input.GetKeyUp(KeyCode.Return)) return;
+            if (!_showingConsole)
             {
-                if (!_showingConsole)
-                {
-                    _showingConsole = true;
-                }
+                _showingConsole = true;
             }
         }
 
@@ -44,21 +43,7 @@ namespace FarmVox.Scripts
                 return;
             }
 
-            var enterPressed = Event.current.Equals(Event.KeyboardEvent("return"));
-            if (enterPressed)
-            {
-                var args = _text.Split(' ').Select(x => x.Trim()).Where(x => x.Length > 0).ToArray();
-
-                if (args.Length > 0)
-                {
-                    var command = GetComponents<ICommand>().SingleOrDefault(x =>
-                        string.Equals(x.Name, args[0], StringComparison.OrdinalIgnoreCase));
-                    command?.Run(args);
-                }
-
-                _text = "";
-                _showingConsole = false;
-            }
+            ProcessEnter();
 
             const int textFieldLeftPadding = 8;
 
@@ -69,11 +54,63 @@ namespace FarmVox.Scripts
 
             var textFieldRect = new Rect(textFieldLeftPadding, 0, width - textFieldLeftPadding * 2, height);
             GUI.SetNextControlName("input");
-            _text = GUI.TextField(textFieldRect, _text, textFieldStyle);
+
+            if (_output.Length == 0)
+            {
+                _text = GUI.TextField(textFieldRect, _text, textFieldStyle);
+            }
+            else
+            {
+                GUI.Label(textFieldRect, _output, textFieldStyle);
+            }
 
             GUI.FocusControl("input");
 
             GUI.EndGroup();
+        }
+
+        private void ProcessEnter()
+        {
+            var enterPressed = Event.current.Equals(Event.KeyboardEvent("return"));
+            if (!enterPressed)
+            {
+                return;
+            }
+
+            if (_output.Length > 0)
+            {
+                _output = "";
+                _showingConsole = false;
+                return;
+            }
+
+            var args = _text.Split(' ').Select(x => x.Trim()).Where(x => x.Length > 0).ToArray();
+
+            if (args.Length == 0)
+            {
+                _text = "";
+                _showingConsole = false;
+                return;
+            }
+
+            var command = GetComponents<ICommand>().SingleOrDefault(x =>
+                string.Equals(x.Name, args[0], StringComparison.OrdinalIgnoreCase));
+
+            if (command == null)
+            {
+                _showingConsole = false;
+                _text = "";
+                return;
+            }
+
+            _output = command.Run(args);
+
+            if (_output.Length == 0)
+            {
+                _showingConsole = false;
+            }
+
+            _text = "";
         }
 
         private static Texture2D MakeTexture(int w, int h, Color col)
