@@ -15,7 +15,7 @@ namespace FarmVox.Scripts.Voxel
 
         private Vector3Int LightDirVector => LightDir.GetDirVector();
 
-        private static int DataSize => Size + 1;
+        public static int DataSize => Size + 1;
         private const int MinY = -100;
         private static ComputeBuffer _defaultBuffer;
 
@@ -53,25 +53,7 @@ namespace FarmVox.Scripts.Voxel
             foreach (var origin in _dirtyChunks)
             {
                 _allChunks.Add(origin);
-                var offsets = new[]
-                {
-                    new Vector2Int(0, 0),
-                    new Vector2Int(0, 1),
-                    new Vector2Int(1, 0),
-                    new Vector2Int(1, 1)
-                };
-
-                var y = origin.y;
-                var shadowOrigin = new Vector2Int(origin.x + y * LightDirVector.x, origin.z + y * LightDirVector.z);
-
-                var buffers = offsets.Select(offset =>
-                {
-                    var o = new Vector2Int(
-                        shadowOrigin.x + offset.x * Size * LightDirVector.x,
-                        shadowOrigin.y + offset.y * Size * LightDirVector.z);
-                    return _buffers.TryGetValue(o, out var buffer) ? buffer : GetDefaultBuffer();
-                }).ToArray();
-                ShadowEvents.Instance.PublishShadowMapUpdated(origin, DataSize, buffers);
+                ShadowEvents.Instance.PublishShadowMapUpdated(origin);
             }
 
             if (DebugLog)
@@ -83,6 +65,28 @@ namespace FarmVox.Scripts.Voxel
             }
 
             _dirtyChunks.Clear();
+        }
+
+        public IEnumerable<ComputeBuffer> GetBuffers(Vector3Int origin)
+        {
+            var offsets = new[]
+            {
+                new Vector2Int(0, 0),
+                new Vector2Int(0, 1),
+                new Vector2Int(1, 0),
+                new Vector2Int(1, 1)
+            };
+
+            var y = origin.y;
+            var shadowOrigin = new Vector2Int(origin.x + y * LightDirVector.x, origin.z + y * LightDirVector.z);
+
+            return offsets.Select(offset =>
+            {
+                var o = new Vector2Int(
+                    shadowOrigin.x + offset.x * Size * LightDirVector.x,
+                    shadowOrigin.y + offset.y * Size * LightDirVector.z);
+                return _buffers.TryGetValue(o, out var buffer) ? buffer : GetDefaultBuffer();
+            });
         }
 
         public static ComputeBuffer GetDefaultBuffer()

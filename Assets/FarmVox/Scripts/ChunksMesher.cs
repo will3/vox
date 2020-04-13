@@ -34,7 +34,7 @@ namespace FarmVox.Scripts
             ShadowEvents.Instance.ShadowMapUpdated -= OnShadowMapUpdated;
         }
 
-        private void OnShadowMapUpdated(Vector3Int origin, int dataSize, ComputeBuffer[] buffers)
+        private void OnShadowMapUpdated(Vector3Int origin)
         {
             foreach (var chunks in chunksToDraw)
             {
@@ -45,8 +45,7 @@ namespace FarmVox.Scripts
                 }
 
                 chunk.SetLightDir(LightDir);
-                chunk.UpdateShadowBuffers(buffers);
-                chunk.SetShadowMapSize(dataSize);
+                chunk.UpdateShadowBuffers();
             }
         }
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using UnityEngine;
 
@@ -52,8 +53,13 @@ namespace FarmVox.Scripts.Voxel
         private static readonly int ShadowMap11 = Shader.PropertyToID("_ShadowMap11");
         private static readonly int ShadowMapSize = Shader.PropertyToID("_ShadowMapSize");
         private static readonly int ShadowStrength = Shader.PropertyToID("_ShadowStrength");
-
+        private static ShadowMapController _shadowMapController;
         private ComputeBuffer _defaultVoxelDataBuffer;
+
+        private void OnEnable()
+        {
+            _shadowMapController = FindObjectOfType<ShadowMapController>();
+        }
 
         public Material Material
         {
@@ -96,6 +102,7 @@ namespace FarmVox.Scripts.Voxel
                 _material.SetBuffer(ShadowMap10, defaultBuffer);
                 _material.SetBuffer(ShadowMap11, defaultBuffer);
                 _material.SetFloat(ShadowStrength, options.shadowStrength);
+                _material.SetInt(ShadowMapSize, ShadowMap.DataSize);
 
                 return _material;
             }
@@ -315,8 +322,9 @@ namespace FarmVox.Scripts.Voxel
             _defaultVoxelDataBuffer?.Dispose();
         }
 
-        public void UpdateShadowBuffers(ComputeBuffer[] shadowMaps)
+        public void UpdateShadowBuffers()
         {
+            var shadowMaps = _shadowMapController.GetBuffers(origin).ToArray();
             Material.SetBuffer(ShadowMap00, shadowMaps[0]);
             Material.SetBuffer(ShadowMap01, shadowMaps[1]);
             Material.SetBuffer(ShadowMap10, shadowMaps[2]);
@@ -336,11 +344,6 @@ namespace FarmVox.Scripts.Voxel
                    localCoord.x < size &&
                    localCoord.y < size &&
                    localCoord.z < size;
-        }
-
-        public void SetShadowMapSize(int dataSize)
-        {
-            Material.SetInt(ShadowMapSize, dataSize);
         }
 
         public void SetNormal(Vector3Int coord, Vector3 normal)

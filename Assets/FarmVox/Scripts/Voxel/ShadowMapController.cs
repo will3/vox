@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -5,7 +6,7 @@ namespace FarmVox.Scripts.Voxel
 {
     public class ShadowMapController : MonoBehaviour
     {
-        private ShadowMap[] _shadowMaps =
+        private readonly ShadowMap[] _shadowMaps =
         {
             new ShadowMap(LightDir.NorthEast),
             new ShadowMap(LightDir.NorthWest),
@@ -78,6 +79,11 @@ namespace FarmVox.Scripts.Voxel
                     shadowMap.SetDirty(o);
                 }
             }
+        }
+
+        public IEnumerable<ComputeBuffer> GetBuffers(Vector3Int origin)
+        {
+            return ActiveShadowMap.GetBuffers(origin);
         }
     }
 }

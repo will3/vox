@@ -14,7 +14,7 @@ namespace FarmVox.Scripts
 
         public delegate void ChunkUpdatedHandler(Vector3Int origin);
 
-        public delegate void ShadowMapUpdatedHandler(Vector3Int origin, int dataSize, ComputeBuffer[] buffers);
+        public delegate void ShadowMapUpdatedHandler(Vector3Int origin);
 
         public event ChunkUpdatedHandler ChunkUpdated;
         public event ShadowMapUpdatedHandler ShadowMapUpdated;
@@ -24,9 +24,9 @@ namespace FarmVox.Scripts
             ChunkUpdated?.Invoke(origin);
         }
 
-        public void PublishShadowMapUpdated(Vector3Int origin, int dataSize, ComputeBuffer[] buffers)
+        public void PublishShadowMapUpdated(Vector3Int origin)
         {
-            ShadowMapUpdated?.Invoke(origin, dataSize, buffers);
+            ShadowMapUpdated?.Invoke(origin);
         }
     }
 }
