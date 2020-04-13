@@ -9,6 +9,8 @@ namespace FarmVox.Scripts
     public class ValueGradient
     {
         public AnimationCurve Curve;
+        public bool constantValue;
+        public float value;
 
         public ValueGradient(float min, float max)
         {
@@ -33,7 +35,7 @@ namespace FarmVox.Scripts
 
         public float GetValue(float ratio)
         {
-            return Curve.Evaluate(ratio);
+            return constantValue ? value : Curve.Evaluate(ratio);
         }
     }
 }

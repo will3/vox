@@ -54,8 +54,6 @@ namespace FarmVox.Scripts
                 {1, 1}
             });
 
-        public float grassValue = 1.0f;
-
         public ValueGradient heightFilter = new ValueGradient(new Dictionary<float, float>
         {
             {-1.0f, -0.27f},

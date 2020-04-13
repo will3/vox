@@ -4,19 +4,6 @@
 #include "common.cginc"
 #include "noise.cginc"
 
-// Input
-StructuredBuffer<Noise> _NoisesBuffer;
-
-float calcNoiseAtIndex(int index, float3 coord) {
-    return calcNoise(_NoisesBuffer[index], coord);
-}
-
-float calcHeightNoise(float3 coord) { return calcNoiseAtIndex(0, coord); }
-float calcRockColorNoise(float3 coord) { return calcNoiseAtIndex(1, coord); }
-float calcGrassNoise(float3 coord) { return calcNoiseAtIndex(2, coord); }
-float calcStoneNoise(float3 coord) { return calcNoiseAtIndex(3, coord); }
-float calcEdgeNoise(float3 coord) { return calcNoiseAtIndex(4, coord); }
-
 float _MaxHeight;
 int _WaterLevel;
 
@@ -31,7 +18,6 @@ float4 _RockColorGradient[33];
 // Grass
 float _GrassNormalCurve[67];
 float _GrassHeightCurve[67];
-float _GrassValue;
 float4 _GrassColorGradient[33];
 
 // Stone
@@ -54,6 +40,18 @@ float3 _Origin;
 int _DataSize;
 int _Resolution;
 int4 _Bounds;
+
+StructuredBuffer<Noise> _NoisesBuffer;
+
+float calcNoiseAtIndex(int index, float3 coord) {
+    return calcNoise(_NoisesBuffer[index], coord);
+}
+
+float calcHeightNoise(float3 coord) { return calcNoiseAtIndex(0, coord); }
+float calcRockColorNoise(float3 coord) { return calcNoiseAtIndex(1, coord); }
+float calcGrassNoise(float3 coord) { return calcNoiseAtIndex(2, coord); }
+float calcStoneNoise(float3 coord) { return calcNoiseAtIndex(3, coord); }
+float calcEdgeNoise(float3 coord) { return calcNoiseAtIndex(4, coord); }
 
 int getIndex(int3 coord) {
     int dataSize = _DataSize;
@@ -110,8 +108,9 @@ float calcGrass(int3 worldCoord) {
     float normal = dot(calcNormal(worldCoord), float3(0, 1, 0));
     float normalValue = sampleValueGradient64(_GrassNormalCurve, normal);
     float heightValue = sampleValueGradient64(_GrassHeightCurve, heightRatio);
+    float v = calcGrassNoise(worldCoord);
 
-    return normalValue * heightValue - _GrassValue;
+    return normalValue + heightValue + v;
 }
 
 float calcStone(int3 worldCoord) {
@@ -142,11 +141,12 @@ float4 calcColor(int3 worldCoord) {
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
     int dataSize = _DataSize;
-    if (id.x >= dataSize || id.y >= dataSize || id.z >= dataSize) {
+
+    int3 coord = int3(id.x, id.y, id.z);
+    if (coord.x >= dataSize || coord.y >= dataSize || coord.z >= dataSize) {
         return;
     }
 
-    int3 coord = int3(id.x, id.y, id.z);
     int3 worldCoord = coord + _Origin;
     float heightRatio = worldCoord.y / _MaxHeight;
 

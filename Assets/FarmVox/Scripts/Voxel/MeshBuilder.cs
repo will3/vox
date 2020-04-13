@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
-using FarmVox.Scripts;
 using FarmVox.Scripts.GPU.Shaders;
-using FarmVox.Scripts.Voxel;
 using UnityEngine;
 
-namespace FarmVox.Voxel
+namespace FarmVox.Scripts.Voxel
 {
     internal class MeshBuilder
     {

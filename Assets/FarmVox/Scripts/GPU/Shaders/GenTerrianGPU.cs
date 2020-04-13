@@ -73,8 +73,6 @@ namespace FarmVox.Scripts.GPU.Shaders
 
                 _shader.SetValueGradient("_HeightCurve", _groundConfig.heightFilter);
 
-                _shader.SetFloat("_GrassValue", _groundConfig.grassValue);
-
                 _shader.SetValueGradient("_StoneHeightCurve", _stoneConfig.heightCurve);
                 _shader.SetValueGradient("_EdgeHeightCurve", _groundConfig.edgeCurve);
                 _shader.SetFloat("_EdgeDistance", _groundConfig.edgeDistance);

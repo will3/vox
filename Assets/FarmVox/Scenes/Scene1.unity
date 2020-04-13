@@ -223,17 +223,17 @@ MonoBehaviour:
     grassColor:
       gradient:
         serializedVersion: 2
-        key0: {r: 0.41843137, g: 0.45490196, b: 0.2117647, a: 1}
-        key1: {r: 0.41960785, g: 0.45490196, b: 0.21176471, a: 1}
-        key2: {r: 0, g: 0, b: 0, a: 0}
+        key0: {r: 0.39607844, g: 0.30588236, b: 0.19215687, a: 1}
+        key1: {r: 0.41836217, g: 0.4470127, b: 0.21072665, a: 1}
+        key2: {r: 0.41960785, g: 0.45490196, b: 0.21176471, a: 0}
         key3: {r: 0, g: 0, b: 0, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}
         key5: {r: 0, g: 0, b: 0, a: 0}
         key6: {r: 0, g: 0, b: 0, a: 0}
         key7: {r: 0, g: 0, b: 0, a: 0}
         ctime0: 0
-        ctime1: 65535
-        ctime2: 0
+        ctime1: 21781
+        ctime2: 65535
         ctime3: 0
         ctime4: 0
         ctime5: 0
@@ -248,7 +248,7 @@ MonoBehaviour:
         atime6: 0
         atime7: 0
         m_Mode: 0
-        m_NumColorKeys: 2
+        m_NumColorKeys: 3
         m_NumAlphaKeys: 2
       banding: 0
       useSolidColor: 0
@@ -291,7 +291,7 @@ MonoBehaviour:
         serializedVersion: 2
         m_Curve:
         - serializedVersion: 3
-          time: 0
+          time: -1
           value: 1
           inSlope: -1
           outSlope: -1
@@ -300,8 +300,8 @@ MonoBehaviour:
           inWeight: 0
           outWeight: 0.33333334
         - serializedVersion: 3
-          time: 0.5
-          value: 0.5
+          time: 1
+          value: -1
           inSlope: -1
           outSlope: -1
           tangentMode: 34
@@ -311,32 +311,35 @@ MonoBehaviour:
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
+      constantValue: 0
+      value: 0
     grassNormalFilter:
       Curve:
         serializedVersion: 2
         m_Curve:
         - serializedVersion: 3
-          time: 0
-          value: 0
-          inSlope: 1
-          outSlope: 1
+          time: -1
+          value: -3
+          inSlope: 2
+          outSlope: 2
           tangentMode: 34
           weightedMode: 0
           inWeight: 0
-          outWeight: 0
+          outWeight: 0.33333334
         - serializedVersion: 3
           time: 1
           value: 1
-          inSlope: 1
-          outSlope: 1
+          inSlope: 2
+          outSlope: 2
           tangentMode: 34
           weightedMode: 0
-          inWeight: 0
+          inWeight: 0.33333334
           outWeight: 0
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
-    grassValue: 0.5
+      constantValue: 0
+      value: 0
     heightFilter:
       Curve:
         serializedVersion: 2
@@ -389,6 +392,8 @@ MonoBehaviour:
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
+      constantValue: 0
+      value: 0
     edgeCurve:
       Curve:
         serializedVersion: 2
@@ -432,6 +437,8 @@ MonoBehaviour:
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
+      constantValue: 0
+      value: 0
     edgeNoise:
       frequency: 0.01
       amplitude: 0.5
@@ -531,6 +538,8 @@ MonoBehaviour:
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
+      constantValue: 0
+      value: 0
 --- !u!1 &362043726
 GameObject:
   m_ObjectHideFlags: 0
@@ -1156,6 +1165,8 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
+    constantValue: 0
+    value: 0
   groundChunks: {fileID: 316894773}
   water: {fileID: 1603196057}
   ground: {fileID: 316894774}
@@ -1405,6 +1416,8 @@ MonoBehaviour:
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
+      constantValue: 0
+      value: 0
     densityFilter:
       Curve:
         serializedVersion: 2
@@ -1430,6 +1443,8 @@ MonoBehaviour:
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
+      constantValue: 0
+      value: 0
     directionFilter:
       Curve:
         serializedVersion: 2
@@ -1455,6 +1470,8 @@ MonoBehaviour:
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
+      constantValue: 0
+      value: 0
     bias: 0.5
     minDis: 4
     trunkHeight: 2
