@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using FarmVox.Voxel;
@@ -6,7 +5,7 @@ using UnityEngine;
 
 namespace FarmVox.Scripts
 {
-    public class UnloadWorld : MonoBehaviour
+    public class Reloader : MonoBehaviour, ICommand
     {
         public int size = 32;
         public Ground ground;
@@ -15,8 +14,6 @@ namespace FarmVox.Scripts
         public Waterfalls waterfalls;
         public BuildingTiles tiles;
 
-        public float waitForSeconds = 0.1f;
-
         private readonly HashSet<Vector3Int> _columnsToUnload = new HashSet<Vector3Int>();
 
         private string _lastConfig;
@@ -24,36 +21,9 @@ namespace FarmVox.Scripts
         public Vector3Int numGridsToGenerate = new Vector3Int(1, 2, 1);
         public int distanceToUnload = 1;
 
-        public BoundsInt Bounds =>
-            new BoundsInt
-            {
-                min = new Vector3Int(-numGridsToGenerate.x, 0, -numGridsToGenerate.z) * size,
-                max = new Vector3Int(numGridsToGenerate.x + 1, 0, numGridsToGenerate.z + 1) * size
-            };
-
-        private void Start()
+        private void Awake()
         {
-            StartCoroutine(UnloadColumnsLoop());
-        }
-
-        private IEnumerator UnloadColumnsLoop()
-        {
-            while (true)
-            {
-                UpdateColumnsToUnload();
-                yield return UnloadColumns();
-
-                yield return new WaitForSeconds(waitForSeconds);
-            }
-        }
-
-        private void Update()
-        {
-            if (!Input.GetKeyDown(KeyCode.Return)) return;
-            foreach (var column in ground.Columns)
-            {
-                _columnsToUnload.Add(column);
-            }
+            CommandManager.Instance.Add(this);
         }
 
         private void UpdateColumnsToUnload()
@@ -71,18 +41,18 @@ namespace FarmVox.Scripts
             _columnsToUnload.UnionWith(columnsToUnload);
         }
 
-        private IEnumerator UnloadColumns()
+        private void UnloadColumns()
         {
             var copy = new HashSet<Vector3Int>(_columnsToUnload);
             foreach (var column in copy)
             {
-                yield return UnloadColumn(column);
+                UnloadColumn(column);
             }
 
             _columnsToUnload.ExceptWith(copy);
         }
 
-        private IEnumerator UnloadColumn(Vector3Int column)
+        private void UnloadColumn(Vector3Int column)
         {
             foreach (var chunk in GetChunks(column))
             {
@@ -91,8 +61,6 @@ namespace FarmVox.Scripts
                 water.UnloadChunk(chunk);
                 waterfalls.UnloadChunk(chunk);
                 tiles.UnloadChunk(chunk);
-
-                yield return new WaitForSeconds(waitForSeconds);
             }
         }
 
@@ -102,6 +70,21 @@ namespace FarmVox.Scripts
             {
                 yield return new Vector3Int(columnOrigin.x, size * i, columnOrigin.z);
             }
+        }
+
+        public string CommandName => "reload";
+
+        public string Run(string[] args)
+        {
+            foreach (var column in ground.Columns)
+            {
+                _columnsToUnload.Add(column);
+            }
+
+            UpdateColumnsToUnload();
+            UnloadColumns();
+
+            return "";
         }
     }
 }

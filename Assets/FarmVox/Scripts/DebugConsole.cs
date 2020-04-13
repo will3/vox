@@ -93,9 +93,7 @@ namespace FarmVox.Scripts
                 return;
             }
 
-            var command = GetComponents<ICommand>().SingleOrDefault(x =>
-                string.Equals(x.Name, args[0], StringComparison.OrdinalIgnoreCase));
-
+            var command = CommandManager.Instance.Get(args[0]);
             if (command == null)
             {
                 _showingConsole = false;

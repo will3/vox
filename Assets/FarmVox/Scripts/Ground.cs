@@ -14,6 +14,8 @@ namespace FarmVox.Scripts
         public Stone stone;
         public Vector3Int numGridsToGenerate = new Vector3Int(3, 2, 3);
         public Vector3Int gridOffset = new Vector3Int(-1, 0, -1);
+        private readonly HashSet<Vector3Int> _columns = new HashSet<Vector3Int>();
+        private readonly List<Vector3Int> _columnsDirty = new List<Vector3Int>();
 
         public Vector3 Center
         {
@@ -25,9 +27,6 @@ namespace FarmVox.Scripts
             }
         }
 
-        private readonly HashSet<Vector3Int> _columns = new HashSet<Vector3Int>();
-        private readonly List<Vector3Int> _columnsDirty = new List<Vector3Int>();
-
         public IEnumerable<Vector3Int> Columns => _columns;
 
         public BoundsInt Bounds =>
@@ -38,10 +37,9 @@ namespace FarmVox.Scripts
                       size
             };
 
-        private void OnDrawGizmosSelected()
+        private void Awake()
         {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireCube(Bounds.center, Bounds.size);
+            stone = FindObjectOfType<Stone>();
         }
 
         private void Update()
@@ -54,6 +52,12 @@ namespace FarmVox.Scripts
             }
 
             _columnsDirty.Clear();
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireCube(Bounds.center, Bounds.size);
         }
 
         private void UpdateColumns()
@@ -81,14 +85,9 @@ namespace FarmVox.Scripts
             return (transform.position - (c + new Vector3(size, 0, size) / 2.0f)).sqrMagnitude;
         }
 
-        public void GenerateChunk(Vector3Int origin)
+        private void GenerateChunk(Vector3Int origin)
         {
             var chunk = chunks.GetOrCreateChunk(origin);
-
-            if (stone == null)
-            {
-                stone = FindObjectOfType<Stone>();
-            }
 
             var genTerrianGpu = new GenTerrianGpu(config.size, origin, config, water.config, stone.config, Bounds);
 
@@ -104,6 +103,7 @@ namespace FarmVox.Scripts
 
         public void UnloadChunk(Vector3Int origin)
         {
+            _columns.Remove(origin);
             chunks.UnloadChunk(origin);
         }
 
