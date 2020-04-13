@@ -55,7 +55,6 @@ namespace FarmVox.Scripts
                 foreach (var column in _columnsDirty)
                 {
                     LoadColumn(column);
-                    yield return null;
                 }
 
                 _columnsDirty.Clear();
