@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -8,13 +9,14 @@ namespace FarmVox.Scripts
         public NavMeshAgent agent;
         public Camera targetCamera;
 
+        private void Awake()
+        {
+            agent = GetComponent<NavMeshAgent>();
+            targetCamera = Camera.main;
+        }
+
         private void Start()
         {
-            if (targetCamera == null)
-            {
-                targetCamera = Camera.main;
-            }
-
             agent.updatePosition = false;
         }
 
