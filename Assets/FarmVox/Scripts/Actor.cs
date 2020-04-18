@@ -11,12 +11,11 @@ namespace FarmVox.Scripts
         public NavMeshAgent agent;
 
         public float speed = 15;
+        public float walkAnimationSpeed = 14f;
         public float waterSpeedMultiplier = 0.4f;
         public Animator animator;
         private Vector3 _lastPosition;
         private static readonly int WalkSpeed = Animator.StringToHash("WalkSpeed");
-
-        private const float WalkSpeedMultiplier = 14f;
 
         private void Start()
         {
@@ -34,7 +33,7 @@ namespace FarmVox.Scripts
             if (_lastPosition != Vector3.zero)
             {
                 var velocity = (_lastPosition.GetXz() - position.GetXz()).magnitude;
-                animator.SetFloat(WalkSpeed, velocity * WalkSpeedMultiplier);
+                animator.SetFloat(WalkSpeed, velocity * walkAnimationSpeed);
             }
 
             _lastPosition = position;

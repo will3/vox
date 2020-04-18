@@ -12,6 +12,7 @@ namespace FarmVox.Scripts
         public Ground ground;
         public Waterfalls waterfalls;
         public Water water;
+        public bool logMeshing;
         private LightController _lightController;
         private Vector3Int LightDir => _lightController.lightDir.GetDirVector();
         private static readonly int VoxelData = Shader.PropertyToID("_VoxelData");
@@ -74,9 +75,19 @@ namespace FarmVox.Scripts
                 Destroy(chunk.meshFilter.sharedMesh);
             }
 
-            var mesh = MeshGpu(chunk);
+            var meshResult = CalcMesh(chunk);
 
-            Debug.Log($"Meshed {chunk.origin} {mesh.triangles.Length} triangles {mesh.vertices.Length} vertices");
+            chunk.SetVoxelData(meshResult.VoxelData);
+
+            // Update voxel data buffer
+            chunk.Material.SetBuffer(VoxelData, chunk.GetVoxelDataBuffer());
+
+            var mesh = meshResult.Mesh;
+
+            if (logMeshing)
+            {
+                Debug.Log($"Meshed {chunk.origin} {mesh.triangles.Length} triangles {mesh.vertices.Length} vertices");
+            }
 
             chunk.meshRenderer.material = chunk.Material;
             chunk.meshFilter.sharedMesh = mesh;
@@ -87,24 +98,20 @@ namespace FarmVox.Scripts
             ShadowEvents.Instance.PublishChunkUpdated(chunk.origin);
         }
 
-        private Mesh MeshGpu(Chunk chunk)
+        private MeshResult CalcMesh(Chunk chunk)
         {
-            var quads = MeshCpu(chunk);
+            var quads = MeshQuads(chunk);
 
             var builder = new MeshBuilder();
+
             var meshResult = builder
                 .AddQuads(quads, waterfalls.GetWaterfallChunk(chunk.origin))
                 .Build();
 
-            chunk.SetVoxelData(meshResult.VoxelData);
-
-            // Update voxel data buffer
-            chunk.Material.SetBuffer(VoxelData, chunk.GetVoxelDataBuffer());
-
-            return meshResult.Mesh;
+            return meshResult;
         }
 
-        private IEnumerable<Quad> MeshCpu(Chunk chunk)
+        private IEnumerable<Quad> MeshQuads(Chunk chunk)
         {
             var size = chunk.size;
             var quads = new List<Quad>();

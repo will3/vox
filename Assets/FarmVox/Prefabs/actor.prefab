@@ -77,7 +77,7 @@ SpriteRenderer:
   m_Size: {x: 0.64, y: 0.64}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!114 &1775203859733327100
@@ -93,6 +93,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetCamera: {fileID: 0}
+  scale: {x: 12, y: 18, z: 12}
+  scaleMultiplier: 0.22
 --- !u!1 &1775203860528327706
 GameObject:
   m_ObjectHideFlags: 0
@@ -106,8 +108,9 @@ GameObject:
   - component: {fileID: 1775203860528327703}
   - component: {fileID: 1775203860528327698}
   - component: {fileID: 1775203860528327702}
+  - component: {fileID: 8689489102498337434}
   m_Layer: 0
-  m_Name: enemy
+  m_Name: actor
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -141,10 +144,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 1775203860528327703}
-  speed: 15
+  speed: 14
+  walkAnimationSpeed: 28
   waterSpeedMultiplier: 0.4
   animator: {fileID: 1775203860528327702}
-  walkSpeedMultiplier: 12
 --- !u!195 &1775203860528327703
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -200,3 +203,17 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &8689489102498337434
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1775203860528327706}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5489513f7b244e6b71dd02e8045e9d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agent: {fileID: 0}
+  targetCamera: {fileID: 0}

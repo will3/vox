@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace FarmVox.Scripts
 {
-    public class FileStorage
+    public static class FileStorage
     {
-        public void Save(string dir, string key, object obj)
+        public static void Save(string dir, string key, object obj)
         {
             var dirPath = Path.Combine(Application.persistentDataPath, dir);
             Directory.CreateDirectory(dirPath);
@@ -16,7 +16,7 @@ namespace FarmVox.Scripts
             File.WriteAllText(path, json);
         }
 
-        public T Load<T>(string dir, string key)
+        public static T Load<T>(string dir, string key)
         {
             var dirPath = Path.Combine(Application.persistentDataPath, dir);
             var path = Path.Combine(dirPath, key);
@@ -25,14 +25,14 @@ namespace FarmVox.Scripts
             return JsonUtility.FromJson<T>(json);
         }
 
-        public void Remove(string dir, string key)
+        public static void Remove(string dir, string key)
         {
             var dirPath = Path.Combine(Application.persistentDataPath, dir);
             var path = Path.Combine(dirPath, key);
             File.Delete(path);
         }
 
-        public IEnumerable<string> List(string dir)
+        public static IEnumerable<string> List(string dir)
         {
             var dirPath = new DirectoryInfo(Path.Combine(Application.persistentDataPath, dir));
             var files = dirPath.GetFiles("*.*");
