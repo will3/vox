@@ -503,7 +503,7 @@ MonoBehaviour:
   water: {fileID: 1603196057}
   stone: {fileID: 316894775}
   numGridsToGenerate: {x: 3, y: 2, z: 3}
-  gridOffset: {x: -1, y: 0, z: -1}
+  gridOffset: {x: -2, y: 0, z: -2}
 --- !u!114 &316894775
 MonoBehaviour:
   m_ObjectHideFlags: 0

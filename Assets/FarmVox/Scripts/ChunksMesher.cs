@@ -1,8 +1,9 @@
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
 using FarmVox.Scripts.GPU.Shaders;
 using FarmVox.Scripts.Voxel;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace FarmVox.Scripts
 {
@@ -56,15 +57,36 @@ namespace FarmVox.Scripts
 
         private void Update()
         {
-            var chunks = chunksToDraw
-                .Select(c => c.ChunkList)
-                .SelectMany(x => x)
-                .Where(c => c.dirty)
-                .ToArray();
+            var chunksCount = 0;
+            var verticesCount = 0;
+            var trianglesCount = 0;
 
-            foreach (var chunk in chunks)
+            var stopwatch = Stopwatch.StartNew();
+
+            foreach (var chunks in chunksToDraw)
             {
-                DrawChunk(chunk);
+                foreach (var chunk in chunks.ChunkList)
+                {
+                    if (!chunk.dirty)
+                    {
+                        continue;
+                    }
+
+                    DrawChunk(chunk);
+
+                    chunksCount++;
+                    var mesh = chunk.meshFilter.mesh;
+                    verticesCount += mesh.vertexCount;
+                    trianglesCount += mesh.triangles.Length;
+                }
+            }
+
+            if (chunksCount > 0)
+            {
+                Debug.Log($"Meshed {chunksCount} chunks, " +
+                          $"{verticesCount} vertices, " +
+                          $"{trianglesCount} triangles, " +
+                          $"took {stopwatch.ElapsedMilliseconds}ms");
             }
         }
 

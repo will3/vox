@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using FarmVox.Scripts.GPU.Shaders;
 using FarmVox.Scripts.Voxel;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace FarmVox.Scripts
 {
@@ -46,9 +48,17 @@ namespace FarmVox.Scripts
         {
             UpdateColumns();
 
+            var stopwatch = Stopwatch.StartNew();
+
             foreach (var column in _columnsDirty)
             {
                 LoadColumn(column);
+            }
+
+            if (_columnsDirty.Count > 0)
+            {
+                Debug.Log($"Generated {_columnsDirty.Count} columns, " +
+                          $"took {stopwatch.ElapsedMilliseconds}ms");
             }
 
             _columnsDirty.Clear();
