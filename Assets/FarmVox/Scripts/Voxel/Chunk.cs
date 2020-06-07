@@ -233,17 +233,6 @@ namespace FarmVox.Scripts.Voxel
                 return 0;
             }
 
-            var i = coord.x;
-            var j = coord.y;
-            var k = coord.z;
-
-            if (i < 0 || i >= DataSize ||
-                j < 0 || j >= DataSize ||
-                k < 0 || k >= DataSize)
-            {
-                throw new Exception("out of bounds:" + new Vector3Int(i, j, k));
-            }
-
             var index = GetIndex(coord);
             return _data[index];
         }
@@ -253,17 +242,6 @@ namespace FarmVox.Scripts.Voxel
             if (_data == null || _data.Length == 0)
             {
                 _data = new float[DataSize * DataSize * DataSize];
-            }
-
-            var i = coord.x;
-            var j = coord.y;
-            var k = coord.z;
-
-            if (i < 0 || i >= DataSize ||
-                j < 0 || j >= DataSize ||
-                k < 0 || k >= DataSize)
-            {
-                throw new Exception("out of bounds:" + new Vector3Int(i, j, k));
             }
 
             var index = GetIndex(coord);
