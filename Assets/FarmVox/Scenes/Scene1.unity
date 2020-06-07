@@ -498,12 +498,12 @@ MonoBehaviour:
       xzScale: 1
       type: 0
       offset: 0.7
-    useEdges: 0
+    useEdges: 1
   chunks: {fileID: 316894773}
   water: {fileID: 1603196057}
   stone: {fileID: 316894775}
-  numGridsToGenerate: {x: 3, y: 2, z: 3}
-  gridOffset: {x: -2, y: 0, z: -2}
+  numGridsToGenerate: {x: 9, y: 2, z: 9}
+  gridOffset: {x: -4, y: 0, z: -4}
 --- !u!114 &316894775
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -616,8 +616,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3b8e92769eacb4672b888f1ab521aeaf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!4 &362043728
