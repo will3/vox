@@ -7,19 +7,16 @@ namespace FarmVox.Scripts
 {
     public class FileStorage
     {
-        public void Save(string dir, string key, object obj)
+        public void Save(string key, object obj)
         {
-            var dirPath = Path.Combine(Application.persistentDataPath, dir);
-            Directory.CreateDirectory(dirPath);
-            var path = Path.Combine(dirPath, key);
+            var path = Path.Combine(Application.persistentDataPath, key);
             var json = JsonUtility.ToJson(obj);
             File.WriteAllText(path, json);
         }
 
-        public T Load<T>(string dir, string key) where T : class
+        public T Load<T>(string key)
         {
-            var dirPath = Path.Combine(Application.persistentDataPath, dir);
-            var path = Path.Combine(dirPath, key);
+            var path = Path.Combine(Application.persistentDataPath, key);
 
             try
             {
@@ -29,18 +26,17 @@ namespace FarmVox.Scripts
             }
             catch (DirectoryNotFoundException)
             {
-                return null;
+                return default;
             }
             catch (FileNotFoundException)
             {
-                return null;
+                return default;
             }
         }
 
-        public void Remove(string dir, string key)
+        public void Remove(string key)
         {
-            var dirPath = Path.Combine(Application.persistentDataPath, dir);
-            var path = Path.Combine(dirPath, key);
+            var path = Path.Combine(Application.persistentDataPath, key);
             File.Delete(path);
         }
 

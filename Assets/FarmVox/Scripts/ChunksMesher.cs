@@ -95,7 +95,7 @@ namespace FarmVox.Scripts
         private MeshData CalcMesh(Chunk chunk, int layer)
         {
             var loadedMesh = LoadMesh(chunk.origin, layer);
-            if (loadedMesh != null)
+            if (loadedMesh.quads != null)
             {
                 return loadedMesh;
             }
@@ -324,25 +324,17 @@ namespace FarmVox.Scripts
 
         private void SaveMesh(Vector3Int origin, int layer, MeshData data)
         {
-            _storage.Save("meshes", GetKey(origin, layer), data);
+            _storage.Save(GetKey(origin, layer), data);
         }
 
         private MeshData LoadMesh(Vector3Int origin, int layer)
         {
-            var data = _storage.Load<MeshData>("meshes", GetKey(origin, layer));
-
-            if (data?.quads == null)
-            {
-                Debug.LogWarning("Corrupted data, no quads found");
-                return null;
-            }
-
-            return data;
+            return _storage.Load<MeshData>(GetKey(origin, layer));
         }
 
         private static string GetKey(Vector3Int origin, int layer)
         {
-            return $"{layer}-{origin.x}-{origin.y}-{origin.z}";
+            return $"meshes-{layer}-{origin.x}-{origin.y}-{origin.z}";
         }
     }
 }

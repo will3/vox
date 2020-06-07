@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using UnityEngine;
 
@@ -14,7 +13,6 @@ namespace FarmVox.Scripts
         public GUIStyle textFieldStyle;
         private bool _hasAppliedBoxBackgroundColor;
         private bool _showingConsole;
-        private string _output = "";
 
         private void ApplyBoxBackgroundColorIfNeeded()
         {
@@ -55,14 +53,7 @@ namespace FarmVox.Scripts
             var textFieldRect = new Rect(textFieldLeftPadding, 0, width - textFieldLeftPadding * 2, height);
             GUI.SetNextControlName("input");
 
-            if (_output.Length == 0)
-            {
-                _text = GUI.TextField(textFieldRect, _text, textFieldStyle);
-            }
-            else
-            {
-                GUI.Label(textFieldRect, _output, textFieldStyle);
-            }
+            _text = GUI.TextField(textFieldRect, _text, textFieldStyle);
 
             GUI.FocusControl("input");
 
@@ -77,13 +68,6 @@ namespace FarmVox.Scripts
                 return;
             }
 
-            if (_output.Length > 0)
-            {
-                _output = "";
-                _showingConsole = false;
-                return;
-            }
-
             var args = _text.Split(' ').Select(x => x.Trim()).Where(x => x.Length > 0).ToArray();
 
             if (args.Length == 0)
@@ -93,22 +77,21 @@ namespace FarmVox.Scripts
                 return;
             }
 
-            var command = CommandManager.Instance.Get(args[0]);
+            var commandName = args[0];
+            var command = CommandManager.Instance.Get(commandName);
             if (command == null)
             {
+                Debug.Log($"Command {commandName} not found");
+                Debug.Log($"Known commands:\n{string.Join("\n", CommandManager.Instance.Commands)}");
                 _showingConsole = false;
                 _text = "";
                 return;
             }
 
-            _output = command.Run(args);
-
-            if (_output.Length == 0)
-            {
-                _showingConsole = false;
-            }
-
+            var output = command.Run(args);
+            Debug.Log(output);
             _text = "";
+            _showingConsole = false;
         }
 
         private static Texture2D MakeTexture(int w, int h, Color col)

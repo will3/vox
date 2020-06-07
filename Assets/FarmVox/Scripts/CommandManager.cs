@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace FarmVox.Scripts
 {
@@ -13,6 +14,8 @@ namespace FarmVox.Scripts
         public static CommandManager Instance => _instance ?? (_instance = new CommandManager());
 
         private readonly Dictionary<string, ICommand> _map = new Dictionary<string, ICommand>();
+
+        public IReadOnlyList<string> Commands => _map.Keys.ToArray();
 
         public void Add(ICommand command)
         {

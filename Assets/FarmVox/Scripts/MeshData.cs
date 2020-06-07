@@ -4,7 +4,7 @@ using FarmVox.Scripts.GPU.Shaders;
 namespace FarmVox.Scripts
 {
     [Serializable]
-    public class MeshData
+    public struct MeshData
     {
         public Quad[] quads;
     }
