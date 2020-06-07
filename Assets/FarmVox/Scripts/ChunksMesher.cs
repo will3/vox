@@ -159,8 +159,8 @@ namespace FarmVox.Scripts
                             var ca = GetVectorInt(i, j, k, d);
                             var cb = GetVectorInt(i + 1, j, k, d);
 
-                            var va = chunk.GetLocal(ca);
-                            var vb = chunk.GetLocal(cb);
+                            var va = chunk.GetLocal(i, j, k, d);
+                            var vb = chunk.GetLocal(i + 1, j, k, d);
 
                             if (va > 0 == vb > 0)
                             {
@@ -204,14 +204,14 @@ namespace FarmVox.Scripts
                             }
 
                             var aoI = front ? i + 1 : i;
-                            var v00 = chunk.GetLocal(GetVectorInt(aoI, j - 1, k - 1, d));
-                            var v01 = chunk.GetLocal(GetVectorInt(aoI, j, k - 1, d));
-                            var v02 = chunk.GetLocal(GetVectorInt(aoI, j + 1, k - 1, d));
-                            var v10 = chunk.GetLocal(GetVectorInt(aoI, j - 1, k, d));
-                            var v12 = chunk.GetLocal(GetVectorInt(aoI, j + 1, k, d));
-                            var v20 = chunk.GetLocal(GetVectorInt(aoI, j - 1, k + 1, d));
-                            var v21 = chunk.GetLocal(GetVectorInt(aoI, j, k + 1, d));
-                            var v22 = chunk.GetLocal(GetVectorInt(aoI, j + 1, k + 1, d));
+                            var v00 = chunk.GetLocal(aoI, j - 1, k - 1, d);
+                            var v01 = chunk.GetLocal(aoI, j, k - 1, d);
+                            var v02 = chunk.GetLocal(aoI, j + 1, k - 1, d);
+                            var v10 = chunk.GetLocal(aoI, j - 1, k, d);
+                            var v12 = chunk.GetLocal(aoI, j + 1, k, d);
+                            var v20 = chunk.GetLocal(aoI, j - 1, k + 1, d);
+                            var v21 = chunk.GetLocal(aoI, j, k + 1, d);
+                            var v22 = chunk.GetLocal(aoI, j + 1, k + 1, d);
 
                             var ao = new Vector4(
                                 CalcAo(v10, v01, v00, aoStrength),

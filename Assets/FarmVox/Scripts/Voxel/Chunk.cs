@@ -22,8 +22,6 @@ namespace FarmVox.Scripts.Voxel
         public bool hasMesh;
         public Chunks chunks;
 
-        public int DataSize => size;
-
         private float[] _data;
         private Color[] _colors;
         private Vector3[] _normals;
@@ -183,11 +181,11 @@ namespace FarmVox.Scripts.Voxel
 
             for (var d = 0; d < 3; d++)
             {
-                for (var i = 0; i < DataSize - 1; i++)
+                for (var i = 0; i < size - 1; i++)
                 {
-                    for (var j = 0; j < DataSize - 1; j++)
+                    for (var j = 0; j < size - 1; j++)
                     {
-                        for (var k = 0; k < DataSize - 1; k++)
+                        for (var k = 0; k < size - 1; k++)
                         {
                             var coordA = Vectors.GetVector3Int(i, j, k, d);
                             var coordB = Vectors.GetVector3Int(i + 1, j, k, d);
@@ -226,6 +224,19 @@ namespace FarmVox.Scripts.Voxel
                 : chunks.Get(origin + coord);
         }
 
+        public float GetLocal(int i, int j, int k, int d)
+        {
+            switch (d)
+            {
+                case 0:
+                    return IsInBound(i, j, k) ? Get(i, j, k) : chunks.Get(new Vector3Int(i, j, k) + origin);
+                case 1:
+                    return IsInBound(i, j, k) ? Get(k, i, j) : chunks.Get(new Vector3Int(k, i, j) + origin);
+                default:
+                    return IsInBound(i, j, k) ? Get(j, k, i) : chunks.Get(new Vector3Int(j, k, i) + origin);
+            }
+        }
+
         public float Get(Vector3Int coord)
         {
             if (_data == null || _data.Length == 0)
@@ -237,11 +248,17 @@ namespace FarmVox.Scripts.Voxel
             return _data[index];
         }
 
+        public float Get(int i, int j, int k)
+        {
+            var index = i * size * size + j * size + k;
+            return _data[index];
+        }
+
         public void Set(Vector3Int coord, float v)
         {
             if (_data == null || _data.Length == 0)
             {
-                _data = new float[DataSize * DataSize * DataSize];
+                _data = new float[size * size * size];
             }
 
             var index = GetIndex(coord);
@@ -254,7 +271,7 @@ namespace FarmVox.Scripts.Voxel
         {
             if (_colors == null || _colors.Length == 0)
             {
-                _colors = new Color[DataSize * DataSize * DataSize];
+                _colors = new Color[size * size * size];
             }
 
             var index = GetIndex(coord);
@@ -277,7 +294,7 @@ namespace FarmVox.Scripts.Voxel
 
         private int GetIndex(Vector3Int coord)
         {
-            var index = coord.x * DataSize * DataSize + coord.y * DataSize + coord.z;
+            var index = coord.x * size * size + coord.y * size + coord.z;
             return index;
         }
 
@@ -328,11 +345,21 @@ namespace FarmVox.Scripts.Voxel
                    localCoord.z < size;
         }
 
+        public bool IsInBound(int x, int y, int z)
+        {
+            return x >= 0 &&
+                   y >= 0 &&
+                   z >= 0 &&
+                   x < size &&
+                   y < size &&
+                   z < size;
+        }
+
         public void SetNormal(Vector3Int coord, Vector3 normal)
         {
             if (_normals == null)
             {
-                _normals = new Vector3[DataSize * DataSize * DataSize];
+                _normals = new Vector3[size * size * size];
             }
 
             var index = GetIndex(coord);

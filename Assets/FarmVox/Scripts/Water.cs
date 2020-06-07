@@ -72,9 +72,9 @@ namespace FarmVox.Scripts
                 maxJ = size;
             }
 
-            for (var i = 0; i < waterChunk.DataSize; i++)
+            for (var i = 0; i < waterChunk.size; i++)
             {
-                for (var k = 0; k < waterChunk.DataSize; k++)
+                for (var k = 0; k < waterChunk.size; k++)
                 {
                     for (var j = 0; j <= maxJ; j++)
                     {
