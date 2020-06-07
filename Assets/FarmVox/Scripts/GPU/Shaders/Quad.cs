@@ -1,24 +1,26 @@
+using System;
 using UnityEngine;
 
 namespace FarmVox.Scripts.GPU.Shaders
 {
+    [Serializable]
     public struct Quad
     {
-        public Vector3 A;
+        public Vector3 a;
             
-        public Vector3 B;
+        public Vector3 b;
             
-        public Vector3 C;
+        public Vector3 c;
 
-        public Vector3 D;
+        public Vector3 d;
             
-        public Color Color;
+        public Color color;
 
-        public Vector4 AO;
+        public Vector4 ao;
             
-        public Vector3Int Coord;
+        public Vector3Int coord;
 
-        public Vector3 Normal;
+        public Vector3 normal;
 
         public static int Size =>
             sizeof(float) * 3 * 4 +

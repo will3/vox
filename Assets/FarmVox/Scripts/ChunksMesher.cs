@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using FarmVox.Scripts.GPU.Shaders;
 using FarmVox.Scripts.Voxel;
 using UnityEngine;
@@ -63,8 +64,9 @@ namespace FarmVox.Scripts
 
             var stopwatch = Stopwatch.StartNew();
 
-            foreach (var chunks in chunksToDraw)
+            for (var i = 0; i < chunksToDraw.Length; i++)
             {
+                var chunks = chunksToDraw[i];
                 foreach (var chunk in chunks.ChunkList)
                 {
                     if (!chunk.dirty)
@@ -72,7 +74,7 @@ namespace FarmVox.Scripts
                         continue;
                     }
 
-                    DrawChunk(chunk);
+                    DrawChunk(chunk, i);
 
                     chunksCount++;
                     var mesh = chunk.meshFilter.mesh;
@@ -90,14 +92,34 @@ namespace FarmVox.Scripts
             }
         }
 
-        private void DrawChunk(Chunk chunk)
+        private MeshData CalcMesh(Chunk chunk, int layer)
+        {
+            var loadedMesh = LoadMesh(chunk.origin, layer);
+            if (loadedMesh != null)
+            {
+                return loadedMesh;
+            }
+
+            var quads = MeshQuads(chunk).ToArray();
+            var data = new MeshData
+            {
+                quads = quads
+            };
+            SaveMesh(chunk.origin, layer, data);
+
+            return data;
+        }
+
+        private void DrawChunk(Chunk chunk, int layer)
         {
             if (chunk.hasMesh)
             {
                 Destroy(chunk.meshFilter.sharedMesh);
             }
 
-            var meshResult = CalcMesh(chunk);
+            var data = CalcMesh(chunk, layer);
+
+            var meshResult = MeshBuilder.Build(data.quads, waterfalls.GetWaterfallChunk(chunk.origin));
 
             chunk.SetVoxelData(meshResult.VoxelData);
 
@@ -118,19 +140,6 @@ namespace FarmVox.Scripts
             chunk.dirty = false;
 
             ShadowEvents.Instance.PublishChunkUpdated(chunk.origin);
-        }
-
-        private MeshResult CalcMesh(Chunk chunk)
-        {
-            var quads = MeshQuads(chunk);
-
-            var builder = new MeshBuilder();
-
-            var meshResult = builder
-                .AddQuads(quads, waterfalls.GetWaterfallChunk(chunk.origin))
-                .Build();
-
-            return meshResult;
         }
 
         private IEnumerable<Quad> MeshQuads(Chunk chunk)
@@ -222,26 +231,26 @@ namespace FarmVox.Scripts
 
                             var quad = new Quad
                             {
-                                Color = color,
-                                Coord = coord,
-                                Normal = chunk.GetNormalLocal(coord)
+                                color = color,
+                                coord = coord,
+                                normal = chunk.GetNormalLocal(coord)
                             };
 
                             if (front)
                             {
-                                quad.A = v1;
-                                quad.B = v2;
-                                quad.C = v3;
-                                quad.D = v4;
-                                quad.AO = ao;
+                                quad.a = v1;
+                                quad.b = v2;
+                                quad.c = v3;
+                                quad.d = v4;
+                                quad.ao = ao;
                             }
                             else
                             {
-                                quad.A = v3;
-                                quad.B = v2;
-                                quad.C = v1;
-                                quad.D = v4;
-                                quad.AO = new Vector4(ao[2], ao[1], ao[0], ao[3]);
+                                quad.a = v3;
+                                quad.b = v2;
+                                quad.c = v1;
+                                quad.d = v4;
+                                quad.ao = new Vector4(ao[2], ao[1], ao[0], ao[3]);
                             }
 
                             quads.Add(quad);
@@ -309,6 +318,31 @@ namespace FarmVox.Scripts
         private static float CalcAo(float s1F, float s2F, float cf, float aoStrength)
         {
             return 1.0f - CalcAoRaw(s1F, s2F, cf) * aoStrength;
+        }
+
+        private FileStorage _storage = new FileStorage();
+
+        private void SaveMesh(Vector3Int origin, int layer, MeshData data)
+        {
+            _storage.Save("meshes", GetKey(origin, layer), data);
+        }
+
+        private MeshData LoadMesh(Vector3Int origin, int layer)
+        {
+            var data = _storage.Load<MeshData>("meshes", GetKey(origin, layer));
+
+            if (data?.quads == null)
+            {
+                Debug.LogWarning("Corrupted data, no quads found");
+                return null;
+            }
+
+            return data;
+        }
+
+        private static string GetKey(Vector3Int origin, int layer)
+        {
+            return $"{layer}-{origin.x}-{origin.y}-{origin.z}";
         }
     }
 }
