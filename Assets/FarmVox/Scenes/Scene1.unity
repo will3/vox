@@ -498,12 +498,12 @@ MonoBehaviour:
       xzScale: 1
       type: 0
       offset: 0.7
-    useEdges: 1
+    useEdges: 0
   chunks: {fileID: 316894773}
   water: {fileID: 1603196057}
   stone: {fileID: 316894775}
-  numGridsToGenerate: {x: 9, y: 2, z: 9}
-  gridOffset: {x: -4, y: 0, z: -4}
+  numGridsToGenerate: {x: 3, y: 2, z: 3}
+  gridOffset: {x: -1, y: 0, z: -1}
 --- !u!114 &316894775
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -597,7 +597,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 362043728}
-  - component: {fileID: 362043727}
   - component: {fileID: 362043729}
   m_Layer: 0
   m_Name: Game
@@ -606,18 +605,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &362043727
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 362043726}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3b8e92769eacb4672b888f1ab521aeaf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &362043728
 Transform:
   m_ObjectHideFlags: 0
@@ -748,7 +735,7 @@ MonoBehaviour:
   target: {x: 0, y: 32, z: 0}
   rotation: {x: 45, y: 45, z: 0}
   targetRotation: {x: 45, y: 45, z: 0}
-  distance: 150
+  distance: 200
   keysEnabled: 1
   orthographicSize: 50
   rotateAmount: 90
