@@ -141,6 +141,7 @@ namespace FarmVox.Scripts
             var aoStrength = chunk.options.aoStrength;
             var waterLevel = water.config.waterLevel;
             var waterOpacity = water.config.opacity;
+            var chunkY = chunk.origin.y;
 
             for (var d = 0; d < 3; d++)
             {
@@ -191,8 +192,8 @@ namespace FarmVox.Scripts
 
                             if (!isWater)
                             {
-                                var worldCoord = chunk.origin + coord;
-                                var depth = waterLevel - worldCoord.y;
+                                var worldCoordY = chunkY + coord.y;
+                                var depth = waterLevel - worldCoordY;
 
                                 if (depth > 0)
                                 {
