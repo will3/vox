@@ -16,16 +16,5 @@ namespace FarmVox.Scripts
                     return new Vector3Int(j, k, i);
             }
         }
-
-        public static Vector3Int FloorToInt(Vector3 vector) {
-            return new Vector3Int(
-                Mathf.FloorToInt(vector.x),
-                Mathf.FloorToInt(vector.y),
-                Mathf.FloorToInt(vector.z));
-        }
-
-        public static Vector2Int GetXZ(Vector3Int vector) {
-            return new Vector2Int(vector.x, vector.z);
-        }
     }
 }
