@@ -1,6 +1,4 @@
 using System.Linq;
-using FarmVox.Scripts.Voxel;
-using FarmVox.Voxel;
 using UnityEngine;
 
 namespace FarmVox.Scripts

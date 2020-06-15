@@ -94,18 +94,11 @@ namespace FarmVox.Scripts
 
         private MeshData CalcMesh(Chunk chunk, int layer)
         {
-            var loadedMesh = LoadMesh(chunk.origin, layer);
-            if (loadedMesh.quads != null)
-            {
-                return loadedMesh;
-            }
-
             var quads = MeshQuads(chunk).ToArray();
             var data = new MeshData
             {
                 quads = quads
             };
-            SaveMesh(chunk.origin, layer, data);
 
             return data;
         }
@@ -318,18 +311,6 @@ namespace FarmVox.Scripts
         private static float CalcAo(float s1F, float s2F, float cf, float aoStrength)
         {
             return 1.0f - CalcAoRaw(s1F, s2F, cf) * aoStrength;
-        }
-
-        private FileStorage _storage = new FileStorage();
-
-        private void SaveMesh(Vector3Int origin, int layer, MeshData data)
-        {
-            _storage.Save(GetKey(origin, layer), data);
-        }
-
-        private MeshData LoadMesh(Vector3Int origin, int layer)
-        {
-            return _storage.Load<MeshData>(GetKey(origin, layer));
         }
 
         private static string GetKey(Vector3Int origin, int layer)
