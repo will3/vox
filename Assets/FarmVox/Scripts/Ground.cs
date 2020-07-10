@@ -16,6 +16,7 @@ namespace FarmVox.Scripts
         public Stone stone;
         public Vector3Int numGridsToGenerate = new Vector3Int(3, 2, 3);
         public Vector3Int gridOffset = new Vector3Int(-1, 0, -1);
+        public ComputeShader shader;
         private readonly HashSet<Vector3Int> _columns = new HashSet<Vector3Int>();
         private readonly List<Vector3Int> _columnsDirty = new List<Vector3Int>();
 
@@ -99,7 +100,7 @@ namespace FarmVox.Scripts
         {
             var chunk = chunks.GetOrCreateChunk(origin);
 
-            var genTerrianGpu = new GenTerrianGpu(config.size, origin, config, water.config, stone.config, Bounds);
+            var genTerrianGpu = new GenTerrianGpu(config.size, origin, config, water.config, stone.config, Bounds, shader);
 
             using (var results = genTerrianGpu.Dispatch())
             {

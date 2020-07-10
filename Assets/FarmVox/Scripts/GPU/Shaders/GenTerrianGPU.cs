@@ -21,7 +21,8 @@ namespace FarmVox.Scripts.GPU.Shaders
             GroundConfig groundConfig,
             WaterConfig waterConfig,
             StoneConfig stoneConfig,
-            BoundsInt bounds)
+            BoundsInt bounds,
+            ComputeShader shader)
         {
             _size = size;
             _origin = origin;
@@ -31,7 +32,7 @@ namespace FarmVox.Scripts.GPU.Shaders
             _bounds = bounds;
 
             _dataSize = size;
-            _shader = Resources.Load<ComputeShader>("Shaders/GenTerrian");
+            _shader = shader;
         }
 
         public GenTerrianResults Dispatch()
